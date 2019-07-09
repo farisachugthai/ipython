@@ -10,10 +10,8 @@ from IPython.utils import io
 from IPython.utils.py3compat import input
 from IPython.utils.terminal import toggle_set_term_title, set_term_title
 from IPython.utils.process import abbrev_cwd
-from traitlets import (
-    Bool, Unicode, Dict, Integer, observe, Instance, Type, default, Enum, Union,
-    Any, validate
-)
+from traitlets import (Bool, Unicode, Dict, Integer, observe, Instance, Type,
+                       default, Enum, Union, Any, validate)
 
 from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
 from prompt_toolkit.filters import (HasFocus, Condition, IsDone)
@@ -40,23 +38,24 @@ from .shortcuts import create_ipython_shortcuts
 DISPLAY_BANNER_DEPRECATED = object()
 
 
-class _NoStyle(Style): pass
-
+class _NoStyle(Style):
+    pass
 
 
 _style_overrides_light_bg = {
-            Token.Prompt: '#0000ff',
-            Token.PromptNum: '#0000ee bold',
-            Token.OutPrompt: '#cc0000',
-            Token.OutPromptNum: '#bb0000 bold',
+    Token.Prompt: '#0000ff',
+    Token.PromptNum: '#0000ee bold',
+    Token.OutPrompt: '#cc0000',
+    Token.OutPromptNum: '#bb0000 bold',
 }
 
 _style_overrides_linux = {
-            Token.Prompt: '#00cc00',
-            Token.PromptNum: '#00bb00 bold',
-            Token.OutPrompt: '#cc0000',
-            Token.OutPromptNum: '#bb0000 bold',
+    Token.Prompt: '#00cc00',
+    Token.PromptNum: '#00bb00 bold',
+    Token.OutPrompt: '#cc0000',
+    Token.OutPromptNum: '#bb0000 bold',
 }
+
 
 def get_default_editor():
     try:
@@ -70,7 +69,8 @@ def get_default_editor():
     if os.name == 'posix':
         return 'vi'  # the only one guaranteed to be there!
     else:
-        return 'notepad' # same in Windows!
+        return 'notepad'  # same in Windows!
+
 
 # conservatively check for tty
 # overridden streams can result in things like:
@@ -84,49 +84,57 @@ for _name in ('stdin', 'stdout', 'stderr'):
 else:
     _is_tty = True
 
-
 _use_simple_prompt = ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
 
+
 class TerminalInteractiveShell(InteractiveShell):
-    space_for_menu = Integer(6, help='Number of line at the bottom of the screen '
-                                     'to reserve for the completion menu'
-                            ).tag(config=True)
+    space_for_menu = Integer(
+        6,
+        help='Number of line at the bottom of the screen '
+        'to reserve for the completion menu').tag(config=True)
 
     pt_app = None
     debugger_history = None
 
-    simple_prompt = Bool(_use_simple_prompt,
-        help="""Use `raw_input` for the REPL, without completion and prompt colors.
+    simple_prompt = Bool(
+        _use_simple_prompt,
+        help=
+        """Use `raw_input` for the REPL, without completion and prompt colors.
 
             Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
             IPython own testing machinery, and emacs inferior-shell integration through elpy.
 
             This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
             environment variable is set, or the current terminal is not a tty."""
-            ).tag(config=True)
+    ).tag(config=True)
 
     @property
     def debugger_cls(self):
         return Pdb if self.simple_prompt else TerminalPdb
 
-    confirm_exit = Bool(True,
+    confirm_exit = Bool(
+        True,
         help="""
         Set to confirm when you try to exit IPython with an EOF (Control-D
         in Unix, Control-Z/Enter in Windows). By typing 'exit' or 'quit',
         you can force a direct exit without any confirmation.""",
     ).tag(config=True)
 
-    editing_mode = Unicode('emacs',
+    editing_mode = Unicode(
+        'emacs',
         help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
     ).tag(config=True)
 
-    mouse_support = Bool(False,
-        help="Enable mouse support in the prompt\n(Note: prevents selecting text with the mouse)"
+    mouse_support = Bool(
+        False,
+        help=
+        "Enable mouse support in the prompt\n(Note: prevents selecting text with the mouse)"
     ).tag(config=True)
 
     # We don't load the list of styles for the help string, because loading
     # Pygments plugins takes time and can cause unexpected errors.
-    highlighting_style = Union([Unicode('legacy'), Type(klass=Style)],
+    highlighting_style = Union(
+        [Unicode('legacy'), Type(klass=Style)],
         help="""The name or class of a Pygments style to use for syntax
         highlighting. To see available styles, run `pygmentize -L styles`."""
     ).tag(config=True)
@@ -134,15 +142,14 @@ class TerminalInteractiveShell(InteractiveShell):
     @validate('editing_mode')
     def _validate_editing_mode(self, proposal):
         if proposal['value'].lower() == 'vim':
-            proposal['value']= 'vi'
+            proposal['value'] = 'vi'
         elif proposal['value'].lower() == 'default':
-            proposal['value']= 'emacs'
+            proposal['value'] = 'emacs'
 
         if hasattr(EditingMode, proposal['value'].upper()):
             return proposal['value'].lower()
 
         return self.editing_mode
-
 
     @observe('editing_mode')
     def _editing_mode(self, change):
@@ -156,25 +163,30 @@ class TerminalInteractiveShell(InteractiveShell):
         self.refresh_style()
 
     def refresh_style(self):
-        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
-
+        self._style = self._make_style_from_name_or_cls(
+            self.highlighting_style)
 
     highlighting_style_overrides = Dict(
-        help="Override highlighting format for specific tokens"
-    ).tag(config=True)
+        help="Override highlighting format for specific tokens").tag(
+            config=True)
 
-    true_color = Bool(False,
+    true_color = Bool(
+        False,
         help=("Use 24bit colors instead of 256 colors in prompt highlighting. "
               "If your terminal supports true color, the following command "
               "should print 'TRUECOLOR' in orange: "
-              "printf \"\\x1b[38;2;255;100;0mTRUECOLOR\\x1b[0m\\n\"")
-    ).tag(config=True)
+              "printf \"\\x1b[38;2;255;100;0mTRUECOLOR\\x1b[0m\\n\"")).tag(
+                  config=True)
 
-    editor = Unicode(get_default_editor(),
+    editor = Unicode(
+        get_default_editor(),
         help="Set the editor used by IPython (default to $EDITOR/vi/notepad)."
     ).tag(config=True)
 
-    prompts_class = Type(Prompts, help='Class used to generate Prompt token for prompt_toolkit').tag(config=True)
+    prompts_class = Type(
+        Prompts,
+        help='Class used to generate Prompt token for prompt_toolkit').tag(
+            config=True)
 
     prompts = Instance(Prompts)
 
@@ -190,44 +202,50 @@ class TerminalInteractiveShell(InteractiveShell):
     def _displayhook_class_default(self):
         return RichPromptDisplayHook
 
-    term_title = Bool(True,
-        help="Automatically set the terminal title"
-    ).tag(config=True)
+    term_title = Bool(
+        True, help="Automatically set the terminal title").tag(config=True)
 
-    term_title_format = Unicode("IPython: {cwd}",
-        help="Customize the terminal title format.  This is a python format string. " +
-             "Available substitutions are: {cwd}."
-    ).tag(config=True)
+    term_title_format = Unicode(
+        "IPython: {cwd}",
+        help=
+        "Customize the terminal title format.  This is a python format string. "
+        + "Available substitutions are: {cwd}.").tag(config=True)
 
-    display_completions = Enum(('column', 'multicolumn','readlinelike'),
-        help= ( "Options for displaying tab completions, 'column', 'multicolumn', and "
-                "'readlinelike'. These options are for `prompt_toolkit`, see "
-                "`prompt_toolkit` documentation for more information."
-                ),
+    display_completions = Enum(
+        ('column', 'multicolumn', 'readlinelike'),
+        help=
+        ("Options for displaying tab completions, 'column', 'multicolumn', and "
+         "'readlinelike'. These options are for `prompt_toolkit`, see "
+         "`prompt_toolkit` documentation for more information."),
         default_value='multicolumn').tag(config=True)
 
-    highlight_matching_brackets = Bool(True,
+    highlight_matching_brackets = Bool(
+        True,
         help="Highlight matching brackets.",
     ).tag(config=True)
 
-    extra_open_editor_shortcuts = Bool(False,
-        help="Enable vi (v) or Emacs (C-X C-E) shortcuts to open an external editor. "
-             "This is in addition to the F2 binding, which is always enabled."
-    ).tag(config=True)
+    extra_open_editor_shortcuts = Bool(
+        False,
+        help=
+        "Enable vi (v) or Emacs (C-X C-E) shortcuts to open an external editor. "
+        "This is in addition to the F2 binding, which is always enabled.").tag(
+            config=True)
 
-    handle_return = Any(None,
+    handle_return = Any(
+        None,
         help="Provide an alternative handler to be called when the user presses "
-             "Return. This is an advanced option intended for debugging, which "
-             "may be changed or removed in later releases."
-    ).tag(config=True)
+        "Return. This is an advanced option intended for debugging, which "
+        "may be changed or removed in later releases.").tag(config=True)
 
-    enable_history_search = Bool(True,
-        help="Allows to enable/disable the prompt toolkit history search"
-    ).tag(config=True)
+    enable_history_search = Bool(
+        True,
+        help="Allows to enable/disable the prompt toolkit history search").tag(
+            config=True)
 
-    prompt_includes_vi_mode = Bool(True,
-        help="Display the current vi mode (when using vi editing mode)."
-    ).tag(config=True)
+    prompt_includes_vi_mode = Bool(
+        True,
+        help="Display the current vi mode (when using vi editing mode).").tag(
+            config=True)
 
     @observe('term_title')
     def init_term_title(self, change=None):
@@ -250,12 +268,15 @@ class TerminalInteractiveShell(InteractiveShell):
             # Fall back to plain non-interactive output for tests.
             # This is very limited.
             def prompt():
-                prompt_text = "".join(x[1] for x in self.prompts.in_prompt_tokens())
+                prompt_text = "".join(x[1]
+                                      for x in self.prompts.in_prompt_tokens())
                 lines = [input(prompt_text)]
-                prompt_continuation = "".join(x[1] for x in self.prompts.continuation_prompt_tokens())
+                prompt_continuation = "".join(
+                    x[1] for x in self.prompts.continuation_prompt_tokens())
                 while self.check_complete('\n'.join(lines))[0] == 'incomplete':
-                    lines.append( input(prompt_continuation) )
+                    lines.append(input(prompt_continuation))
                 return '\n'.join(lines)
+
             self.prompt_for_code = prompt
             return
 
@@ -265,31 +286,32 @@ class TerminalInteractiveShell(InteractiveShell):
         # Pre-populate history from IPython's history database
         history = InMemoryHistory()
         last_cell = u""
-        for __, ___, cell in self.history_manager.get_tail(self.history_load_length,
-                                                        include_latest=True):
+        for __, ___, cell in self.history_manager.get_tail(
+                self.history_load_length, include_latest=True):
             # Ignore blank lines and consecutive duplicates
             cell = cell.rstrip()
             if cell and (cell != last_cell):
                 history.append_string(cell)
                 last_cell = cell
 
-        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
+        self._style = self._make_style_from_name_or_cls(
+            self.highlighting_style)
         self.style = DynamicStyle(lambda: self._style)
 
         editing_mode = getattr(EditingMode, self.editing_mode.upper())
 
         self.pt_app = PromptSession(
-                            editing_mode=editing_mode,
-                            key_bindings=key_bindings,
-                            history=history,
-                            completer=IPythonPTCompleter(shell=self),
-                            enable_history_search = self.enable_history_search,
-                            style=self.style,
-                            include_default_pygments_style=False,
-                            mouse_support=self.mouse_support,
-                            enable_open_in_editor=self.extra_open_editor_shortcuts,
-                            color_depth=self.color_depth,
-                            **self._extra_prompt_options())
+            editing_mode=editing_mode,
+            key_bindings=key_bindings,
+            history=history,
+            completer=IPythonPTCompleter(shell=self),
+            enable_history_search=self.enable_history_search,
+            style=self.style,
+            include_default_pygments_style=False,
+            mouse_support=self.mouse_support,
+            enable_open_in_editor=self.extra_open_editor_shortcuts,
+            color_depth=self.color_depth,
+            **self._extra_prompt_options())
 
     def _make_style_from_name_or_cls(self, name_or_cls):
         """
@@ -312,33 +334,44 @@ class TerminalInteractiveShell(InteractiveShell):
                 # looks like. These tweaks to the default theme help with that.
                 style_cls = get_style_by_name('default')
                 style_overrides.update({
-                    Token.Number: '#007700',
-                    Token.Operator: 'noinherit',
-                    Token.String: '#BB6622',
-                    Token.Name.Function: '#2080D0',
-                    Token.Name.Class: 'bold #2080D0',
-                    Token.Name.Namespace: 'bold #2080D0',
-                    Token.Prompt: '#009900',
-                    Token.PromptNum: '#ansibrightgreen bold',
-                    Token.OutPrompt: '#990000',
-                    Token.OutPromptNum: '#ansibrightred bold',
+                    Token.Number:
+                    '#007700',
+                    Token.Operator:
+                    'noinherit',
+                    Token.String:
+                    '#BB6622',
+                    Token.Name.Function:
+                    '#2080D0',
+                    Token.Name.Class:
+                    'bold #2080D0',
+                    Token.Name.Namespace:
+                    'bold #2080D0',
+                    Token.Prompt:
+                    '#009900',
+                    Token.PromptNum:
+                    '#ansibrightgreen bold',
+                    Token.OutPrompt:
+                    '#990000',
+                    Token.OutPromptNum:
+                    '#ansibrightred bold',
                 })
 
                 # Hack: Due to limited color support on the Windows console
                 # the prompt colors will be wrong without this
-                if os.name == 'nt':
-                    style_overrides.update({
-                        Token.Prompt: '#ansidarkgreen',
-                        Token.PromptNum: '#ansigreen bold',
-                        Token.OutPrompt: '#ansidarkred',
-                        Token.OutPromptNum: '#ansired bold',
-                    })
-            elif legacy =='nocolor':
-                style_cls=_NoStyle
+                # cmd is now 24 bit....
+                # if os.name == 'nt':
+                #     style_overrides.update({
+                #         Token.Prompt: '#ansidarkgreen',
+                #         Token.PromptNum: '#ansigreen bold',
+                #         Token.OutPrompt: '#ansidarkred',
+                #         Token.OutPromptNum: '#ansired bold',
+                #     })
+            elif legacy == 'nocolor':
+                style_cls = _NoStyle
                 style_overrides = {}
-            else :
+            else:
                 raise ValueError('Got unknown colors: ', legacy)
-        else :
+        else:
             if isinstance(name_or_cls, str):
                 style_cls = get_style_by_name(name_or_cls)
             else:
@@ -373,28 +406,39 @@ class TerminalInteractiveShell(InteractiveShell):
         """
         Return the current layout option for the current Terminal InteractiveShell
         """
+
         def get_message():
             return PygmentsTokens(self.prompts.in_prompt_tokens())
 
         return {
-                'complete_in_thread': False,
-                'lexer':IPythonPTLexer(),
-                'reserve_space_for_menu':self.space_for_menu,
-                'message': get_message,
-                'prompt_continuation': (
-                    lambda width, lineno, is_soft_wrap:
-                        PygmentsTokens(self.prompts.continuation_prompt_tokens(width))),
-                'multiline': True,
-                'complete_style': self.pt_complete_style,
+            'complete_in_thread':
+            False,
+            'lexer':
+            IPythonPTLexer(),
+            'reserve_space_for_menu':
+            self.space_for_menu,
+            'message':
+            get_message,
+            'prompt_continuation':
+            (lambda width, lineno, is_soft_wrap: PygmentsTokens(
+                self.prompts.continuation_prompt_tokens(width))),
+            'multiline':
+            True,
+            'complete_style':
+            self.pt_complete_style,
 
-                # Highlight matching brackets, but only when this setting is
-                # enabled, and only when the DEFAULT_BUFFER has the focus.
-                'input_processors': [ConditionalProcessor(
-                        processor=HighlightMatchingBracketProcessor(chars='[](){}'),
-                        filter=HasFocus(DEFAULT_BUFFER) & ~IsDone() &
-                            Condition(lambda: self.highlight_matching_brackets))],
-                'inputhook': self.inputhook,
-                }
+            # Highlight matching brackets, but only when this setting is
+            # enabled, and only when the DEFAULT_BUFFER has the focus.
+            'input_processors': [
+                ConditionalProcessor(
+                    processor=HighlightMatchingBracketProcessor(
+                        chars='[](){}'),
+                    filter=HasFocus(DEFAULT_BUFFER) & ~IsDone()
+                    & Condition(lambda: self.highlight_matching_brackets))
+            ],
+            'inputhook':
+            self.inputhook,
+        }
 
     def prompt_for_code(self):
         if self.rl_next_input:
@@ -406,7 +450,7 @@ class TerminalInteractiveShell(InteractiveShell):
         with patch_stdout(raw=True):
             text = self.pt_app.prompt(
                 default=default,
-#                pre_run=self.pre_prompt,# reset_current_buffer=True,
+                #                pre_run=self.pre_prompt,# reset_current_buffer=True,
                 **self._extra_prompt_options())
         return text
 
@@ -454,7 +498,6 @@ class TerminalInteractiveShell(InteractiveShell):
             for cmd in ('clear', 'more', 'less', 'man'):
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
-
     def __init__(self, *args, **kwargs):
         super(TerminalInteractiveShell, self).__init__(*args, **kwargs)
         self.init_prompt_toolkit_cli()
@@ -471,7 +514,10 @@ class TerminalInteractiveShell(InteractiveShell):
     def interact(self, display_banner=DISPLAY_BANNER_DEPRECATED):
 
         if display_banner is not DISPLAY_BANNER_DEPRECATED:
-            warn('interact `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.', DeprecationWarning, stacklevel=2)
+            warn(
+                'interact `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.',
+                DeprecationWarning,
+                stacklevel=2)
 
         self.keep_running = True
         while self.keep_running:
@@ -492,7 +538,10 @@ class TerminalInteractiveShell(InteractiveShell):
         # An extra layer of protection in case someone mashing Ctrl-C breaks
         # out of our internal code.
         if display_banner is not DISPLAY_BANNER_DEPRECATED:
-            warn('mainloop `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.', DeprecationWarning, stacklevel=2)
+            warn(
+                'mainloop `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.',
+                DeprecationWarning,
+                stacklevel=2)
         while True:
             try:
                 self.interact()
@@ -508,11 +557,13 @@ class TerminalInteractiveShell(InteractiveShell):
                     self._eventloop.stop()
 
     _inputhook = None
+
     def inputhook(self, context):
         if self._inputhook is not None:
             self._inputhook(context)
 
     active_eventloop = None
+
     def enable_gui(self, gui=None):
         if gui:
             self.active_eventloop, self._inputhook =\
@@ -531,7 +582,8 @@ class TerminalInteractiveShell(InteractiveShell):
 
         tokens = self.prompts.rewrite_prompt_tokens()
         if self.pt_app:
-            print_formatted_text(PygmentsTokens(tokens), end='',
+            print_formatted_text(PygmentsTokens(tokens),
+                                 end='',
                                  style=self.pt_app.app.style)
             print(cmd)
         else:
@@ -539,6 +591,7 @@ class TerminalInteractiveShell(InteractiveShell):
             print(prompt, cmd, sep='')
 
     _prompts_before = None
+
     def switch_doctest_mode(self, mode):
         """Switch prompts to classic for %doctest_mode"""
         if mode:
@@ -547,8 +600,9 @@ class TerminalInteractiveShell(InteractiveShell):
         elif self._prompts_before:
             self.prompts = self._prompts_before
             self._prompts_before = None
-#        self._update_layout()
 
+
+#        self._update_layout()
 
 InteractiveShellABC.register(TerminalInteractiveShell)
 

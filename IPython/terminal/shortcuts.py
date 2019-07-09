@@ -11,15 +11,16 @@ import signal
 import sys
 from typing import Callable
 
-
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import DEFAULT_BUFFER, SEARCH_BUFFER
 from prompt_toolkit.filters import (has_focus, has_selection, Condition,
-    vi_insert_mode, emacs_insert_mode, has_completions, vi_mode)
+                                    vi_insert_mode, emacs_insert_mode,
+                                    has_completions, vi_mode)
 from prompt_toolkit.key_binding.bindings.completion import display_completions_like_readline
 from prompt_toolkit.key_binding import KeyBindings
 
 from IPython.utils.decorators import undoc
+
 
 @undoc
 @Condition
@@ -39,21 +40,24 @@ def create_ipython_shortcuts(shell):
     else:
         return_handler = newline_or_execute_outer(shell)
 
-    kb.add('enter', filter=(has_focus(DEFAULT_BUFFER)
-                            & ~has_selection
-                            & insert_mode
-                        ))(return_handler)
+    kb.add('enter',
+           filter=(has_focus(DEFAULT_BUFFER)
+                   & ~has_selection
+                   & insert_mode))(return_handler)
 
     kb.add('c-\\')(force_exit)
 
-    kb.add('c-p', filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER))
-                )(previous_history_or_previous_completion)
+    kb.add('c-p', filter=(
+        vi_insert_mode
+        & has_focus(DEFAULT_BUFFER)))(previous_history_or_previous_completion)
 
-    kb.add('c-n', filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER))
-                )(next_history_or_next_completion)
+    kb.add(
+        'c-n',
+        filter=(vi_insert_mode
+                & has_focus(DEFAULT_BUFFER)))(next_history_or_next_completion)
 
-    kb.add('c-g', filter=(has_focus(DEFAULT_BUFFER) & has_completions)
-                )(dismiss_completion)
+    kb.add('c-g', filter=(has_focus(DEFAULT_BUFFER)
+                          & has_completions))(dismiss_completion)
 
     kb.add('c-c', filter=has_focus(DEFAULT_BUFFER))(reset_buffer)
 
@@ -63,22 +67,23 @@ def create_ipython_shortcuts(shell):
     kb.add('c-z', filter=supports_suspend)(suspend_to_bg)
 
     # Ctrl+I == Tab
-    kb.add('tab', filter=(has_focus(DEFAULT_BUFFER)
-                          & ~has_selection
-                          & insert_mode
-                          & cursor_in_leading_ws
-                        ))(indent_buffer)
-    kb.add('c-o', filter=(has_focus(DEFAULT_BUFFER) & emacs_insert_mode)
-           )(newline_autoindent_outer(shell.input_transformer_manager))
+    kb.add('tab',
+           filter=(has_focus(DEFAULT_BUFFER)
+                   & ~has_selection
+                   & insert_mode
+                   & cursor_in_leading_ws))(indent_buffer)
+    kb.add('c-o', filter=(has_focus(DEFAULT_BUFFER) & emacs_insert_mode))(
+        newline_autoindent_outer(shell.input_transformer_manager))
 
     kb.add('f2', filter=has_focus(DEFAULT_BUFFER))(open_input_in_editor)
 
     if shell.display_completions == 'readlinelike':
-        kb.add('c-i', filter=(has_focus(DEFAULT_BUFFER)
-                              & ~has_selection
-                              & insert_mode
-                              & ~cursor_in_leading_ws
-                        ))(display_completions_like_readline)
+        kb.add('c-i',
+               filter=(
+                   has_focus(DEFAULT_BUFFER)
+                   & ~has_selection
+                   & insert_mode
+                   & ~cursor_in_leading_ws))(display_completions_like_readline)
 
     if sys.platform == 'win32':
         kb.add('c-v', filter=(has_focus(DEFAULT_BUFFER) & ~vi_mode))(win_paste)
@@ -108,9 +113,8 @@ def newline_or_execute_outer(shell):
             check_text = d.text[:d.cursor_position]
         status, indent = shell.check_complete(check_text)
 
-        if not (d.on_last_line or
-                d.cursor_position_row >= d.line_count - d.empty_line_count_at_the_end()
-                ):
+        if not (d.on_last_line or d.cursor_position_row >=
+                d.line_count - d.empty_line_count_at_the_end()):
             if shell.autoindent:
                 b.insert_text('\n' + indent)
             else:
@@ -124,6 +128,7 @@ def newline_or_execute_outer(shell):
                 b.insert_text('\n' + indent)
             else:
                 b.insert_text('\n')
+
     return newline_or_execute
 
 
@@ -165,8 +170,10 @@ def reset_search_buffer(event):
     else:
         event.app.layout.focus(DEFAULT_BUFFER)
 
+
 def suspend_to_bg(event):
     event.app.suspend_to_background()
+
 
 def force_exit(event):
     """
@@ -174,8 +181,10 @@ def force_exit(event):
     """
     sys.exit("Quit")
 
+
 def indent_buffer(event):
     event.current_buffer.insert_text(' ' * 4)
+
 
 @undoc
 def newline_with_copy_margin(event):
@@ -187,9 +196,11 @@ def newline_with_copy_margin(event):
     Preserve margin and cursor position when using
     Control-O to insert a newline in EMACS mode
     """
-    warnings.warn("`newline_with_copy_margin(event)` is deprecated since IPython 6.0. "
-      "see `newline_autoindent_outer(shell)(event)` for a replacement.",
-                  DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "`newline_with_copy_margin(event)` is deprecated since IPython 6.0. "
+        "see `newline_autoindent_outer(shell)(event)` for a replacement.",
+        DeprecationWarning,
+        stacklevel=2)
 
     b = event.current_buffer
     cursor_start_pos = b.document.cursor_position_col
@@ -199,6 +210,7 @@ def newline_with_copy_margin(event):
     if cursor_start_pos != cursor_end_pos:
         pos_diff = cursor_start_pos - cursor_end_pos
         b.cursor_right(count=pos_diff)
+
 
 def newline_autoindent_outer(inputsplitter) -> Callable[..., None]:
     """
@@ -231,8 +243,7 @@ def open_input_in_editor(event):
 
 if sys.platform == 'win32':
     from IPython.core.error import TryNext
-    from IPython.lib.clipboard import (ClipboardEmpty,
-                                       win32_clipboard_get,
+    from IPython.lib.clipboard import (ClipboardEmpty, win32_clipboard_get,
                                        tkinter_clipboard_get)
 
     @undoc

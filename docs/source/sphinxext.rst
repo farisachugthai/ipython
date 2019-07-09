@@ -10,12 +10,17 @@ IPython Sphinx Directive
    The IPython Sphinx Directive is in 'beta' and currently under
    active development. Improvements to the code or documentation are welcome!
 
-The ipython directive is a stateful ipython shell for embedding in
-sphinx documents.  It knows about standard ipython prompts, and
-extracts the input and output lines.  These prompts will be renumbered
-starting at ``1``.  The inputs will be fed to an embedded ipython
-interpreter and the outputs from that interpreter will be inserted as
-well.  For example, code blocks like the following::
+The IPython directive is a stateful shell that can be useful for parsing
+valid IPython code, autogenerating documentation based on the docstrings in
+source code, and embedding featureful plots based on live data in
+Sphinx documents.
+
+The IPython Sphinx extension can correctly parse standard IPython prompts, and
+extracts the input and output lines to generate HTML.
+These prompts will be renumbered starting at ``1`` regardless of the actual
+number displayed in the source code.
+
+For example, code blocks like the following::
 
   .. ipython::
 
@@ -36,20 +41,25 @@ will be rendered as
 .. note::
 
    This tutorial should be read side-by-side with the Sphinx source
-   for this document because otherwise you will see only the rendered
-   output and not the code that generated it.  Excepting the example
-   above, we will not in general be showing the literal ReST in this
-   document that generates the rendered output.
+   that generated this document.
+   With the exception of the example given above, the literal ReStructured
+   Text will not be displayed alongside the rendered output.
 
 
-Persisting the Python session across IPython directive blocks
+Persisting the session across IPython directive blocks
 =============================================================
 
-The state from previous sessions is stored, and standard error is
-trapped. At doc build time, ipython's output and std err will be
-inserted, and prompts will be renumbered. So the prompt below should
-be renumbered in the rendered docs, and pick up where the block above
-left off.
+The state from previous code-blocks is stored, and carries over from section
+to section. The IPython shell will maintain and continue to execute in the same
+namespace so long as it remains in the same document.
+
+This can be useful for documentation that may need to build on a few
+lengthier examples rather than a handful of shorter snippets.
+
+In addition, IPython's output and :data:`sys.stderr` will be
+inserted at doc build time and the prompts will be renumbered starting
+from 1. For example, the prompt below is renumbered so as to follow the code
+block from above.
 
 .. ipython::
   :verbatim:
@@ -70,40 +80,16 @@ left off.
   SyntaxError: invalid syntax
 
 
-Adding documentation tests to your IPython directive
-====================================================
-
-The embedded interpreter supports some limited markup.  For example,
-you can put comments in your ipython sessions, which are reported
-verbatim.  There are some handy "pseudo-decorators" that let you
-doctest the output.  The inputs are fed to an embedded ipython
-session and the outputs from the ipython session are inserted into
-your doc.  If the output in your doc and in the ipython session don't
-match on a doctest assertion, an error will occur.
-
-
-.. ipython::
-
-   In [1]: x = 'hello world'
-
-   # this will raise an error if the ipython output is different
-   @doctest
-   In [2]: x.upper()
-   Out[2]: 'HELLO WORLD'
-
-   # some readline features cannot be supported, so we allow
-   # "verbatim" blocks, which are dumped in verbatim except prompts
-   # are continuously numbered
-   @verbatim
-   In [3]: x.st<TAB>
-   x.startswith  x.strip
-
-For more information on @doctest decorator, please refer to the end of this page in Pseudo-Decorators section.
 
 Multi-line input
 ================
 
-Multi-line input is supported.
+Multi-line input is supported, and particularly lengthy blocks of text can be
+parsed correctly.
+
+.. **TODO**
+.. is this parsed correctly because the last character is the continuation
+   character or because of a property intrinsic to IPython??
 
 .. ipython::
    :verbatim:
@@ -117,22 +103,59 @@ Multi-line input is supported.
 Testing directive outputs
 =========================
 
-The IPython Sphinx Directive makes it possible to test the outputs that you provide with your code. To do this,
-decorate the contents in your directive block with one of the following:
+The embedded interpreter supports some limited markup.  For example,
+you can put comments in your IPython sessions, which are reported
+verbatim.  There are some handy "pseudo-decorators" that let you
+doctest the output.  The inputs are fed to an embedded IPython
+session and the outputs are inserted into your documentation automatically.
 
-  * list directives here
+If the output in your doc and the output from the embedded shell don't
+match on a doctest assertion, an error will occur.
+
+
+.. ipython::
+
+   In [1]: x = 'hello world'
+
+   # This will raise an error if the IPython output is different.
+   @doctest
+   In [2]: x.upper()
+   Out[2]: 'HELLO WORLD'
+
+   # Some readline features cannot be supported, so we allow
+   # "verbatim" blocks, which are dumped verbatim except for the prompts
+   # as they are continuously numbered.
+   @verbatim
+   In [3]: x.st<TAB>
+   x.startswith  x.strip
+
+.. The IPython Sphinx Directive makes it possible to test the outputs that you
+.. provide with your code. To do this,
+.. decorate the contents in your directive block with one of the following:
+
+.. .. ...?????
+
+..   * list directives here
 
 If an IPython doctest decorator is found, it will take these steps when your documentation is built:
 
-1. Run the *input* lines in your IPython directive block against the current Python kernel (remember that the session
-persists across IPython directive blocks);
+1. Execute the *input* lines in your IPython directive block.
 
-2. Compare the *output* of this with the output text that you've put in the IPython directive block (what comes
-after `Out[NN]`);
+2. Compare the *output* of this with the output text that you've put in the
+   IPython directive block (I.E. what comes after `Out[NN]`);
 
-3. If there is a difference, the directive will raise an error and your documentation build will fail.
+3. If there is a difference, the embedded shell will raise an error and
+   halt building the documentation.
 
-You can do doctesting on multi-line output as well.  Just be careful
+.. admonition:: Warning is Error
+
+   All warnings are treated as errors in the default configuration which
+   will lead to frequent crashes while building documentation.
+   The option where this behavior can be modified, `ipython_warning_is_error`
+   is displayed in the :ref:`IPython Sphinx directive module` section at the 
+   bottom of the page.
+
+You can doctest multi-line output as well.  Just be careful
 when using non-deterministic inputs like random numbers in the ipython
 directive, because your inputs are run through a live interpreter, so
 if you are doctesting random output you will get an error.  Here we
@@ -295,6 +318,10 @@ Then call it from a subsequent section.
 
    In [5]: square(-2)
    Out [5]: 4
+
+
+For more information on the **@doctest** decorator, please refer to the end of
+this page in the :ref:`Pseudo-Decorators` section.
 
 
 Writing Pure Python Code

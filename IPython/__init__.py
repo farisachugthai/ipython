@@ -28,8 +28,7 @@ import sys
 
 # Don't forget to also update setup.py when this changes!
 if sys.version_info < (3, 5):
-    raise ImportError(
-"""
+    raise ImportError("""
 IPython 7.0+ supports Python 3.5 and above.
 When using Python 2.7, please install IPython 5.x LTS Long Term Support version.
 Python 3.3 and 3.4 were supported up to IPython 6.x.
@@ -61,9 +60,10 @@ from .utils.frame import extract_module_locals
 
 # Release data
 __author__ = '%s <%s>' % (release.author, release.author_email)
-__license__  = release.license
-__version__  = release.version
+__license__ = release.license
+__version__ = release.version
 version_info = release.version_info
+
 
 def embed_kernel(module=None, local_ns=None, **kwargs):
     """Embed and start an IPython kernel in a given scope.
@@ -85,16 +85,17 @@ def embed_kernel(module=None, local_ns=None, **kwargs):
         allowing configuration of the Kernel.  Will only have an effect
         on the first embed_kernel call for a given process.
     """
-    
+
     (caller_module, caller_locals) = extract_module_locals(1)
     if module is None:
         module = caller_module
     if local_ns is None:
         local_ns = caller_locals
-    
+
     # Only import .zmq when we really need it
     from ipykernel.embed import embed_kernel as real_embed_kernel
     real_embed_kernel(module=module, local_ns=local_ns, **kwargs)
+
 
 def start_ipython(argv=None, **kwargs):
     """Launch a normal IPython instance (as opposed to embedded)
@@ -123,6 +124,7 @@ def start_ipython(argv=None, **kwargs):
     """
     from IPython.terminal.ipapp import launch_new_instance
     return launch_new_instance(argv=argv, **kwargs)
+
 
 def start_kernel(argv=None, **kwargs):
     """Launch a normal IPython kernel instance (as opposed to embedded)

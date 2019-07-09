@@ -27,9 +27,11 @@ def work_path():
     path = pathlib.Path("./tmp-ipython-pytest-profiledir")
     os.environ["IPYTHONDIR"] = str(path.absolute())
     if path.exists():
-        raise ValueError('IPython dir temporary path already exists ! Did previous test run exit successfully ?')
+        raise ValueError(
+            'IPython dir temporary path already exists ! Did previous test run exit successfully ?'
+        )
     path.mkdir()
-    yield 
+    yield
     shutil.rmtree(str(path.resolve()))
 
 
@@ -44,7 +46,9 @@ def xsys(self, cmd):
     """
     # We use getoutput, but we need to strip it because pexpect captures
     # the trailing newline differently from commands.getoutput
-    print(self.getoutput(cmd, split=False, depth=1).rstrip(), end="", file=sys.stdout)
+    print(self.getoutput(cmd, split=False, depth=1).rstrip(),
+          end="",
+          file=sys.stdout)
     sys.stdout.flush()
 
 

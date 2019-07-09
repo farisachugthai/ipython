@@ -32,8 +32,8 @@ def inputhook_wx1(context):
         pass
     return 0
 
-class EventLoopTimer(wx.Timer):
 
+class EventLoopTimer(wx.Timer):
     def __init__(self, func):
         self.func = func
         wx.Timer.__init__(self)
@@ -41,8 +41,8 @@ class EventLoopTimer(wx.Timer):
     def Notify(self):
         self.func()
 
-class EventLoopRunner(object):
 
+class EventLoopRunner(object):
     def Run(self, time, input_is_ready):
         self.input_is_ready = input_is_ready
         self.evtloop = wx.EventLoop()
@@ -54,6 +54,7 @@ class EventLoopRunner(object):
         if self.input_is_ready():
             self.timer.Stop()
             self.evtloop.Exit()
+
 
 def inputhook_wx2(context):
     """Run the wx event loop, polling for stdin.
@@ -76,11 +77,13 @@ def inputhook_wx2(context):
             elr = EventLoopRunner()
             # As this time is made shorter, keyboard response improves, but idle
             # CPU load goes up.  10 ms seems like a good compromise.
-            elr.Run(time=10,  # CHANGE time here to control polling interval
-                    input_is_ready=context.input_is_ready)
+            elr.Run(
+                time=10,  # CHANGE time here to control polling interval
+                input_is_ready=context.input_is_ready)
     except KeyboardInterrupt:
         pass
     return 0
+
 
 def inputhook_wx3(context):
     """Run the wx event loop by processing pending events only.
@@ -136,6 +139,7 @@ def inputhook_wx3(context):
     except KeyboardInterrupt:
         pass
     return 0
+
 
 if sys.platform == 'darwin':
     # On OSX, evtloop.Pending() always returns True, regardless of there being

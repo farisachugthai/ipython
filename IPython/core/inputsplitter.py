@@ -18,8 +18,9 @@ For more details, see the class docstrings below.
 
 from warnings import warn
 
-warn('IPython.core.inputsplitter is deprecated since IPython 7 in favor of `IPython.core.inputtransformer2`',
-     DeprecationWarning)
+warn(
+    'IPython.core.inputsplitter is deprecated since IPython 7 in favor of `IPython.core.inputtransformer2`',
+    DeprecationWarning)
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -32,22 +33,24 @@ import tokenize
 import warnings
 
 from IPython.utils.py3compat import cast_unicode
-from IPython.core.inputtransformer import (leading_indent,
-                                           classic_prompt,
-                                           ipy_prompt,
-                                           cellmagic,
-                                           assemble_logical_lines,
-                                           help_end,
-                                           escaped_commands,
-                                           assign_from_magic,
-                                           assign_from_system,
-                                           assemble_python_lines,
-                                           )
+from IPython.core.inputtransformer import (
+    leading_indent,
+    classic_prompt,
+    ipy_prompt,
+    cellmagic,
+    assemble_logical_lines,
+    help_end,
+    escaped_commands,
+    assign_from_magic,
+    assign_from_system,
+    assemble_python_lines,
+)
 
 # These are available in this module for backwards compatibility.
 from IPython.core.inputtransformer import (ESC_SHELL, ESC_SH_CAP, ESC_HELP,
-                                        ESC_HELP2, ESC_MAGIC, ESC_MAGIC2,
-                                        ESC_QUOTE, ESC_QUOTE2, ESC_PAREN, ESC_SEQUENCES)
+                                           ESC_HELP2, ESC_MAGIC, ESC_MAGIC2,
+                                           ESC_QUOTE, ESC_QUOTE2, ESC_PAREN,
+                                           ESC_SEQUENCES)
 
 #-----------------------------------------------------------------------------
 # Utilities
@@ -60,13 +63,13 @@ from IPython.core.inputtransformer import (ESC_SHELL, ESC_SH_CAP, ESC_HELP,
 
 # compiled regexps for autoindent management
 dedent_re = re.compile('|'.join([
-    r'^\s+raise(\s.*)?$', # raise statement (+ space + other stuff, maybe)
-    r'^\s+raise\([^\)]*\).*$', # wacky raise with immediate open paren
-    r'^\s+return(\s.*)?$', # normal return (+ space + other stuff, maybe)
-    r'^\s+return\([^\)]*\).*$', # wacky return with immediate open paren
-    r'^\s+pass\s*$', # pass (optionally followed by trailing spaces)
-    r'^\s+break\s*$', # break (optionally followed by trailing spaces)
-    r'^\s+continue\s*$', # continue (optionally followed by trailing spaces)
+    r'^\s+raise(\s.*)?$',  # raise statement (+ space + other stuff, maybe)
+    r'^\s+raise\([^\)]*\).*$',  # wacky raise with immediate open paren
+    r'^\s+return(\s.*)?$',  # normal return (+ space + other stuff, maybe)
+    r'^\s+return\([^\)]*\).*$',  # wacky return with immediate open paren
+    r'^\s+pass\s*$',  # pass (optionally followed by trailing spaces)
+    r'^\s+break\s*$',  # break (optionally followed by trailing spaces)
+    r'^\s+continue\s*$',  # continue (optionally followed by trailing spaces)
 ]))
 ini_spaces_re = re.compile(r'^([ \t\r\f\v]+)')
 
@@ -96,26 +99,32 @@ def num_ini_spaces(s):
     else:
         return 0
 
+
 # Fake token types for partial_tokenize:
 INCOMPLETE_STRING = tokenize.N_TOKENS
 IN_MULTILINE_STATEMENT = tokenize.N_TOKENS + 1
+
 
 # The 2 classes below have the same API as TokenInfo, but don't try to look up
 # a token type name that they won't find.
 class IncompleteString:
     type = exact_type = INCOMPLETE_STRING
+
     def __init__(self, s, start, end, line):
         self.s = s
         self.start = start
         self.end = end
         self.line = line
 
+
 class InMultilineStatement:
     type = exact_type = IN_MULTILINE_STATEMENT
+
     def __init__(self, pos, line):
         self.s = ''
         self.start = self.end = pos
         self.line = line
+
 
 def partial_tokens(s):
     """Iterate over tokens from a possibly-incomplete string of code.
@@ -135,12 +144,13 @@ def partial_tokens(s):
         end = len(lines), len(lines[-1])
         if 'multi-line string' in e.args[0]:
             l, c = start = token.end
-            s = lines[l-1][c:] + ''.join(lines[l:])
+            s = lines[l - 1][c:] + ''.join(lines[l:])
             yield IncompleteString(s, start, end, lines[-1])
         elif 'multi-line statement' in e.args[0]:
             yield InMultilineStatement(end, lines[-1])
         else:
             raise
+
 
 def find_next_indent(code):
     """Find the number of spaces for the next line of indentation"""
@@ -149,7 +159,9 @@ def find_next_indent(code):
         tokens.pop()
     if not tokens:
         return 0
-    while (tokens[-1].type in {tokenize.DEDENT, tokenize.NEWLINE, tokenize.COMMENT}):
+    while (tokens[-1].type in {
+            tokenize.DEDENT, tokenize.NEWLINE, tokenize.COMMENT
+    }):
         tokens.pop()
 
     if tokens[-1].type == INCOMPLETE_STRING:
@@ -158,6 +170,7 @@ def find_next_indent(code):
 
     # Find the indents used before
     prev_indents = [0]
+
     def _add_indent(n):
         if n != prev_indents[-1]:
             prev_indents.append(n)
@@ -176,7 +189,9 @@ def find_next_indent(code):
 
     # If we've just opened a multiline statement (e.g. 'a = ['), indent more
     if tokens[-1].type == IN_MULTILINE_STATEMENT:
-        if tokens[-2].exact_type in {tokenize.LPAR, tokenize.LSQB, tokenize.LBRACE}:
+        if tokens[-2].exact_type in {
+                tokenize.LPAR, tokenize.LSQB, tokenize.LBRACE
+        }:
             return last_indent + 4
         return last_indent
 
@@ -194,7 +209,9 @@ def find_next_indent(code):
 
         last_line_tokens = tokens[last_line_starts:]
         names = [t.string for t in last_line_tokens if t.type == tokenize.NAME]
-        if names and names[0] in {'raise', 'return', 'pass', 'break', 'continue'}:
+        if names and names[0] in {
+                'raise', 'return', 'pass', 'break', 'continue'
+        }:
             # Find the most recent indentation less than the current level
             for indent in reversed(prev_indents):
                 if indent < last_indent:
@@ -214,12 +231,13 @@ def last_blank(src):
       A single or multiline string.
     """
     if not src: return False
-    ll  = src.splitlines()[-1]
+    ll = src.splitlines()[-1]
     return (ll == '') or ll.isspace()
 
 
 last_two_blanks_re = re.compile(r'\n\s*\n\s*$', re.MULTILINE)
 last_two_blanks_re2 = re.compile(r'.+\n\s*\n\s+$', re.MULTILINE)
+
 
 def last_two_blanks(src):
     """Determine if the input source ends in two blanks.
@@ -240,8 +258,8 @@ def last_two_blanks(src):
     # it works.  If anyone tries to change this logic, make sure to validate
     # the whole test suite first!
     new_src = '\n'.join(['###\n'] + src.splitlines()[-2:])
-    return (bool(last_two_blanks_re.match(new_src)) or
-            bool(last_two_blanks_re2.match(new_src)) )
+    return (bool(last_two_blanks_re.match(new_src))
+            or bool(last_two_blanks_re2.match(new_src)))
 
 
 def remove_comments(src):
@@ -273,9 +291,11 @@ def get_input_encoding():
         encoding = 'ascii'
     return encoding
 
+
 #-----------------------------------------------------------------------------
 # Classes and functions for normal Python syntax handling
 #-----------------------------------------------------------------------------
+
 
 class InputSplitter(object):
     r"""An object that can accumulate lines of Python source before execution.
@@ -299,7 +319,7 @@ class InputSplitter(object):
     """
     # A cache for storing the current indentation
     # The first value stores the most recently processed source input
-    # The second value is the number of spaces for the current indentation 
+    # The second value is the number of spaces for the current indentation
     # If self.source matches the first value, the second value is a valid
     # current indentation. Otherwise, the cache is invalid and the indentation
     # must be recalculated.
@@ -430,8 +450,8 @@ class InputSplitter(object):
         # immediately produce a 'ready' block, so the invalid Python can be
         # sent to the kernel for evaluation with possible ipython
         # special-syntax conversion.
-        except (SyntaxError, OverflowError, ValueError, TypeError,
-                MemoryError, SyntaxWarning):
+        except (SyntaxError, OverflowError, ValueError, TypeError, MemoryError,
+                SyntaxWarning):
             self._is_complete = True
             self._is_invalid = True
         else:
@@ -468,20 +488,20 @@ class InputSplitter(object):
         if not self._is_complete:
             #print("Not complete")  # debug
             return True
-        
+
         # The user can make any (complete) input execute by leaving a blank line
         last_line = self.source.splitlines()[-1]
         if (not last_line) or last_line.isspace():
             #print("Blank line")  # debug
             return False
-        
+
         # If there's just a single line or AST node, and we're flush left, as is
         # the case after a simple statement such as 'a=1', we want to execute it
         # straight away.
         if self.get_indent_spaces() == 0:
             if len(self.source.splitlines()) <= 1:
                 return False
-            
+
             try:
                 code_ast = ast.parse(u''.join(self._buffer))
             except Exception:
@@ -523,7 +543,7 @@ class InputSplitter(object):
         if lines.endswith('\n'):
             buffer.append(lines)
         else:
-            buffer.append(lines+'\n')
+            buffer.append(lines + '\n')
         setattr(self, store, self._set_source(buffer))
 
     def _set_source(self, buffer):
@@ -535,11 +555,11 @@ class IPythonInputSplitter(InputSplitter):
 
     # String with raw, untransformed input.
     source_raw = ''
-    
+
     # Flag to track when a transformer has stored input that it hasn't given
     # back yet.
     transformer_accumulating = False
-    
+
     # Flag to track when assemble_python_lines has stored input that it hasn't
     # given back yet.
     within_python_line = False
@@ -549,47 +569,50 @@ class IPythonInputSplitter(InputSplitter):
     # List with lines of raw input accumulated so far.
     _buffer_raw = None
 
-    def __init__(self, line_input_checker=True, physical_line_transforms=None,
-                    logical_line_transforms=None, python_line_transforms=None):
+    def __init__(self,
+                 line_input_checker=True,
+                 physical_line_transforms=None,
+                 logical_line_transforms=None,
+                 python_line_transforms=None):
         super(IPythonInputSplitter, self).__init__()
         self._buffer_raw = []
         self._validate = True
-        
+
         if physical_line_transforms is not None:
             self.physical_line_transforms = physical_line_transforms
         else:
             self.physical_line_transforms = [
-                                             leading_indent(),
-                                             classic_prompt(),
-                                             ipy_prompt(),
-                                             cellmagic(end_on_blank_line=line_input_checker),
-                                            ]
-        
+                leading_indent(),
+                classic_prompt(),
+                ipy_prompt(),
+                cellmagic(end_on_blank_line=line_input_checker),
+            ]
+
         self.assemble_logical_lines = assemble_logical_lines()
         if logical_line_transforms is not None:
             self.logical_line_transforms = logical_line_transforms
         else:
             self.logical_line_transforms = [
-                                            help_end(),
-                                            escaped_commands(),
-                                            assign_from_magic(),
-                                            assign_from_system(),
-                                           ]
-        
+                help_end(),
+                escaped_commands(),
+                assign_from_magic(),
+                assign_from_system(),
+            ]
+
         self.assemble_python_lines = assemble_python_lines()
         if python_line_transforms is not None:
             self.python_line_transforms = python_line_transforms
         else:
             # We don't use any of these at present
             self.python_line_transforms = []
-    
+
     @property
     def transforms(self):
         "Quick access to all transformers."
         return self.physical_line_transforms + \
             [self.assemble_logical_lines] + self.logical_line_transforms + \
             [self.assemble_python_lines]  + self.python_line_transforms
-    
+
     @property
     def transforms_in_use(self):
         """Transformers, excluding logical line transformers if we're in a
@@ -614,7 +637,7 @@ class IPythonInputSplitter(InputSplitter):
                 # Nothing that calls reset() expects to handle transformer
                 # errors
                 pass
-    
+
     def flush_transformers(self):
         def _flush(transform, outs):
             """yield transformed lines
@@ -632,16 +655,16 @@ class IPythonInputSplitter(InputSplitter):
                     tmp = transform.push(line)
                     if tmp is not None:
                         yield tmp
-            
+
             # reset the transform
             tmp = transform.reset()
             if tmp is not None:
                 yield tmp
-        
+
         out = []
         for t in self.transforms_in_use:
             out = _flush(t, out)
-        
+
         out = list(out)
         if out:
             self._store('\n'.join(out))
@@ -652,7 +675,7 @@ class IPythonInputSplitter(InputSplitter):
         out = self.source_raw
         self.reset()
         return out
-    
+
     def source_reset(self):
         try:
             self.flush_transformers()
@@ -735,6 +758,7 @@ class IPythonInputSplitter(InputSplitter):
         
         Sets self.transformer_accumulating as a side effect.
         """
+
         def _accumulating(dbg):
             #print(dbg)
             self.transformer_accumulating = True
@@ -770,4 +794,3 @@ class IPythonInputSplitter(InputSplitter):
         #print("transformers clear") #debug
         self.transformer_accumulating = False
         return line
-

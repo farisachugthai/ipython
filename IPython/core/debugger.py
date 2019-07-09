@@ -40,7 +40,6 @@ from IPython.utils import coloransi, py3compat
 from IPython.core.excolors import exception_colors
 from IPython.testing.skipdoctest import skip_doctest
 
-
 prompt = 'ipdb> '
 
 #We have to check this directly from sys.argv, config struct not yet available
@@ -50,10 +49,11 @@ from pdb import Pdb as OldPdb
 # it does so with some limitations.  The rest of this support is implemented in
 # the Tracer constructor.
 
+
 def make_arrow(pad):
     """generate the leading arrow in front of traceback or debugger"""
     if pad >= 2:
-        return '-'*(pad-2) + '> '
+        return '-' * (pad - 2) + '> '
     elif pad == 1:
         return '>'
     return ''
@@ -66,20 +66,22 @@ def BdbQuit_excepthook(et, ev, tb, excepthook=None):
     parameter.
     """
     warnings.warn("`BdbQuit_excepthook` is deprecated since version 5.1",
-                  DeprecationWarning, stacklevel=2)
-    if et==bdb.BdbQuit:
+                  DeprecationWarning,
+                  stacklevel=2)
+    if et == bdb.BdbQuit:
         print('Exiting Debugger.')
     elif excepthook is not None:
         excepthook(et, ev, tb)
     else:
         # Backwards compatibility. Raise deprecation warning?
-        BdbQuit_excepthook.excepthook_ori(et,ev,tb)
+        BdbQuit_excepthook.excepthook_ori(et, ev, tb)
 
 
-def BdbQuit_IPython_excepthook(self,et,ev,tb,tb_offset=None):
+def BdbQuit_IPython_excepthook(self, et, ev, tb, tb_offset=None):
     warnings.warn(
         "`BdbQuit_IPython_excepthook` is deprecated since version 5.1",
-        DeprecationWarning, stacklevel=2)
+        DeprecationWarning,
+        stacklevel=2)
     print('Exiting Debugger.')
 
 
@@ -129,9 +131,11 @@ class Tracer(object):
         step through code, set breakpoints, etc.  See the pdb documentation
         from the Python standard library for usage details.
         """
-        warnings.warn("`Tracer` is deprecated since version 5.1, directly use "
-                      "`IPython.core.debugger.Pdb.set_trace()`",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "`Tracer` is deprecated since version 5.1, directly use "
+            "`IPython.core.debugger.Pdb.set_trace()`",
+            DeprecationWarning,
+            stacklevel=2)
 
         ip = get_ipython()
         if ip is None:
@@ -142,7 +146,7 @@ class Tracer(object):
         else:
             # In ipython, we use its custom exception handler mechanism
             def_colors = ip.colors
-            ip.set_custom_exc((bdb.BdbQuit,), BdbQuit_IPython_excepthook)
+            ip.set_custom_exc((bdb.BdbQuit, ), BdbQuit_IPython_excepthook)
 
         if colors is None:
             colors = def_colors
@@ -188,8 +192,10 @@ def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     for the ``do_...`` commands that hook into the help system.
     Adapted from from a comp.lang.python posting
     by Duncan Booth."""
+
     def wrapper(*args, **kw):
         return new_fn(*args, **kw)
+
     if old_fn.__doc__:
         wrapper.__doc__ = strip_indentation(old_fn.__doc__) + additional_text
     return wrapper
@@ -218,8 +224,12 @@ class Pdb(OldPdb):
     `IPython.terminal.debugger.set_trace()`
     """
 
-    def __init__(self, color_scheme=None, completekey=None,
-                 stdin=None, stdout=None, context=5):
+    def __init__(self,
+                 color_scheme=None,
+                 completekey=None,
+                 stdin=None,
+                 stdout=None,
+                 context=5):
 
         # Parent constructor:
         try:
@@ -227,7 +237,7 @@ class Pdb(OldPdb):
             if self.context <= 0:
                 raise ValueError("Context must be a positive integer")
         except (TypeError, ValueError):
-                raise ValueError("Context must be a positive integer")
+            raise ValueError("Context must be a positive integer")
 
         OldPdb.__init__(self, completekey, stdin, stdout)
 
@@ -242,12 +252,13 @@ class Pdb(OldPdb):
             self.shell = TerminalInteractiveShell.instance()
             # needed by any code which calls __import__("__main__") after
             # the debugger was entered. See also #9941.
-            sys.modules['__main__'] = save_main 
+            sys.modules['__main__'] = save_main
 
         if color_scheme is not None:
             warnings.warn(
                 "The `color_scheme` argument is deprecated since version 5.1",
-                DeprecationWarning, stacklevel=2)
+                DeprecationWarning,
+                stacklevel=2)
         else:
             color_scheme = self.shell.colors
 
@@ -277,7 +288,6 @@ class Pdb(OldPdb):
         cst['Neutral'].colors.breakpoint_enabled = C.LightRed
         cst['Neutral'].colors.breakpoint_disabled = C.Red
 
-
         # Add a python parser so we can syntax highlight source while
         # debugging.
         self.parser = PyColorize.Parser(style=color_scheme)
@@ -299,6 +309,7 @@ class Pdb(OldPdb):
 
     def new_do_up(self, arg):
         OldPdb.do_up(self, arg)
+
     do_u = do_up = decorate_fn_with_doc(new_do_up, OldPdb.do_up)
 
     def new_do_down(self, arg):
@@ -312,7 +323,7 @@ class Pdb(OldPdb):
     def new_do_quit(self, arg):
 
         if hasattr(self, 'old_all_completions'):
-            self.shell.Completer.all_completions=self.old_all_completions
+            self.shell.Completer.all_completions = self.old_all_completions
 
         return OldPdb.do_quit(self, arg)
 
@@ -328,28 +339,31 @@ class Pdb(OldPdb):
         if context is None:
             context = self.context
         try:
-            context=int(context)
+            context = int(context)
             if context <= 0:
                 raise ValueError("Context must be a positive integer")
         except (TypeError, ValueError):
-                raise ValueError("Context must be a positive integer")
+            raise ValueError("Context must be a positive integer")
         try:
             for frame_lineno in self.stack:
                 self.print_stack_entry(frame_lineno, context=context)
         except KeyboardInterrupt:
             pass
 
-    def print_stack_entry(self, frame_lineno, prompt_prefix='\n-> ',
+    def print_stack_entry(self,
+                          frame_lineno,
+                          prompt_prefix='\n-> ',
                           context=None):
         if context is None:
             context = self.context
         try:
-            context=int(context)
+            context = int(context)
             if context <= 0:
                 raise ValueError("Context must be a positive integer")
         except (TypeError, ValueError):
-                raise ValueError("Context must be a positive integer")
-        print(self.format_stack_entry(frame_lineno, '', context), file=self.stdout)
+            raise ValueError("Context must be a positive integer")
+        print(self.format_stack_entry(frame_lineno, '', context),
+              file=self.stdout)
 
         # vds: >>
         frame, lineno = frame_lineno
@@ -361,11 +375,11 @@ class Pdb(OldPdb):
         if context is None:
             context = self.context
         try:
-            context=int(context)
+            context = int(context)
             if context <= 0:
                 print("Context must be a positive integer", file=self.stdout)
         except (TypeError, ValueError):
-                print("Context must be a positive integer", file=self.stdout)
+            print("Context must be a positive integer", file=self.stdout)
         try:
             import reprlib  # Py 3
         except ImportError:
@@ -379,7 +393,7 @@ class Pdb(OldPdb):
         tpl_call = u'%s%%s%s%%s%s' % (Colors.vName, Colors.valEm, ColorsNormal)
         tpl_line = u'%%s%s%%s %s%%s' % (Colors.lineno, ColorsNormal)
         tpl_line_em = u'%%s%s%%s %s%%s%s' % (Colors.linenoEm, Colors.line,
-                                            ColorsNormal)
+                                             ColorsNormal)
 
         frame, lineno = frame_lineno
 
@@ -413,25 +427,28 @@ class Pdb(OldPdb):
             ret.append('> ')
         else:
             ret.append('  ')
-        ret.append(u'%s(%s)%s\n' % (link,lineno,call))
+        ret.append(u'%s(%s)%s\n' % (link, lineno, call))
 
-        start = lineno - 1 - context//2
+        start = lineno - 1 - context // 2
         lines = linecache.getlines(filename)
         start = min(start, len(lines) - context)
         start = max(start, 0)
-        lines = lines[start : start + context]
+        lines = lines[start:start + context]
 
-        for i,line in enumerate(lines):
+        for i, line in enumerate(lines):
             show_arrow = (start + 1 + i == lineno)
             linetpl = (frame is self.curframe or show_arrow) \
                       and tpl_line_em \
                       or tpl_line
-            ret.append(self.__format_line(linetpl, filename,
-                                          start + 1 + i, line,
-                                          arrow = show_arrow) )
+            ret.append(
+                self.__format_line(linetpl,
+                                   filename,
+                                   start + 1 + i,
+                                   line,
+                                   arrow=show_arrow))
         return ''.join(ret)
 
-    def __format_line(self, tpl_line, filename, lineno, line, arrow = False):
+    def __format_line(self, tpl_line, filename, lineno, line, arrow=False):
         bp_mark = ""
         bp_mark_color = ""
 
@@ -461,7 +478,6 @@ class Pdb(OldPdb):
 
         return tpl_line % (bp_mark_color + bp_mark, num, line)
 
-
     def print_list_lines(self, filename, first, last):
         """The printing (as opposed to the parsing part of a 'list'
         command."""
@@ -469,20 +485,29 @@ class Pdb(OldPdb):
             Colors = self.color_scheme_table.active_colors
             ColorsNormal = Colors.Normal
             tpl_line = '%%s%s%%s %s%%s' % (Colors.lineno, ColorsNormal)
-            tpl_line_em = '%%s%s%%s %s%%s%s' % (Colors.linenoEm, Colors.line, ColorsNormal)
+            tpl_line_em = '%%s%s%%s %s%%s%s' % (Colors.linenoEm, Colors.line,
+                                                ColorsNormal)
             src = []
             if filename == "<string>" and hasattr(self, "_exec_filename"):
                 filename = self._exec_filename
 
-            for lineno in range(first, last+1):
+            for lineno in range(first, last + 1):
                 line = linecache.getline(filename, lineno)
                 if not line:
                     break
 
                 if lineno == self.curframe.f_lineno:
-                    line = self.__format_line(tpl_line_em, filename, lineno, line, arrow = True)
+                    line = self.__format_line(tpl_line_em,
+                                              filename,
+                                              lineno,
+                                              line,
+                                              arrow=True)
                 else:
-                    line = self.__format_line(tpl_line, filename, lineno, line, arrow = False)
+                    line = self.__format_line(tpl_line,
+                                              filename,
+                                              lineno,
+                                              line,
+                                              arrow=False)
 
                 src.append(line)
                 self.lineno = lineno
@@ -535,7 +560,7 @@ class Pdb(OldPdb):
             return lines, 1
         elif inspect.ismodule(obj):
             return lines, 1
-        return inspect.getblock(lines[lineno:]), lineno+1
+        return inspect.getblock(lines[lineno:]), lineno + 1
 
     def do_longlist(self, arg):
         """Print lines of code from the current stack frame.
@@ -550,6 +575,7 @@ class Pdb(OldPdb):
             return
         last = lineno + len(lines)
         self.print_list_lines(self.curframe.f_code.co_filename, lineno, last)
+
     do_ll = do_longlist
 
     def do_debug(self, arg):
@@ -562,7 +588,8 @@ class Pdb(OldPdb):
         globals = self.curframe.f_globals
         locals = self.curframe_locals
         p = self.__class__(completekey=self.completekey,
-                           stdin=self.stdin, stdout=self.stdout)
+                           stdin=self.stdin,
+                           stdout=self.stdout)
         p.use_rawinput = self.use_rawinput
         p.prompt = "(%s) " % self.prompt.strip()
         self.message("ENTERING RECURSIVE DEBUGGER")

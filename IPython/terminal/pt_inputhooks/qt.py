@@ -22,8 +22,7 @@ def inputhook(context):
                     warnings.warn(
                         'The DISPLAY or WAYLAND_DISPLAY environment variable is '
                         'not set or empty and Qt5 requires this environment '
-                        'variable. Deactivate Qt5 code.'
-                    )
+                        'variable. Deactivate Qt5 code.')
                 return
         _appref = app = QtGui.QApplication([" "])
     event_loop = QtCore.QEventLoop(app)

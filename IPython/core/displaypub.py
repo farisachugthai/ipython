@@ -15,7 +15,6 @@ spec.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import sys
 
 from traitlets.config.configurable import Configurable
@@ -27,6 +26,7 @@ from .display import publish_display_data
 #-----------------------------------------------------------------------------
 # Main payload class
 #-----------------------------------------------------------------------------
+
 
 class DisplayPublisher(Configurable):
     """A traited class that publishes display data to frontends.
@@ -53,7 +53,14 @@ class DisplayPublisher(Configurable):
                 raise TypeError('metadata must be a dict, got: %r' % data)
 
     # use * to indicate transient, update are keyword-only
-    def publish(self, data, metadata=None, source=None, *, transient=None, update=False, **kwargs):
+    def publish(self,
+                data,
+                metadata=None,
+                source=None,
+                *,
+                transient=None,
+                update=False,
+                **kwargs):
         """Publish data and metadata to all frontends.
 
         See the ``display_data`` message in the messaging documentation for
@@ -114,9 +121,19 @@ class CapturingDisplayPublisher(DisplayPublisher):
     """A DisplayPublisher that stores"""
     outputs = List()
 
-    def publish(self, data, metadata=None, source=None, *, transient=None, update=False):
-        self.outputs.append({'data':data, 'metadata':metadata,
-                             'transient':transient, 'update':update})
+    def publish(self,
+                data,
+                metadata=None,
+                source=None,
+                *,
+                transient=None,
+                update=False):
+        self.outputs.append({
+            'data': data,
+            'metadata': metadata,
+            'transient': transient,
+            'update': update
+        })
 
     def clear_output(self, wait=False):
         super(CapturingDisplayPublisher, self).clear_output(wait)

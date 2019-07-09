@@ -40,16 +40,25 @@ def _get_conda_executable():
             match = R.match(line)
             if match:
                 return match.groupdict()['command']
-    
+
     # Fallback: assume conda is available on the system path.
     return "conda"
 
 
 CONDA_COMMANDS_REQUIRING_PREFIX = {
-    'install', 'list', 'remove', 'uninstall', 'update', 'upgrade',
+    'install',
+    'list',
+    'remove',
+    'uninstall',
+    'update',
+    'upgrade',
 }
 CONDA_COMMANDS_REQUIRING_YES = {
-    'install', 'remove', 'uninstall', 'update', 'upgrade',
+    'install',
+    'remove',
+    'uninstall',
+    'update',
+    'upgrade',
 }
 CONDA_ENV_FLAGS = {'-p', '--prefix', '-n', '--name'}
 CONDA_YES_FLAGS = {'-y', '--y'}
@@ -67,7 +76,9 @@ class PackagingMagics(Magics):
           %pip install [pkgs]
         """
         self.shell.system(' '.join([sys.executable, '-m', 'pip', line]))
-        print("Note: you may need to restart the kernel to use updated packages.")
+        print(
+            "Note: you may need to restart the kernel to use updated packages."
+        )
 
     @line_magic
     def conda(self, line):
@@ -77,9 +88,10 @@ class PackagingMagics(Magics):
           %conda install [pkgs]
         """
         if not _is_conda_environment():
-            raise ValueError("The python kernel does not appear to be a conda environment.  "
-                             "Please use ``%pip install`` instead.")
-        
+            raise ValueError(
+                "The python kernel does not appear to be a conda environment.  "
+                "Please use ``%pip install`` instead.")
+
         conda = _get_conda_executable()
         args = shlex.split(line)
         command = args[0]
@@ -101,4 +113,6 @@ class PackagingMagics(Magics):
             extra_args.extend(["--prefix", sys.prefix])
 
         self.shell.system(' '.join([conda, command] + extra_args + args))
-        print("\nNote: you may need to restart the kernel to use updated packages.")
+        print(
+            "\nNote: you may need to restart the kernel to use updated packages."
+        )

@@ -9,15 +9,15 @@ from warnings import warn
 
 from IPython.utils.shimmodule import ShimModule, ShimWarning
 
-warn("The `IPython.kernel` package has been deprecated since IPython 4.0."
-     "You should import from ipykernel or jupyter_client instead.", ShimWarning)
-
+warn(
+    "The `IPython.kernel` package has been deprecated since IPython 4.0."
+    "You should import from ipykernel or jupyter_client instead.", ShimWarning)
 
 # zmq subdir is gone
 sys.modules['IPython.kernel.zmq.session'] = ShimModule(
     src='IPython.kernel.zmq.session', mirror='jupyter_client.session')
-sys.modules['IPython.kernel.zmq'] = ShimModule(
-    src='IPython.kernel.zmq', mirror='ipykernel')
+sys.modules['IPython.kernel.zmq'] = ShimModule(src='IPython.kernel.zmq',
+                                               mirror='ipykernel')
 
 for pkg in ('comm', 'inprocess'):
     src = 'IPython.kernel.%s' % pkg

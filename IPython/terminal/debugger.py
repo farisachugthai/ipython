@@ -9,7 +9,7 @@ from .shortcuts import suspend_to_bg, cursor_in_leading_ws
 
 from prompt_toolkit.enums import DEFAULT_BUFFER
 from prompt_toolkit.filters import (Condition, has_focus, has_selection,
-    vi_insert_mode, emacs_insert_mode)
+                                    vi_insert_mode, emacs_insert_mode)
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.completion import display_completions_like_readline
 from pygments.token import Token
@@ -29,11 +29,12 @@ class TerminalPdb(Pdb):
             return [(Token.Prompt, self.prompt)]
 
         if self._ptcomp is None:
-            compl = IPCompleter(shell=self.shell,
-                                        namespace={},
-                                        global_namespace={},
-                                        parent=self.shell,
-                                       )
+            compl = IPCompleter(
+                shell=self.shell,
+                namespace={},
+                global_namespace={},
+                parent=self.shell,
+            )
             self._ptcomp = IPythonPTCompleter(compl)
 
         kb = KeyBindings()
@@ -41,24 +42,25 @@ class TerminalPdb(Pdb):
         kb.add('c-z', filter=supports_suspend)(suspend_to_bg)
 
         if self.shell.display_completions == 'readlinelike':
-            kb.add('tab', filter=(has_focus(DEFAULT_BUFFER)
-                                  & ~has_selection
-                                  & vi_insert_mode | emacs_insert_mode
-                                  & ~cursor_in_leading_ws
-                              ))(display_completions_like_readline)
+            kb.add('tab',
+                   filter=(has_focus(DEFAULT_BUFFER)
+                           & ~has_selection
+                           & vi_insert_mode | emacs_insert_mode
+                           & ~cursor_in_leading_ws
+                           ))(display_completions_like_readline)
 
         self.pt_app = PromptSession(
-                            message=(lambda: PygmentsTokens(get_prompt_tokens())),
-                            editing_mode=getattr(EditingMode, self.shell.editing_mode.upper()),
-                            key_bindings=kb,
-                            history=self.shell.debugger_history,
-                            completer=self._ptcomp,
-                            enable_history_search=True,
-                            mouse_support=self.shell.mouse_support,
-                            complete_style=self.shell.pt_complete_style,
-                            style=self.shell.style,
-                            inputhook=self.shell.inputhook,
-                            color_depth=self.shell.color_depth,
+            message=(lambda: PygmentsTokens(get_prompt_tokens())),
+            editing_mode=getattr(EditingMode, self.shell.editing_mode.upper()),
+            key_bindings=kb,
+            history=self.shell.debugger_history,
+            completer=self._ptcomp,
+            enable_history_search=True,
+            mouse_support=self.shell.mouse_support,
+            complete_style=self.shell.pt_complete_style,
+            style=self.shell.style,
+            inputhook=self.shell.inputhook,
+            color_depth=self.shell.color_depth,
         )
 
     def cmdloop(self, intro=None):
@@ -77,7 +79,7 @@ class TerminalPdb(Pdb):
             if intro is not None:
                 self.intro = intro
             if self.intro:
-                self.stdout.write(str(self.intro)+"\n")
+                self.stdout.write(str(self.intro) + "\n")
             stop = None
             while not stop:
                 if self.cmdqueue:
@@ -86,7 +88,8 @@ class TerminalPdb(Pdb):
                     self._ptcomp.ipy_completer.namespace = self.curframe_locals
                     self._ptcomp.ipy_completer.global_namespace = self.curframe.f_globals
                     try:
-                        line = self.pt_app.prompt() # reset_current_buffer=True)
+                        line = self.pt_app.prompt(
+                        )  # reset_current_buffer=True)
                     except EOFError:
                         line = 'EOF'
                 line = self.precmd(line)

@@ -10,9 +10,8 @@ not to be used outside IPython.
 import unicodedata
 from wcwidth import wcwidth
 
-from IPython.core.completer import (
-    provisionalcompleter, cursor_to_position,
-    _deduplicate_completions)
+from IPython.core.completer import (provisionalcompleter, cursor_to_position,
+                                    _deduplicate_completions)
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.lexers import Lexer
 from prompt_toolkit.lexers import PygmentsLexer
@@ -22,6 +21,7 @@ import pygments.lexers as pygments_lexers
 import os
 
 _completion_sentinel = object()
+
 
 def _elide(string, *, min_elide=30):
     """
@@ -35,8 +35,8 @@ def _elide(string, *, min_elide=30):
     replaced by the equivalents HORIZONTAL ELLIPSIS or TWO DOT LEADER unicode
     equivalents
     """
-    string = string.replace('...','\N{HORIZONTAL ELLIPSIS}')
-    string = string.replace('..','\N{TWO DOT LEADER}')
+    string = string.replace('...', '\N{HORIZONTAL ELLIPSIS}')
+    string = string.replace('..', '\N{TWO DOT LEADER}')
     if len(string) < min_elide:
         return string
 
@@ -44,10 +44,14 @@ def _elide(string, *, min_elide=30):
     file_parts = string.split(os.sep)
 
     if len(object_parts) > 3:
-        return '{}.{}\N{HORIZONTAL ELLIPSIS}{}.{}'.format(object_parts[0], object_parts[1][0], object_parts[-2][-1], object_parts[-1])
+        return '{}.{}\N{HORIZONTAL ELLIPSIS}{}.{}'.format(
+            object_parts[0], object_parts[1][0], object_parts[-2][-1],
+            object_parts[-1])
 
     elif len(file_parts) > 3:
-        return ('{}' + os.sep + '{}\N{HORIZONTAL ELLIPSIS}{}' + os.sep + '{}').format(file_parts[0], file_parts[1][0], file_parts[-2][-1], file_parts[-1])
+        return ('{}' + os.sep + '{}\N{HORIZONTAL ELLIPSIS}{}' + os.sep +
+                '{}').format(file_parts[0], file_parts[1][0],
+                             file_parts[-2][-1], file_parts[-1])
 
     return string
 
@@ -61,6 +65,7 @@ def _adjust_completion_text_based_on_context(text, body, offset):
 
 class IPythonPTCompleter(Completer):
     """Adaptor to provide IPython completions to prompt_toolkit"""
+
     def __init__(self, ipy_completer=None, shell=None):
         if shell is None and ipy_completer is None:
             raise TypeError("Please pass shell=an InteractiveShell instance.")
@@ -87,7 +92,8 @@ class IPythonPTCompleter(Completer):
             cursor_col = document.cursor_position_col
             cursor_position = document.cursor_position
             offset = cursor_to_position(body, cursor_row, cursor_col)
-            yield from self._get_completions(body, offset, cursor_position, self.ipy_completer)
+            yield from self._get_completions(body, offset, cursor_position,
+                                             self.ipy_completer)
 
     @staticmethod
     def _get_completions(body, offset, cursor_position, ipyc):
@@ -95,8 +101,8 @@ class IPythonPTCompleter(Completer):
         Private equivalent of get_completions() use only for unit_testing.
         """
         debug = getattr(ipyc, 'debug', False)
-        completions = _deduplicate_completions(
-            body, ipyc.completions(body, offset))
+        completions = _deduplicate_completions(body,
+                                               ipyc.completions(body, offset))
         for c in completions:
             if not c.text:
                 # Guard against completion machinery giving us an empty string.
@@ -109,12 +115,13 @@ class IPythonPTCompleter(Completer):
             if wcwidth(text[0]) == 0:
                 if cursor_position + c.start > 0:
                     char_before = body[c.start - 1]
-                    fixed_text = unicodedata.normalize(
-                        'NFC', char_before + text)
+                    fixed_text = unicodedata.normalize('NFC',
+                                                       char_before + text)
 
                     # Yield the modified completion instead, if this worked.
                     if wcwidth(text[0:1]) == 1:
-                        yield Completion(fixed_text, start_position=c.start - offset - 1)
+                        yield Completion(fixed_text,
+                                         start_position=c.start - offset - 1)
                         continue
 
             # TODO: Use Jedi to determine meta_text
@@ -124,16 +131,25 @@ class IPythonPTCompleter(Completer):
             #                  display_meta=meta_text)
             display_text = c.text
 
-            adjusted_text = _adjust_completion_text_based_on_context(c.text, body, offset)
+            adjusted_text = _adjust_completion_text_based_on_context(
+                c.text, body, offset)
             if c.type == 'function':
-                yield Completion(adjusted_text, start_position=c.start - offset, display=_elide(display_text+'()'), display_meta=c.type+c.signature)
+                yield Completion(adjusted_text,
+                                 start_position=c.start - offset,
+                                 display=_elide(display_text + '()'),
+                                 display_meta=c.type + c.signature)
             else:
-                yield Completion(adjusted_text, start_position=c.start - offset, display=_elide(display_text), display_meta=c.type)
+                yield Completion(adjusted_text,
+                                 start_position=c.start - offset,
+                                 display=_elide(display_text),
+                                 display_meta=c.type)
+
 
 class IPythonPTLexer(Lexer):
     """
     Wrapper around PythonLexer and BashLexer.
     """
+
     def __init__(self):
         l = pygments_lexers
         self.python_lexer = PygmentsLexer(l.Python3Lexer)

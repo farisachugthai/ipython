@@ -7,10 +7,11 @@ from warnings import warn
 
 import IPython
 from IPython.utils.importstring import import_item
-from IPython.utils.path import (
-    get_home_dir, get_xdg_dir, get_xdg_cache_dir, compress_user, _writable_dir,
-    ensure_dir_exists, fs_encoding)
+from IPython.utils.path import (get_home_dir, get_xdg_dir, get_xdg_cache_dir,
+                                compress_user, _writable_dir,
+                                ensure_dir_exists, fs_encoding)
 from IPython.utils import py3compat
+
 
 def get_ipython_dir():
     """Get the IPython directory for this platform and user.
@@ -22,7 +23,6 @@ def get_ipython_dir():
     env = os.environ
     pjoin = os.path.join
 
-
     ipdir_def = '.ipython'
 
     home_dir = get_home_dir()
@@ -31,7 +31,7 @@ def get_ipython_dir():
     # import pdb; pdb.set_trace()  # dbg
     if 'IPYTHON_DIR' in env:
         warn('The environment variable IPYTHON_DIR is deprecated. '
-                'Please use IPYTHONDIR instead.')
+             'Please use IPYTHONDIR instead.')
     ipdir = env.get('IPYTHONDIR', env.get('IPYTHON_DIR', None))
     if ipdir is None:
         # not set explicitly, use ~/.ipython
@@ -45,10 +45,12 @@ def get_ipython_dir():
                 cu = compress_user
                 if os.path.exists(ipdir):
                     warn(('Ignoring {0} in favour of {1}. Remove {0} to '
-                        'get rid of this message').format(cu(xdg_ipdir), cu(ipdir)))
+                          'get rid of this message').format(
+                              cu(xdg_ipdir), cu(ipdir)))
                 elif os.path.islink(xdg_ipdir):
                     warn(('{0} is deprecated. Move link to {1} to '
-                        'get rid of this message').format(cu(xdg_ipdir), cu(ipdir)))
+                          'get rid of this message').format(
+                              cu(xdg_ipdir), cu(ipdir)))
                 else:
                     warn('Moving {0} to {1}'.format(cu(xdg_ipdir), cu(ipdir)))
                     shutil.move(xdg_ipdir, ipdir)
@@ -58,14 +60,14 @@ def get_ipython_dir():
     if os.path.exists(ipdir) and not _writable_dir(ipdir):
         # ipdir exists, but is not writable
         warn("IPython dir '{0}' is not a writable location,"
-                " using a temp directory.".format(ipdir))
+             " using a temp directory.".format(ipdir))
         ipdir = tempfile.mkdtemp()
     elif not os.path.exists(ipdir):
         parent = os.path.dirname(ipdir)
         if not _writable_dir(parent):
             # ipdir does not exist and parent isn't writable
             warn("IPython parent '{0}' is not a writable location,"
-                    " using a temp directory.".format(parent))
+                 " using a temp directory.".format(parent))
             ipdir = tempfile.mkdtemp()
 
     return py3compat.cast_unicode(ipdir, fs_encoding)
@@ -105,10 +107,11 @@ def get_ipython_module_path(module_str):
     the_path = the_path.replace('.pyo', '.py')
     return py3compat.cast_unicode(the_path, fs_encoding)
 
+
 def locate_profile(profile='default'):
     """Find the path to the folder associated with a given profile.
 
-    I.e. find $IPYTHONDIR/profile_whatever.
+    I.E. find :envvar:`IPYTHONDIR`/profile_*.
     """
     from IPython.core.profiledir import ProfileDir, ProfileDirError
     try:

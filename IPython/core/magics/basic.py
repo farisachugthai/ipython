@@ -1,6 +1,5 @@
 """Implementation of basic magic functions."""
 
-
 import argparse
 from logging import error
 import io
@@ -22,28 +21,33 @@ class MagicsDisplay(object):
     def __init__(self, magics_manager, ignore=None):
         self.ignore = ignore if ignore else []
         self.magics_manager = magics_manager
-    
+
     def _lsmagic(self):
         """The main implementation of the %lsmagic"""
         mesc = magic_escapes['line']
         cesc = magic_escapes['cell']
         mman = self.magics_manager
         magics = mman.lsmagic()
-        out = ['Available line magics:',
-               mesc + ('  '+mesc).join(sorted([m for m,v in magics['line'].items() if (v not in self.ignore)])),
-               '',
-               'Available cell magics:',
-               cesc + ('  '+cesc).join(sorted([m for m,v in magics['cell'].items() if (v not in self.ignore)])),
-               '',
-               mman.auto_status()]
+        out = [
+            'Available line magics:', mesc + ('  ' + mesc).join(
+                sorted([
+                    m for m, v in magics['line'].items()
+                    if (v not in self.ignore)
+                ])), '', 'Available cell magics:', cesc + ('  ' + cesc).join(
+                    sorted([
+                        m for m, v in magics['cell'].items()
+                        if (v not in self.ignore)
+                    ])), '',
+            mman.auto_status()
+        ]
         return '\n'.join(out)
 
     def _repr_pretty_(self, p, cycle):
         p.text(self._lsmagic())
-    
+
     def __str__(self):
         return self._lsmagic()
-    
+
     def _jsonable(self):
         """turn magics dict into jsonable dict of the same structure
         
@@ -60,10 +64,10 @@ class MagicsDisplay(object):
                     classname = obj.__self__.__class__.__name__
                 except AttributeError:
                     classname = 'Other'
-                
+
                 d[name] = classname
         return magic_dict
-        
+
     def _repr_json_(self):
         return self._jsonable()
 
@@ -76,26 +80,23 @@ class BasicMagics(Magics):
     are all part of the base 'IPython experience'."""
 
     @magic_arguments.magic_arguments()
+    @magic_arguments.argument('-l',
+                              '--line',
+                              action='store_true',
+                              help="""Create a line magic alias.""")
+    @magic_arguments.argument('-c',
+                              '--cell',
+                              action='store_true',
+                              help="""Create a cell magic alias.""")
+    @magic_arguments.argument('name',
+                              help="""Name of the magic to be created.""")
     @magic_arguments.argument(
-        '-l', '--line', action='store_true',
-        help="""Create a line magic alias."""
-    )
+        'target', help="""Name of the existing line or cell magic.""")
     @magic_arguments.argument(
-        '-c', '--cell', action='store_true',
-        help="""Create a cell magic alias."""
-    )
-    @magic_arguments.argument(
-        'name',
-        help="""Name of the magic to be created."""
-    )
-    @magic_arguments.argument(
-        'target',
-        help="""Name of the existing line or cell magic."""
-    )
-    @magic_arguments.argument(
-        '-p', '--params', default=None,
-        help="""Parameters passed to the magic function."""
-    )
+        '-p',
+        '--params',
+        default=None,
+        help="""Parameters passed to the magic function.""")
     @line_magic
     def alias_magic(self, line=''):
         """Create an alias for an existing line or cell magic.
@@ -137,9 +138,8 @@ class BasicMagics(Magics):
         name = args.name.lstrip(escs)
 
         params = args.params
-        if (params and
-                ((params.startswith('"') and params.endswith('"'))
-                or (params.startswith("'") and params.endswith("'")))):
+        if (params and ((params.startswith('"') and params.endswith('"')) or
+                        (params.startswith("'") and params.endswith("'")))):
             params = params[1:-1]
 
         # Find the requested magics.
@@ -157,8 +157,7 @@ class BasicMagics(Magics):
         if not args.line and not args.cell:
             if not m_line and not m_cell:
                 raise UsageError(
-                    'No line or cell magic with name `%s` found.' % target
-                )
+                    'No line or cell magic with name `%s` found.' % target)
             args.line = bool(m_line)
             args.cell = bool(m_cell)
 
@@ -166,15 +165,15 @@ class BasicMagics(Magics):
 
         if args.line:
             mman.register_alias(name, target, 'line', params)
-            print('Created `%s%s` as an alias for `%s%s%s`.' % (
-                magic_escapes['line'], name,
-                magic_escapes['line'], target, params_str))
+            print('Created `%s%s` as an alias for `%s%s%s`.' %
+                  (magic_escapes['line'], name, magic_escapes['line'], target,
+                   params_str))
 
         if args.cell:
             mman.register_alias(name, target, 'cell', params)
-            print('Created `%s%s` as an alias for `%s%s%s`.' % (
-                magic_escapes['cell'], name,
-                magic_escapes['cell'], target, params_str))
+            print('Created `%s%s` as an alias for `%s%s%s`.' %
+                  (magic_escapes['cell'], name, magic_escapes['cell'], target,
+                   params_str))
 
     @line_magic
     def lsmagic(self, parameter_s=''):
@@ -191,15 +190,15 @@ class BasicMagics(Magics):
         else:
             format_string = '%s%s:\n%s\n'
 
-        return ''.join(
-            [format_string % (magic_escapes['line'], fname,
-                              indent(dedent(fndoc)))
-             for fname, fndoc in sorted(docs['line'].items())]
-            +
-            [format_string % (magic_escapes['cell'], fname,
-                              indent(dedent(fndoc)))
-             for fname, fndoc in sorted(docs['cell'].items())]
-        )
+        return ''.join([
+            format_string %
+            (magic_escapes['line'], fname, indent(dedent(fndoc)))
+            for fname, fndoc in sorted(docs['line'].items())
+        ] + [
+            format_string %
+            (magic_escapes['cell'], fname, indent(dedent(fndoc)))
+            for fname, fndoc in sorted(docs['cell'].items())
+        ])
 
     @line_magic
     def magic(self, parameter_s=''):
@@ -224,7 +223,8 @@ class BasicMagics(Magics):
         else:
             magic_docs = format_screen(magic_docs)
 
-        out = ["""
+        out = [
+            """
 IPython's 'magic' functions
 ===========================
 
@@ -269,12 +269,12 @@ For a list of the available magic functions, use %lsmagic. For a description
 of any of them, type %magic_name?, e.g. '%cd?'.
 
 Currently the magic system has the following functions:""",
-       magic_docs,
-       "Summary of magic functions (from %slsmagic):" % magic_escapes['line'],
-       str(self.lsmagic()),
-       ]
+            magic_docs,
+            "Summary of magic functions (from %slsmagic):" %
+            magic_escapes['line'],
+            str(self.lsmagic()),
+        ]
         page.page('\n'.join(out))
-
 
     @line_magic
     def page(self, parameter_s=''):
@@ -297,7 +297,7 @@ Currently the magic system has the following functions:""",
         oname = args and args or '_'
         info = self.shell._ofind(oname)
         if info['found']:
-            txt = (raw and str or pformat)( info['obj'] )
+            txt = (raw and str or pformat)(info['obj'])
             page.page(txt)
         else:
             print('Object `%s` not found' % oname)
@@ -307,8 +307,8 @@ Currently the magic system has the following functions:""",
         """Toggle pretty printing on/off."""
         ptformatter = self.shell.display_formatter.formatters['text/plain']
         ptformatter.pprint = bool(1 - ptformatter.pprint)
-        print('Pretty printing has been turned',
-              ['OFF','ON'][ptformatter.pprint])
+        print('Pretty printing has been turned', ['OFF',
+                                                  'ON'][ptformatter.pprint])
 
     @line_magic
     def colors(self, parameter_s=''):
@@ -324,10 +324,11 @@ Currently the magic system has the following functions:""",
 
           %colors nocolor
         """
+
         def color_switch_err(name):
             warn('Error changing %s color schemes.\n%s' %
-                 (name, sys.exc_info()[1]), stacklevel=2)
-
+                 (name, sys.exc_info()[1]),
+                 stacklevel=2)
 
         new_scheme = parameter_s.strip()
         if not new_scheme:
@@ -345,8 +346,8 @@ Currently the magic system has the following functions:""",
 
         # Set exception colors
         try:
-            shell.InteractiveTB.set_colors(scheme = new_scheme)
-            shell.SyntaxTB.set_colors(scheme = new_scheme)
+            shell.InteractiveTB.set_colors(scheme=new_scheme)
+            shell.SyntaxTB.set_colors(scheme=new_scheme)
         except:
             color_switch_err('exception')
 
@@ -369,13 +370,13 @@ Currently the magic system has the following functions:""",
 
         def xmode_switch_err(name):
             warn('Error changing %s exception modes.\n%s' %
-                 (name,sys.exc_info()[1]))
+                 (name, sys.exc_info()[1]))
 
         shell = self.shell
         new_mode = parameter_s.strip().capitalize()
         try:
             shell.InteractiveTB.set_mode(mode=new_mode)
-            print('Exception reporting mode:',shell.InteractiveTB.mode)
+            print('Exception reporting mode:', shell.InteractiveTB.mode)
         except:
             xmode_switch_err('user')
 
@@ -419,17 +420,17 @@ Currently the magic system has the following functions:""",
         ptformatter = disp_formatter.formatters['text/plain']
         # dstore is a data store kept in the instance metadata bag to track any
         # changes we make, so we can undo them later.
-        dstore = meta.setdefault('doctest_mode',Struct())
+        dstore = meta.setdefault('doctest_mode', Struct())
         save_dstore = dstore.setdefault
 
         # save a few values we'll need to recover later
-        mode = save_dstore('mode',False)
-        save_dstore('rc_pprint',ptformatter.pprint)
-        save_dstore('xmode',shell.InteractiveTB.mode)
-        save_dstore('rc_separate_out',shell.separate_out)
-        save_dstore('rc_separate_out2',shell.separate_out2)
-        save_dstore('rc_separate_in',shell.separate_in)
-        save_dstore('rc_active_types',disp_formatter.active_types)
+        mode = save_dstore('mode', False)
+        save_dstore('rc_pprint', ptformatter.pprint)
+        save_dstore('xmode', shell.InteractiveTB.mode)
+        save_dstore('rc_separate_out', shell.separate_out)
+        save_dstore('rc_separate_out2', shell.separate_out2)
+        save_dstore('rc_separate_in', shell.separate_in)
+        save_dstore('rc_active_types', disp_formatter.active_types)
 
         if not mode:
             # turn on
@@ -438,7 +439,6 @@ Currently the magic system has the following functions:""",
             shell.separate_in = ''
             shell.separate_out = ''
             shell.separate_out2 = ''
-
 
             ptformatter.pprint = False
             disp_formatter.active_types = ['text/plain']
@@ -462,7 +462,7 @@ Currently the magic system has the following functions:""",
 
         # Store new mode and inform
         dstore.mode = bool(not mode)
-        mode_label = ['OFF','ON'][dstore.mode]
+        mode_label = ['OFF', 'ON'][dstore.mode]
         print('Doctest mode is:', mode_label)
 
     @line_magic
@@ -492,7 +492,7 @@ Currently the magic system has the following functions:""",
         we have already handled that.
         """
         opts, arg = self.parse_options(parameter_s, '')
-        if arg=='': arg = None
+        if arg == '': arg = None
         try:
             return self.shell.enable_gui(arg)
         except Exception as e:
@@ -547,14 +547,14 @@ Currently the magic system has the following functions:""",
         return ptformatter.float_format
 
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument(
-        '-e', '--export', action='store_true', default=False,
-        help=argparse.SUPPRESS
-    )
-    @magic_arguments.argument(
-        'filename', type=str,
-        help='Notebook name or filename'
-    )
+    @magic_arguments.argument('-e',
+                              '--export',
+                              action='store_true',
+                              default=False,
+                              help=argparse.SUPPRESS)
+    @magic_arguments.argument('filename',
+                              type=str,
+                              help='Notebook name or filename')
     @line_magic
     def notebook(self, s):
         """Export and convert IPython notebooks.
@@ -571,20 +571,19 @@ Currently the magic system has the following functions:""",
 
         cells = []
         hist = list(self.shell.history_manager.get_range())
-        if(len(hist)<=1):
+        if (len(hist) <= 1):
             raise ValueError('History is empty, cannot export')
         for session, execution_count, source in hist[:-1]:
-            cells.append(v4.new_code_cell(
-                execution_count=execution_count,
-                source=source
-            ))
+            cells.append(
+                v4.new_code_cell(execution_count=execution_count,
+                                 source=source))
         nb = v4.new_notebook(cells=cells)
         with io.open(args.filename, 'w', encoding='utf-8') as f:
             write(nb, f, version=4)
 
+
 @magics_class
 class AsyncMagics(BasicMagics):
-
     @line_magic
     def autoawait(self, parameter_s):
         """
@@ -625,9 +624,7 @@ class AsyncMagics(BasicMagics):
 
         if not param:
             print("IPython autoawait is `{}`, and set to use `{}`".format(
-                d[self.shell.autoawait],
-                self.shell.loop_runner
-            ))
+                d[self.shell.autoawait], self.shell.loop_runner))
             return None
 
         if param.lower() in ('false', 'off'):
@@ -638,10 +635,11 @@ class AsyncMagics(BasicMagics):
             return None
 
         if param in self.shell.loop_runner_map:
-            self.shell.loop_runner, self.shell.autoawait = self.shell.loop_runner_map[param]
+            self.shell.loop_runner, self.shell.autoawait = self.shell.loop_runner_map[
+                param]
             return None
 
-        if param in self.shell.user_ns :
+        if param in self.shell.user_ns:
             self.shell.loop_runner = self.shell.user_ns[param]
             self.shell.autoawait = True
             return None

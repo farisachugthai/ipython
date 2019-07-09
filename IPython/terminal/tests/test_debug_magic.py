@@ -20,6 +20,7 @@ from IPython.testing import IPYTHON_TESTING_TIMEOUT_SCALE
 # Tests
 #-----------------------------------------------------------------------------
 
+
 @skip_win32
 def test_debug_magic_passes_through_generators():
     """
@@ -30,8 +31,10 @@ def test_debug_magic_passes_through_generators():
     in_prompt = re.compile(br'In ?\[\d+\]:')
     ipdb_prompt = 'ipdb>'
     env = os.environ.copy()
-    child = pexpect.spawn(sys.executable, ['-m', 'IPython', '--colors=nocolor', '--simple-prompt'],
-                          env=env)
+    child = pexpect.spawn(
+        sys.executable,
+        ['-m', 'IPython', '--colors=nocolor', '--simple-prompt'],
+        env=env)
     child.timeout = 15 * IPYTHON_TESTING_TIMEOUT_SCALE
 
     child.expect(in_prompt)

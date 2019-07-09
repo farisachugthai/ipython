@@ -1,6 +1,5 @@
 # encoding: utf-8
-"""Simple function to call to get the current InteractiveShell instance
-"""
+"""Simple function to call to get the current InteractiveShell instance."""
 
 #-----------------------------------------------------------------------------
 #  Copyright (C) 2013  The IPython Development Team
@@ -16,7 +15,7 @@
 
 def get_ipython():
     """Get the global InteractiveShell instance.
-    
+
     Returns None if no InteractiveShell instance is registered.
     """
     from IPython.core.interactiveshell import InteractiveShell

@@ -88,7 +88,6 @@ Inheritance diagram:
 # the file COPYING, distributed as part of this software.
 #*****************************************************************************
 
-
 import dis
 import inspect
 import keyword
@@ -137,7 +136,6 @@ INDENT_SIZE = 8
 # to users of ultratb who are NOT running inside ipython.
 DEFAULT_SCHEME = 'NoColor'
 
-
 # Number of frame above which we are likely to have a recursion and will
 # **attempt** to detect it.  Made modifiable mostly to speedup test suite
 # as detecting recursion is one of our slowest test
@@ -145,6 +143,7 @@ _FRAME_RECURSION_LIMIT = 500
 
 # ---------------------------------------------------------------------------
 # Code begins
+
 
 # Utility functions
 def inspect_error():
@@ -264,7 +263,8 @@ def getargs(co):
                 step = step + 1
                 if op >= dis.HAVE_ARGUMENT:
                     opname = dis.opname[op]
-                    value = ord(co.co_code[step]) + ord(co.co_code[step+1])*256
+                    value = ord(
+                        co.co_code[step]) + ord(co.co_code[step + 1]) * 256
                     step = step + 2
                     if opname in ('UNPACK_TUPLE', 'UNPACK_SEQUENCE'):
                         remain.append(value)
@@ -273,7 +273,8 @@ def getargs(co):
                         if op in dis.haslocal:
                             stack.append(co.co_varnames[value])
                         elif op in dis.hasfree:
-                            stack.append((co.co_cellvars + co.co_freevars)[value])
+                            stack.append(
+                                (co.co_cellvars + co.co_freevars)[value])
                         # Special case for sublists of length 1: def foo((bar))
                         # doesn't generate the UNPACK_TUPLE bytecode, so if
                         # `remain` is empty here, we have such a sublist.
@@ -342,7 +343,8 @@ def fix_frame_records_filenames(records):
                 # __file__. It might also be None if the error occurred during
                 # import.
                 filename = better_fn
-        fixed_records.append((frame, filename, line_no, func_name, lines, index))
+        fixed_records.append(
+            (frame, filename, line_no, func_name, lines, index))
     return fixed_records
 
 
@@ -376,6 +378,7 @@ def _fixed_getinnerframes(etb, context=1, tb_offset=0):
         records[i] = tuple(buf)
     return records[tb_offset:]
 
+
 # Helper function -- largely belongs to VerboseTB, but we need the same
 # functionality to produce a pseudo verbose TB for SyntaxErrors, so that they
 # can be recognized properly by ipython.el's py-traceback-line-re
@@ -402,7 +405,7 @@ def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
     numbers_width = INDENT_SIZE - 1
     res = []
 
-    for i,line in enumerate(lines, lnum-index):
+    for i, line in enumerate(lines, lnum - index):
         line = py3compat.cast_unicode(line)
 
         new_line, err = _line_format(line, 'str')
@@ -413,17 +416,17 @@ def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
             # This is the line with the error
             pad = numbers_width - len(str(i))
             num = '%s%s' % (debugger.make_arrow(pad), str(lnum))
-            line = '%s%s%s %s%s' % (Colors.linenoEm, num,
-                                    Colors.line, line, Colors.Normal)
+            line = '%s%s%s %s%s' % (Colors.linenoEm, num, Colors.line, line,
+                                    Colors.Normal)
         else:
             num = '%*s' % (numbers_width, i)
-            line = '%s%s%s %s' % (Colors.lineno, num,
-                                  Colors.Normal, line)
+            line = '%s%s%s %s' % (Colors.lineno, num, Colors.Normal, line)
 
         res.append(line)
         if lvals and i == lnum:
             res.append(lvals + '\n')
     return res
+
 
 def is_recursion_error(etype, value, records):
     try:
@@ -438,6 +441,7 @@ def is_recursion_error(etype, value, records):
     return (etype is recursion_error_type) \
            and "recursion" in str(value).lower() \
            and len(records) > _FRAME_RECURSION_LIMIT
+
 
 def find_recursion(etype, value, records):
     """Identify the repeating stack frames from a RecursionError traceback
@@ -455,7 +459,7 @@ def find_recursion(etype, value, records):
 
     # Select filename, lineno, func_name to track frames with
     records = [r[1:4] for r in records]
-    inner_frames = records[-(len(records)//4):]
+    inner_frames = records[-(len(records) // 4):]
     frames_repeated = set(inner_frames)
 
     last_seen_at = {}
@@ -473,9 +477,10 @@ def find_recursion(etype, value, records):
 
         last_seen_at[frame] = i
     else:
-        last_unique = 0 # The whole traceback was recursion
+        last_unique = 0  # The whole traceback was recursion
 
     return last_unique, longest_repeat
+
 
 #---------------------------------------------------------------------------
 # Module classes
@@ -485,7 +490,12 @@ class TBTools(colorable.Colorable):
     # Number of frames to skip when reporting tracebacks
     tb_offset = 0
 
-    def __init__(self, color_scheme='NoColor', call_pdb=False, ostream=None, parent=None, config=None):
+    def __init__(self,
+                 color_scheme='NoColor',
+                 call_pdb=False,
+                 ostream=None,
+                 parent=None,
+                 config=None):
         # Whether to call the interactive pdb debugger after printing
         # tracebacks or not
         super(TBTools, self).__init__(parent=parent, config=config)
@@ -561,12 +571,17 @@ class TBTools(colorable.Colorable):
 
         Subclasses may override this if they add extra arguments.
         """
-        tb_list = self.structured_traceback(etype, value, tb,
-                                            tb_offset, context)
+        tb_list = self.structured_traceback(etype, value, tb, tb_offset,
+                                            context)
         return self.stb2text(tb_list)
 
-    def structured_traceback(self, etype, evalue, tb, tb_offset=None,
-                             context=5, mode=None):
+    def structured_traceback(self,
+                             etype,
+                             evalue,
+                             tb,
+                             tb_offset=None,
+                             context=5,
+                             mode=None):
         """Return a list of traceback frames.
 
         Must be implemented by each class.
@@ -594,16 +609,29 @@ class ListTB(TBTools):
     Because they are meant to be called without a full traceback (only a
     list), instances of this class can't call the interactive pdb debugger."""
 
-    def __init__(self, color_scheme='NoColor', call_pdb=False, ostream=None, parent=None, config=None):
-        TBTools.__init__(self, color_scheme=color_scheme, call_pdb=call_pdb,
-                         ostream=ostream, parent=parent,config=config)
+    def __init__(self,
+                 color_scheme='NoColor',
+                 call_pdb=False,
+                 ostream=None,
+                 parent=None,
+                 config=None):
+        TBTools.__init__(self,
+                         color_scheme=color_scheme,
+                         call_pdb=call_pdb,
+                         ostream=ostream,
+                         parent=parent,
+                         config=config)
 
     def __call__(self, etype, value, elist):
         self.ostream.flush()
         self.ostream.write(self.text(etype, value, elist))
         self.ostream.write('\n')
 
-    def structured_traceback(self, etype, value, elist, tb_offset=None,
+    def structured_traceback(self,
+                             etype,
+                             value,
+                             elist,
+                             tb_offset=None,
                              context=5):
         """Return a color formatted string with the traceback info.
 
@@ -678,8 +706,7 @@ class ListTB(TBTools):
                 Colors.nameEm, name, Colors.normalEm,
                 Colors.Normal)
         if line:
-            item += '%s    %s%s\n' % (Colors.line, line.strip(),
-                                      Colors.Normal)
+            item += '%s    %s%s\n' % (Colors.line, line.strip(), Colors.Normal)
         list.append(item)
         return list
 
@@ -699,7 +726,8 @@ class ListTB(TBTools):
         have_filedata = False
         Colors = self.Colors
         list = []
-        stype = py3compat.cast_unicode(Colors.excName + etype.__name__ + Colors.Normal)
+        stype = py3compat.cast_unicode(Colors.excName + etype.__name__ +
+                                       Colors.Normal)
         if value is None:
             # Not sure if this can still happen in Python 2.6 and above
             list.append(stype + '\n')
@@ -724,9 +752,8 @@ class ListTB(TBTools):
                     i = 0
                     while i < len(textline) and textline[i].isspace():
                         i += 1
-                    list.append('%s    %s%s\n' % (Colors.line,
-                                                  textline.strip(),
-                                                  Colors.Normal))
+                    list.append('%s    %s%s\n' %
+                                (Colors.line, textline.strip(), Colors.Normal))
                     if value.offset is not None:
                         s = '    '
                         for c in textline[i:value.offset - 1]:
@@ -734,16 +761,16 @@ class ListTB(TBTools):
                                 s += c
                             else:
                                 s += ' '
-                        list.append('%s%s^%s\n' % (Colors.caret, s,
-                                                   Colors.Normal))
+                        list.append('%s%s^%s\n' %
+                                    (Colors.caret, s, Colors.Normal))
 
             try:
                 s = value.msg
             except Exception:
                 s = self._some_str(value)
             if s:
-                list.append('%s%s:%s %s\n' % (stype, Colors.excName,
-                                              Colors.Normal, s))
+                list.append('%s%s:%s %s\n' %
+                            (stype, Colors.excName, Colors.Normal, s))
             else:
                 list.append('%s\n' % stype)
 
@@ -751,7 +778,8 @@ class ListTB(TBTools):
         if have_filedata:
             ipinst = get_ipython()
             if ipinst is not None:
-                ipinst.hooks.synchronize_with_editor(value.filename, value.lineno, 0)
+                ipinst.hooks.synchronize_with_editor(value.filename,
+                                                     value.lineno, 0)
 
         return list
 
@@ -797,18 +825,29 @@ class VerboseTB(TBTools):
     traceback, to be used with alternate interpreters (because their own code
     would appear in the traceback)."""
 
-    def __init__(self, color_scheme='Linux', call_pdb=False, ostream=None,
-                 tb_offset=0, long_header=False, include_vars=True,
-                 check_cache=None, debugger_cls = None,
-                 parent=None, config=None):
+    def __init__(self,
+                 color_scheme='Linux',
+                 call_pdb=False,
+                 ostream=None,
+                 tb_offset=0,
+                 long_header=False,
+                 include_vars=True,
+                 check_cache=None,
+                 debugger_cls=None,
+                 parent=None,
+                 config=None):
         """Specify traceback offset, headers and color scheme.
 
         Define how many frames to drop from the tracebacks. Calling it with
         tb_offset=1 allows use of this handler in interpreters which will have
         their own code at the top of the traceback (VerboseTB will first
         remove that frame before printing the traceback info)."""
-        TBTools.__init__(self, color_scheme=color_scheme, call_pdb=call_pdb,
-                         ostream=ostream, parent=parent, config=config)
+        TBTools.__init__(self,
+                         color_scheme=color_scheme,
+                         call_pdb=call_pdb,
+                         ostream=ostream,
+                         parent=parent,
+                         config=config)
         self.tb_offset = tb_offset
         self.long_header = long_header
         self.include_vars = include_vars
@@ -826,13 +865,17 @@ class VerboseTB(TBTools):
     def format_records(self, records, last_unique, recursion_repeat):
         """Format the stack frames of the traceback"""
         frames = []
-        for r in records[:last_unique+recursion_repeat+1]:
+        for r in records[:last_unique + recursion_repeat + 1]:
             #print '*** record:',file,lnum,func,lines,index  # dbg
             frames.append(self.format_record(*r))
 
         if recursion_repeat:
-            frames.append('... last %d frames repeated, from the frame below ...\n' % recursion_repeat)
-            frames.append(self.format_record(*records[last_unique+recursion_repeat+1]))
+            frames.append(
+                '... last %d frames repeated, from the frame below ...\n' %
+                recursion_repeat)
+            frames.append(
+                self.format_record(*records[last_unique + recursion_repeat +
+                                            1]))
 
         return frames
 
@@ -885,9 +928,10 @@ class VerboseTB(TBTools):
             # Decide whether to include variable details or not
             var_repr = eqrepr if self.include_vars else nullrepr
             try:
-                call = tpl_call % (func, inspect.formatargvalues(args,
-                                                                 varargs, varkw,
-                                                                 locals_, formatvalue=var_repr))
+                call = tpl_call % (
+                    func,
+                    inspect.formatargvalues(
+                        args, varargs, varkw, locals_, formatvalue=var_repr))
             except KeyError:
                 # This happens in situations like errors inside generator
                 # expressions, where local variables are listed in the
@@ -931,7 +975,8 @@ class VerboseTB(TBTools):
             names = []
             name_cont = False
 
-            for token_type, token, start, end, line in generate_tokens(linereader):
+            for token_type, token, start, end, line in generate_tokens(
+                    linereader):
                 # build composite names
                 if token_type == tokenize.NAME and token not in keyword.kwlist:
                     if name_cont:
@@ -1008,10 +1053,11 @@ class VerboseTB(TBTools):
         if index is None:
             return level
         else:
-            _line_format = PyColorize.Parser(style=col_scheme, parent=self).format2
+            _line_format = PyColorize.Parser(style=col_scheme,
+                                             parent=self).format2
             return '%s%s' % (level, ''.join(
                 _format_traceback_lines(lnum, index, lines, Colors, lvals,
-                                         _line_format)))
+                                        _line_format)))
 
     def prepare_chained_exception_message(self, cause):
         direct_cause = "\nThe above exception was the direct cause of the following exception:\n"
@@ -1033,9 +1079,10 @@ class VerboseTB(TBTools):
             pyver = 'Python ' + sys.version.split()[0] + ': ' + sys.executable
             date = time.ctime(time.time())
 
-            head = '%s%s%s\n%s%s%s\n%s' % (colors.topline, '-' * width, colorsnormal,
-                                           exc, ' ' * (width - len(str(etype)) - len(pyver)),
-                                           pyver, date.rjust(width) )
+            head = '%s%s%s\n%s%s%s\n%s' % (
+                colors.topline, '-' * width, colorsnormal, exc, ' ' *
+                (width - len(str(etype)) - len(pyver)), pyver,
+                date.rjust(width))
             head += "\nA problem occurred executing Python code.  Here is the sequence of function" \
                     "\ncalls leading up to the error, with the most recent (innermost) call last."
         else:
@@ -1056,10 +1103,13 @@ class VerboseTB(TBTools):
             etype, evalue = str, sys.exc_info()[:2]
             etype_str, evalue_str = map(str, (etype, evalue))
         # ... and format it
-        return ['%s%s%s: %s' % (colors.excName, etype_str,
-                                colorsnormal, py3compat.cast_unicode(evalue_str))]
+        return [
+            '%s%s%s: %s' % (colors.excName, etype_str, colorsnormal,
+                            py3compat.cast_unicode(evalue_str))
+        ]
 
-    def format_exception_as_a_whole(self, etype, evalue, etb, number_of_lines_of_context, tb_offset):
+    def format_exception_as_a_whole(self, etype, evalue, etb,
+                                    number_of_lines_of_context, tb_offset):
         """Formats the header, traceback and exception message for a single exception.
 
         This may be called multiple times by Python 3 exception chaining
@@ -1079,7 +1129,8 @@ class VerboseTB(TBTools):
         if records is None:
             return ""
 
-        last_unique, recursion_repeat = find_recursion(orig_etype, evalue, records)
+        last_unique, recursion_repeat = find_recursion(orig_etype, evalue,
+                                                       records)
 
         frames = self.format_records(records, last_unique, recursion_repeat)
 
@@ -1098,7 +1149,8 @@ class VerboseTB(TBTools):
             # Try the default getinnerframes and Alex's: Alex's fixes some
             # problems, but it generates empty tracebacks for console errors
             # (5 blanks lines) where none should be returned.
-            return _fixed_getinnerframes(etb, number_of_lines_of_context, tb_offset)
+            return _fixed_getinnerframes(etb, number_of_lines_of_context,
+                                         tb_offset)
         except UnicodeDecodeError:
             # This can occur if a file's encoding magic comment is wrong.
             # I can't see a way to recover without duplicating a bunch of code
@@ -1114,7 +1166,9 @@ class VerboseTB(TBTools):
             # reproduce the problem.
             inspect_error()
             traceback.print_exc(file=self.ostream)
-            info('\nUnfortunately, your original traceback can not be constructed.\n')
+            info(
+                '\nUnfortunately, your original traceback can not be constructed.\n'
+            )
             return None
 
     def get_parts_of_chained_exception(self, evalue):
@@ -1131,35 +1185,46 @@ class VerboseTB(TBTools):
         if chained_evalue:
             return chained_evalue.__class__, chained_evalue, chained_evalue.__traceback__
 
-    def structured_traceback(self, etype, evalue, etb, tb_offset=None,
+    def structured_traceback(self,
+                             etype,
+                             evalue,
+                             etb,
+                             tb_offset=None,
                              number_of_lines_of_context=5):
         """Return a nice text document describing the traceback."""
 
-        formatted_exception = self.format_exception_as_a_whole(etype, evalue, etb, number_of_lines_of_context,
-                                                               tb_offset)
+        formatted_exception = self.format_exception_as_a_whole(
+            etype, evalue, etb, number_of_lines_of_context, tb_offset)
 
         colors = self.Colors  # just a shorthand + quicker name lookup
         colorsnormal = colors.Normal  # used a lot
-        head = '%s%s%s' % (colors.topline, '-' * min(75, get_terminal_size()[0]), colorsnormal)
+        head = '%s%s%s' % (colors.topline, '-' * min(75,
+                                                     get_terminal_size()[0]),
+                           colorsnormal)
         structured_traceback_parts = [head]
         chained_exceptions_tb_offset = 0
         lines_of_context = 3
         formatted_exceptions = formatted_exception
         exception = self.get_parts_of_chained_exception(evalue)
         if exception:
-            formatted_exceptions += self.prepare_chained_exception_message(evalue.__cause__)
+            formatted_exceptions += self.prepare_chained_exception_message(
+                evalue.__cause__)
             etype, evalue, etb = exception
         else:
             evalue = None
         chained_exc_ids = set()
         while evalue:
-            formatted_exceptions += self.format_exception_as_a_whole(etype, evalue, etb, lines_of_context,
-                                                                     chained_exceptions_tb_offset)
+            formatted_exceptions += self.format_exception_as_a_whole(
+                etype, evalue, etb, lines_of_context,
+                chained_exceptions_tb_offset)
             exception = self.get_parts_of_chained_exception(evalue)
 
             if exception and not id(exception[1]) in chained_exc_ids:
-                chained_exc_ids.add(id(exception[1])) # trace exception to avoid infinite 'cause' loop
-                formatted_exceptions += self.prepare_chained_exception_message(evalue.__cause__)
+                chained_exc_ids.add(
+                    id(exception[1]
+                       ))  # trace exception to avoid infinite 'cause' loop
+                formatted_exceptions += self.prepare_chained_exception_message(
+                    evalue.__cause__)
                 etype, evalue, etb = exception
             else:
                 evalue = None
@@ -1250,25 +1315,40 @@ class FormattedTB(VerboseTB, ListTB):
     occurs with python programs that themselves execute other python code,
     like Python shells).  """
 
-    def __init__(self, mode='Plain', color_scheme='Linux', call_pdb=False,
+    def __init__(self,
+                 mode='Plain',
+                 color_scheme='Linux',
+                 call_pdb=False,
                  ostream=None,
-                 tb_offset=0, long_header=False, include_vars=False,
-                 check_cache=None, debugger_cls=None,
-                 parent=None, config=None):
+                 tb_offset=0,
+                 long_header=False,
+                 include_vars=False,
+                 check_cache=None,
+                 debugger_cls=None,
+                 parent=None,
+                 config=None):
 
         # NEVER change the order of this list. Put new modes at the end:
         self.valid_modes = ['Plain', 'Context', 'Verbose', 'Minimal']
         self.verbose_modes = self.valid_modes[1:3]
 
-        VerboseTB.__init__(self, color_scheme=color_scheme, call_pdb=call_pdb,
-                           ostream=ostream, tb_offset=tb_offset,
-                           long_header=long_header, include_vars=include_vars,
-                           check_cache=check_cache, debugger_cls=debugger_cls,
-                           parent=parent, config=config)
+        VerboseTB.__init__(self,
+                           color_scheme=color_scheme,
+                           call_pdb=call_pdb,
+                           ostream=ostream,
+                           tb_offset=tb_offset,
+                           long_header=long_header,
+                           include_vars=include_vars,
+                           check_cache=check_cache,
+                           debugger_cls=debugger_cls,
+                           parent=parent,
+                           config=config)
 
         # Different types of tracebacks are joined with different separators to
         # form a single string.  They are taken from this dict
-        self._join_chars = dict(Plain='', Context='\n', Verbose='\n',
+        self._join_chars = dict(Plain='',
+                                Context='\n',
+                                Verbose='\n',
                                 Minimal='')
         # set_mode also sets the tb_join_char attribute
         self.set_mode(mode)
@@ -1279,14 +1359,19 @@ class FormattedTB(VerboseTB, ListTB):
         else:
             return None
 
-    def structured_traceback(self, etype, value, tb, tb_offset=None, number_of_lines_of_context=5):
+    def structured_traceback(self,
+                             etype,
+                             value,
+                             tb,
+                             tb_offset=None,
+                             number_of_lines_of_context=5):
         tb_offset = self.tb_offset if tb_offset is None else tb_offset
         mode = self.mode
         if mode in self.verbose_modes:
             # Verbose modes need a full traceback
-            return VerboseTB.structured_traceback(
-                self, etype, value, tb, tb_offset, number_of_lines_of_context
-            )
+            return VerboseTB.structured_traceback(self, etype, value, tb,
+                                                  tb_offset,
+                                                  number_of_lines_of_context)
         elif mode == 'Minimal':
             return ListTB.get_exception_only(self, etype, value)
         else:
@@ -1295,14 +1380,13 @@ class FormattedTB(VerboseTB, ListTB):
             self.check_cache()
             # Now we can extract and format the exception
             elist = self._extract_tb(tb)
-            return ListTB.structured_traceback(
-                self, etype, value, elist, tb_offset, number_of_lines_of_context
-            )
+            return ListTB.structured_traceback(self, etype, value, elist,
+                                               tb_offset,
+                                               number_of_lines_of_context)
 
     def stb2text(self, stb):
         """Convert a structured traceback (a list) to a string."""
         return self.tb_join_char.join(stb)
-
 
     def set_mode(self, mode=None):
         """Switch to the desired mode.
@@ -1314,8 +1398,9 @@ class FormattedTB(VerboseTB, ListTB):
                       len(self.valid_modes)
             self.mode = self.valid_modes[new_idx]
         elif mode not in self.valid_modes:
-            raise ValueError('Unrecognized mode in FormattedTB: <' + mode + '>\n'
-                                                                            'Valid modes: ' + str(self.valid_modes))
+            raise ValueError('Unrecognized mode in FormattedTB: <' + mode +
+                             '>\n'
+                             'Valid modes: ' + str(self.valid_modes))
         else:
             self.mode = mode
         # include variable details only in 'Verbose' mode
@@ -1352,8 +1437,12 @@ class AutoFormattedTB(FormattedTB):
           AutoTB()  # or AutoTB(out=logfile) where logfile is an open file object
     """
 
-    def __call__(self, etype=None, evalue=None, etb=None,
-                 out=None, tb_offset=None):
+    def __call__(self,
+                 etype=None,
+                 evalue=None,
+                 etb=None,
+                 out=None,
+                 tb_offset=None):
         """Print out a formatted exception traceback.
 
         Optional arguments:
@@ -1376,24 +1465,32 @@ class AutoFormattedTB(FormattedTB):
         except KeyboardInterrupt:
             print("\nKeyboardInterrupt")
 
-    def structured_traceback(self, etype=None, value=None, tb=None,
-                             tb_offset=None, number_of_lines_of_context=5):
+    def structured_traceback(self,
+                             etype=None,
+                             value=None,
+                             tb=None,
+                             tb_offset=None,
+                             number_of_lines_of_context=5):
         if etype is None:
             etype, value, tb = sys.exc_info()
         self.tb = tb
-        return FormattedTB.structured_traceback(
-            self, etype, value, tb, tb_offset, number_of_lines_of_context)
+        return FormattedTB.structured_traceback(self, etype, value, tb,
+                                                tb_offset,
+                                                number_of_lines_of_context)
 
 
 #---------------------------------------------------------------------------
+
 
 # A simple class to preserve Nathan's original functionality.
 class ColorTB(FormattedTB):
     """Shorthand to initialize a FormattedTB in Linux colors mode."""
 
     def __init__(self, color_scheme='Linux', call_pdb=0, **kwargs):
-        FormattedTB.__init__(self, color_scheme=color_scheme,
-                             call_pdb=call_pdb, **kwargs)
+        FormattedTB.__init__(self,
+                             color_scheme=color_scheme,
+                             call_pdb=call_pdb,
+                             **kwargs)
 
 
 class SyntaxTB(ListTB):
@@ -1408,7 +1505,11 @@ class SyntaxTB(ListTB):
 
         ListTB.__call__(self, etype, value, elist)
 
-    def structured_traceback(self, etype, value, elist, tb_offset=None,
+    def structured_traceback(self,
+                             etype,
+                             value,
+                             elist,
+                             tb_offset=None,
                              context=5):
         # If the source file has been edited, the line in the syntax error can
         # be wrong (retrieved from an outdated cache). This replaces it with
@@ -1421,8 +1522,11 @@ class SyntaxTB(ListTB):
             if newtext:
                 value.text = newtext
         self.last_syntax_error = value
-        return super(SyntaxTB, self).structured_traceback(etype, value, elist,
-                                                          tb_offset=tb_offset, context=context)
+        return super(SyntaxTB, self).structured_traceback(etype,
+                                                          value,
+                                                          elist,
+                                                          tb_offset=tb_offset,
+                                                          context=context)
 
     def clear_err_state(self):
         """Return the current error state and clear it"""

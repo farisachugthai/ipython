@@ -14,10 +14,10 @@ from IPython.utils.path import ensure_dir_exists, compress_user
 from IPython.utils.decorators import undoc
 from traitlets import Instance
 
-
 #-----------------------------------------------------------------------------
 # Main class
 #-----------------------------------------------------------------------------
+
 
 class ExtensionManager(Configurable):
     """A class to manage IPython extensions.
@@ -46,13 +46,13 @@ class ExtensionManager(Configurable):
     is added to ``sys.path`` automatically.
     """
 
-    shell = Instance('IPython.core.interactiveshell.InteractiveShellABC', allow_none=True)
+    shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
+                     allow_none=True)
 
     def __init__(self, shell=None, **kwargs):
         super(ExtensionManager, self).__init__(shell=shell, **kwargs)
-        self.shell.observe(
-            self._on_ipython_dir_changed, names=('ipython_dir',)
-        )
+        self.shell.observe(self._on_ipython_dir_changed,
+                           names=('ipython_dir', ))
         self.loaded = set()
 
     @property
@@ -79,10 +79,11 @@ class ExtensionManager(Configurable):
                 with prepended_to_syspath(self.ipython_extension_dir):
                     mod = import_module(module_str)
                     if mod.__file__.startswith(self.ipython_extension_dir):
-                        print(("Loading extensions from {dir} is deprecated. "
-                               "We recommend managing extensions like any "
-                               "other Python packages, in site-packages.").format(
-                              dir=compress_user(self.ipython_extension_dir)))
+                        print((
+                            "Loading extensions from {dir} is deprecated. "
+                            "We recommend managing extensions like any "
+                            "other Python packages, in site-packages.").format(
+                                dir=compress_user(self.ipython_extension_dir)))
             mod = sys.modules[module_str]
             if self._call_load_ipython_extension(mod):
                 self.loaded.add(module_str)
@@ -101,7 +102,7 @@ class ExtensionManager(Configurable):
         """
         if module_str not in self.loaded:
             return "not loaded"
-        
+
         if module_str in sys.modules:
             mod = sys.modules[module_str]
             if self._call_unload_ipython_extension(mod):

@@ -7,19 +7,26 @@ aliases = {
 }
 
 backends = [
-    'qt', 'qt4', 'qt5',
-    'gtk', 'gtk2', 'gtk3',
+    'qt',
+    'qt4',
+    'qt5',
+    'gtk',
+    'gtk2',
+    'gtk3',
     'tk',
     'wx',
-    'pyglet', 'glut',
+    'pyglet',
+    'glut',
     'osx',
 ]
 
 registered = {}
 
+
 def register(name, inputhook):
     """Register the function *inputhook* as an event loop integration."""
     registered[name] = inputhook
+
 
 class UnknownBackend(KeyError):
     def __init__(self, name):
@@ -27,8 +34,9 @@ class UnknownBackend(KeyError):
 
     def __str__(self):
         return ("No event loop integration for {!r}. "
-                "Supported event loops are: {}").format(self.name,
-                                    ', '.join(backends + sorted(registered)))
+                "Supported event loops are: {}").format(
+                    self.name, ', '.join(backends + sorted(registered)))
+
 
 def get_inputhook_name_and_func(gui):
     if gui in registered:
@@ -45,5 +53,5 @@ def get_inputhook_name_and_func(gui):
         os.environ['QT_API'] = 'pyqt5'
         gui_mod = 'qt'
 
-    mod = importlib.import_module('IPython.terminal.pt_inputhooks.'+gui_mod)
+    mod = importlib.import_module('IPython.terminal.pt_inputhooks.' + gui_mod)
     return gui, mod.inputhook

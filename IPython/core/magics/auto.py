@@ -21,6 +21,7 @@ from logging import error
 # Magic implementation classes
 #-----------------------------------------------------------------------------
 
+
 @magics_class
 class AutoMagics(Magics):
     """Magics that control various autoX behaviors."""
@@ -115,7 +116,7 @@ class AutoMagics(Magics):
 
         if arg in (0, 1, 2):
             self.shell.autocall = arg
-        else: # toggle
+        else:  # toggle
             if self.shell.autocall:
                 self._magic_state.autocall_save = self.shell.autocall
                 self.shell.autocall = 0
@@ -125,4 +126,5 @@ class AutoMagics(Magics):
                 except AttributeError:
                     self.shell.autocall = self._magic_state.autocall_save = 1
 
-        print("Automatic calling is:",['OFF','Smart','Full'][self.shell.autocall])
+        print("Automatic calling is:", ['OFF', 'Smart',
+                                        'Full'][self.shell.autocall])

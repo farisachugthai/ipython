@@ -1,5 +1,4 @@
 # encoding: utf-8
-
 """
 Enable wxPython to be used interacive by setting PyOS_InputHook.
 
@@ -25,10 +24,10 @@ import wx
 
 from IPython.lib.inputhook import stdin_ready
 
-
 #-----------------------------------------------------------------------------
 # Code
 #-----------------------------------------------------------------------------
+
 
 def inputhook_wx1():
     """Run the wx event loop by processing pending events only.
@@ -54,8 +53,8 @@ def inputhook_wx1():
         pass
     return 0
 
-class EventLoopTimer(wx.Timer):
 
+class EventLoopTimer(wx.Timer):
     def __init__(self, func):
         self.func = func
         wx.Timer.__init__(self)
@@ -63,8 +62,8 @@ class EventLoopTimer(wx.Timer):
     def Notify(self):
         self.func()
 
-class EventLoopRunner(object):
 
+class EventLoopRunner(object):
     def Run(self, time):
         self.evtloop = wx.EventLoop()
         self.timer = EventLoopTimer(self.check_stdin)
@@ -75,6 +74,7 @@ class EventLoopRunner(object):
         if stdin_ready():
             self.timer.Stop()
             self.evtloop.Exit()
+
 
 def inputhook_wx2():
     """Run the wx event loop, polling for stdin.
@@ -101,6 +101,7 @@ def inputhook_wx2():
     except KeyboardInterrupt:
         pass
     return 0
+
 
 def inputhook_wx3():
     """Run the wx event loop by processing pending events only.
@@ -156,6 +157,7 @@ def inputhook_wx3():
     except KeyboardInterrupt:
         pass
     return 0
+
 
 if sys.platform == 'darwin':
     # On OSX, evtloop.Pending() always returns True, regardless of there being

@@ -41,7 +41,8 @@ from IPython.utils.encoding import get_stream_enc
 # ! and !! trigger if they are first char(s) *or* follow an indent
 # ? triggers as first or last char.
 
-line_split = re.compile(r"""
+line_split = re.compile(
+    r"""
              ^(\s*)               # any leading space
              ([,;/%]|!!?|\?\??)?  # escape character or characters
              \s*(%{0,2}[\w\.\*]*)     # function/method, possibly with leading %
@@ -64,11 +65,11 @@ def split_user_input(line, pattern=None):
     if not match:
         # print "match failed for line '%s'" % line
         try:
-            ifun, the_rest = line.split(None,1)
+            ifun, the_rest = line.split(None, 1)
         except ValueError:
             # print "split failed for line '%s'" % line
             ifun, the_rest = line, u''
-        pre = re.match(r'^(\s*)(.*)',line).groups()[0]
+        pre = re.match(r'^(\s*)(.*)', line).groups()[0]
         esc = ""
     else:
         pre, esc, ifun, the_rest = match.groups()
@@ -107,14 +108,15 @@ class LineInfo(object):
     the_rest
       Everything else on the line.
     """
+
     def __init__(self, line, continue_prompt=False):
-        self.line            = line
+        self.line = line
         self.continue_prompt = continue_prompt
         self.pre, self.esc, self.ifun, self.the_rest = split_user_input(line)
 
-        self.pre_char       = self.pre.strip()
+        self.pre_char = self.pre.strip()
         if self.pre_char:
-            self.pre_whitespace = '' # No whitespace allowed before esc chars
+            self.pre_whitespace = ''  # No whitespace allowed before esc chars
         else:
             self.pre_whitespace = self.pre
 
@@ -134,4 +136,5 @@ class LineInfo(object):
         return ip._ofind(self.ifun)
 
     def __str__(self):
-        return "LineInfo [%s|%s|%s|%s]" %(self.pre, self.esc, self.ifun, self.the_rest)
+        return "LineInfo [%s|%s|%s|%s]" % (self.pre, self.esc, self.ifun,
+                                           self.the_rest)

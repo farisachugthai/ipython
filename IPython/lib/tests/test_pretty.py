@@ -4,7 +4,6 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 from collections import Counter, defaultdict, deque, OrderedDict
 import os
 import types
@@ -22,6 +21,7 @@ from io import StringIO
 class MyList(object):
     def __init__(self, content):
         self.content = content
+
     def _repr_pretty_(self, p, cycle):
         if cycle:
             p.text("MyList(...)")
@@ -40,6 +40,7 @@ class MyDict(dict):
     def _repr_pretty_(self, p, cycle):
         p.text("MyDict(...)")
 
+
 class MyObj(object):
     def somemethod(self):
         pass
@@ -49,41 +50,48 @@ class Dummy1(object):
     def _repr_pretty_(self, p, cycle):
         p.text("Dummy1(...)")
 
+
 class Dummy2(Dummy1):
     _repr_pretty_ = None
+
 
 class NoModule(object):
     pass
 
+
 NoModule.__module__ = None
+
 
 class Breaking(object):
     def _repr_pretty_(self, p, cycle):
-        with p.group(4,"TG: ",":"):
+        with p.group(4, "TG: ", ":"):
             p.text("Breaking(")
             p.break_()
             p.text(")")
+
 
 class BreakingRepr(object):
     def __repr__(self):
         return "Breaking(\n)"
 
+
 class BreakingReprParent(object):
     def _repr_pretty_(self, p, cycle):
-        with p.group(4,"TG: ",":"):
+        with p.group(4, "TG: ", ":"):
             p.pretty(BreakingRepr())
 
+
 class BadRepr(object):
-    
     def __repr__(self):
-        return 1/0
+        return 1 / 0
 
 
 def test_indentation():
     """Test correct indentation in groups"""
     count = 40
     gotoutput = pretty.pretty(MyList(range(count)))
-    expectedoutput = "MyList(\n" + ",\n".join("   %d" % i for i in range(count)) + ")"
+    expectedoutput = "MyList(\n" + ",\n".join("   %d" % i
+                                              for i in range(count)) + ")"
 
     nt.assert_equal(gotoutput, expectedoutput)
 
@@ -114,10 +122,19 @@ def test_sets():
     """
     Test that set and frozenset use Python 3 formatting.
     """
-    objects = [set(), frozenset(), set([1]), frozenset([1]), set([1, 2]),
-        frozenset([1, 2]), set([-1, -2, -3])]
-    expected = ['set()', 'frozenset()', '{1}', 'frozenset({1})', '{1, 2}',
-        'frozenset({1, 2})', '{-3, -2, -1}']
+    objects = [
+        set(),
+        frozenset(),
+        set([1]),
+        frozenset([1]),
+        set([1, 2]),
+        frozenset([1, 2]),
+        set([-1, -2, -3])
+    ]
+    expected = [
+        'set()', 'frozenset()', '{1}', 'frozenset({1})', '{1, 2}',
+        'frozenset({1, 2})', '{-3, -2, -1}'
+    ]
     for obj, expected_output in zip(objects, expected):
         got_output = pretty.pretty(obj)
         yield nt.assert_equal, got_output, expected_output
@@ -132,13 +149,15 @@ def test_pprint_heap_allocated_type():
     output = pretty.pretty(xxlimited.Null)
     nt.assert_equal(output, 'xxlimited.Null')
 
+
 def test_pprint_nomod():
     """
     Test that pprint works for classes with no __module__.
     """
     output = pretty.pretty(NoModule)
     nt.assert_equal(output, 'NoModule')
-    
+
+
 def test_pprint_break():
     """
     Test that p.break_ produces expected output
@@ -146,6 +165,7 @@ def test_pprint_break():
     output = pretty.pretty(Breaking())
     expected = "TG: Breaking(\n    ):"
     nt.assert_equal(output, expected)
+
 
 def test_pprint_break_repr():
     """
@@ -155,23 +175,28 @@ def test_pprint_break_repr():
     expected = "TG: Breaking(\n    ):"
     nt.assert_equal(output, expected)
 
+
 def test_bad_repr():
     """Don't catch bad repr errors"""
     with nt.assert_raises(ZeroDivisionError):
         pretty.pretty(BadRepr())
 
+
 class BadException(Exception):
     def __str__(self):
         return -1
 
+
 class ReallyBadRepr(object):
     __module__ = 1
+
     @property
     def __class__(self):
         raise ValueError("I am horrible")
-    
+
     def __repr__(self):
         raise BadException()
+
 
 def test_really_bad_repr():
     with nt.assert_raises(BadException):
@@ -181,11 +206,12 @@ def test_really_bad_repr():
 class SA(object):
     pass
 
+
 class SB(SA):
     pass
 
-class TestsPretty(unittest.TestCase):
 
+class TestsPretty(unittest.TestCase):
     def test_super_repr(self):
         # "<super: module_name.SA, None>"
         output = pretty.pretty(super(SA))
@@ -195,7 +221,6 @@ class TestsPretty(unittest.TestCase):
         sb = SB()
         output = pretty.pretty(super(SA, sb))
         self.assertRegex(output, r"<super: \S+.SA,\s+<\S+.SB at 0x\S+>>")
-
 
     def test_long_list(self):
         lis = list(range(10000))
@@ -216,7 +241,7 @@ class TestsPretty(unittest.TestCase):
         self.assertEqual(last2, [' 999,', ' ...)'])
 
     def test_long_dict(self):
-        d = { n:n for n in range(10000) }
+        d = {n: n for n in range(10000)}
         p = pretty.pretty(d)
         last2 = p.rsplit('\n', 2)[-2:]
         self.assertEqual(last2, [' 999: 999,', ' ...}'])
@@ -228,7 +253,7 @@ class TestsPretty(unittest.TestCase):
 
 class MetaClass(type):
     def __new__(cls, name):
-        return type.__new__(cls, name, (object,), {'name': name})
+        return type.__new__(cls, name, (object, ), {'name': name})
 
     def __repr__(self):
         return "[CUSTOM REPR FOR CLASS %s]" % self.name
@@ -245,11 +270,11 @@ def test_metaclass_repr():
 def test_unicode_repr():
     u = u"üniçodé"
     ustr = u
-    
+
     class C(object):
         def __repr__(self):
             return ustr
-    
+
     c = C()
     p = pretty.pretty(c)
     nt.assert_equal(p, u)
@@ -262,6 +287,7 @@ def test_basic_class():
         if obj is MyObj:
             type_pprint_wrapper.called = True
         return pretty._type_pprint(obj, p, cycle)
+
     type_pprint_wrapper.called = False
 
     stream = StringIO()
@@ -285,9 +311,9 @@ def test_collections_defaultdict():
     # Dictionary order cannot be relied on, test against single keys.
     cases = [
         (defaultdict(list), 'defaultdict(list, {})'),
-        (defaultdict(list, {'key': '-' * 50}),
-         "defaultdict(list,\n"
-         "            {'key': '--------------------------------------------------'})"),
+        (defaultdict(list, {'key': '-' * 50}), "defaultdict(list,\n"
+         "            {'key': '--------------------------------------------------'})"
+         ),
         (a, 'defaultdict(defaultdict(...), {})'),
         (b, "defaultdict(list, {'key': defaultdict(...)})"),
     ]
@@ -302,8 +328,8 @@ def test_collections_ordereddict():
 
     cases = [
         (OrderedDict(), 'OrderedDict()'),
-        (OrderedDict((i, i) for i in range(1000, 1010)),
-         'OrderedDict([(1000, 1000),\n'
+        (OrderedDict(
+            (i, i) for i in range(1000, 1010)), 'OrderedDict([(1000, 1000),\n'
          '             (1001, 1001),\n'
          '             (1002, 1002),\n'
          '             (1003, 1003),\n'
@@ -326,8 +352,7 @@ def test_collections_deque():
 
     cases = [
         (deque(), 'deque([])'),
-        (deque(i for i in range(1000, 1020)),
-         'deque([1000,\n'
+        (deque(i for i in range(1000, 1020)), 'deque([1000,\n'
          '       1001,\n'
          '       1002,\n'
          '       1003,\n'
@@ -352,9 +377,11 @@ def test_collections_deque():
     for obj, expected in cases:
         nt.assert_equal(pretty.pretty(obj), expected)
 
+
 def test_collections_counter():
     class MyCounter(Counter):
         pass
+
     cases = [
         (Counter(), 'Counter()'),
         (Counter(a=1), "Counter({'a': 1})"),
@@ -362,6 +389,7 @@ def test_collections_counter():
     ]
     for obj, expected in cases:
         nt.assert_equal(pretty.pretty(obj), expected)
+
 
 def test_mappingproxy():
     MP = types.MappingProxyType
@@ -373,8 +401,8 @@ def test_mappingproxy():
     cases = [
         (MP({}), "mappingproxy({})"),
         (MP({None: MP({})}), "mappingproxy({None: mappingproxy({})})"),
-        (MP({k: k.upper() for k in string.ascii_lowercase}),
-         "mappingproxy({'a': 'A',\n"
+        (MP({k: k.upper()
+             for k in string.ascii_lowercase}), "mappingproxy({'a': 'A',\n"
          "              'b': 'B',\n"
          "              'c': 'C',\n"
          "              'd': 'D',\n"
@@ -401,8 +429,7 @@ def test_mappingproxy():
          "              'y': 'Y',\n"
          "              'z': 'Z'})"),
         (mp_recursive, "mappingproxy({2: {...}, 3: {2: {...}, 3: {...}}})"),
-        (underlying_dict,
-         "{2: mappingproxy({2: {...}, 3: {...}}), 3: {...}}"),
+        (underlying_dict, "{2: mappingproxy({2: {...}, 3: {...}}), 3: {...}}"),
     ]
     for obj, expected in cases:
         nt.assert_equal(pretty.pretty(obj), expected)
@@ -421,15 +448,17 @@ def test_function_pretty():
     # posixpath is a pure python module, its interface is consistent
     # across Python distributions
     import posixpath
-    nt.assert_equal(pretty.pretty(posixpath.join), '<function posixpath.join(a, *p)>')
- 
+    nt.assert_equal(pretty.pretty(posixpath.join),
+                    '<function posixpath.join(a, *p)>')
+
     # custom function
     def meaning_of_life(question=None):
         if question:
             return 42
         return "Don't panic"
 
-    nt.assert_in('meaning_of_life(question=None)', pretty.pretty(meaning_of_life))
+    nt.assert_in('meaning_of_life(question=None)',
+                 pretty.pretty(meaning_of_life))
 
 
 class OrderedCounter(Counter, OrderedDict):
@@ -439,11 +468,13 @@ class OrderedCounter(Counter, OrderedDict):
         return '%s(%r)' % (self.__class__.__name__, OrderedDict(self))
 
     def __reduce__(self):
-        return self.__class__, (OrderedDict(self),)
+        return self.__class__, (OrderedDict(self), )
+
 
 class MySet(set):  # Override repr of a basic type
     def __repr__(self):
         return 'mine'
+
 
 def test_custom_repr():
     """A custom repr should override a pretty printer for a parent type"""

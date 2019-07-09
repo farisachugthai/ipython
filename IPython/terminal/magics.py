@@ -3,7 +3,6 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 from logging import error
 import os
 import sys
@@ -13,6 +12,7 @@ from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.lib.clipboard import ClipboardEmpty
 from IPython.utils.text import SList, strip_email_quotes
 from IPython.utils import py3compat
+
 
 def get_pasted_lines(sentinel, l_input=py3compat.input, quiet=False):
     """ Yield pasted lines until the user enters the given sentinel value.
@@ -74,14 +74,16 @@ class TerminalMagics(Magics):
             raise UsageError(
                 "Variable 'pasted_block' is not a string, can't execute")
 
-        print("Re-executing '%s...' (%d chars)"% (b.split('\n',1)[0], len(b)))
+        print("Re-executing '%s...' (%d chars)" %
+              (b.split('\n', 1)[0], len(b)))
         self.shell.run_cell(b)
 
     @line_magic
-    def autoindent(self, parameter_s = ''):
+    def autoindent(self, parameter_s=''):
         """Toggle autoindent on/off (deprecated)"""
         self.shell.set_autoindent()
-        print("Automatic indentation is:",['OFF','ON'][self.shell.autoindent])
+        print("Automatic indentation is:", ['OFF',
+                                            'ON'][self.shell.autoindent])
 
     @line_magic
     def cpaste(self, parameter_s=''):
@@ -196,6 +198,7 @@ class TerminalMagics(Magics):
 
     # Class-level: add a '%cls' magic only on Windows
     if sys.platform == 'win32':
+
         @line_magic
         def cls(self, s):
             """Clear screen.

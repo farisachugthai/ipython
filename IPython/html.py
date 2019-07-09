@@ -9,15 +9,15 @@ from warnings import warn
 
 from IPython.utils.shimmodule import ShimModule, ShimWarning
 
-warn("The `IPython.html` package has been deprecated since IPython 4.0. "
-     "You should import from `notebook` instead. "
-     "`IPython.html.widgets` has moved to `ipywidgets`.", ShimWarning)
+warn(
+    "The `IPython.html` package has been deprecated since IPython 4.0. "
+    "You should import from `notebook` instead. "
+    "`IPython.html.widgets` has moved to `ipywidgets`.", ShimWarning)
 
 _widgets = sys.modules['IPython.html.widgets'] = ShimModule(
     src='IPython.html.widgets', mirror='ipywidgets')
 
-_html = ShimModule(
-    src='IPython.html', mirror='notebook')
+_html = ShimModule(src='IPython.html', mirror='notebook')
 
 # hook up widgets
 _html.widgets = _widgets

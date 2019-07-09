@@ -35,6 +35,7 @@ sigint_timer = None
 # Code
 #-----------------------------------------------------------------------------
 
+
 def create_inputhook_qt4(mgr, app=None):
     """Create an input hook for running the Qt4 application event loop.
 
@@ -90,7 +91,7 @@ def create_inputhook_qt4(mgr, app=None):
         try:
             allow_CTRL_C()
             app = QtCore.QCoreApplication.instance()
-            if not app: # shouldn't happen, but safer if it happens anyway...
+            if not app:  # shouldn't happen, but safer if it happens anyway...
                 return 0
             app.processEvents(QtCore.QEventLoop.AllEvents, 300)
             if not stdin_ready():
@@ -138,17 +139,17 @@ def create_inputhook_qt4(mgr, app=None):
             #
             # Unfortunately this doesn't work on Windows (SIGINT kills
             # Python and CTRL_C_EVENT doesn't work).
-            if(os.name == 'posix'):
+            if (os.name == 'posix'):
                 pid = os.getpid()
-                if(not sigint_timer):
-                    sigint_timer = threading.Timer(.01, os.kill,
-                                         args=[pid, signal.SIGINT] )
+                if (not sigint_timer):
+                    sigint_timer = threading.Timer(.01,
+                                                   os.kill,
+                                                   args=[pid, signal.SIGINT])
                     sigint_timer.start()
             else:
                 print("\nKeyboardInterrupt - Ctrl-C again for new prompt")
 
-
-        except: # NO exceptions are allowed to escape from a ctypes callback
+        except:  # NO exceptions are allowed to escape from a ctypes callback
             ignore_CTRL_C()
             from traceback import print_exc
             print_exc()
@@ -166,7 +167,7 @@ def create_inputhook_qt4(mgr, app=None):
         """
         global got_kbdint, sigint_timer
 
-        if(sigint_timer):
+        if (sigint_timer):
             sigint_timer.cancel()
             sigint_timer = None
 

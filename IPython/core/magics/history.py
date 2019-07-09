@@ -29,33 +29,39 @@ from IPython.utils import io
 # Magics class implementation
 #-----------------------------------------------------------------------------
 
-
 _unspecified = object()
 
 
 @magics_class
 class HistoryMagics(Magics):
-
     @magic_arguments()
-    @argument(
-        '-n', dest='print_nums', action='store_true', default=False,
-        help="""
+    @argument('-n',
+              dest='print_nums',
+              action='store_true',
+              default=False,
+              help="""
         print line numbers for each input.
         This feature is only available if numbered prompts are in use.
         """)
-    @argument(
-        '-o', dest='get_output', action='store_true', default=False,
-        help="also print outputs for each input.")
-    @argument(
-        '-p', dest='pyprompts', action='store_true', default=False,
-        help="""
+    @argument('-o',
+              dest='get_output',
+              action='store_true',
+              default=False,
+              help="also print outputs for each input.")
+    @argument('-p',
+              dest='pyprompts',
+              action='store_true',
+              default=False,
+              help="""
         print classic '>>>' python prompts before each input.
         This is useful for making documentation, and in conjunction
         with -o, for producing doctest-ready output.
         """)
-    @argument(
-        '-t', dest='raw', action='store_false', default=True,
-        help="""
+    @argument('-t',
+              dest='raw',
+              action='store_false',
+              default=True,
+              help="""
         print the 'translated' history, as IPython understands it.
         IPython filters your input and converts it all into valid Python
         source before executing it (things like magics or aliases are turned
@@ -63,9 +69,9 @@ class HistoryMagics(Magics):
         native history instead of the user-entered version: '%%cd /' will be
         seen as 'get_ipython().run_line_magic("cd", "/")' instead of '%%cd /'.
         """)
-    @argument(
-        '-f', dest='filename',
-        help="""
+    @argument('-f',
+              dest='filename',
+              help="""
         FILENAME: instead of printing the output to the screen, redirect
         it to the given file.  The file is always overwritten, though *when
         it can*, IPython asks for confirmation first. In particular, running
@@ -73,30 +79,36 @@ class HistoryMagics(Magics):
         interface will replace FILENAME even if it already exists *without*
         confirmation.
         """)
-    @argument(
-        '-g', dest='pattern', nargs='*', default=None,
-        help="""
+    @argument('-g',
+              dest='pattern',
+              nargs='*',
+              default=None,
+              help="""
         treat the arg as a glob pattern to search for in (full) history.
         This includes the saved history (almost all commands ever written).
         The pattern may contain '?' to match one unknown character and '*'
         to match any number of unknown characters. Use '%%hist -g' to show
         full saved history (may be very long).
         """)
-    @argument(
-        '-l', dest='limit', type=int, nargs='?', default=_unspecified,
-        help="""
+    @argument('-l',
+              dest='limit',
+              type=int,
+              nargs='?',
+              default=_unspecified,
+              help="""
         get the last n lines from all sessions. Specify n as a single
         arg, or the default is the last 10 lines.
         """)
-    @argument(
-        '-u', dest='unique', action='store_true',
-        help="""
+    @argument('-u',
+              dest='unique',
+              action='store_true',
+              help="""
         when searching history using `-g`, show only unique history.
         """)
     @argument('range', nargs='*')
     @skip_doctest
     @line_magic
-    def history(self, parameter_s = ''):
+    def history(self, parameter_s=''):
         """Print input history (_i<n> variables), with most recent last.
 
         By default, input history is printed without line numbers so it can be
@@ -152,7 +164,8 @@ class HistoryMagics(Magics):
         else:
             if os.path.exists(outfname):
                 try:
-                    ans = io.ask_yes_no("File %r exists. Overwrite?" % outfname)
+                    ans = io.ask_yes_no("File %r exists. Overwrite?" %
+                                        outfname)
                 except StdinNotImplementedError:
                     ans = True
                 if not ans:
@@ -175,17 +188,20 @@ class HistoryMagics(Magics):
                 pattern = "*" + " ".join(args.pattern) + "*"
             else:
                 pattern = "*"
-            hist = history_manager.search(pattern, raw=raw, output=get_output,
-                                          n=limit, unique=args.unique)
+            hist = history_manager.search(pattern,
+                                          raw=raw,
+                                          output=get_output,
+                                          n=limit,
+                                          unique=args.unique)
             print_nums = True
         elif args.limit is not _unspecified:
             n = 10 if limit is None else limit
             hist = history_manager.get_tail(n, raw=raw, output=get_output)
         else:
-            if args.range:      # Get history by ranges
-                hist = history_manager.get_range_by_str(" ".join(args.range),
-                                                        raw, get_output)
-            else:               # Just get history for the current session
+            if args.range:  # Get history by ranges
+                hist = history_manager.get_range_by_str(
+                    " ".join(args.range), raw, get_output)
+            else:  # Just get history for the current session
                 hist = history_manager.get_range(raw=raw, output=get_output)
 
         # We could be displaying the entire history, so let's not try to pull
@@ -205,8 +221,10 @@ class HistoryMagics(Magics):
             multiline = "\n" in inline
             line_sep = '\n' if multiline else ' '
             if print_nums:
-                print(u'%s:%s' % (_format_lineno(session, lineno).rjust(width),
-                        line_sep),  file=outfile, end=u'')
+                print(u'%s:%s' %
+                      (_format_lineno(session, lineno).rjust(width), line_sep),
+                      file=outfile,
+                      end=u'')
             if pyprompts:
                 print(u">>> ", end=u"", file=outfile)
                 if multiline:
@@ -253,20 +271,20 @@ class HistoryMagics(Magics):
         for lines which contain that substring, and the most recent one is
         placed at the next input prompt.
         """
-        if not arg:                 # Last output
+        if not arg:  # Last output
             self.shell.set_next_input(str(self.shell.user_ns["_"]))
             return
-                                    # Get history range
+            # Get history range
         histlines = self.shell.history_manager.get_range_by_str(arg)
         cmd = "\n".join(x[2] for x in histlines)
         if cmd:
             self.shell.set_next_input(cmd.rstrip())
             return
 
-        try:                        # Variable in user namespace
+        try:  # Variable in user namespace
             cmd = str(eval(arg, self.shell.user_ns))
-        except Exception:           # Search for term in history
-            histlines = self.shell.history_manager.search("*"+arg+"*")
+        except Exception:  # Search for term in history
+            histlines = self.shell.history_manager.search("*" + arg + "*")
             for h in reversed([x[2] for x in histlines]):
                 if 'recall' in h or 'rep' in h:
                     continue
@@ -291,21 +309,21 @@ class HistoryMagics(Magics):
           -g foo : Repeat the most recent line which contains foo
         """
         opts, args = self.parse_options(parameter_s, 'l:g:', mode='string')
-        if "l" in opts:         # Last n lines
+        if "l" in opts:  # Last n lines
             n = int(opts['l'])
             hist = self.shell.history_manager.get_tail(n)
-        elif "g" in opts:       # Search
-            p = "*"+opts['g']+"*"
+        elif "g" in opts:  # Search
+            p = "*" + opts['g'] + "*"
             hist = list(self.shell.history_manager.search(p))
             for l in reversed(hist):
                 if "rerun" not in l[2]:
-                    hist = [l]     # The last match which isn't a %rerun
+                    hist = [l]  # The last match which isn't a %rerun
                     break
             else:
-                hist = []          # No matches except %rerun
-        elif args:              # Specify history ranges
+                hist = []  # No matches except %rerun
+        elif args:  # Specify history ranges
             hist = self.shell.history_manager.get_range_by_str(args)
-        else:                   # Last line
+        else:  # Last line
             hist = self.shell.history_manager.get_tail(1)
         hist = [x[2] for x in hist]
         if not hist:

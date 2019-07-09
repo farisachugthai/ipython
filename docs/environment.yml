@@ -6,6 +6,7 @@ dependencies:
 - sphinx_rtd_theme
 - numpy
 - nose
+- pytest
 - testpath
 - matplotlib
 - pip:

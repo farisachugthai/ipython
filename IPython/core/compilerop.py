@@ -51,6 +51,7 @@ PyCF_MASK = functools.reduce(operator.or_,
 # Local utilities
 #-----------------------------------------------------------------------------
 
+
 def code_name(code, number=0):
     """ Compute a (probably) unique name for code for caching.
 
@@ -62,9 +63,11 @@ def code_name(code, number=0):
     # even with truncated hashes, and the full one makes tracebacks too long
     return '<ipython-input-{0}-{1}>'.format(number, hash_digest[:12])
 
+
 #-----------------------------------------------------------------------------
 # Classes and functions
 #-----------------------------------------------------------------------------
+
 
 class CachingCompiler(codeop.Compile):
     """A compiler that caches code compiled from interactive statements.
@@ -92,14 +95,13 @@ class CachingCompiler(codeop.Compile):
         # (otherwise we'd lose our tracebacks).
         linecache.checkcache = check_linecache_ipython
 
-
     def ast_parse(self, source, filename='<unknown>', symbol='exec'):
         """Parse code to an AST with the current compiler flags active.
 
         Arguments are exactly the same as ast.parse (in the standard library),
         and are passed to the built-in compile function."""
         return compile(source, filename, symbol, self.flags | PyCF_ONLY_AST, 1)
-    
+
     def reset_compiler_flags(self):
         """Reset compiler flags to default state."""
         # This value is copied from codeop.Compile.__init__, so if that ever
@@ -130,7 +132,7 @@ class CachingCompiler(codeop.Compile):
         """
         name = code_name(code, number)
         entry = (len(code), time.time(),
-                 [line+'\n' for line in code.splitlines()], name)
+                 [line + '\n' for line in code.splitlines()], name)
         linecache.cache[name] = entry
         linecache._ipython_cache[name] = entry
         return name
@@ -140,13 +142,12 @@ class CachingCompiler(codeop.Compile):
         ## bits that we'll set to 1
         turn_on_bits = ~self.flags & flags
 
-
         self.flags = self.flags | flags
         try:
             yield
         finally:
             # turn off only the bits we turned on so that something like
-            # __future__ that set flags stays. 
+            # __future__ that set flags stays.
             self.flags &= ~turn_on_bits
 
 

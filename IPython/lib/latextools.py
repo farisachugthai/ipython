@@ -20,11 +20,13 @@ from IPython.utils.py3compat import cast_unicode
 
 class LaTeXTool(SingletonConfigurable):
     """An object to store configuration of the LaTeX tool."""
+
     def _config_default(self):
         return get_config()
-    
+
     backends = List(
-        Unicode(), ["matplotlib", "dvipng"],
+        Unicode(),
+        ["matplotlib", "dvipng"],
         help="Preferred backend to draw LaTeX math equations. "
         "Backends in the list are checked one by one and the first "
         "usable one is used.  Note that `matplotlib` backend "
@@ -35,24 +37,23 @@ class LaTeXTool(SingletonConfigurable):
         # for display style, the default ["matplotlib", "dvipng"] can
         # be used.  To NOT use dvipng so that other repr such as
         # unicode pretty printing is used, you can use ["matplotlib"].
-        ).tag(config=True)
+    ).tag(config=True)
 
     use_breqn = Bool(
         True,
         help="Use breqn.sty to automatically break long equations. "
         "This configuration takes effect only for dvipng backend.",
-        ).tag(config=True)
+    ).tag(config=True)
 
     packages = List(
         ['amsmath', 'amsthm', 'amssymb', 'bm'],
         help="A list of packages to use for dvipng backend. "
         "'breqn' will be automatically appended when use_breqn=True.",
-        ).tag(config=True)
+    ).tag(config=True)
 
     preamble = Unicode(
         help="Additional preamble to use when generating LaTeX source "
-        "for dvipng backend.",
-        ).tag(config=True)
+        "for dvipng backend.", ).tag(config=True)
 
 
 def latex_to_png(s, encode=False, backend=None, wrap=False):
@@ -127,14 +128,20 @@ def latex_to_png_dvipng(s, wrap):
             f.writelines(genelatex(s, wrap))
 
         with open(os.devnull, 'wb') as devnull:
-            subprocess.check_call(
-                ["latex", "-halt-on-error", "-interaction", "batchmode", tmpfile],
-                cwd=workdir, stdout=devnull, stderr=devnull)
+            subprocess.check_call([
+                "latex", "-halt-on-error", "-interaction", "batchmode", tmpfile
+            ],
+                                  cwd=workdir,
+                                  stdout=devnull,
+                                  stderr=devnull)
 
-            subprocess.check_call(
-                ["dvipng", "-T", "tight", "-x", "1500", "-z", "9",
-                 "-bg", "transparent", "-o", outfile, dvifile], cwd=workdir,
-                stdout=devnull, stderr=devnull)
+            subprocess.check_call([
+                "dvipng", "-T", "tight", "-x", "1500", "-z", "9", "-bg",
+                "transparent", "-o", outfile, dvifile
+            ],
+                                  cwd=workdir,
+                                  stdout=devnull,
+                                  stderr=devnull)
 
         with open(outfile, "rb") as f:
             return f.read()
@@ -148,9 +155,9 @@ def kpsewhich(filename):
     """Invoke kpsewhich command with an argument `filename`."""
     try:
         find_cmd("kpsewhich")
-        proc = subprocess.Popen(
-            ["kpsewhich", filename],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(["kpsewhich", filename],
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate()
         return stdout.strip().decode('utf8', 'replace')
     except FindCmdError:
@@ -184,6 +191,7 @@ def genelatex(body, wrap):
 
 _data_uri_template_png = u"""<img src="data:image/png;base64,%s" alt=%s />"""
 
+
 def latex_to_html(s, alt='image'):
     """Render LaTeX to HTML with embedded PNG data using data URIs.
 
@@ -196,6 +204,4 @@ def latex_to_html(s, alt='image'):
     """
     base64_data = latex_to_png(s, encode=True).decode('ascii')
     if base64_data:
-        return _data_uri_template_png  % (base64_data, alt)
-
-
+        return _data_uri_template_png % (base64_data, alt)

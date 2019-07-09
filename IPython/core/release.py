@@ -31,7 +31,7 @@ _ver = [_version_major, _version_minor, _version_patch]
 
 __version__ = '.'.join(map(str, _ver))
 if _version_extra:
-    __version__ = __version__  + _version_extra
+    __version__ = __version__ + _version_extra
 
 version = __version__  # backwards compatibility name
 version_info = (_version_major, _version_minor, _version_patch, _version_extra)
@@ -85,16 +85,17 @@ site <http://github.com/ipython>`_.
 
 license = 'BSD'
 
-authors = {'Fernando' : ('Fernando Perez','fperez.net@gmail.com'),
-           'Janko'    : ('Janko Hauser','jhauser@zscout.de'),
-           'Nathan'   : ('Nathaniel Gray','n8gray@caltech.edu'),
-           'Ville'    : ('Ville Vainio','vivainio@gmail.com'),
-           'Brian'    : ('Brian E Granger', 'ellisonbg@gmail.com'),
-           'Min'      : ('Min Ragan-Kelley', 'benjaminrk@gmail.com'),
-           'Thomas'   : ('Thomas A. Kluyver', 'takowl@gmail.com'),
-           'Jorgen'   : ('Jorgen Stenarson', 'jorgen.stenarson@bostream.nu'),
-           'Matthias' : ('Matthias Bussonnier', 'bussonniermatthias@gmail.com'),
-           }
+authors = {
+    'Fernando': ('Fernando Perez', 'fperez.net@gmail.com'),
+    'Janko': ('Janko Hauser', 'jhauser@zscout.de'),
+    'Nathan': ('Nathaniel Gray', 'n8gray@caltech.edu'),
+    'Ville': ('Ville Vainio', 'vivainio@gmail.com'),
+    'Brian': ('Brian E Granger', 'ellisonbg@gmail.com'),
+    'Min': ('Min Ragan-Kelley', 'benjaminrk@gmail.com'),
+    'Thomas': ('Thomas A. Kluyver', 'takowl@gmail.com'),
+    'Jorgen': ('Jorgen Stenarson', 'jorgen.stenarson@bostream.nu'),
+    'Matthias': ('Matthias Bussonnier', 'bussonniermatthias@gmail.com'),
+}
 
 author = 'The IPython Development Team'
 
@@ -102,18 +103,14 @@ author_email = 'ipython-dev@python.org'
 
 url = 'https://ipython.org'
 
+platforms = ['Linux', 'Mac OSX', 'Windows']
 
-platforms = ['Linux','Mac OSX','Windows']
-
-keywords = ['Interactive','Interpreter','Shell', 'Embedding']
+keywords = ['Interactive', 'Interpreter', 'Shell', 'Embedding']
 
 classifiers = [
-    'Framework :: IPython',
-    'Intended Audience :: Developers',
+    'Framework :: IPython', 'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: BSD License',
-    'Programming Language :: Python',
+    'License :: OSI Approved :: BSD License', 'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3 :: Only',
-    'Topic :: System :: Shells'
-    ]
+    'Programming Language :: Python :: 3 :: Only', 'Topic :: System :: Shells'
+]

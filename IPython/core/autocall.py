@@ -23,10 +23,10 @@ Notes
 # Imports
 #-----------------------------------------------------------------------------
 
-
 #-----------------------------------------------------------------------------
 # Code
 #-----------------------------------------------------------------------------
+
 
 class IPyAutocall(object):
     """ Instances of this class are always autocalled
@@ -36,9 +36,10 @@ class IPyAutocall(object):
     """
     _ip = None
     rewrite = True
+
     def __init__(self, ip=None):
         self._ip = ip
-    
+
     def set_ip(self, ip):
         """ Will be used to set _ip point to current ipython instance b/f call
         
@@ -52,10 +53,11 @@ class ExitAutocall(IPyAutocall):
     """An autocallable object which will be added to the user namespace so that
     exit, exit(), quit or quit() are all valid ways to close the shell."""
     rewrite = False
-    
+
     def __call__(self):
         self._ip.ask_exit()
-        
+
+
 class ZMQExitAutocall(ExitAutocall):
     """Exit IPython. Autocallable, so it needn't be explicitly called.
     
@@ -65,6 +67,7 @@ class ZMQExitAutocall(ExitAutocall):
       If True, leave the kernel alive. Otherwise, tell the kernel to exit too
       (default).
     """
+
     def __call__(self, keep_kernel=False):
         self._ip.keepkernel_on_exit = keep_kernel
         self._ip.ask_exit()

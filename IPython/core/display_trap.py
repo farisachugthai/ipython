@@ -67,4 +67,3 @@ class DisplayTrap(Configurable):
     def unset(self):
         """Unset the hook."""
         sys.displayhook = self.old_hook
-

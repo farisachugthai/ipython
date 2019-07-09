@@ -34,7 +34,7 @@ if os.name == 'posix':
     import select
 
     def stdin_ready():
-        infds, outfds, erfds = select.select([sys.stdin],[],[],0)
+        infds, outfds, erfds = select.select([sys.stdin], [], [], 0)
         if infds:
             return True
         else:
@@ -52,18 +52,22 @@ elif sys.platform == 'win32':
 # http://groups.google.com/group/pyglet-users/browse_thread/thread/47c1aab9aa4a3d23/c22f9e819826799e?#c22f9e819826799e
 
 if sys.platform.startswith('linux'):
+
     def flip(window):
         try:
             window.flip()
         except AttributeError:
             pass
 else:
+
     def flip(window):
         window.flip()
+
 
 #-----------------------------------------------------------------------------
 # Code
 #-----------------------------------------------------------------------------
+
 
 def inputhook_pyglet():
     """Run the pyglet event loop by processing pending events only.

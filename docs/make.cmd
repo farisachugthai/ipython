@@ -22,7 +22,7 @@ FOR %%L IN (html html_noapi pickle htmlhelp latex changes linkcheck) DO (
             GOTO END
         )
         MD build\doctrees 2>NUL
-        MD build\%1 || GOTO DIR_EXIST
+        MD build\%1
         %PYTHON% autogen_config.py && ECHO Created docs for config options
         %PYTHON% autogen_magics.py && ECHO Created docs for line ^& cell magics
         %PYTHON% autogen_shortcuts.py && ECHO Created docs for shortcuts
@@ -71,9 +71,9 @@ ECHO    changes     to make an overview over all changed/added/deprecated items
 ECHO    linkcheck   to check all external links for integrity
 GOTO END
 
-:DIR_EXIST
-ECHO.
-ECHO Info: Run "make clean" to clean build environment
+:: :DIR_EXIST
+:: ECHO.
+:: ECHO Info: Run "make clean" to clean build environment
 
 :ERROR
 ECHO.

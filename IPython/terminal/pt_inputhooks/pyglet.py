@@ -11,12 +11,14 @@ import pyglet
 # http://groups.google.com/group/pyglet-users/browse_thread/thread/47c1aab9aa4a3d23/c22f9e819826799e?#c22f9e819826799e
 
 if sys.platform.startswith('linux'):
+
     def flip(window):
         try:
             window.flip()
         except AttributeError:
             pass
 else:
+
     def flip(window):
         window.flip()
 

@@ -10,7 +10,7 @@ reference the name under which an object is being read.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-__all__ = ['Inspector','InspectColors']
+__all__ = ['Inspector', 'InspectColors']
 
 # stdlib modules
 import ast
@@ -45,19 +45,22 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
+
 def pylight(code):
     return highlight(code, PythonLexer(), HtmlFormatter(noclasses=True))
+
 
 # builtin docstrings to ignore
 _func_call_docstring = types.FunctionType.__call__.__doc__
 _object_init_docstring = object.__init__.__doc__
 _builtin_type_docstrings = {
-    inspect.getdoc(t) for t in (types.ModuleType, types.MethodType,
-                                types.FunctionType, property)
+    inspect.getdoc(t)
+    for t in (types.ModuleType, types.MethodType, types.FunctionType, property)
 }
 
 _builtin_func_type = type(all)
-_builtin_meth_type = type(str.upper)  # Bound methods have the same type as builtin functions
+_builtin_meth_type = type(
+    str.upper)  # Bound methods have the same type as builtin functions
 #****************************************************************************
 # Builtin color schemes
 
@@ -70,14 +73,30 @@ InspectColors = PyColorize.ANSICodeColors
 
 # See the messaging spec for the definition of all these fields.  This list
 # effectively defines the order of display
-info_fields = ['type_name', 'base_class', 'string_form', 'namespace',
-               'length', 'file', 'definition', 'docstring', 'source',
-               'init_definition', 'class_docstring', 'init_docstring',
-               'call_def', 'call_docstring',
-               # These won't be printed but will be used to determine how to
-               # format the object
-               'ismagic', 'isalias', 'isclass', 'argspec', 'found', 'name'
-               ]
+info_fields = [
+    'type_name',
+    'base_class',
+    'string_form',
+    'namespace',
+    'length',
+    'file',
+    'definition',
+    'docstring',
+    'source',
+    'init_definition',
+    'class_docstring',
+    'init_docstring',
+    'call_def',
+    'call_docstring',
+    # These won't be printed but will be used to determine how to
+    # format the object
+    'ismagic',
+    'isalias',
+    'isclass',
+    'argspec',
+    'found',
+    'name'
+]
 
 
 def object_info(**kw):
@@ -106,9 +125,11 @@ def get_encoding(obj):
         # Print only text files, not extension binaries.  Note that
         # getsourcelines returns lineno with 1-offset and page() uses
         # 0-offset, so we must adjust.
-        with stdlib_io.open(ofile, 'rb') as buffer:   # Tweaked to use io.open for Python 2
+        with stdlib_io.open(
+                ofile, 'rb') as buffer:  # Tweaked to use io.open for Python 2
             encoding, lines = openpy.detect_encoding(buffer.readline)
         return encoding
+
 
 def getdoc(obj):
     """Stable wrapper around inspect.getdoc.
@@ -158,18 +179,18 @@ def getsource(obj, oname=''):
             if fn is not None:
                 encoding = get_encoding(fn)
                 oname_prefix = ('%s.' % oname) if oname else ''
-                sources.append(cast_unicode(
-                    ''.join(('# ', oname_prefix, attrname)),
-                    encoding=encoding))
+                sources.append(
+                    cast_unicode(''.join(('# ', oname_prefix, attrname)),
+                                 encoding=encoding))
                 if inspect.isfunction(fn):
                     sources.append(dedent(getsource(fn)))
                 else:
                     # Default str/repr only prints function name,
                     # pretty.pretty prints module name too.
-                    sources.append(cast_unicode(
-                        '%s%s = %s\n' % (
-                            oname_prefix, attrname, pretty(fn)),
-                        encoding=encoding))
+                    sources.append(
+                        cast_unicode('%s%s = %s\n' %
+                                     (oname_prefix, attrname, pretty(fn)),
+                                     encoding=encoding))
         if sources:
             return '\n'.join(sources)
         else:
@@ -223,12 +244,16 @@ def format_argspec(argspec):
     return inspect.formatargspec(argspec['args'], argspec['varargs'],
                                  argspec['varkw'], argspec['defaults'])
 
+
 @undoc
 def call_tip(oinfo, format_call=True):
     """DEPRECATED. Extract call tip data from an oinfo dict.
     """
-    warnings.warn('`call_tip` function is deprecated as of IPython 6.0'
-                  'and will be removed in future versions.', DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        '`call_tip` function is deprecated as of IPython 6.0'
+        'and will be removed in future versions.',
+        DeprecationWarning,
+        stacklevel=2)
     # Get call definition
     argspec = oinfo.get('argspec')
     if argspec is None:
@@ -245,7 +270,7 @@ def call_tip(oinfo, format_call=True):
             if has_self:
                 argspec['args'] = argspec['args'][1:]
 
-        call_line = oinfo['name']+format_argspec(argspec)
+        call_line = oinfo['name'] + format_argspec(argspec)
 
     # Now get docstring.
     # The priority is: call docstring, constructor docstring, main one.
@@ -253,7 +278,7 @@ def call_tip(oinfo, format_call=True):
     if doc is None:
         doc = oinfo.get('init_docstring')
     if doc is None:
-        doc = oinfo.get('docstring','')
+        doc = oinfo.get('docstring', '')
 
     return call_line, doc
 
@@ -275,6 +300,7 @@ def _get_wrapped(obj):
             # __wrapped__ is probably a lie, so return the thing we started with
             return orig_obj
     return obj
+
 
 def find_file(obj):
     """Find the absolute path to the file where an object was defined.
@@ -343,13 +369,15 @@ def find_source_lines(obj):
 
     return lineno
 
-class Inspector(Colorable):
 
-    def __init__(self, color_table=InspectColors,
+class Inspector(Colorable):
+    def __init__(self,
+                 color_table=InspectColors,
                  code_color_table=PyColorize.ANSICodeColors,
                  scheme=None,
                  str_detail_level=0,
-                 parent=None, config=None):
+                 parent=None,
+                 config=None):
         super(Inspector, self).__init__(parent=parent, config=config)
         self.color_table = color_table
         self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
@@ -357,7 +385,7 @@ class Inspector(Colorable):
         self.str_detail_level = str_detail_level
         self.set_active_scheme(scheme)
 
-    def _getdef(self,obj,oname=''):
+    def _getdef(self, obj, oname=''):
         """Return the call signature for any callable object.
 
         If any exception is generated, None is returned instead and the
@@ -368,9 +396,9 @@ class Inspector(Colorable):
         except:
             return None
 
-    def __head(self,h):
+    def __head(self, h):
         """Return a header string with proper colors."""
-        return '%s%s%s' % (self.color_table.active_colors.header,h,
+        return '%s%s%s' % (self.color_table.active_colors.header, h,
                            self.color_table.active_colors.normal)
 
     def set_active_scheme(self, scheme):
@@ -400,12 +428,11 @@ class Inspector(Colorable):
         if inspect.isclass(obj):
             header = self.__head('Class constructor information:\n')
 
-
-        output = self._getdef(obj,oname)
+        output = self._getdef(obj, oname)
         if output is None:
-            self.noinfo('definition header',oname)
+            self.noinfo('definition header', oname)
         else:
-            print(header,self.format(output), end=' ')
+            print(header, self.format(output), end=' ')
 
     # In Python 3, all classes are new-style, so they all have __init__.
     @skip_doctest
@@ -456,14 +483,14 @@ class Inspector(Colorable):
             if init_ds is not None:
                 lines.append(head("Init docstring:"))
                 lines.append(indent(init_ds))
-        elif hasattr(obj,'__call__'):
+        elif hasattr(obj, '__call__'):
             call_ds = getdoc(obj.__call__)
             if call_ds:
                 lines.append(head("Call docstring:"))
                 lines.append(indent(call_ds))
 
         if not lines:
-            self.noinfo('documentation',oname)
+            self.noinfo('documentation', oname)
         else:
             page.page('\n'.join(lines))
 
@@ -502,7 +529,10 @@ class Inspector(Colorable):
             # Print only text files, not extension binaries.  Note that
             # getsourcelines returns lineno with 1-offset and page() uses
             # 0-offset, so we must adjust.
-            page.page(self.format(openpy.read_py_file(ofile, skip_encoding_cookie=False)), lineno - 1)
+            page.page(
+                self.format(
+                    openpy.read_py_file(ofile, skip_encoding_cookie=False)),
+                lineno - 1)
 
     def _format_fields(self, fields, title_width=0):
         """Formats a list of fields for display.
@@ -543,10 +573,7 @@ class Inspector(Colorable):
 
         """
         text = cast_unicode(text)
-        defaults = {
-            'text/plain': text,
-            'text/html': '<pre>' + text + '</pre>'
-        }
+        defaults = {'text/plain': text, 'text/html': '<pre>' + text + '</pre>'}
 
         if formatter is None:
             return defaults
@@ -564,7 +591,6 @@ class Inspector(Colorable):
             else:
                 return dict(defaults, **formatted)
 
-
     def format_mime(self, bundle):
 
         text_plain = bundle['text/plain']
@@ -576,12 +602,18 @@ class Inspector(Colorable):
         for head, body in zip(heads, bodies):
             body = body.strip('\n')
             delim = '\n' if '\n' in body else ' '
-            text += self.__head(head+':') + (_len - len(head))*' ' +delim + body +'\n'
+            text += self.__head(
+                head + ':') + (_len - len(head)) * ' ' + delim + body + '\n'
 
         bundle['text/plain'] = text
         return bundle
 
-    def _get_info(self, obj, oname='', formatter=None, info=None, detail_level=0):
+    def _get_info(self,
+                  obj,
+                  oname='',
+                  formatter=None,
+                  info=None,
+                  detail_level=0):
         """Retrieve an info dict and format it.
 
         Parameters
@@ -598,7 +630,10 @@ class Inspector(Colorable):
             Granularity of detail level, if set to 1, give more information.
         """
 
-        info = self._info(obj, oname=oname, info=info, detail_level=detail_level)
+        info = self._info(obj,
+                          oname=oname,
+                          info=info,
+                          detail_level=detail_level)
 
         _mime = {
             'text/plain': [],
@@ -609,8 +644,11 @@ class Inspector(Colorable):
             field = info[key]
             if field is not None:
                 formatted_field = self._mime_format(field, formatter)
-                bundle['text/plain'].append((title, formatted_field['text/plain']))
-                bundle['text/html'] += '<h1>' + title + '</h1>\n' + formatted_field['text/html'] + '\n'
+                bundle['text/plain'].append(
+                    (title, formatted_field['text/plain']))
+                bundle[
+                    'text/html'] += '<h1>' + title + '</h1>\n' + formatted_field[
+                        'text/html'] + '\n'
 
         def code_formatter(text):
             return {
@@ -631,12 +669,14 @@ class Inspector(Colorable):
         elif info['isclass'] or is_simple_callable(obj):
             # Functions, methods, classes
             append_field(_mime, 'Signature', 'definition', code_formatter)
-            append_field(_mime, 'Init signature', 'init_definition', code_formatter)
+            append_field(_mime, 'Init signature', 'init_definition',
+                         code_formatter)
             append_field(_mime, 'Docstring', 'docstring', formatter)
             if detail_level > 0 and info['source']:
                 append_field(_mime, 'Source', 'source', code_formatter)
             else:
-                append_field(_mime, 'Init docstring', 'init_docstring', formatter)
+                append_field(_mime, 'Init docstring', 'init_docstring',
+                             formatter)
 
             append_field(_mime, 'File', 'file')
             append_field(_mime, 'Type', 'type_name')
@@ -663,14 +703,20 @@ class Inspector(Colorable):
             else:
                 append_field(_mime, 'Docstring', 'docstring', formatter)
 
-            append_field(_mime, 'Class docstring', 'class_docstring', formatter)
+            append_field(_mime, 'Class docstring', 'class_docstring',
+                         formatter)
             append_field(_mime, 'Init docstring', 'init_docstring', formatter)
             append_field(_mime, 'Call docstring', 'call_docstring', formatter)
 
-
         return self.format_mime(_mime)
 
-    def pinfo(self, obj, oname='', formatter=None, info=None, detail_level=0, enable_html_pager=True):
+    def pinfo(self,
+              obj,
+              oname='',
+              formatter=None,
+              info=None,
+              detail_level=0,
+              enable_html_pager=True):
         """Show detailed information about an object.
 
         Optional arguments:
@@ -701,10 +747,15 @@ class Inspector(Colorable):
         """DEPRECATED. Compute a dict with detailed information about an object.
         """
         if formatter is not None:
-            warnings.warn('The `formatter` keyword argument to `Inspector.info`'
-                     'is deprecated as of IPython 5.0 and will have no effects.',
-                      DeprecationWarning, stacklevel=2)
-        return self._info(obj, oname=oname, info=info, detail_level=detail_level)
+            warnings.warn(
+                'The `formatter` keyword argument to `Inspector.info`'
+                'is deprecated as of IPython 5.0 and will have no effects.',
+                DeprecationWarning,
+                stacklevel=2)
+        return self._info(obj,
+                          oname=oname,
+                          info=info,
+                          detail_level=detail_level)
 
     def _info(self, obj, oname='', info=None, detail_level=0) -> dict:
         """Compute a dict with detailed information about an object.
@@ -754,9 +805,13 @@ class Inspector(Colorable):
                 ds = '<no docstring>'
 
         # store output in a dict, we initialize it here and fill it as we go
-        out = dict(name=oname, found=True, isalias=isalias, ismagic=ismagic, subclasses=None)
+        out = dict(name=oname,
+                   found=True,
+                   isalias=isalias,
+                   ismagic=ismagic,
+                   subclasses=None)
 
-        string_max = 200 # max size of strings to show (snipped if longer)
+        string_max = 200  # max size of strings to show (snipped if longer)
         shalf = int((string_max - 5) / 2)
 
         if ismagic:
@@ -777,7 +832,7 @@ class Inspector(Colorable):
             try:
                 ostr = str(obj)
                 str_head = 'string_form'
-                if not detail_level and len(ostr)>string_max:
+                if not detail_level and len(ostr) > string_max:
                     ostr = ostr[:shalf] + ' <...> ' + ostr[-shalf:]
                     ostr = ("\n" + " " * len(str_head.expandtabs())).\
                             join(q.strip() for q in ostr.split("\n"))
@@ -865,7 +920,7 @@ class Inspector(Colorable):
             if len(names) < 10:
                 all_names = ', '.join(names)
             else:
-                all_names = ', '.join(names[:10]+['...'])
+                all_names = ', '.join(names[:10] + ['...'])
             out['subclasses'] = all_names
         # and class docstring for instances:
         else:
@@ -880,7 +935,7 @@ class Inspector(Colorable):
             # objects which use instance-customized docstrings.
             if ds:
                 try:
-                    cls = getattr(obj,'__class__')
+                    cls = getattr(obj, '__class__')
                 except:
                     class_ds = None
                 else:
@@ -962,8 +1017,14 @@ class Inspector(Colorable):
             # arbitrary ways.
             return False
 
-    def psearch(self,pattern,ns_table,ns_search=[],
-                ignore_case=False,show_all=False, *, list_types=False):
+    def psearch(self,
+                pattern,
+                ns_table,
+                ns_search=[],
+                ignore_case=False,
+                show_all=False,
+                *,
+                list_types=False):
         """Search namespaces with wildcards for objects.
 
         Arguments:
@@ -997,13 +1058,13 @@ class Inspector(Colorable):
             return
 
         cmds = pattern.split()
-        len_cmds  =  len(cmds)
+        len_cmds = len(cmds)
         if len_cmds == 1:
             # Only filter pattern given
             filter = cmds[0]
         elif len_cmds == 2:
             # Both filter and type specified
-            filter,type_pattern = cmds
+            filter, type_pattern = cmds
         else:
             raise ValueError('invalid argument string for psearch: <%s>' %
                              pattern)
@@ -1012,7 +1073,7 @@ class Inspector(Colorable):
         for name in ns_search:
             if name not in ns_table:
                 raise ValueError('invalid namespace <%s>. Valid names: %s' %
-                                 (name,ns_table.keys()))
+                                 (name, ns_table.keys()))
 
         #print 'type_pattern:',type_pattern # dbg
         search_result, namespaces_seen = set(), set()
@@ -1022,8 +1083,11 @@ class Inspector(Colorable):
             if id(ns) in namespaces_seen:
                 continue
             namespaces_seen.add(id(ns))
-            tmp_res = list_namespace(ns, type_pattern, filter,
-                                    ignore_case=ignore_case, show_all=show_all)
+            tmp_res = list_namespace(ns,
+                                     type_pattern,
+                                     filter,
+                                     ignore_case=ignore_case,
+                                     show_all=show_all)
             search_result.update(tmp_res)
 
         page.page('\n'.join(sorted(search_result)))
@@ -1059,9 +1123,8 @@ def _render_signature(obj_signature, obj_name):
     # add up name, parameters, braces (2), and commas
     if len(obj_name) + sum(len(r) + 2 for r in result) > 75:
         # This doesn’t fit behind “Signature: ” in an inspect window.
-        rendered = '{}(\n{})'.format(obj_name, ''.join(
-            '    {},\n'.format(r) for r in result)
-        )
+        rendered = '{}(\n{})'.format(
+            obj_name, ''.join('    {},\n'.format(r) for r in result))
     else:
         rendered = '{}({})'.format(obj_name, ', '.join(result))
 

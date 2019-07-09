@@ -20,24 +20,29 @@ objc.objc_msgSend.argtypes = [void_p, void_p]
 
 msg = objc.objc_msgSend
 
+
 def _utf8(s):
     """ensure utf8 bytes"""
     if not isinstance(s, bytes):
         s = s.encode('utf8')
     return s
 
+
 def n(name):
     """create a selector name (for ObjC methods)"""
     return objc.sel_registerName(_utf8(name))
+
 
 def C(classname):
     """get an ObjC Class by name"""
     return objc.objc_getClass(_utf8(classname))
 
+
 # end obj-c boilerplate from appnope
 
 # CoreFoundation C-API calls we will use:
-CoreFoundation = ctypes.cdll.LoadLibrary(ctypes.util.find_library('CoreFoundation'))
+CoreFoundation = ctypes.cdll.LoadLibrary(
+    ctypes.util.find_library('CoreFoundation'))
 
 CFFileDescriptorCreate = CoreFoundation.CFFileDescriptorCreate
 CFFileDescriptorCreate.restype = void_p
@@ -82,23 +87,25 @@ def _NSApp():
 
 def _wake(NSApp):
     """Wake the Application"""
-    event = msg(C('NSEvent'),
+    event = msg(
+        C('NSEvent'),
         n('otherEventWithType:location:modifierFlags:'
           'timestamp:windowNumber:context:subtype:data1:data2:'),
-        15, # Type
-        0, # location
-        0, # flags
-        0, # timestamp
-        0, # window
-        None, # context
-        0, # subtype
-        0, # data1
-        0, # data2
+        15,  # Type
+        0,  # location
+        0,  # flags
+        0,  # timestamp
+        0,  # window
+        None,  # context
+        0,  # subtype
+        0,  # data1
+        0,  # data2
     )
     msg(NSApp, n('postEvent:atStart:'), void_p(event), True)
 
 
 _triggered = Event()
+
 
 def _input_callback(fdref, flags, info):
     """Callback to fire when there's input to be read"""
@@ -108,6 +115,7 @@ def _input_callback(fdref, flags, info):
     NSApp = _NSApp()
     msg(NSApp, n('stop:'), NSApp)
     _wake(NSApp)
+
 
 _c_callback_func_type = ctypes.CFUNCTYPE(None, void_p, void_p, void_p)
 _c_input_callback = _c_callback_func_type(_input_callback)

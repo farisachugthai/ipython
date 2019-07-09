@@ -8,8 +8,10 @@ from os import walk, sep, fsdecode
 
 from IPython.core.display import DisplayObject, TextDisplayObject
 
-__all__ = ['Audio', 'IFrame', 'YouTubeVideo', 'VimeoVideo', 'ScribdDocument',
-           'FileLink', 'FileLinks', 'Code']
+__all__ = [
+    'Audio', 'IFrame', 'YouTubeVideo', 'VimeoVideo', 'ScribdDocument',
+    'FileLink', 'FileLinks', 'Code'
+]
 
 
 class Audio(DisplayObject):
@@ -94,10 +96,19 @@ class Audio(DisplayObject):
     """
     _read_flags = 'rb'
 
-    def __init__(self, data=None, filename=None, url=None, embed=None, rate=None, autoplay=False, normalize=True, *,
+    def __init__(self,
+                 data=None,
+                 filename=None,
+                 url=None,
+                 embed=None,
+                 rate=None,
+                 autoplay=False,
+                 normalize=True,
+                 *,
                  element_id=None):
         if filename is None and url is None and data is None:
-            raise ValueError("No audio data found. Expecting filename, url, or data.")
+            raise ValueError(
+                "No audio data found. Expecting filename, url, or data.")
         if embed is False and url is None:
             raise ValueError("No url found. Expecting url when embed=False")
 
@@ -111,7 +122,9 @@ class Audio(DisplayObject):
 
         if self.data is not None and not isinstance(self.data, bytes):
             if rate is None:
-                raise ValueError("rate must be specified when data is a numpy array or list of audio samples.")
+                raise ValueError(
+                    "rate must be specified when data is a numpy array or list of audio samples."
+                )
             self.data = Audio._make_wav(data, rate, normalize)
 
     def reload(self):
@@ -135,17 +148,19 @@ class Audio(DisplayObject):
         import wave
 
         try:
-            scaled, nchan = Audio._validate_and_normalize_with_numpy(data, normalize)
+            scaled, nchan = Audio._validate_and_normalize_with_numpy(
+                data, normalize)
         except ImportError:
-            scaled, nchan = Audio._validate_and_normalize_without_numpy(data, normalize)
+            scaled, nchan = Audio._validate_and_normalize_without_numpy(
+                data, normalize)
 
         fp = BytesIO()
-        waveobj = wave.open(fp,mode='wb')
+        waveobj = wave.open(fp, mode='wb')
         waveobj.setnchannels(nchan)
         waveobj.setframerate(rate)
         waveobj.setsampwidth(2)
-        waveobj.setcomptype('NONE','NONE')
-        waveobj.writeframes(b''.join([struct.pack('<h',x) for x in scaled]))
+        waveobj.setcomptype('NONE', 'NONE')
+        waveobj.writeframes(b''.join([struct.pack('<h', x) for x in scaled]))
         val = fp.getvalue()
         waveobj.close()
 
@@ -167,12 +182,12 @@ class Audio(DisplayObject):
             data = data.T.ravel()
         else:
             raise ValueError('Array audio input must be a 1D or 2D array')
-        
+
         max_abs_value = np.max(np.abs(data))
-        normalization_factor = Audio._get_normalization_factor(max_abs_value, normalize)
+        normalization_factor = Audio._get_normalization_factor(
+            max_abs_value, normalize)
         scaled = np.int16(data / normalization_factor * 32767).tolist()
         return scaled, nchan
-
 
     @staticmethod
     def _validate_and_normalize_without_numpy(data, normalize):
@@ -180,9 +195,10 @@ class Audio(DisplayObject):
             max_abs_value = float(max([abs(x) for x in data]))
         except TypeError:
             raise TypeError('Only lists of mono audio are '
-                'supported if numpy is not installed')
+                            'supported if numpy is not installed')
 
-        normalization_factor = Audio._get_normalization_factor(max_abs_value, normalize)
+        normalization_factor = Audio._get_normalization_factor(
+            max_abs_value, normalize)
         scaled = [int(x / normalization_factor * 32767) for x in data]
         nchan = 1
         return scaled, nchan
@@ -190,7 +206,8 @@ class Audio(DisplayObject):
     @staticmethod
     def _get_normalization_factor(max_abs_value, normalize):
         if not normalize and max_abs_value > 1:
-            raise ValueError('Audio data must be between -1 and 1 when normalize=False.')
+            raise ValueError(
+                'Audio data must be between -1 and 1 when normalize=False.')
         return max_abs_value if normalize else 1
 
     def _data_and_metadata(self):
@@ -210,13 +227,15 @@ class Audio(DisplayObject):
                     Your browser does not support the audio element.
                 </audio>
               """
-        return src.format(src=self.src_attr(), type=self.mimetype, autoplay=self.autoplay_attr(),
+        return src.format(src=self.src_attr(),
+                          type=self.mimetype,
+                          autoplay=self.autoplay_attr(),
                           element_id=self.element_id_attr())
 
     def src_attr(self):
         import base64
         if self.embed and (self.data is not None):
-            data = base64=base64.b64encode(self.data).decode('ascii')
+            data = base64 = base64.b64encode(self.data).decode('ascii')
             return """data:{type};base64,{base64}""".format(type=self.mimetype,
                                                             base64=data)
         elif self.url is not None:
@@ -225,16 +244,17 @@ class Audio(DisplayObject):
             return ""
 
     def autoplay_attr(self):
-        if(self.autoplay):
+        if (self.autoplay):
             return 'autoplay="autoplay"'
         else:
             return ''
-    
+
     def element_id_attr(self):
         if (self.element_id):
             return 'id="{element_id}"'.format(element_id=self.element_id)
         else:
             return ''
+
 
 class IFrame(object):
     """
@@ -261,7 +281,7 @@ class IFrame(object):
         """return the embed iframe"""
         if self.params:
             try:
-                from urllib.parse import urlencode # Py 3
+                from urllib.parse import urlencode  # Py 3
             except ImportError:
                 from urllib import urlencode
             params = "?" + urlencode(self.params)
@@ -271,6 +291,7 @@ class IFrame(object):
                                   width=self.width,
                                   height=self.height,
                                   params=params)
+
 
 class YouTubeVideo(IFrame):
     """Class for embedding a YouTube Video in an IPython session, based on its video id.
@@ -299,18 +320,21 @@ class YouTubeVideo(IFrame):
     """
 
     def __init__(self, id, width=400, height=300, **kwargs):
-        self.id=id
+        self.id = id
         src = "https://www.youtube.com/embed/{0}".format(id)
         super(YouTubeVideo, self).__init__(src, width, height, **kwargs)
-    
+
     def _repr_jpeg_(self):
         # Deferred import
         from urllib.request import urlopen
 
         try:
-            return urlopen("https://img.youtube.com/vi/{id}/hqdefault.jpg".format(id=self.id)).read()
+            return urlopen(
+                "https://img.youtube.com/vi/{id}/hqdefault.jpg".format(
+                    id=self.id)).read()
         except IOError:
             return None
+
 
 class VimeoVideo(IFrame):
     """
@@ -318,8 +342,9 @@ class VimeoVideo(IFrame):
     """
 
     def __init__(self, id, width=400, height=300, **kwargs):
-        src="https://player.vimeo.com/video/{0}".format(id)
+        src = "https://player.vimeo.com/video/{0}".format(id)
         super(VimeoVideo, self).__init__(src, width, height, **kwargs)
+
 
 class ScribdDocument(IFrame):
     """
@@ -334,8 +359,9 @@ class ScribdDocument(IFrame):
     """
 
     def __init__(self, id, width=400, height=300, **kwargs):
-        src="https://www.scribd.com/embeds/{0}/content".format(id)
+        src = "https://www.scribd.com/embeds/{0}/content".format(id)
         super(ScribdDocument, self).__init__(src, width, height, **kwargs)
+
 
 class FileLink(object):
     """Class for embedding a local file link in an IPython session, based on path
@@ -374,7 +400,7 @@ class FileLink(object):
         """
         if isdir(path):
             raise ValueError("Cannot display a directory using FileLink. "
-              "Use FileLinks to display '%s'." % path)
+                             "Use FileLinks to display '%s'." % path)
         self.path = fsdecode(path)
         self.url_prefix = url_prefix
         self.result_html_prefix = result_html_prefix
@@ -403,6 +429,7 @@ class FileLink(object):
         """
         return abspath(self.path)
 
+
 class FileLinks(FileLink):
     """Class for embedding local file links in an IPython session, based on path
 
@@ -416,6 +443,7 @@ class FileLinks(FileLink):
 
         FileLinks("my/data")
     """
+
     def __init__(self,
                  path,
                  url_prefix='',
@@ -464,7 +492,7 @@ class FileLinks(FileLink):
         """
         if isfile(path):
             raise ValueError("Cannot display a file using FileLinks. "
-              "Use FileLink to display '%s'." % path)
+                             "Use FileLink to display '%s'." % path)
         self.included_suffixes = included_suffixes
         # remove trailing slashes for more consistent output formatting
         path = path.rstrip('/')
@@ -503,16 +531,17 @@ class FileLinks(FileLink):
             exactly two "%s" and the dirname will be subsituted for the first
             and fname will be substituted for the second
         """
+
         def f(dirname, fnames, included_suffixes=None):
             result = []
             # begin by figuring out which filenames, if any,
             # are going to be displayed
             display_fnames = []
             for fname in fnames:
-                if (isfile(join(dirname,fname)) and
-                       (included_suffixes is None or
-                        splitext(fname)[1] in included_suffixes)):
-                      display_fnames.append(fname)
+                if (isfile(join(dirname, fname))
+                        and (included_suffixes is None
+                             or splitext(fname)[1] in included_suffixes)):
+                    display_fnames.append(fname)
 
             if len(display_fnames) == 0:
                 # if there are no filenames to display, don't print anything
@@ -524,7 +553,7 @@ class FileLinks(FileLink):
                 dirname_output_line = dirname_output_format % dirname
                 result.append(dirname_output_line)
                 for fname in display_fnames:
-                    fp = fp_format % (dirname,fname)
+                    fp = fp_format % (dirname, fname)
                     if fp_cleaner is not None:
                         fp = fp_cleaner(fp)
                     try:
@@ -535,10 +564,10 @@ class FileLinks(FileLink):
                         fname_output_line = fname_output_format % fname
                     result.append(fname_output_line)
             return result
+
         return f
 
-    def _get_notebook_display_formatter(self,
-                                        spacer="&nbsp;&nbsp;"):
+    def _get_notebook_display_formatter(self, spacer="&nbsp;&nbsp;"):
         """ generate function to use for notebook formatting
         """
         dirname_output_format = \
@@ -553,17 +582,15 @@ class FileLinks(FileLink):
                 # Replace all occurrences of backslash ("\") with a forward
                 # slash ("/") - this is necessary on windows when a path is
                 # provided as input, but we must link to a URI
-                return fp.replace('\\','/')
+                return fp.replace('\\', '/')
         else:
             fp_cleaner = None
 
         return self._get_display_formatter(dirname_output_format,
-                                           fname_output_format,
-                                           fp_format,
+                                           fname_output_format, fp_format,
                                            fp_cleaner)
 
-    def _get_terminal_display_formatter(self,
-                                        spacer="  "):
+    def _get_terminal_display_formatter(self, spacer="  "):
         """ generate function to use for terminal formatting
         """
         dirname_output_format = "%s/"
@@ -571,8 +598,7 @@ class FileLinks(FileLink):
         fp_format = '%s/%s'
 
         return self._get_display_formatter(dirname_output_format,
-                                           fname_output_format,
-                                           fp_format)
+                                           fname_output_format, fp_format)
 
     def _format_path(self):
         result_lines = []
@@ -582,7 +608,8 @@ class FileLinks(FileLink):
             walked_dir = [next(walk(self.path))]
         walked_dir.sort()
         for dirname, subdirs, fnames in walked_dir:
-            result_lines += self.notebook_display_formatter(dirname, fnames, self.included_suffixes)
+            result_lines += self.notebook_display_formatter(
+                dirname, fnames, self.included_suffixes)
         return '\n'.join(result_lines)
 
     def __repr__(self):
@@ -595,7 +622,8 @@ class FileLinks(FileLink):
             walked_dir = [next(walk(self.path))]
         walked_dir.sort()
         for dirname, subdirs, fnames in walked_dir:
-            result_lines += self.terminal_display_formatter(dirname, fnames, self.included_suffixes)
+            result_lines += self.terminal_display_formatter(
+                dirname, fnames, self.included_suffixes)
         return '\n'.join(result_lines)
 
 
@@ -617,6 +645,7 @@ class Code(TextDisplayObject):
         If not specified, it will guess the lexer based on the filename
         or the code. Available lexers: http://pygments.org/docs/lexers/
     """
+
     def __init__(self, data=None, url=None, filename=None, language=None):
         self.language = language
         super().__init__(data=data, url=url, filename=filename)

@@ -12,6 +12,7 @@ from IPython.utils.syspathcontext import prepended_to_syspath
 from IPython.utils.tempdir import TemporaryDirectory
 from IPython.lib.deepreload import reload as dreload
 
+
 def test_deepreload():
     "Test that dreload does deep reloads and skips excluded modules."
     with TemporaryDirectory() as tmpdir:

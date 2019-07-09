@@ -17,9 +17,8 @@ from IPython.core import oinspect
 from IPython.core import page
 from IPython.core.alias import AliasError, Alias
 from IPython.core.error import UsageError
-from IPython.core.magic import  (
-    Magics, compress_dhist, magics_class, line_magic, cell_magic, line_cell_magic
-)
+from IPython.core.magic import (Magics, compress_dhist, magics_class,
+                                line_magic, cell_magic, line_cell_magic)
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.openpy import source_to_unicode
 from IPython.utils.process import abbrev_cwd
@@ -32,9 +31,10 @@ class OSMagics(Magics):
     """Magics to interact with the underlying OS (shell-type functionality).
     """
 
-    cd_force_quiet = Bool(False,
-        help="Force %cd magic to be quiet even if -q is not passed."
-    ).tag(config=True)
+    cd_force_quiet = Bool(
+        False,
+        help="Force %cd magic to be quiet even if -q is not passed.").tag(
+            config=True)
 
     def __init__(self, shell=None, **kwargs):
 
@@ -45,15 +45,15 @@ class OSMagics(Magics):
             self.is_posix = True
         else:
             try:
-                winext = os.environ['pathext'].replace(';','|').replace('.','')
+                winext = os.environ['pathext'].replace(';',
+                                                       '|').replace('.', '')
             except KeyError:
                 winext = 'exe|com|bat|py'
-            
-            self.execre = re.compile(r'(.*)\.(%s)$' % winext,re.IGNORECASE)
+
+            self.execre = re.compile(r'(.*)\.(%s)$' % winext, re.IGNORECASE)
 
         # call up the chain
         super().__init__(shell=shell, **kwargs)
-
 
     @skip_doctest
     def _isexec_POSIX(self, file):
@@ -65,8 +65,6 @@ class OSMagics(Magics):
             return file.is_file()
         return False
 
-
-    
     @skip_doctest
     def _isexec_WIN(self, file):
         """
@@ -83,7 +81,6 @@ class OSMagics(Magics):
             return self._isexec_POSIX(file)
         else:
             return self._isexec_WIN(file)
-
 
     @skip_doctest
     @line_magic
@@ -163,15 +160,16 @@ class OSMagics(Magics):
 
         # Now try to define a new one
         try:
-            alias,cmd = par.split(None, 1)
+            alias, cmd = par.split(None, 1)
         except TypeError:
             print(oinspect.getdoc(self.alias))
             return
-        
+
         try:
             self.shell.alias_manager.define_alias(alias, cmd)
         except AliasError as e:
             print(e)
+
     # end magic_alias
 
     @line_magic
@@ -184,10 +182,10 @@ class OSMagics(Magics):
         except ValueError as e:
             print(e)
             return
-        
-        stored = self.shell.db.get('stored_aliases', {} )
+
+        stored = self.shell.db.get('stored_aliases', {})
         if aname in stored:
-            print("Removing %stored alias",aname)
+            print("Removing %stored alias", aname)
             del stored[aname]
             self.shell.db['stored_aliases'] = stored
 
@@ -210,8 +208,10 @@ class OSMagics(Magics):
         # for the benefit of module completer in ipy_completers.py
         del self.shell.db['rootmodules_cache']
 
-        path = [os.path.abspath(os.path.expanduser(p)) for p in
-            os.environ.get('PATH','').split(os.pathsep)]
+        path = [
+            os.path.abspath(os.path.expanduser(p))
+            for p in os.environ.get('PATH', '').split(os.pathsep)
+        ]
 
         syscmdlist = []
         savedir = os.getcwd()
@@ -235,9 +235,10 @@ class OSMagics(Magics):
                             try:
                                 # Removes dots from the name since ipython
                                 # will assume names with dots to be python.
-                                if not self.shell.alias_manager.is_alias(fname):
+                                if not self.shell.alias_manager.is_alias(
+                                        fname):
                                     self.shell.alias_manager.define_alias(
-                                        fname.replace('.',''), fname)
+                                        fname.replace('.', ''), fname)
                             except InvalidAliasError:
                                 pass
                             else:
@@ -262,7 +263,7 @@ class OSMagics(Magics):
                                     # Removes dots from the name since ipython
                                     # will assume names with dots to be python.
                                     self.shell.alias_manager.define_alias(
-                                        base.lower().replace('.',''), fname)
+                                        base.lower().replace('.', ''), fname)
                                 except InvalidAliasError:
                                     pass
                                 syscmdlist.append(fname)
@@ -286,7 +287,8 @@ class OSMagics(Magics):
         try:
             return os.getcwd()
         except FileNotFoundError:
-            raise UsageError("CWD no longer exists - please use %cd to change directory.")
+            raise UsageError(
+                "CWD no longer exists - please use %cd to change directory.")
 
     @skip_doctest
     @line_magic
@@ -336,7 +338,7 @@ class OSMagics(Magics):
             # Happens if the CWD has been deleted.
             oldcwd = None
 
-        numcd = re.match(r'(-)(\d+)$',parameter_s)
+        numcd = re.match(r'(-)(\d+)$', parameter_s)
         # jump in directory history by number
         if numcd:
             nn = int(numcd.group(2))
@@ -371,7 +373,6 @@ class OSMagics(Magics):
             else:
                 opts = {}
 
-
         else:
             opts, ps = self.parse_options(parameter_s, 'qb', mode='string')
         # jump to previous
@@ -391,15 +392,17 @@ class OSMagics(Magics):
                     ps = target
                 else:
                     if 'b' in opts:
-                        raise UsageError("Bookmark '%s' not found.  "
-                              "Use '%%bookmark -l' to see your bookmarks." % ps)
+                        raise UsageError(
+                            "Bookmark '%s' not found.  "
+                            "Use '%%bookmark -l' to see your bookmarks." % ps)
 
         # at this point ps should point to the target dir
         if ps:
             try:
                 os.chdir(os.path.expanduser(ps))
                 if hasattr(self.shell, 'term_title') and self.shell.term_title:
-                    set_term_title(self.shell.term_title_format.format(cwd=abbrev_cwd()))
+                    set_term_title(
+                        self.shell.term_title_format.format(cwd=abbrev_cwd()))
             except OSError:
                 print(sys.exc_info()[1])
             else:
@@ -419,7 +422,8 @@ class OSMagics(Magics):
             if oldcwd != cwd:
                 dhist.append(cwd)
                 self.shell.db['dhist'] = compress_dhist(dhist)[-100:]
-        if not 'q' in opts and not self.cd_force_quiet and self.shell.user_ns['_dh']:
+        if not 'q' in opts and not self.cd_force_quiet and self.shell.user_ns[
+                '_dh']:
             print(self.shell.user_ns['_dh'][-1])
 
     @line_magic
@@ -461,7 +465,7 @@ class OSMagics(Magics):
         """
         split = '=' if '=' in parameter_s else ' '
         bits = parameter_s.split(split, 1)
-        if not parameter_s.strip() or len(bits)<2:
+        if not parameter_s.strip() or len(bits) < 2:
             raise UsageError("usage is 'set_env var=val'")
         var = bits[0].strip()
         val = bits[1].strip()
@@ -476,7 +480,7 @@ class OSMagics(Magics):
             err = err.format(val)
             raise UsageError(err)
         os.environ[var] = val
-        print('env: {0}={1}'.format(var,val))
+        print('env: {0}={1}'.format(var, val))
 
     @line_magic
     def pushd(self, parameter_s=''):
@@ -488,10 +492,10 @@ class OSMagics(Magics):
 
         dir_s = self.shell.dir_stack
         tgt = os.path.expanduser(parameter_s)
-        cwd = os.getcwd().replace(self.shell.home_dir,'~')
+        cwd = os.getcwd().replace(self.shell.home_dir, '~')
         if tgt:
             self.cd(parameter_s)
-        dir_s.insert(0,cwd)
+        dir_s.insert(0, cwd)
         return self.shell.magic('dirs')
 
     @line_magic
@@ -502,7 +506,7 @@ class OSMagics(Magics):
             raise UsageError("%popd on empty stack")
         top = self.shell.dir_stack.pop(0)
         self.cd(top)
-        print("popd ->",top)
+        print("popd ->", top)
 
     @line_magic
     def dirs(self, parameter_s=''):
@@ -530,20 +534,20 @@ class OSMagics(Magics):
         dh = self.shell.user_ns['_dh']
         if parameter_s:
             try:
-                args = map(int,parameter_s.split())
+                args = map(int, parameter_s.split())
             except:
                 self.arg_err(self.dhist)
                 return
             if len(args) == 1:
-                ini,fin = max(len(dh)-(args[0]),0),len(dh)
+                ini, fin = max(len(dh) - (args[0]), 0), len(dh)
             elif len(args) == 2:
-                ini,fin = args
+                ini, fin = args
                 fin = min(fin, len(dh))
             else:
                 self.arg_err(self.dhist)
                 return
         else:
-            ini,fin = 0,len(dh)
+            ini, fin = 0, len(dh)
         print('Directory history (kept in _dh)')
         for i in range(ini, fin):
             print("%d: %s" % (i, dh[i]))
@@ -641,26 +645,26 @@ class OSMagics(Magics):
             .s (or .spstr): value as space-separated string.
         """
 
-        opts,args = self.parse_options(parameter_s, 'lv')
+        opts, args = self.parse_options(parameter_s, 'lv')
         # Try to get a variable name and command to run
         try:
             # the variable name must be obtained from the parse_options
             # output, which uses shlex.split to strip options out.
-            var,_ = args.split('=', 1)
+            var, _ = args.split('=', 1)
             var = var.strip()
             # But the command has to be extracted from the original input
             # parameter_s, not on what parse_options returns, to avoid the
             # quote stripping which shlex.split performs on it.
-            _,cmd = parameter_s.split('=', 1)
+            _, cmd = parameter_s.split('=', 1)
         except ValueError:
-            var,cmd = '',''
+            var, cmd = '', ''
         # If all looks ok, proceed
         split = 'l' in opts
         out = self.shell.getoutput(cmd, split=split)
         if 'v' in opts:
             print('%s ==\n%s' % (var, pformat(out)))
         if var:
-            self.shell.user_ns.update({var:out})
+            self.shell.user_ns.update({var: out})
         else:
             return out
 
@@ -705,12 +709,12 @@ class OSMagics(Magics):
 
         This is very useful when trying to use such lists as arguments to
         system commands."""
-        
+
         if cell is None:
             # line magic
             return self.shell.getoutput(line)
         else:
-            opts,args = self.parse_options(line, '', 'out=')
+            opts, args = self.parse_options(line, '', 'out=')
             output = self.shell.getoutput(cell)
             out_name = opts.get('out', opts.get('o'))
             if out_name:
@@ -741,11 +745,11 @@ class OSMagics(Magics):
         Your bookmarks persist through IPython sessions, but they are
         associated with each profile."""
 
-        opts,args = self.parse_options(parameter_s,'drl',mode='list')
+        opts, args = self.parse_options(parameter_s, 'drl', mode='list')
         if len(args) > 2:
             raise UsageError("%bookmark: too many arguments")
 
-        bkms = self.shell.db.get('bookmarks',{})
+        bkms = self.shell.db.get('bookmarks', {})
 
         if 'd' in opts:
             try:
@@ -768,16 +772,17 @@ class OSMagics(Magics):
                 size = max(map(len, bks))
             else:
                 size = 0
-            fmt = '%-'+str(size)+'s -> %s'
+            fmt = '%-' + str(size) + 's -> %s'
             print('Current bookmarks:')
             for bk in bks:
                 print(fmt % (bk, bkms[bk]))
         else:
             if not args:
-                raise UsageError("%bookmark: You must specify the bookmark name")
-            elif len(args)==1:
+                raise UsageError(
+                    "%bookmark: You must specify the bookmark name")
+            elif len(args) == 1:
                 bkms[args[0]] = os.getcwd()
-            elif len(args)==2:
+            elif len(args) == 2:
                 bkms[args[0]] = args[1]
         self.shell.db['bookmarks'] = bkms
 
@@ -800,8 +805,9 @@ class OSMagics(Magics):
             raise UsageError('Missing filename, URL, input history range, '
                              'or macro.')
 
-        try :
-            cont = self.shell.find_user_code(parameter_s, skip_encoding_cookie=False)
+        try:
+            cont = self.shell.find_user_code(parameter_s,
+                                             skip_encoding_cookie=False)
         except (ValueError, IOError):
             print("Error: no such file, variable, URL, history range or macro")
             return
@@ -810,14 +816,13 @@ class OSMagics(Magics):
 
     @magic_arguments.magic_arguments()
     @magic_arguments.argument(
-        '-a', '--append', action='store_true', default=False,
+        '-a',
+        '--append',
+        action='store_true',
+        default=False,
         help='Append contents of the cell to an existing file. '
-             'The file will be created if it does not exist.'
-    )
-    @magic_arguments.argument(
-        'filename', type=str,
-        help='file to write'
-    )
+        'The file will be created if it does not exist.')
+    @magic_arguments.argument('filename', type=str, help='file to write')
     @cell_magic
     def writefile(self, line, cell):
         """Write the contents of the cell to a file.
@@ -829,7 +834,7 @@ class OSMagics(Magics):
             filename = os.path.expanduser(args.filename[1:-1])
         else:
             filename = os.path.expanduser(args.filename)
-            
+
         if os.path.exists(filename):
             if args.append:
                 print("Appending to %s" % filename)
@@ -837,7 +842,7 @@ class OSMagics(Magics):
                 print("Overwriting %s" % filename)
         else:
             print("Writing %s" % filename)
-        
+
         mode = 'a' if args.append else 'w'
         with io.open(filename, mode, encoding='utf-8') as f:
             f.write(cell)

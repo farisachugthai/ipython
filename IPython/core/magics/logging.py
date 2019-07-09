@@ -25,15 +25,15 @@ from traitlets import Bool
 # Magic implementation classes
 #-----------------------------------------------------------------------------
 
+
 @magics_class
 class LoggingMagics(Magics):
     """Magics related to all logging machinery."""
 
-    quiet = Bool(False, help=
-        """
+    quiet = Bool(False,
+                 help="""
         Suppress output of log state when logging is enabled
-        """
-    ).tag(config=True)
+        """).tag(config=True)
 
     @line_magic
     def logstart(self, parameter_s=''):
@@ -94,7 +94,7 @@ class LoggingMagics(Magics):
             suppress output of logstate message when logging is invoked
         """
 
-        opts,par = self.parse_options(parameter_s,'ortq')
+        opts, par = self.parse_options(parameter_s, 'ortq')
         log_output = 'o' in opts
         log_raw_input = 'r' in opts
         timestamp = 't' in opts
@@ -106,7 +106,7 @@ class LoggingMagics(Magics):
         # ipython remain valid
         if par:
             try:
-                logfname,logmode = par.split()
+                logfname, logmode = par.split()
             except:
                 logfname = par
                 logmode = 'backup'
@@ -145,10 +145,10 @@ class LoggingMagics(Magics):
             if log_output:
                 log_write = logger.log_write
                 output_hist = self.shell.history_manager.output_hist
-                for n in range(1,len(input_hist)-1):
+                for n in range(1, len(input_hist) - 1):
                     log_write(input_hist[n].rstrip() + u'\n')
                     if n in output_hist:
-                        log_write(repr(output_hist[n]),'output')
+                        log_write(repr(output_hist[n]), 'output')
             else:
                 logger.log_write(u'\n'.join(input_hist[1:]))
                 logger.log_write(u'\n')
@@ -157,8 +157,8 @@ class LoggingMagics(Magics):
                 logger.timestamp = True
 
             if not (self.quiet or quiet):
-                print ('Activating auto-logging. '
-                       'Current session state plus future input saved.')
+                print('Activating auto-logging. '
+                      'Current session state plus future input saved.')
                 logger.logstate()
 
     @line_magic

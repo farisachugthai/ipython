@@ -28,7 +28,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 Wrapper around the eventloop that gives some time to the Tkinter GUI to process
 events when it's loaded and while we are waiting for input at the REPL. This
@@ -42,6 +41,7 @@ import time
 
 import _tkinter
 import tkinter
+
 
 def inputhook(inputhook_context):
     """
@@ -59,10 +59,12 @@ def inputhook(inputhook_context):
         # Add a handler that sets the stop flag when `prompt-toolkit` has input
         # to process.
         stop = [False]
+
         def done(*a):
             stop[0] = True
 
-        root.createfilehandler(inputhook_context.fileno(), _tkinter.READABLE, done)
+        root.createfilehandler(inputhook_context.fileno(), _tkinter.READABLE,
+                               done)
 
         # Run the TK event loop as long as we don't receive input.
         while root.dooneevent(_tkinter.ALL_EVENTS):
@@ -78,7 +80,7 @@ def inputhook(inputhook_context):
         """
         while not inputhook_context.input_is_ready():
             while root.dooneevent(_tkinter.ALL_EVENTS | _tkinter.DONT_WAIT):
-                 pass
+                pass
             # Sleep to make the CPU idle, but not too long, so that the UI
             # stays responsive.
             time.sleep(.01)

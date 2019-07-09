@@ -45,22 +45,21 @@ from timeit import default_timer as clock
 # Should probably be an IPython option
 glut_fps = 60
 
-
 # Display mode : double buffeed + rgba + depth
 # Should probably be an IPython option
-glut_display_mode = (glut.GLUT_DOUBLE |
-                     glut.GLUT_RGBA   |
-                     glut.GLUT_DEPTH)
+glut_display_mode = (glut.GLUT_DOUBLE | glut.GLUT_RGBA | glut.GLUT_DEPTH)
 
 glutMainLoopEvent = None
 if sys.platform == 'darwin':
     try:
         glutCheckLoop = platform.createBaseFunction(
-            'glutCheckLoop', dll=platform.GLUT, resultType=None,
+            'glutCheckLoop',
+            dll=platform.GLUT,
+            resultType=None,
             argTypes=[],
             doc='glutCheckLoop(  ) -> None',
             argNames=(),
-            )
+        )
     except AttributeError:
         raise RuntimeError(
             '''Your glut implementation does not allow interactive sessions'''
@@ -73,7 +72,6 @@ else:
         '''Your glut implementation does not allow interactive sessions. '''
         '''Consider installing freeglut.''')
 
-
 #-----------------------------------------------------------------------------
 # Platform-dependent imports and functions
 #-----------------------------------------------------------------------------
@@ -82,7 +80,7 @@ if os.name == 'posix':
     import select
 
     def stdin_ready():
-        infds, outfds, erfds = select.select([sys.stdin],[],[],0)
+        infds, outfds, erfds = select.select([sys.stdin], [], [], 0)
         if infds:
             return True
         else:
@@ -94,29 +92,33 @@ elif sys.platform == 'win32':
     def stdin_ready():
         return msvcrt.kbhit()
 
+
 #-----------------------------------------------------------------------------
 # Callback functions
 #-----------------------------------------------------------------------------
+
 
 def glut_display():
     # Dummy display function
     pass
 
+
 def glut_idle():
     # Dummy idle function
     pass
+
 
 def glut_close():
     # Close function only hides the current window
     glut.glutHideWindow()
     glutMainLoopEvent()
 
+
 def glut_int_handler(signum, frame):
     # Catch sigint and print the default message
     signal.signal(signal.SIGINT, signal.default_int_handler)
     print('\nKeyboardInterrupt')
     # Need to reprint the prompt at this stage
-
 
 
 #-----------------------------------------------------------------------------
@@ -140,7 +142,7 @@ def inputhook_glut():
 
         # Make sure the default window is set after a window has been closed
         if glut.glutGetWindow() == 0:
-            glut.glutSetWindow( 1 )
+            glut.glutSetWindow(1)
             glutMainLoopEvent()
             return 0
 

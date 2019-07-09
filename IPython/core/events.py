@@ -18,17 +18,18 @@ from backcall import callback_prototype
 
 class EventManager(object):
     """Manage a collection of events and a sequence of callbacks for each.
-    
+
     This is attached to :class:`~IPython.core.interactiveshell.InteractiveShell`
     instances as an ``events`` attribute.
-    
+
     .. note::
 
        This API is experimental in IPython 2.0, and may be revised in future versions.
     """
+
     def __init__(self, shell, available_events):
         """Initialise the :class:`CallbackManager`.
-        
+
         Parameters
         ----------
         shell
@@ -37,11 +38,11 @@ class EventManager(object):
           An iterable of names for callback events.
         """
         self.shell = shell
-        self.callbacks = {n:[] for n in available_events}
-    
+        self.callbacks = {n: [] for n in available_events}
+
     def register(self, event, function):
         """Register a new event callback.
-        
+
         Parameters
         ----------
         event : str
@@ -49,7 +50,7 @@ class EventManager(object):
         function : callable
           A function to be called on the given event. It should take the same
           parameters as the appropriate callback prototype.
-        
+
         Raises
         ------
         TypeError
@@ -61,7 +62,7 @@ class EventManager(object):
             raise TypeError('Need a callable, got %r' % function)
         callback_proto = available_events.get(event)
         self.callbacks[event].append(callback_proto.adapt(function))
-    
+
     def unregister(self, event, function):
         """Remove a callback from the given event."""
         if function in self.callbacks[event]:
@@ -75,11 +76,13 @@ class EventManager(object):
             except AttributeError:
                 pass
 
-        raise ValueError('Function {!r} is not registered as a {} callback'.format(function, event))
+        raise ValueError(
+            'Function {!r} is not registered as a {} callback'.format(
+                function, event))
 
     def trigger(self, event, *args, **kwargs):
         """Call callbacks for ``event``.
-        
+
         Any additional arguments are passed to all callbacks registered for this
         event. Exceptions raised by callbacks are caught, and a message printed.
         """
@@ -90,13 +93,16 @@ class EventManager(object):
                 print("Error in callback {} (for {}):".format(func, event))
                 self.shell.showtraceback()
 
+
 # event_name -> prototype mapping
 available_events = {}
+
 
 def _define_event(callback_function):
     callback_proto = callback_prototype(callback_function)
     available_events[callback_function.__name__] = callback_proto
     return callback_proto
+
 
 # ------------------------------------------------------------------------------
 # Callback prototypes
@@ -105,14 +111,16 @@ def _define_event(callback_function):
 # signatures of callbacks for those events.
 # ------------------------------------------------------------------------------
 
+
 @_define_event
 def pre_execute():
     """Fires before code is executed in response to user/frontend action.
-    
+
     This includes comm and widget messages and silent execution, as well as user
     code cells.
     """
     pass
+
 
 @_define_event
 def pre_run_cell(info):
@@ -125,14 +133,16 @@ def pre_run_cell(info):
     """
     pass
 
+
 @_define_event
 def post_execute():
     """Fires after code is executed in response to user/frontend action.
-    
+
     This includes comm and widget messages and silent execution, as well as user
     code cells.
     """
     pass
+
 
 @_define_event
 def post_run_cell(result):
@@ -145,13 +155,14 @@ def post_run_cell(result):
     """
     pass
 
+
 @_define_event
 def shell_initialized(ip):
     """Fires after initialisation of :class:`~IPython.core.interactiveshell.InteractiveShell`.
-    
+
     This is before extensions and startup scripts are loaded, so it can only be
     set by subclassing.
-    
+
     Parameters
     ----------
     ip : :class:`~IPython.core.interactiveshell.InteractiveShell`

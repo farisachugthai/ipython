@@ -28,7 +28,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 PyGTK input hook for prompt_toolkit.
 
@@ -41,6 +40,7 @@ import gtk, gobject
 # Enable threading in GTK. (Otherwise, GTK will keep the GIL.)
 gtk.gdk.threads_init()
 
+
 def inputhook(context):
     """
     When the eventloop of prompt-toolkit is idle, call this inputhook.
@@ -50,6 +50,7 @@ def inputhook(context):
 
     :param context: An `InputHookContext` instance.
     """
+
     def _main_quit(*a, **kw):
         gtk.main_quit()
         return False

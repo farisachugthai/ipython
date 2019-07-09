@@ -12,6 +12,7 @@ from .. import lexers
 
 class TestLexers(TestCase):
     """Collection of lexers tests"""
+
     def setUp(self):
         self.lexer = lexers.IPythonLexer()
         self.bash_lexer = BashLexer()
