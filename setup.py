@@ -31,7 +31,7 @@ if sys.version_info < (3, 5):
     try:
         import pip
         pip_version = tuple([int(x) for x in pip.__version__.split('.')[:3]])
-        if pip_version < (9, 0, 1) :
+        if pip_version < (9, 0, 1):
             pip_message = 'Your pip version is out of date, please install pip >= 9.0.1. '\
             'pip {} detected.'.format(pip.__version__)
         else:
@@ -39,7 +39,6 @@ if sys.version_info < (3, 5):
             pip_message = ''
     except Exception:
         pass
-
 
     error = """
 IPython 7.0+ supports Python 3.5 and above.
@@ -52,7 +51,7 @@ See IPython `README.rst` file for more information:
 
 Python {py} detected.
 {pip}
-""".format(py=sys.version_info, pip=pip_message )
+""".format(py=sys.version_info, pip=pip_message)
 
     print(error, file=sys.stderr)
     sys.exit(1)
@@ -61,7 +60,8 @@ Python {py} detected.
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
-if os.path.exists('MANIFEST'): os.remove('MANIFEST')
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
 
 from distutils.core import setup
 
@@ -86,11 +86,11 @@ from setupbase import (
 isfile = os.path.isfile
 pjoin = os.path.join
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Handle OS specific things
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-if os.name in ('nt','dos'):
+if os.name in ('nt', 'dos'):
     os_name = 'windows'
 else:
     os_name = os.name
@@ -98,28 +98,25 @@ else:
 # Under Windows, 'sdist' has not been supported.  Now that the docs build with
 # Sphinx it might work, but let's not turn it on until someone confirms that it
 # actually works.
-if os_name == 'windows' and 'sdist' in sys.argv:
-    print('The sdist command is not available under Windows.  Exiting.')
-    sys.exit(1)
+# if os_name == 'windows' and 'sdist' in sys.argv:
+#     print('The sdist command is not available under Windows.  Exiting.')
+#     sys.exit(1)
 
-
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Things related to the IPython documentation
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 # update the manuals when building a source dist
-if len(sys.argv) >= 2 and sys.argv[1] in ('sdist','bdist_rpm'):
+if len(sys.argv) >= 2 and sys.argv[1] in ('sdist', 'bdist_rpm'):
 
     # List of things to be updated. Each entry is a triplet of args for
     # target_update()
     to_update = [
-                 ('docs/man/ipython.1.gz',
-                  ['docs/man/ipython.1'],
-                  'cd docs/man && gzip -9c ipython.1 > ipython.1.gz'),
-                 ]
+        ('docs/man/ipython.1.gz', ['docs/man/ipython.1'],
+         'cd docs/man && gzip -9c ipython.1 > ipython.1.gz'),
+    ]
 
-
-    [ target_update(*t) for t in to_update ]
+    [target_update(*t) for t in to_update]
 
 #---------------------------------------------------------------------------
 # Find all the packages, package data, and data_files
@@ -141,15 +138,13 @@ setup_args['data_files'] = data_files
 from distutils.command.sdist import sdist
 
 setup_args['cmdclass'] = {
-    'build_py': \
-            check_package_data_first(git_prebuild('IPython')),
-    'sdist' : git_prebuild('IPython', sdist),
+    'build_py': check_package_data_first(git_prebuild('IPython')),
+    'sdist': git_prebuild('IPython', sdist),
     'symlink': install_symlinked,
     'install_lib_symlink': install_lib_symlink,
     'install_scripts_sym': install_scripts_for_symlink,
     'unsymlink': unsymlink,
 }
-
 
 #---------------------------------------------------------------------------
 # Handle scripts, dependencies, and setuptools specific things
@@ -157,10 +152,20 @@ setup_args['cmdclass'] = {
 
 # For some commands, use setuptools.  Note that we do NOT list install here!
 # If you want a setuptools-enhanced install, just run 'setupegg.py install'
-needs_setuptools = {'develop', 'release', 'bdist_egg', 'bdist_rpm',
-           'bdist', 'bdist_dumb', 'bdist_wininst', 'bdist_wheel',
-           'egg_info', 'easy_install', 'upload', 'install_egg_info',
-          }
+needs_setuptools = {
+    'develop',
+    'release',
+    'bdist_egg',
+    'bdist_rpm',
+    'bdist',
+    'bdist_dumb',
+    'bdist_wininst',
+    'bdist_wheel',
+    'egg_info',
+    'easy_install',
+    'upload',
+    'install_egg_info',
+}
 
 if len(needs_setuptools.intersection(sys.argv)) > 0:
     import setuptools
@@ -172,15 +177,18 @@ setuptools_extra_args = {}
 # setuptools requirements
 
 extras_require = dict(
-    parallel = ['ipyparallel'],
-    qtconsole = ['qtconsole'],
-    doc = ['Sphinx>=1.3'],
-    test = ['nose>=0.10.1', 'requests', 'testpath', 'pygments', 'nbformat', 'ipykernel', 'numpy'],
-    terminal = [],
-    kernel = ['ipykernel'],
-    nbformat = ['nbformat'],
-    notebook = ['notebook', 'ipywidgets'],
-    nbconvert = ['nbconvert'],
+    parallel=['ipyparallel'],
+    qtconsole=['qtconsole'],
+    doc=['Sphinx>=1.3'],
+    test=[
+        'nose>=0.10.1', 'requests', 'testpath', 'pygments', 'nbformat',
+        'ipykernel', 'numpy'
+    ],
+    terminal=[],
+    kernel=['ipykernel'],
+    nbformat=['nbformat'],
+    notebook=['notebook', 'ipywidgets'],
+    nbconvert=['nbconvert'],
 )
 
 install_requires = [
@@ -203,7 +211,8 @@ extras_require.update({
     ':sys_platform != "win32"': ['pexpect'],
     ':sys_platform == "darwin"': ['appnope'],
     ':sys_platform == "win32"': ['colorama'],
-    ':sys_platform == "win32" and python_version < "3.6"': ['win_unicode_console>=0.5'],
+    ':sys_platform == "win32" and python_version < "3.6"':
+    ['win_unicode_console>=0.5'],
 })
 # FIXME: re-specify above platform dependencies for pip < 6
 # These would result in non-portable bdists.
@@ -219,7 +228,8 @@ if not any(arg.startswith('bdist') for arg in sys.argv):
     if 'setuptools' in sys.modules:
         for key in list(extras_require):
             if 'platform_python_implementation' in key:
-                new_key = key.replace('platform_python_implementation', 'python_implementation')
+                new_key = key.replace('platform_python_implementation',
+                                      'python_implementation')
                 extras_require[new_key] = extras_require.pop(key)
 
 everything = set()
@@ -232,7 +242,8 @@ if 'setuptools' in sys.modules:
     setuptools_extra_args['python_requires'] = '>=3.5'
     setuptools_extra_args['zip_safe'] = False
     setuptools_extra_args['entry_points'] = {
-        'console_scripts': find_entry_points(),
+        'console_scripts':
+        find_entry_points(),
         'pygments.lexers': [
             'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
             'ipython = IPython.lib.lexers:IPythonLexer',
@@ -244,7 +255,9 @@ if 'setuptools' in sys.modules:
 
 else:
     # scripts has to be a non-empty list, or install_scripts isn't called
-    setup_args['scripts'] = [e.split('=')[0].strip() for e in find_entry_points()]
+    setup_args['scripts'] = [
+        e.split('=')[0].strip() for e in find_entry_points()
+    ]
 
     setup_args['cmdclass']['build_scripts'] = build_scripts_entrypt
 
@@ -255,9 +268,9 @@ else:
 setup_args.update(setuptools_extra_args)
 
 
-
 def main():
     setup(**setup_args)
+
 
 if __name__ == '__main__':
     main()
