@@ -1509,7 +1509,8 @@ class InteractiveShell(SingletonConfigurable):
         # GUI or web frontend
         if os.name == 'posix':
             for cmd in ('clear', 'more', 'less', 'man'):
-                self.alias_manager.soft_define_alias(cmd, cmd)
+                if cmd not in self.magics_manager.magics['line']:
+                    self.alias_manager.soft_define_alias(cmd, cmd)
 
         # Flush the private list of module references kept for script
         # execution protection
@@ -3099,7 +3100,7 @@ class InteractiveShell(SingletonConfigurable):
             self.showtraceback(preprocessing_exc_tuple)
             if store_history:
                 self.execution_count += 1
-            return error_before_exec(preprocessing_exc_tuple[2])
+            return error_before_exec(preprocessing_exc_tuple[1])
 
         # Our own compiler remembers the __future__ environment. If we want to
         # run code with a separate __future__ environment, use the default
