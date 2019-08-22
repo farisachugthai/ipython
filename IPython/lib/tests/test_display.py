@@ -54,9 +54,8 @@ def test_instantiation_FileLink():
         fl = display.FileLink(pathlib.PurePath('example.txt'))
 
 
-def test_warning_on_non_existant_path_FileLink():
-    """FileLink: Calling _repr_html_ on non-existant files returns a warning
-    """
+def test_warning_on_non_existent_path_FileLink():
+    """FileLink: Calling _repr_html_ on non-existant files returns a warning."""
     fl = display.FileLink('example.txt')
     nt.assert_true(fl._repr_html_().startswith('Path (<tt>example.txt</tt>)'))
 
@@ -99,8 +98,8 @@ def test_instantiation_FileLinks():
     fls = display.FileLinks('example')
 
 
-def test_warning_on_non_existant_path_FileLinks():
-    """FileLinks: Calling _repr_html_ on non-existant files returns a warning
+def test_warning_on_non_existent_path_FileLinks():
+    """FileLinks: Calling _repr_html_ on non-existent files returns a warning
     """
     fls = display.FileLinks('example')
     nt.assert_true(fls._repr_html_().startswith('Path (<tt>example</tt>)'))
@@ -194,7 +193,6 @@ def test_error_on_file_to_FileLinks():
     tf1 = NamedTemporaryFile(dir=td)
     nt.assert_raises(ValueError, display.FileLinks, tf1.name)
 
-
 def test_recursive_FileLinks():
     """FileLinks: Does not recurse when recursive=False
     """
@@ -211,13 +209,13 @@ def test_recursive_FileLinks():
     actual = actual.split('\n')
     nt.assert_equal(len(actual), 2, actual)
 
-
 def test_audio_from_file():
     path = pjoin(dirname(__file__), 'test.wav')
     display.Audio(filename=path)
 
 
 class TestAudioDataWithNumpy(TestCase):
+
     @skipif_not_numpy
     def test_audio_from_numpy_array(self):
         test_tone = get_test_tone()
@@ -255,21 +253,18 @@ class TestAudioDataWithNumpy(TestCase):
 
     def test_audio_data_without_normalization_raises_for_invalid_data(self):
         nt.assert_raises(
-            ValueError, lambda: display.Audio(
-                [1.001], rate=44100, normalize=False))
+            ValueError,
+            lambda: display.Audio([1.001], rate=44100, normalize=False))
         nt.assert_raises(
-            ValueError, lambda: display.Audio(
-                [-1.001], rate=44100, normalize=False))
-
+            ValueError,
+            lambda: display.Audio([-1.001], rate=44100, normalize=False))
 
 def simulate_numpy_not_installed():
     try:
         import numpy
-        return mock.patch('numpy.array',
-                          mock.MagicMock(side_effect=ImportError))
+        return mock.patch('numpy.array', mock.MagicMock(side_effect=ImportError))
     except ModuleNotFoundError:
         return lambda x: x
-
 
 @simulate_numpy_not_installed()
 class TestAudioDataWithoutNumpy(TestAudioDataWithNumpy):
@@ -286,13 +281,11 @@ class TestAudioDataWithoutNumpy(TestAudioDataWithNumpy):
 def get_test_tone(scale=1):
     return numpy.sin(2 * numpy.pi * 440 * numpy.linspace(0, 1, 44100)) * scale
 
-
 def read_wav(data):
     with wave.open(BytesIO(data)) as wave_file:
         wave_data = wave_file.readframes(wave_file.getnframes())
         num_samples = wave_file.getnframes() * wave_file.getnchannels()
         return struct.unpack('<%sh' % num_samples, wave_data)
-
 
 def test_code_from_file():
     c = display.Code(filename=__file__)
