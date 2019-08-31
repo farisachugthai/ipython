@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>0.9 series &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="0.8 series" href="version0.8.html" />
+    <link rel="prev" title="0.10 series" href="version0.10.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">What’s new in IPython</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.html">Development version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version7.html">7.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-7.html">Issues closed in the 7.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version6.html">6.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-6.html">Issues closed in the 6.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version5.html">5.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-5.html">Issues closed in the 5.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version4.html">4.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-4.html">Issues closed in the 4.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version3.html">3.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-3.html">Issues closed in the 3.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version3_widget_migration.html">Migrating Widgets to IPython 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version2.0.html">2.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-2.0.html">Issues closed in the 2.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version1.0.html">1.0 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-1.0.html">Issues closed in the 1.0 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.13.html">0.13 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.13.html">Issues closed in the 0.13 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.12.html">0.12 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.12.html">Issues closed in the 0.12 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.11.html">0.11 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.11.html">Issues closed in the 0.11 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.10.html">0.10 series</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">0.9 series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#release-0-9-1">Release 0.9.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-0-9">Release 0.9</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#new-features">New features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bug-fixes">Bug fixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backwards-incompatible-changes">Backwards incompatible changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#changes-merged-in-from-ipython1">Changes merged in from IPython1</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="version0.8.html">0.8 series</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">What’s new in IPython</a> &raquo;</li>
+        
+      <li>0.9 series</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/whatsnew/version0.9.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="series">
+<h1>0.9 series<a class="headerlink" href="#series" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="release-0-9-1">
+<h2>Release 0.9.1<a class="headerlink" href="#release-0-9-1" title="Permalink to this headline">¶</a></h2>
+<p>This release was quickly made to restore compatibility with Python 2.4, which
+version 0.9 accidentally broke.  No new features were introduced, other than
+some additional testing support for internal use.</p>
+</div>
+<div class="section" id="release-0-9">
+<h2>Release 0.9<a class="headerlink" href="#release-0-9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="new-features">
+<h3>New features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>All furl files and security certificates are now put in a read-only
+directory named ~/.ipython/security.</p></li>
+<li><p>A single function <code class="xref py py-func docutils literal notranslate"><span class="pre">get_ipython_dir()</span></code>, in <code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.genutils</span></code> that
+determines the user’s IPython directory in a robust manner.</p></li>
+<li><p>Laurent’s WX application has been given a top-level script called
+ipython-wx, and it has received numerous fixes. We expect this code to be
+architecturally better integrated with Gael’s WX ‘ipython widget’ over the
+next few releases.</p></li>
+<li><p>The Editor synchronization work by Vivian De Smedt has been merged in.  This
+code adds a number of new editor hooks to synchronize with editors under
+Windows.</p></li>
+<li><p>A new, still experimental but highly functional, WX shell by Gael Varoquaux.
+This work was sponsored by Enthought, and while it’s still very new, it is
+based on a more cleanly organized architecture of the various IPython
+components. We will continue to develop this over the next few releases as a
+model for GUI components that use IPython.</p></li>
+<li><p>Another GUI frontend, Cocoa based (Cocoa is the OSX native GUI framework),
+authored by Barry Wark.  Currently the WX and the Cocoa ones have slightly
+different internal organizations, but the whole team is working on finding
+what the right abstraction points are for a unified codebase.</p></li>
+<li><p>As part of the frontend work, Barry Wark also implemented an experimental
+event notification system that various ipython components can use.  In the
+next release the implications and use patterns of this system regarding the
+various GUI options will be worked out.</p></li>
+<li><p>IPython finally has a full test system, that can test docstrings with
+IPython-specific functionality.  There are still a few pieces missing for it
+to be widely accessible to all users (so they can run the test suite at any
+time and report problems), but it now works for the developers.  We are
+working hard on continuing to improve it, as this was probably IPython’s
+major Achilles heel (the lack of proper test coverage made it effectively
+impossible to do large-scale refactoring).  The full test suite can now
+be run using the <strong class="command">iptest</strong> command line program.</p></li>
+<li><p>The notion of a task has been completely reworked.  An <code class="docutils literal notranslate"><span class="pre">ITask</span></code> interface has
+been created.  This interface defines the methods that tasks need to
+implement.  These methods are now responsible for things like submitting
+tasks and processing results.  There are two basic task types:
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.task.StringTask</span></code> (this is the old <code class="docutils literal notranslate"><span class="pre">Task</span></code> object, but
+renamed) and the new <code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.task.MapTask</span></code>, which is based on
+a function.</p></li>
+<li><p>A new interface, <code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.mapper.IMapper</span></code> has been defined to
+standardize the idea of a <code class="docutils literal notranslate"><span class="pre">map</span></code> method.  This interface has a single <code class="docutils literal notranslate"><span class="pre">map</span></code>
+method that has the same syntax as the built-in <code class="docutils literal notranslate"><span class="pre">map</span></code>.  We have also defined
+a <code class="docutils literal notranslate"><span class="pre">mapper</span></code> factory interface that creates objects that implement
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.mapper.IMapper</span></code> for different controllers.  Both the
+multiengine and task controller now have mapping capabilities.</p></li>
+<li><p>The parallel function capabilities have been reworks.  The major changes are
+that i) there is now an <code class="docutils literal notranslate"><span class="pre">&#64;parallel</span></code> magic that creates parallel functions,
+ii) the syntax for multiple variable follows that of <code class="docutils literal notranslate"><span class="pre">map</span></code>, iii) both the
+multiengine and task controller now have a parallel function implementation.</p></li>
+<li><p>All of the parallel computing capabilities from <code class="docutils literal notranslate"><span class="pre">ipython1-dev</span></code> have been
+merged into IPython proper.  This resulted in the following new subpackages:
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.kernel</span></code>, <code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.kernel.core</span></code>, <a class="reference external" href="https://traitlets.readthedocs.io/en/latest/config.html#module-traitlets.config" title="(in traitlets v5.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">traitlets.config</span></code></a>,
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.tools</span></code> and <a class="reference internal" href="../api/generated/IPython.testing.html#module-IPython.testing" title="IPython.testing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.testing</span></code></a>.</p></li>
+<li><p>As part of merging in the <code class="docutils literal notranslate"><span class="pre">ipython1-dev</span></code> stuff, the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script and
+friends have been completely refactored.  Now we are checking for
+dependencies using the approach that matplotlib uses.</p></li>
+<li><p>The documentation has been completely reorganized to accept the
+documentation from <code class="docutils literal notranslate"><span class="pre">ipython1-dev</span></code>.</p></li>
+<li><p>We have switched to using Foolscap for all of our network protocols in
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.kernel</span></code>.  This gives us secure connections that are both
+encrypted and authenticated.</p></li>
+<li><p>We have a brand new <code class="docutils literal notranslate"><span class="pre">COPYING.txt</span></code> files that describes the IPython license
+and copyright. The biggest change is that we are putting “The IPython
+Development Team” as the copyright holder. We give more details about
+exactly what this means in this file. All developer should read this and use
+the new banner in all IPython source code files.</p></li>
+<li><p>sh profile: ./foo runs foo as system command, no need to do !./foo anymore</p></li>
+<li><p>String lists now support <code class="docutils literal notranslate"><span class="pre">sort(field,</span> <span class="pre">nums</span> <span class="pre">=</span> <span class="pre">True)</span></code> method (to easily sort
+system command output). Try it with <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">!ls</span> <span class="pre">-l</span> <span class="pre">;</span> <span class="pre">a.sort(1,</span> <span class="pre">nums=1)</span></code>.</p></li>
+<li><p>‘%cpaste foo’ now assigns the pasted block as string list, instead of string</p></li>
+<li><p>The ipcluster script now run by default with no security.  This is done
+because the main usage of the script is for starting things on localhost.
+Eventually when ipcluster is able to start things on other hosts, we will put
+security back.</p></li>
+<li><p>‘cd –foo’ searches directory history for string foo, and jumps to that dir.
+Last part of dir name is checked first. If no matches for that are found,
+look at the whole path.</p></li>
+</ul>
+</div>
+<div class="section" id="bug-fixes">
+<h3>Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The Windows installer has been fixed.  Now all IPython scripts have <code class="docutils literal notranslate"><span class="pre">.bat</span></code>
+versions created.  Also, the Start Menu shortcuts have been updated.</p></li>
+<li><p>The colors escapes in the multiengine client are now turned off on win32 as
+they don’t print correctly.</p></li>
+<li><p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.kernel.scripts.ipengine</span></code> script was exec’ing
+mpi_import_statement incorrectly, which was leading the engine to crash when
+mpi was enabled.</p></li>
+<li><p>A few subpackages had missing <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files.</p></li>
+<li><p>The documentation is only created if Sphinx is found.  Previously, the
+<code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script would fail if it was missing.</p></li>
+<li><p>Greedy <code class="docutils literal notranslate"><span class="pre">cd</span></code> completion has been disabled again (it was enabled in 0.8.4) as
+it caused problems on certain platforms.</p></li>
+</ul>
+</div>
+<div class="section" id="backwards-incompatible-changes">
+<h3>Backwards incompatible changes<a class="headerlink" href="#backwards-incompatible-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">clusterfile</span></code> options of the <strong class="command">ipcluster</strong> command has been
+removed as it was not working and it will be replaced soon by something much
+more robust.</p></li>
+<li><p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.kernel</span></code> configuration now properly find the user’s
+IPython directory.</p></li>
+<li><p>In ipapi, the <code class="xref py py-func docutils literal notranslate"><span class="pre">make_user_ns()</span></code> function has been replaced with
+<code class="xref py py-func docutils literal notranslate"><span class="pre">make_user_namespaces()</span></code>, to support dict subclasses in namespace
+creation.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.client.Task</span></code> has been renamed
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.client.StringTask</span></code> to make way for new task types.</p></li>
+<li><p>The keyword argument <code class="docutils literal notranslate"><span class="pre">style</span></code> has been renamed <code class="docutils literal notranslate"><span class="pre">dist</span></code> in <code class="docutils literal notranslate"><span class="pre">scatter</span></code>, <code class="docutils literal notranslate"><span class="pre">gather</span></code>
+and <code class="docutils literal notranslate"><span class="pre">map</span></code>.</p></li>
+<li><p>Renamed the values that the rename <code class="docutils literal notranslate"><span class="pre">dist</span></code> keyword argument can have from
+<code class="docutils literal notranslate"><span class="pre">'basic'</span></code> to <code class="docutils literal notranslate"><span class="pre">'b'</span></code>.</p></li>
+<li><p>IPython has a larger set of dependencies if you want all of its capabilities.
+See the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script for details.</p></li>
+<li><p>The constructors for <code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.client.MultiEngineClient</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.kernel.client.TaskClient</span></code> no longer take the (ip,port) tuple.
+Instead they take the filename of a file that contains the FURL for that
+client.  If the FURL file is in your IPYTHONDIR, it will be found automatically
+and the constructor can be left empty.</p></li>
+<li><p>The asynchronous clients in <code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.kernel.asyncclient</span></code> are now created
+using the factory functions <code class="xref py py-func docutils literal notranslate"><span class="pre">get_multiengine_client()</span></code> and
+<code class="xref py py-func docutils literal notranslate"><span class="pre">get_task_client()</span></code>.  These return a <code class="docutils literal notranslate"><span class="pre">Deferred</span></code> to the actual client.</p></li>
+<li><p>The command line options to <code class="docutils literal notranslate"><span class="pre">ipcontroller</span></code> and <code class="docutils literal notranslate"><span class="pre">ipengine</span></code> have changed to
+reflect the new Foolscap network protocol and the FURL files.  Please see the
+help for these scripts for details.</p></li>
+<li><p>The configuration files for the kernel have changed because of the Foolscap
+stuff.  If you were using custom config files before, you should delete them
+and regenerate new ones.</p></li>
+</ul>
+</div>
+<div class="section" id="changes-merged-in-from-ipython1">
+<h3>Changes merged in from IPython1<a class="headerlink" href="#changes-merged-in-from-ipython1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h4>New features<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Much improved <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> and <code class="docutils literal notranslate"><span class="pre">setupegg.py</span></code> scripts.  Because Twisted and
+zope.interface are now easy installable, we can declare them as dependencies
+in our setupegg.py script.</p></li>
+<li><p>IPython is now compatible with Twisted 2.5.0 and 8.x.</p></li>
+<li><p>Added a new example of how to use <code class="xref py py-mod docutils literal notranslate"><span class="pre">ipython1.kernel.asynclient</span></code>.</p></li>
+<li><p>Initial draft of a process daemon in <code class="xref py py-mod docutils literal notranslate"><span class="pre">ipython1.daemon</span></code>.  This has not
+been merged into IPython and is still in <code class="docutils literal notranslate"><span class="pre">ipython1-dev</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">TaskController</span></code> now has methods for getting the queue status.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">TaskResult</span></code> objects not have information about how long the task
+took to run.</p></li>
+<li><p>We are attaching additional attributes to exceptions <code class="docutils literal notranslate"><span class="pre">(_ipython_*)</span></code> that
+we use to carry additional info around.</p></li>
+<li><p>New top-level module <code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncclient</span></code> that has asynchronous versions (that
+return deferreds) of the client classes.  This is designed to users who want
+to run their own Twisted reactor.</p></li>
+<li><p>All the clients in <code class="xref py py-mod docutils literal notranslate"><span class="pre">client</span></code> are now based on Twisted.  This is done by
+running the Twisted reactor in a separate thread and using the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">blockingCallFromThread()</span></code> function that is in recent versions of Twisted.</p></li>
+<li><p>Functions can now be pushed/pulled to/from engines using
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiEngineClient.push_function()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiEngineClient.pull_function()</span></code>.</p></li>
+<li><p>Gather/scatter are now implemented in the client to reduce the work load
+of the controller and improve performance.</p></li>
+<li><p>Complete rewrite of the IPython docuementation.  All of the documentation
+from the IPython website has been moved into docs/source as restructured
+text documents.  PDF and HTML documentation are being generated using
+Sphinx.</p></li>
+<li><p>New developer oriented documentation: development guidelines and roadmap.</p></li>
+<li><p>Traditional <code class="docutils literal notranslate"><span class="pre">ChangeLog</span></code> has been changed to a more useful <code class="docutils literal notranslate"><span class="pre">changes.txt</span></code>
+file that is organized by release and is meant to provide something more
+relevant for users.</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h4>Bug fixes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Created a proper <code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> file to create source distributions.</p></li>
+<li><p>Fixed a bug in the <code class="docutils literal notranslate"><span class="pre">MultiEngine</span></code> interface.  Previously, multi-engine
+actions were being collected with a <code class="xref py py-class docutils literal notranslate"><span class="pre">DeferredList</span></code> with
+<code class="docutils literal notranslate"><span class="pre">fireononeerrback=1</span></code>.  This meant that methods were returning
+before all engines had given their results.  This was causing extremely odd
+bugs in certain cases. To fix this problem, we have 1) set
+<code class="docutils literal notranslate"><span class="pre">fireononeerrback=0</span></code> to make sure all results (or exceptions) are in
+before returning and 2) introduced a <code class="xref py py-exc docutils literal notranslate"><span class="pre">CompositeError</span></code> exception
+that wraps all of the engine exceptions.  This is a huge change as it means
+that users will have to catch <code class="xref py py-exc docutils literal notranslate"><span class="pre">CompositeError</span></code> rather than the actual
+exception.</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h4>Backwards incompatible changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>All names have been renamed to conform to the lowercase_with_underscore
+convention.  This will require users to change references to all names like
+<code class="docutils literal notranslate"><span class="pre">queueStatus</span></code> to <code class="docutils literal notranslate"><span class="pre">queue_status</span></code>.</p></li>
+<li><p>Previously, methods like <code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiEngineClient.push()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiEngineClient.push()</span></code> used <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>.  This was
+becoming a problem as we weren’t able to introduce new keyword arguments into
+the API.  Now these methods simple take a dict or sequence.  This has also
+allowed us to get rid of the <code class="docutils literal notranslate"><span class="pre">*All</span></code> methods like <code class="xref py py-meth docutils literal notranslate"><span class="pre">pushAll()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">pullAll()</span></code>.  These things are now handled with the <code class="docutils literal notranslate"><span class="pre">targets</span></code> keyword
+argument that defaults to <code class="docutils literal notranslate"><span class="pre">'all'</span></code>.</p></li>
+<li><p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">MultiEngineClient.magicTargets</span></code> has been renamed to
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">MultiEngineClient.targets</span></code>.</p></li>
+<li><p>All methods in the MultiEngine interface now accept the optional keyword
+argument <code class="docutils literal notranslate"><span class="pre">block</span></code>.</p></li>
+<li><p>Renamed <code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteController</span></code> to <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiEngineClient</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TaskController</span></code> to <code class="xref py py-class docutils literal notranslate"><span class="pre">TaskClient</span></code>.</p></li>
+<li><p>Renamed the top-level module from <code class="xref py py-mod docutils literal notranslate"><span class="pre">api</span></code> to <code class="xref py py-mod docutils literal notranslate"><span class="pre">client</span></code>.</p></li>
+<li><p>Most methods in the multiengine interface now raise a <code class="xref py py-exc docutils literal notranslate"><span class="pre">CompositeError</span></code>
+exception that wraps the user’s exceptions, rather than just raising the raw
+user’s exception.</p></li>
+<li><p>Changed the <code class="docutils literal notranslate"><span class="pre">setupNS</span></code> and <code class="docutils literal notranslate"><span class="pre">resultNames</span></code> in the <code class="docutils literal notranslate"><span class="pre">Task</span></code> class to <code class="docutils literal notranslate"><span class="pre">push</span></code>
+and <code class="docutils literal notranslate"><span class="pre">pull</span></code>.</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="version0.8.html" class="btn btn-neutral float-right" title="0.8 series" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="version0.10.html" class="btn btn-neutral float-left" title="0.10 series" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

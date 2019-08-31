@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction to IPython configuration &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IPython options" href="options/index.html" />
+    <link rel="prev" title="Configuration and customization" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Configuration and customization</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#configuring-ipython">Configuring IPython</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Introduction to IPython configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setting-configurable-options">Setting configurable options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#profiles">Profiles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-ipython-directory">The IPython directory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="options/index.html">IPython options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shortcuts/index.html">IPython shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="details.html">Specific config details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#extending-and-integrating-with-ipython">Extending and integrating with IPython</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Configuration and customization</a> &raquo;</li>
+        
+      <li>Introduction to IPython configuration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/config/intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="introduction-to-ipython-configuration">
+<h1>Introduction to IPython configuration<a class="headerlink" href="#introduction-to-ipython-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setting-configurable-options">
+<span id="setting-config"></span><h2>Setting configurable options<a class="headerlink" href="#setting-configurable-options" title="Permalink to this headline">¶</a></h2>
+<p>Many of IPython’s classes have configurable attributes (see
+<a class="reference internal" href="options/index.html"><span class="doc">IPython options</span></a> for the list). These can be
+configured in several ways.</p>
+<div class="section" id="python-config-files">
+<h3>Python config files<a class="headerlink" href="#python-config-files" title="Permalink to this headline">¶</a></h3>
+<p>To create the blank config files, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython</span> <span class="n">profile</span> <span class="n">create</span> <span class="p">[</span><span class="n">profilename</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If you leave out the profile name, the files will be created for the
+<code class="docutils literal notranslate"><span class="pre">default</span></code> profile (see <a class="reference internal" href="#profiles"><span class="std std-ref">Profiles</span></a>). These will typically be
+located in <code class="file docutils literal notranslate"><span class="pre">~/.ipython/profile_default/</span></code>, and will be named
+<code class="file docutils literal notranslate"><span class="pre">ipython_config.py</span></code>, <code class="file docutils literal notranslate"><span class="pre">ipython_notebook_config.py</span></code>, etc.
+The settings in <code class="file docutils literal notranslate"><span class="pre">ipython_config.py</span></code> apply to all IPython commands.</p>
+<p>The files typically start by getting the root config object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can then configure class attributes like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShell</span><span class="o">.</span><span class="n">automagic</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>Be careful with spelling–incorrect names will simply be ignored, with
+no error.</p>
+<p>To add to a collection which may have already been defined elsewhere,
+you can use methods like those found on lists, dicts and sets: append,
+extend, <code class="xref py py-meth docutils literal notranslate"><span class="pre">prepend()</span></code> (like
+extend, but at the front), add and update (which works both for dicts
+and sets):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">extensions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Cython&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.0: </span>list, dict and set methods for config values</p>
+</div>
+<div class="section" id="example-config-file">
+<h4>Example config file<a class="headerlink" href="#example-config-file" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># sample ipython_config.py</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">TerminalIPythonApp</span><span class="o">.</span><span class="n">display_banner</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;myextension&#39;</span>
+<span class="p">]</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_lines</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;import numpy&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;import scipy&#39;</span>
+<span class="p">]</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_files</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;mycode.py&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;fancy.ipy&#39;</span>
+<span class="p">]</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShell</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="s1">&#39;LightBG&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShell</span><span class="o">.</span><span class="n">confirm_exit</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShell</span><span class="o">.</span><span class="n">editor</span> <span class="o">=</span> <span class="s1">&#39;nano&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShell</span><span class="o">.</span><span class="n">xmode</span> <span class="o">=</span> <span class="s1">&#39;Context&#39;</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">PrefilterManager</span><span class="o">.</span><span class="n">multi_line_specials</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">AliasManager</span><span class="o">.</span><span class="n">user_aliases</span> <span class="o">=</span> <span class="p">[</span>
+ <span class="p">(</span><span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;ls -al&#39;</span><span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-arguments">
+<h3>Command line arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h3>
+<p>Every configurable value can be set from the command line, using this
+syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython</span> <span class="o">--</span><span class="n">ClassName</span><span class="o">.</span><span class="n">attribute</span><span class="o">=</span><span class="n">value</span>
+</pre></div>
+</div>
+<p>Many frequently used options have short aliases and flags, such as
+<code class="docutils literal notranslate"><span class="pre">--matplotlib</span></code> (to integrate with a matplotlib GUI event loop) or
+<code class="docutils literal notranslate"><span class="pre">--pdb</span></code> (automatic post-mortem debugging of exceptions).</p>
+<p>To see all of these abbreviated options, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython</span> <span class="o">--</span><span class="n">help</span>
+<span class="n">ipython</span> <span class="n">notebook</span> <span class="o">--</span><span class="n">help</span>
+<span class="c1"># etc.</span>
+</pre></div>
+</div>
+<p>Options specified at the command line, in either format, override
+options set in a configuration file.</p>
+</div>
+<div class="section" id="the-config-magic">
+<h3>The config magic<a class="headerlink" href="#the-config-magic" title="Permalink to this headline">¶</a></h3>
+<p>You can also modify config from inside IPython, using a magic command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">config</span> <span class="n">IPCompleter</span><span class="o">.</span><span class="n">greedy</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>At present, this only affects the current session - changes you make to
+config are not saved anywhere. Also, some options are only read when
+IPython starts, so they can’t be changed like this.</p>
+</div>
+<div class="section" id="running-ipython-from-python">
+<span id="configure-start-ipython"></span><h3>Running IPython from Python<a class="headerlink" href="#running-ipython-from-python" title="Permalink to this headline">¶</a></h3>
+<p>If you are using <a class="reference internal" href="../interactive/reference.html#embedding"><span class="std std-ref">Embedding IPython</span></a> to start IPython from a normal
+python file, you can set configuration options the same way as in a
+config file by creating a traitlets config object and passing it to
+start_ipython like in the example below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Quick snippet explaining how to set config options when using start_ipython.&quot;&quot;&quot;</span>
+
+<span class="c1"># First create a config object from the traitlets library</span>
+<span class="kn">from</span> <span class="nn">traitlets.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+
+<span class="c1"># Now we can set options as we would in a config file: </span>
+<span class="c1">#   c.Class.config_value = value</span>
+<span class="c1"># For example, we can set the exec_lines option of the InteractiveShellApp</span>
+<span class="c1"># class to run some code when the IPython REPL starts</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_lines</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;print(&quot;</span><span class="se">\\</span><span class="s1">nimporting some things</span><span class="se">\\</span><span class="s1">n&quot;)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;import math&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;math&quot;</span>
+<span class="p">]</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShell</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="s1">&#39;LightBG&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShell</span><span class="o">.</span><span class="n">confirm_exit</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">c</span><span class="o">.</span><span class="n">TerminalIPythonApp</span><span class="o">.</span><span class="n">display_banner</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="c1"># Now we start ipython with our configuration</span>
+<span class="kn">import</span> <span class="nn">IPython</span>
+<span class="n">IPython</span><span class="o">.</span><span class="n">start_ipython</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="profiles">
+<span id="id1"></span><h2>Profiles<a class="headerlink" href="#profiles" title="Permalink to this headline">¶</a></h2>
+<p>IPython can use multiple profiles, with separate configuration and
+history. By default, if you don’t specify a profile, IPython always runs
+in the <code class="docutils literal notranslate"><span class="pre">default</span></code> profile. To use a new profile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython</span> <span class="n">profile</span> <span class="n">create</span> <span class="n">foo</span>   <span class="c1"># create the profile foo</span>
+<span class="n">ipython</span> <span class="o">--</span><span class="n">profile</span><span class="o">=</span><span class="n">foo</span>        <span class="c1"># start IPython using the new profile</span>
+</pre></div>
+</div>
+<p>Profiles are typically stored in <a class="reference internal" href="#ipythondir"><span class="std std-ref">The IPython directory</span></a>, but you can also keep
+a profile in the current working directory, for example to distribute it
+with a project. To find a profile directory on the filesystem:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython</span> <span class="n">locate</span> <span class="n">profile</span> <span class="n">foo</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-ipython-directory">
+<span id="ipythondir"></span><h2>The IPython directory<a class="headerlink" href="#the-ipython-directory" title="Permalink to this headline">¶</a></h2>
+<p>IPython stores its files—config, command history and extensions—in
+the directory <code class="file docutils literal notranslate"><span class="pre">~/.ipython/</span></code> by default.</p>
+<dl class="envvar">
+<dt id="envvar-IPYTHONDIR">
+<code class="sig-name descname">IPYTHONDIR</code><a class="headerlink" href="#envvar-IPYTHONDIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set, this environment variable should be the path to a directory,
+which IPython will use for user data. IPython will create it if it
+does not exist.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-ipython-dir">
+<code class="sig-name descname">--ipython-dir</code><code class="sig-prename descclassname">=&lt;path&gt;</code><a class="headerlink" href="#cmdoption-ipython-dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>This command line option can also be used to override the default
+IPython directory.</p>
+</dd></dl>
+
+<p>To see where IPython is looking for the IPython directory, use the command
+<code class="docutils literal notranslate"><span class="pre">ipython</span> <span class="pre">locate</span></code>, or the Python function <a class="reference internal" href="../api/generated/IPython.paths.html#IPython.paths.get_ipython_dir" title="IPython.paths.get_ipython_dir"><code class="xref py py-func docutils literal notranslate"><span class="pre">IPython.paths.get_ipython_dir()</span></code></a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="options/index.html" class="btn btn-neutral float-right" title="IPython options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Configuration and customization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

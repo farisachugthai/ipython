@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introducing IPython &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Rich Outputs" href="plotting.html" />
+    <link rel="prev" title="Tutorial" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Introducing IPython</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-four-most-helpful-commands">The four most helpful commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tab-completion">Tab completion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exploring-your-objects">Exploring your objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#magic-functions">Magic functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#running-and-editing">Running and Editing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debugging">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#history">History</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-shell-commands">System shell commands</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#define-your-own-system-aliases">Define your own system aliases</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#startup-files">Startup Files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Rich Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#id1">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html">IPython reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html">IPython as a system shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autoawait.html">Asynchronous in REPL: Autoawait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips.html">IPython Tips &amp; Tricks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-ipython-diff.html">Python vs IPython</a></li>
+<li class="toctree-l2"><a class="reference internal" href="magics.html">Built-in magic commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorial</a> &raquo;</li>
+        
+      <li>Introducing IPython</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/interactive/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="introducing-ipython">
+<span id="tutorial"></span><h1>Introducing IPython<a class="headerlink" href="#introducing-ipython" title="Permalink to this headline">¶</a></h1>
+<p>You don’t need to know anything beyond Python to start using IPython – just type
+commands as you would at the standard Python prompt. But IPython can do much
+more than the standard prompt. Some key features are described here. For more
+information, check the <a class="reference internal" href="tips.html#tips"><span class="std std-ref">tips page</span></a>, or look at examples in the
+<a class="reference external" href="https://github.com/ipython/ipython/wiki/Cookbook%3A-Index">IPython cookbook</a>.</p>
+<p>If you haven’t done that yet see <a class="reference internal" href="../install/install.html#install"><span class="std std-ref">how to install ipython</span></a>.</p>
+<p>If you’ve never used Python before, you might want to look at <a class="reference external" href="http://docs.python.org/tutorial/">the official
+tutorial</a> or an alternative, <a class="reference external" href="https://www.diveinto.org/python3/table-of-contents.html">Dive into
+Python</a>.</p>
+<p>Start IPython by issuing the <code class="docutils literal notranslate"><span class="pre">ipython</span></code> command from your shell, you should be
+greeted by the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">3.6</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">Type</span> <span class="s1">&#39;copyright&#39;</span><span class="p">,</span> <span class="s1">&#39;credits&#39;</span> <span class="ow">or</span> <span class="s1">&#39;license&#39;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span>
+<span class="n">IPython</span> <span class="mf">6.0</span><span class="o">.</span><span class="mf">0.</span><span class="n">dev</span> <span class="o">--</span> <span class="n">An</span> <span class="n">enhanced</span> <span class="n">Interactive</span> <span class="n">Python</span><span class="o">.</span> <span class="n">Type</span> <span class="s1">&#39;?&#39;</span> <span class="k">for</span> <span class="n">help</span><span class="o">.</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+</pre></div>
+</div>
+<p>Unlike the Python REPL, you will see that the input prompt is <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">[N]:</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code>. The number <code class="docutils literal notranslate"><span class="pre">N</span></code> in the prompt will be used later in this
+tutorial but should usually not impact the computation.</p>
+<p>You should be able to type single line expressions and press enter to evaluate
+them. If an expression is incomplete, IPython will automatically detect this and
+add a new line when you press <kbd class="kbd docutils literal notranslate">Enter</kbd> instead of executing right away.</p>
+<p>Feel free to explore multi-line text input. Unlike many other REPLs, with
+IPython you can use the up and down arrow keys when editing multi-line
+code blocks.</p>
+<p>Here is an example of a longer interaction with the IPython REPL,
+which we often refer to as an IPython <em>session</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Hello IPython&#39;</span><span class="p">)</span>
+<span class="n">Hello</span> <span class="n">IPython</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="mi">21</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="mi">42</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Hello </span><span class="si">{name}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span>
+   <span class="o">...</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>We won’t get into details right now, but you may notice a few differences to
+the standard Python REPL. First, your code should be syntax-highlighted as you
+type. Second, you will see that some results will have an <code class="docutils literal notranslate"><span class="pre">Out[N]:</span></code> prompt,
+while some other do not. We’ll come to this later.</p>
+<p>Depending on the exact command you are typing you might realize that sometimes
+<kbd class="kbd docutils literal notranslate">Enter</kbd> will add a new line, and sometimes it will execute the current
+statement. IPython tries to guess what you are doing, so most of the time you
+should not have to care. Though if by any chance IPython does not the right
+thing you can force execution of the current code block by pressing in sequence
+<kbd class="kbd docutils literal notranslate">Esc</kbd> and <kbd class="kbd docutils literal notranslate">Enter</kbd>. You can also force the insertion of a new line at
+the position of the cursor by using <kbd class="kbd docutils literal notranslate">Ctrl-o</kbd>.</p>
+<div class="section" id="the-four-most-helpful-commands">
+<h2>The four most helpful commands<a class="headerlink" href="#the-four-most-helpful-commands" title="Permalink to this headline">¶</a></h2>
+<p>The four most helpful commands, as well as their brief description, is shown
+to you in a banner, every time you start IPython:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 85%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>command</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>?</p></td>
+<td><p>Introduction and overview of IPython’s features.</p></td>
+</tr>
+<tr class="row-odd"><td><p>%quickref</p></td>
+<td><p>Quick reference.</p></td>
+</tr>
+<tr class="row-even"><td><p>help</p></td>
+<td><p>Python’s own help system.</p></td>
+</tr>
+<tr class="row-odd"><td><p>object?</p></td>
+<td><p>Details about ‘object’, use ‘object??’ for extra details.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="tab-completion">
+<h2>Tab completion<a class="headerlink" href="#tab-completion" title="Permalink to this headline">¶</a></h2>
+<p>Tab completion, especially for attributes, is a convenient way to explore the
+structure of any object you’re dealing with. Simply type <code class="docutils literal notranslate"><span class="pre">object_name.&lt;TAB&gt;</span></code>
+to view the object’s attributes. Besides Python objects and keywords, tab
+completion also works on file and directory names.</p>
+<p>Starting with IPython 6.0, if <code class="docutils literal notranslate"><span class="pre">jedi</span></code> is installed, IPython will try to pull
+completions from Jedi as well. This allows to not only inspect currently
+existing objects, but also to infer completion statically without executing
+code. There is nothing particular need to get this to work, simply use tab
+completion on more complex expressions like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Number of users&#39;</span><span class="p">,</span> <span class="mi">123456</span><span class="p">]</span>
+<span class="gp">... </span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>IPython and Jedi will be able to infer that <code class="docutils literal notranslate"><span class="pre">data[0]</span></code> is actually a string
+and should show relevant completions like <code class="docutils literal notranslate"><span class="pre">upper()</span></code>, <code class="docutils literal notranslate"><span class="pre">lower()</span></code> and other
+string methods. You can use the <kbd class="kbd docutils literal notranslate">Tab</kbd> key to cycle through completions,
+and while a completion is highlighted, its type will be shown as well.
+When the type of the completion is a function, the completer will also show the
+signature of the function when highlighted.</p>
+</div>
+<div class="section" id="exploring-your-objects">
+<h2>Exploring your objects<a class="headerlink" href="#exploring-your-objects" title="Permalink to this headline">¶</a></h2>
+<p>Typing <code class="docutils literal notranslate"><span class="pre">object_name?</span></code> will print all sorts of details about any object,
+including docstrings, function definition lines (for call arguments) and
+constructor details for classes. To get specific information on an object, you
+can use the magic commands <code class="docutils literal notranslate"><span class="pre">%pdoc</span></code>, <code class="docutils literal notranslate"><span class="pre">%pdef</span></code>, <code class="docutils literal notranslate"><span class="pre">%psource</span></code> and <code class="docutils literal notranslate"><span class="pre">%pfile</span></code></p>
+</div>
+<div class="section" id="magic-functions">
+<span id="magics-explained"></span><h2>Magic functions<a class="headerlink" href="#magic-functions" title="Permalink to this headline">¶</a></h2>
+<p>IPython has a set of predefined ‘magic functions’ that you can call with a
+command line style syntax.  There are two kinds of magics, line-oriented and
+cell-oriented.  <strong>Line magics</strong> are prefixed with the <code class="docutils literal notranslate"><span class="pre">%</span></code> character and work
+much like OS command-line calls: they get as an argument the rest of the line,
+where arguments are passed without parentheses or quotes. <strong>Lines magics</strong> can
+return results and can be used in the right hand side of an assignment.  <strong>Cell
+magics</strong> are prefixed with a double <code class="docutils literal notranslate"><span class="pre">%%</span></code>, and they are functions that get as
+an argument not only the rest of the line, but also the lines below it in a
+separate argument.</p>
+<p>Magics are useful as convenient functions where Python syntax is not the most
+natural one, or when one want to embed invalid python syntax in their work flow.</p>
+<p>The following examples show how to call the built-in <code class="xref std std-magic docutils literal notranslate"><span class="pre">%timeit</span></code> magic, both
+in line and cell mode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">%</span><span class="n">timeit</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="mi">100000</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">7.76</span> <span class="n">us</span> <span class="n">per</span> <span class="n">loop</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="o">%%</span><span class="n">timeit</span> <span class="n">x</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="o">...</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="o">...</span><span class="p">:</span>
+<span class="mi">1000</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">223</span> <span class="n">us</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+</div>
+<p>The built-in magics include:</p>
+<ul class="simple">
+<li><p>Functions that work with code: <code class="xref std std-magic docutils literal notranslate"><span class="pre">%run</span></code>, <code class="xref std std-magic docutils literal notranslate"><span class="pre">%edit</span></code>, <code class="xref std std-magic docutils literal notranslate"><span class="pre">%save</span></code>,
+<code class="xref std std-magic docutils literal notranslate"><span class="pre">%macro</span></code>, <code class="xref std std-magic docutils literal notranslate"><span class="pre">%recall</span></code>, etc.</p></li>
+<li><p>Functions which affect the shell: <code class="xref std std-magic docutils literal notranslate"><span class="pre">%colors</span></code>, <code class="xref std std-magic docutils literal notranslate"><span class="pre">%xmode</span></code>,
+<code class="xref std std-magic docutils literal notranslate"><span class="pre">%automagic</span></code>, etc.</p></li>
+<li><p>Other functions such as <code class="xref std std-magic docutils literal notranslate"><span class="pre">%reset</span></code>, <code class="xref std std-magic docutils literal notranslate"><span class="pre">%timeit</span></code>,
+<code class="xref std std-cellmagic docutils literal notranslate"><span class="pre">%%writefile</span></code>, <code class="xref std std-magic docutils literal notranslate"><span class="pre">%load</span></code>, or <code class="xref std std-magic docutils literal notranslate"><span class="pre">%paste</span></code>.</p></li>
+</ul>
+<p>You can always call magics using the <code class="docutils literal notranslate"><span class="pre">%</span></code> prefix, and if you’re calling a line
+magic on a line by itself, as long as the identifier is not defined in your
+namespace, you can omit even that:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">run</span> <span class="n">thescript</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>You can toggle this behavior by running the <code class="xref std std-magic docutils literal notranslate"><span class="pre">%automagic</span></code> magic.  Cell
+magics must always have the <code class="docutils literal notranslate"><span class="pre">%%</span></code> prefix.</p>
+<p>A more detailed explanation of the magic system can be obtained by calling
+<code class="docutils literal notranslate"><span class="pre">%magic</span></code>, and for more details on any magic function, call <code class="docutils literal notranslate"><span class="pre">%somemagic?</span></code> to
+read its docstring. To see all the available magic functions, call
+<code class="docutils literal notranslate"><span class="pre">%lsmagic</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The <a class="reference internal" href="reference.html#magic"><span class="std std-ref">Magic command system</span></a> section of the documentation goes more in depth into how
+the magics works and how to define your own, and <a class="reference internal" href="magics.html"><span class="doc">Built-in magic commands</span></a> for a list of
+built-in magics.</p>
+<p><a class="reference external" href="http://nbviewer.ipython.org/urls/raw.github.com/ipython/ipython/1.x/examples/notebooks/Cell%20Magics.ipynb">Cell magics</a> example notebook</p>
+</div>
+<div class="section" id="running-and-editing">
+<h3>Running and Editing<a class="headerlink" href="#running-and-editing" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="xref std std-magic docutils literal notranslate"><span class="pre">%run</span></code> magic command allows you to run any python script and load all
+of its data directly into the interactive namespace. Since the file is re-read
+from disk each time, changes you make to it are reflected immediately (unlike
+imported modules, which have to be specifically reloaded). IPython also includes
+<a class="reference internal" href="reference.html#dreload"><span class="std std-ref">dreload</span></a>, a recursive reload function.</p>
+<p><code class="docutils literal notranslate"><span class="pre">%run</span></code> has special flags for timing the execution of your scripts (-t), or
+for running them under the control of either Python’s pdb debugger (-d) or
+profiler (-p).</p>
+<p>The <code class="xref std std-magic docutils literal notranslate"><span class="pre">%edit</span></code> command gives a reasonable approximation of multi-line editing,
+by invoking your favorite editor on the spot. IPython will execute the
+code you type in there as if it were typed interactively. Note that for
+<code class="xref std std-magic docutils literal notranslate"><span class="pre">%edit</span></code> to work, the call to startup your editor has to be a blocking
+call. In a GUI environment, your editor likely will have such an option.</p>
+</div>
+<div class="section" id="debugging">
+<h3>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h3>
+<p>After an exception occurs, you can call <code class="xref std std-magic docutils literal notranslate"><span class="pre">%debug</span></code> to jump into the Python
+debugger (pdb) and examine the problem. Alternatively, if you call <code class="xref std std-magic docutils literal notranslate"><span class="pre">%pdb</span></code>,
+IPython will automatically start the debugger on any uncaught exception. You can
+print variables, see code, execute statements and even walk up and down the call
+stack to track down the true source of the problem. This can be an efficient way
+to develop and debug code, in many cases eliminating the need for print
+statements or external debugging tools.</p>
+<p>You can also step through a program from the beginning by calling
+<code class="docutils literal notranslate"><span class="pre">%run</span> <span class="pre">-d</span> <span class="pre">theprogram.py</span></code>.</p>
+</div>
+</div>
+<div class="section" id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
+<p>IPython stores both the commands you enter, and the results it produces. You
+can easily go through previous commands with the up- and down-arrow keys, or
+access your history in more sophisticated ways.</p>
+<p>Input and output history are kept in variables called <code class="docutils literal notranslate"><span class="pre">In</span></code> and <code class="docutils literal notranslate"><span class="pre">Out</span></code>, keyed
+by the prompt numbers, e.g. <code class="docutils literal notranslate"><span class="pre">In[4]</span></code>. The last three objects in output history
+are also kept in variables named <code class="docutils literal notranslate"><span class="pre">_</span></code>, <code class="docutils literal notranslate"><span class="pre">__</span></code> and <code class="docutils literal notranslate"><span class="pre">___</span></code>.</p>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">%history</span></code> magic function to examine past input and output.
+Input history from previous sessions is saved in a database, and IPython can be
+configured to save output history.</p>
+<p>Several other magic functions can use your input history, including <code class="docutils literal notranslate"><span class="pre">%edit</span></code>,
+<code class="docutils literal notranslate"><span class="pre">%rerun</span></code>, <code class="docutils literal notranslate"><span class="pre">%recall</span></code>, <code class="docutils literal notranslate"><span class="pre">%macro</span></code>, <code class="docutils literal notranslate"><span class="pre">%save</span></code> and <code class="docutils literal notranslate"><span class="pre">%pastebin</span></code>. You can use a
+standard format to refer to lines:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">pastebin</span> <span class="mi">3</span> <span class="mi">18</span><span class="o">-</span><span class="mi">20</span> <span class="o">~</span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="o">-</span><span class="mi">5</span>
+</pre></div>
+</div>
+<p>This will take line 3 and lines 18 to 20 from the current session, and lines
+1-5 from the previous session.</p>
+</div>
+<div class="section" id="system-shell-commands">
+<h2>System shell commands<a class="headerlink" href="#system-shell-commands" title="Permalink to this headline">¶</a></h2>
+<p>To run any command at the system shell, simply prefix it with <code class="docutils literal notranslate"><span class="pre">!</span></code>, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!ping www.bbc.co.uk
+</pre></div>
+</div>
+<p>You can capture the output into a Python list, e.g.: <code class="docutils literal notranslate"><span class="pre">files</span> <span class="pre">=</span> <span class="pre">!ls</span></code>. To pass
+the values of Python variables or expressions to system commands, prefix them
+with $: <code class="docutils literal notranslate"><span class="pre">!grep</span> <span class="pre">-rF</span> <span class="pre">$pattern</span> <span class="pre">ipython/*</span></code> or wrap in <code class="docutils literal notranslate"><span class="pre">{braces}</span></code>. See <a class="reference internal" href="reference.html#system-shell-access"><span class="std std-ref">our
+shell section</span></a> for more details.</p>
+<div class="section" id="define-your-own-system-aliases">
+<h3>Define your own system aliases<a class="headerlink" href="#define-your-own-system-aliases" title="Permalink to this headline">¶</a></h3>
+<p>It’s convenient to have aliases to the system commands you use most often. This
+allows you to work seamlessly from inside IPython with the same commands you are
+used to in your system shell. IPython comes with some pre-defined aliases and a
+complete system for changing directories, both via a stack (see <code class="xref std std-magic docutils literal notranslate"><span class="pre">%pushd</span></code>,
+<code class="xref std std-magic docutils literal notranslate"><span class="pre">%popd</span></code> and <code class="xref std std-magic docutils literal notranslate"><span class="pre">%dhist</span></code>) and via direct <code class="xref std std-magic docutils literal notranslate"><span class="pre">%cd</span></code>. The latter keeps a
+history of visited directories and allows you to go to any previously visited
+one.</p>
+</div>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Much of IPython can be tweaked through <a class="reference internal" href="../config/intro.html"><span class="doc">configuration</span></a>.
+To get started, use the command <code class="docutils literal notranslate"><span class="pre">ipython</span> <span class="pre">profile</span> <span class="pre">create</span></code> to produce the
+default config files. These will be placed in
+<code class="file docutils literal notranslate"><span class="pre">~/.ipython/profile_default</span></code>, and contain comments explaining
+what the various options do.</p>
+<p>Profiles allow you to use IPython for different tasks, keeping separate config
+files and history for each one. More details in <a class="reference internal" href="../config/intro.html#profiles"><span class="std std-ref">the profiles section</span></a>.</p>
+<div class="section" id="startup-files">
+<span id="id1"></span><h3>Startup Files<a class="headerlink" href="#startup-files" title="Permalink to this headline">¶</a></h3>
+<p>If you want some code to be run at the beginning of every IPython session, the
+easiest way is to add Python (.py) or IPython (.ipy) scripts to your
+<code class="file docutils literal notranslate"><span class="pre">profile_default/startup/</span></code> directory. Files here will be executed as soon
+as the IPython shell is constructed, before any other code or scripts you have
+specified. The files will be run in order of their names, so you can control the
+ordering with prefixes, like <code class="docutils literal notranslate"><span class="pre">10-myimports.py</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plotting.html" class="btn btn-neutral float-right" title="Rich Outputs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

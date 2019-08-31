@@ -1,0 +1,431 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Issues closed in the 4.x development cycle &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.x Series" href="version3.html" />
+    <link rel="prev" title="4.x Series" href="version4.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">What’s new in IPython</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.html">Development version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version7.html">7.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-7.html">Issues closed in the 7.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version6.html">6.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-6.html">Issues closed in the 6.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version5.html">5.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-5.html">Issues closed in the 5.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version4.html">4.x Series</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Issues closed in the 4.x development cycle</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#issues-closed-in-4-2">Issues closed in 4.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#issues-closed-in-4-1">Issues closed in 4.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#issues-closed-in-4-0">Issues closed in 4.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="version3.html">3.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-3.html">Issues closed in the 3.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version3_widget_migration.html">Migrating Widgets to IPython 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version2.0.html">2.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-2.0.html">Issues closed in the 2.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version1.0.html">1.0 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-1.0.html">Issues closed in the 1.0 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.13.html">0.13 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.13.html">Issues closed in the 0.13 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.12.html">0.12 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.12.html">Issues closed in the 0.12 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.11.html">0.11 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.11.html">Issues closed in the 0.11 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.10.html">0.10 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.9.html">0.9 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.8.html">0.8 series</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">What’s new in IPython</a> &raquo;</li>
+        
+      <li>Issues closed in the 4.x development cycle</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/whatsnew/github-stats-4.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="issues-closed-in-the-4-x-development-cycle">
+<span id="issues-list-4"></span><h1>Issues closed in the 4.x development cycle<a class="headerlink" href="#issues-closed-in-the-4-x-development-cycle" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="issues-closed-in-4-2">
+<h2>Issues closed in 4.2<a class="headerlink" href="#issues-closed-in-4-2" title="Permalink to this headline">¶</a></h2>
+<p>GitHub stats for 2015/02/02 - 2016/04/20 (since 4.1)</p>
+<p>These lists are automatically generated, and may be incomplete or contain duplicates.</p>
+<p>We closed 10 issues and merged 22 pull requests.
+The full list can be seen <a class="reference external" href="https://github.com/ipython/ipython/issues?q=milestone%3A4.2+">on GitHub</a></p>
+<p>The following 10 authors contributed 27 commits.</p>
+<ul class="simple">
+<li><p>Benjamin Ragan-Kelley</p></li>
+<li><p>Carlos Cordoba</p></li>
+<li><p>Gökhan Karabulut</p></li>
+<li><p>Jonas Rauber</p></li>
+<li><p>Matthias Bussonnier</p></li>
+<li><p>Paul Ivanov</p></li>
+<li><p>Sebastian Bank</p></li>
+<li><p>Thomas A Caswell</p></li>
+<li><p>Thomas Kluyver</p></li>
+<li><p>Vincent Woo</p></li>
+</ul>
+</div>
+<div class="section" id="issues-closed-in-4-1">
+<h2>Issues closed in 4.1<a class="headerlink" href="#issues-closed-in-4-1" title="Permalink to this headline">¶</a></h2>
+<p>GitHub stats for 2015/08/12 - 2016/02/02 (since 4.0.0)</p>
+<p>These lists are automatically generated, and may be incomplete or contain duplicates.</p>
+<p>We closed 60 issues and merged 148 pull requests.
+The full list can be seen <a class="reference external" href="https://github.com/ipython/ipython/issues?q=milestone%3A4.1+">on GitHub</a></p>
+<p>The following 52 authors contributed 468 commits.</p>
+<ul class="simple">
+<li><p>Aaron Meurer</p></li>
+<li><p>Alexandre Avanian</p></li>
+<li><p>Anthony Sottile</p></li>
+<li><p>Antony Lee</p></li>
+<li><p>Arthur Loder</p></li>
+<li><p>Ben Kasel</p></li>
+<li><p>Ben Rousch</p></li>
+<li><p>Benjamin Ragan-Kelley</p></li>
+<li><p>bollwyvl</p></li>
+<li><p>Carol Willing</p></li>
+<li><p>Christopher Roach</p></li>
+<li><p>Douglas La Rocca</p></li>
+<li><p>Fairly</p></li>
+<li><p>Fernando Perez</p></li>
+<li><p>Frank Sachsenheim</p></li>
+<li><p>Guillaume DOUMENC</p></li>
+<li><p>Gábor Luk</p></li>
+<li><p>Hoyt Koepke</p></li>
+<li><p>Ivan Timokhin</p></li>
+<li><p>Jacob Niehus</p></li>
+<li><p>JamshedVesuna</p></li>
+<li><p>Jan Schulz</p></li>
+<li><p>Jan-Philip Gehrcke</p></li>
+<li><p>jc</p></li>
+<li><p>Jessica B. Hamrick</p></li>
+<li><p>jferrara</p></li>
+<li><p>John Bohannon</p></li>
+<li><p>John Kirkham</p></li>
+<li><p>Jonathan Frederic</p></li>
+<li><p>Kyle Kelley</p></li>
+<li><p>Lev Givon</p></li>
+<li><p>Lilian Besson</p></li>
+<li><p>lingxz</p></li>
+<li><p>Matthias Bussonnier</p></li>
+<li><p>memeplex</p></li>
+<li><p>Michael Droettboom</p></li>
+<li><p>naught101</p></li>
+<li><p>Peter Waller</p></li>
+<li><p>Pierre Gerold</p></li>
+<li><p>Rémy Léone</p></li>
+<li><p>Scott Sanderson</p></li>
+<li><p>Shanzhuo Zhang</p></li>
+<li><p>Sylvain Corlay</p></li>
+<li><p>Tayfun Sen</p></li>
+<li><p>Thomas A Caswell</p></li>
+<li><p>Thomas Ballinger</p></li>
+<li><p>Thomas Kluyver</p></li>
+<li><p>Vincent Legoll</p></li>
+<li><p>Wouter Bolsterlee</p></li>
+<li><p>xconverge</p></li>
+<li><p>Yuri Numerov</p></li>
+<li><p>Zachary Pincus</p></li>
+</ul>
+</div>
+<div class="section" id="issues-closed-in-4-0">
+<h2>Issues closed in 4.0<a class="headerlink" href="#issues-closed-in-4-0" title="Permalink to this headline">¶</a></h2>
+<p>GitHub stats for 2015/02/27 - 2015/08/11 (since 3.0)</p>
+<p>These lists are automatically generated, and may be incomplete or contain duplicates.</p>
+<p>We closed 35 issues and merged 125 pull requests.
+The full list can be seen <a class="reference external" href="https://github.com/ipython/ipython/milestone/21">on GitHub</a></p>
+<p>The following 69 authors contributed 1186 commits.</p>
+<ul class="simple">
+<li><p>Abe Guerra</p></li>
+<li><p>Adal Chiriliuc</p></li>
+<li><p>Alexander Belopolsky</p></li>
+<li><p>Andrew Murray</p></li>
+<li><p>Antonio Russo</p></li>
+<li><p>Benjamin Ragan-Kelley</p></li>
+<li><p>Björn Linse</p></li>
+<li><p>Brian Drawert</p></li>
+<li><p>chebee7i</p></li>
+<li><p>Daniel Rocco</p></li>
+<li><p>Donny Winston</p></li>
+<li><p>Drekin</p></li>
+<li><p>Erik Hvatum</p></li>
+<li><p>Fernando Perez</p></li>
+<li><p>Francisco de la Peña</p></li>
+<li><p>Frazer McLean</p></li>
+<li><p>Gareth Elston</p></li>
+<li><p>Gert-Ludwig Ingold</p></li>
+<li><p>Giuseppe Venturini</p></li>
+<li><p>Ian Barfield</p></li>
+<li><p>Ivan Pozdeev</p></li>
+<li><p>Jakob Gager</p></li>
+<li><p>Jan Schulz</p></li>
+<li><p>Jason Grout</p></li>
+<li><p>Jeff Hussmann</p></li>
+<li><p>Jessica B. Hamrick</p></li>
+<li><p>Joe Borg</p></li>
+<li><p>Joel Nothman</p></li>
+<li><p>Johan Forsberg</p></li>
+<li><p>Jonathan Frederic</p></li>
+<li><p>Justin Tyberg</p></li>
+<li><p>Koen van Besien</p></li>
+<li><p>Kyle Kelley</p></li>
+<li><p>Lorena Pantano</p></li>
+<li><p>Lucretiel</p></li>
+<li><p>Marin Gilles</p></li>
+<li><p>mashenjun</p></li>
+<li><p>Mathieu</p></li>
+<li><p>Matthias Bussonnier</p></li>
+<li><p>Merlijn van Deen</p></li>
+<li><p>Mikhail Korobov</p></li>
+<li><p>Naveen Nathan</p></li>
+<li><p>Nicholas Bollweg</p></li>
+<li><p>nottaanibot</p></li>
+<li><p>Omer Katz</p></li>
+<li><p>onesandzeroes</p></li>
+<li><p>Patrick Snape</p></li>
+<li><p>patter001</p></li>
+<li><p>Peter Parente</p></li>
+<li><p>Pietro Battiston</p></li>
+<li><p>RickWinter</p></li>
+<li><p>Robert Smith</p></li>
+<li><p>Ryan Nelson</p></li>
+<li><p>Scott Sanderson</p></li>
+<li><p>Sebastiaan Mathot</p></li>
+<li><p>Sylvain Corlay</p></li>
+<li><p>thethomask</p></li>
+<li><p>Thomas A Caswell</p></li>
+<li><p>Thomas Adriaan Hellinger</p></li>
+<li><p>Thomas Kluyver</p></li>
+<li><p>Tianhui Michael Li</p></li>
+<li><p>tmtabor</p></li>
+<li><p>unknown</p></li>
+<li><p>Victor Ramirez</p></li>
+<li><p>Volker Braun</p></li>
+<li><p>Wieland Hoffmann</p></li>
+<li><p>Yuval Langer</p></li>
+<li><p>Zoltán Vörös</p></li>
+<li><p>Élie Michel</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="version3.html" class="btn btn-neutral float-right" title="3.x Series" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="version4.html" class="btn btn-neutral float-left" title="4.x Series" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

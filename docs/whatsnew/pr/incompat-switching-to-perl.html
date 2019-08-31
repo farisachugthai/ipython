@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Incompatible change switch to perl &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="7.x Series" href="../version7.html" />
+    <link rel="prev" title="Antigravity feature" href="antigravity-feature.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">What’s new in IPython</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../development.html">Development version</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="antigravity-feature.html">Antigravity feature</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Incompatible change switch to perl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../development.html#backwards-incompatible-changes">Backwards incompatible changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../version7.html">7.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-7.html">Issues closed in the 7.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version6.html">6.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-6.html">Issues closed in the 6.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version5.html">5.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-5.html">Issues closed in the 5.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version4.html">4.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-4.html">Issues closed in the 4.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version3.html">3.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-3.html">Issues closed in the 3.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version3_widget_migration.html">Migrating Widgets to IPython 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version2.0.html">2.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-2.0.html">Issues closed in the 2.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version1.0.html">1.0 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-1.0.html">Issues closed in the 1.0 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version0.13.html">0.13 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-0.13.html">Issues closed in the 0.13 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version0.12.html">0.12 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-0.12.html">Issues closed in the 0.12 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version0.11.html">0.11 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../github-stats-0.11.html">Issues closed in the 0.11 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version0.10.html">0.10 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version0.9.html">0.9 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../version0.8.html">0.8 series</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">What’s new in IPython</a> &raquo;</li>
+        
+          <li><a href="../development.html">Development version</a> &raquo;</li>
+        
+      <li>Incompatible change switch to perl</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/whatsnew/pr/incompat-switching-to-perl.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="incompatible-change-switch-to-perl">
+<h1>Incompatible change switch to perl<a class="headerlink" href="#incompatible-change-switch-to-perl" title="Permalink to this headline">¶</a></h1>
+<p>Document which filename start with <code class="docutils literal notranslate"><span class="pre">incompat-</span></code> will be gathers in their own
+incompatibility section.</p>
+<p>Starting with IPython 42, only perl code execution is allowed. See <a class="reference external" href="https://github.com/ipython/ipython/pull/42/">PR #42</a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../version7.html" class="btn btn-neutral float-right" title="7.x Series" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="antigravity-feature.html" class="btn btn-neutral float-left" title="Antigravity feature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

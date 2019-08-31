@@ -1,0 +1,654 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The IPython API &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IPython" href="generated/IPython.html" />
+    <link rel="prev" title="Guide for IPython core Developers" href="../coredev/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The IPython API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.conftest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">conftest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.alias.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.alias</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.application.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.application</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.autocall.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.autocall</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.builtin_trap.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.builtin_trap</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.compilerop.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.compilerop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.completer.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.completer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.completerlib.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.completerlib</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.crashhandler.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.crashhandler</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.debugger.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.debugger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.error.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.events.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.events</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.excolors.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.excolors</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.extensions.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.extensions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.formatters.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.formatters</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.getipython.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.getipython</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.history.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.history</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.historyapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.historyapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.hooks.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.hooks</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.inputsplitter.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputsplitter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.inputtransformer.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputtransformer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.inputtransformer2.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputtransformer2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.interactiveshell.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.interactiveshell</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.logger.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.logger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.macro.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.macro</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.magic.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.magic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.magic_arguments.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.magic_arguments</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.oinspect.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.oinspect</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.page.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.page</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.payload.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.payload</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.payloadpage.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.payloadpage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.prefilter.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.prefilter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.profileapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.profileapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.profiledir.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.profiledir</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.prompts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.prompts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.pylabtools.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.pylabtools</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.shellapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.shellapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.splitinput.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.splitinput</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.core.ultratb.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.ultratb</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.display.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">display</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.backgroundjobs.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.backgroundjobs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.clipboard.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.clipboard</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.deepreload.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.deepreload</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.demo.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.demo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.editorhooks.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.editorhooks</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.guisupport.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.guisupport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.inputhook.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.inputhook</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.latextools.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.latextools</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.lexers.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.lexers</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.pretty.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.pretty</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.lib.security.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.security</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.paths.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">paths</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.terminal.debugger.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.debugger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.terminal.embed.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.embed</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.terminal.interactiveshell.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.interactiveshell</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.terminal.ipapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.ipapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.terminal.magics.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.magics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.terminal.prompts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.prompts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.terminal.shortcuts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.shortcuts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.decorators.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.decorators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.globalipapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.globalipapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.iptest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.iptest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.iptestcontroller.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.iptestcontroller</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.ipunittest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.ipunittest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.skipdoctest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.skipdoctest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.testing.tools.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.tools</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.PyColorize.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.PyColorize</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.capture.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.capture</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.colorable.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.colorable</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.coloransi.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.coloransi</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.contexts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.contexts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.data.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.data</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.decorators.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.decorators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.dir2.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.dir2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.encoding.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.encoding</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.frame.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.frame</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.generics.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.generics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.importstring.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.importstring</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.io.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.io</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.ipstruct.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.ipstruct</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.module_paths.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.module_paths</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.openpy.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.openpy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.path.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.path</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.process.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.process</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.sentinel.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.sentinel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.shimmodule.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.shimmodule</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.strdispatch.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.strdispatch</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.sysinfo.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.sysinfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.syspathcontext.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.syspathcontext</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.tempdir.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.tempdir</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.terminal.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.terminal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.text.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.text</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.timing.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.timing</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.tokenutil.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.tokenutil</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.tz.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.tz</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.ulinecache.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.ulinecache</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.version.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.version</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/IPython.utils.wildcard.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.wildcard</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>The IPython API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="the-ipython-api">
+<span id="api-index"></span><h1>The IPython API<a class="headerlink" href="#the-ipython-api" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Release</dt>
+<dd class="field-odd"><p>7.9.0.dev</p>
+</dd>
+<dt class="field-even">Date</dt>
+<dd class="field-even"><p>August 30, 2019</p>
+</dd>
+</dl>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.html#module-IPython" title="IPython"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython</span></code></a></p></td>
+<td><p>IPython: tools for interactive and parallel computing in Python.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.conftest.html#module-IPython.conftest" title="IPython.conftest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.conftest</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.alias.html#module-IPython.core.alias" title="IPython.core.alias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.alias</span></code></a></p></td>
+<td><p>System command aliases.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.application.html#module-IPython.core.application" title="IPython.core.application"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.application</span></code></a></p></td>
+<td><p>An application for IPython.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.autocall.html#module-IPython.core.autocall" title="IPython.core.autocall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.autocall</span></code></a></p></td>
+<td><p>Autocall capabilities for IPython.core.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.builtin_trap.html#module-IPython.core.builtin_trap" title="IPython.core.builtin_trap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.builtin_trap</span></code></a></p></td>
+<td><p>A context manager for managing things injected into <a class="reference external" href="https://docs.python.org/3/library/builtins.html#module-builtins" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">builtins</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.compilerop.html#module-IPython.core.compilerop" title="IPython.core.compilerop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.compilerop</span></code></a></p></td>
+<td><p>Compiler tools with improved interactive support.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.completer.html#module-IPython.core.completer" title="IPython.core.completer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.completer</span></code></a></p></td>
+<td><p>Completion for IPython.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.completerlib.html#module-IPython.core.completerlib" title="IPython.core.completerlib"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.completerlib</span></code></a></p></td>
+<td><p>Implementations for various useful completers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.crashhandler.html#module-IPython.core.crashhandler" title="IPython.core.crashhandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.crashhandler</span></code></a></p></td>
+<td><p>sys.excepthook for IPython itself, leaves a detailed report on disk.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.debugger.html#module-IPython.core.debugger" title="IPython.core.debugger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.debugger</span></code></a></p></td>
+<td><p>Pdb debugger class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.error.html#module-IPython.core.error" title="IPython.core.error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.error</span></code></a></p></td>
+<td><p>Global exception classes for IPython.core.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.events.html#module-IPython.core.events" title="IPython.core.events"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.events</span></code></a></p></td>
+<td><p>Infrastructure for registering and firing callbacks on application events.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.excolors.html#module-IPython.core.excolors" title="IPython.core.excolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.excolors</span></code></a></p></td>
+<td><p>Color schemes for exception handling code in IPython.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.extensions.html#module-IPython.core.extensions" title="IPython.core.extensions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.extensions</span></code></a></p></td>
+<td><p>A class for managing IPython extensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.formatters.html#module-IPython.core.formatters" title="IPython.core.formatters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.formatters</span></code></a></p></td>
+<td><p>Display formatters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.getipython.html#module-IPython.core.getipython" title="IPython.core.getipython"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.getipython</span></code></a></p></td>
+<td><p>Simple function to call to get the current InteractiveShell instance</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.history.html#module-IPython.core.history" title="IPython.core.history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.history</span></code></a></p></td>
+<td><p>History related magics and functionality</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.historyapp.html#module-IPython.core.historyapp" title="IPython.core.historyapp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.historyapp</span></code></a></p></td>
+<td><p>An application for managing IPython history.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.hooks.html#module-IPython.core.hooks" title="IPython.core.hooks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.hooks</span></code></a></p></td>
+<td><p>Hooks for IPython.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.inputsplitter.html#module-IPython.core.inputsplitter" title="IPython.core.inputsplitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.inputsplitter</span></code></a></p></td>
+<td><p>DEPRECATED: Input handling and transformation machinery.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.inputtransformer.html#module-IPython.core.inputtransformer" title="IPython.core.inputtransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.inputtransformer</span></code></a></p></td>
+<td><p>DEPRECATED: Input transformer classes to support IPython special syntax.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.inputtransformer2.html#module-IPython.core.inputtransformer2" title="IPython.core.inputtransformer2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.inputtransformer2</span></code></a></p></td>
+<td><p>Input transformer machinery to support IPython special syntax.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.interactiveshell.html#module-IPython.core.interactiveshell" title="IPython.core.interactiveshell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.interactiveshell</span></code></a></p></td>
+<td><p>Main IPython class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.logger.html#module-IPython.core.logger" title="IPython.core.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.logger</span></code></a></p></td>
+<td><p>Logger class for IPython’s logging facilities.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.macro.html#module-IPython.core.macro" title="IPython.core.macro"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.macro</span></code></a></p></td>
+<td><p>Support for interactive macros in IPython</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.magic.html#module-IPython.core.magic" title="IPython.core.magic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.magic</span></code></a></p></td>
+<td><p>Magic functions for InteractiveShell.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.magic_arguments.html#module-IPython.core.magic_arguments" title="IPython.core.magic_arguments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.magic_arguments</span></code></a></p></td>
+<td><p>A decorator-based method of constructing IPython magics with <code class="docutils literal notranslate"><span class="pre">argparse</span></code> option handling.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.oinspect.html#module-IPython.core.oinspect" title="IPython.core.oinspect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.oinspect</span></code></a></p></td>
+<td><p>Tools for inspecting Python objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.page.html#module-IPython.core.page" title="IPython.core.page"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.page</span></code></a></p></td>
+<td><p>Paging capabilities for IPython.core</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.payload.html#module-IPython.core.payload" title="IPython.core.payload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.payload</span></code></a></p></td>
+<td><p>Payload system for IPython.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.payloadpage.html#module-IPython.core.payloadpage" title="IPython.core.payloadpage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.payloadpage</span></code></a></p></td>
+<td><p>A payload based version of page.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.prefilter.html#module-IPython.core.prefilter" title="IPython.core.prefilter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.prefilter</span></code></a></p></td>
+<td><p>Prefiltering components.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.profileapp.html#module-IPython.core.profileapp" title="IPython.core.profileapp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.profileapp</span></code></a></p></td>
+<td><p>An application for managing IPython profiles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.profiledir.html#module-IPython.core.profiledir" title="IPython.core.profiledir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.profiledir</span></code></a></p></td>
+<td><p>An object for managing IPython profile directories.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.prompts.html#module-IPython.core.prompts" title="IPython.core.prompts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.prompts</span></code></a></p></td>
+<td><p>Being removed</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.pylabtools.html#module-IPython.core.pylabtools" title="IPython.core.pylabtools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.pylabtools</span></code></a></p></td>
+<td><p>Pylab (matplotlib) support utilities.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.shellapp.html#module-IPython.core.shellapp" title="IPython.core.shellapp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.shellapp</span></code></a></p></td>
+<td><p>A mixin for <code class="xref py py-class docutils literal notranslate"><span class="pre">Application</span></code> classes that launch InteractiveShell instances, load extensions, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.core.splitinput.html#module-IPython.core.splitinput" title="IPython.core.splitinput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.splitinput</span></code></a></p></td>
+<td><p>Simple utility for splitting user input.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.core.ultratb.html#module-IPython.core.ultratb" title="IPython.core.ultratb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.core.ultratb</span></code></a></p></td>
+<td><p>Verbose and colourful traceback formatting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.display.html#module-IPython.display" title="IPython.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.display</span></code></a></p></td>
+<td><p>Public API for display tools in IPython.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.lib.backgroundjobs.html#module-IPython.lib.backgroundjobs" title="IPython.lib.backgroundjobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.backgroundjobs</span></code></a></p></td>
+<td><p>Manage background (threaded) jobs conveniently from an interactive shell.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.lib.clipboard.html#module-IPython.lib.clipboard" title="IPython.lib.clipboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.clipboard</span></code></a></p></td>
+<td><p>Utilities for accessing the platform’s clipboard.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.lib.deepreload.html#module-IPython.lib.deepreload" title="IPython.lib.deepreload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.deepreload</span></code></a></p></td>
+<td><p>Provides a reload() function that acts recursively.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.lib.demo.html#module-IPython.lib.demo" title="IPython.lib.demo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.demo</span></code></a></p></td>
+<td><p>Module for interactive demos using IPython.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.lib.editorhooks.html#module-IPython.lib.editorhooks" title="IPython.lib.editorhooks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.editorhooks</span></code></a></p></td>
+<td><p>‘editor’ hooks for common editors that work well with ipython</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.lib.guisupport.html#module-IPython.lib.guisupport" title="IPython.lib.guisupport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.guisupport</span></code></a></p></td>
+<td><p>Support for creating GUI apps and starting event loops.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.lib.inputhook.html#module-IPython.lib.inputhook" title="IPython.lib.inputhook"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.inputhook</span></code></a></p></td>
+<td><p>Deprecated since IPython 5.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.lib.latextools.html#module-IPython.lib.latextools" title="IPython.lib.latextools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.latextools</span></code></a></p></td>
+<td><p>Tools for handling LaTeX.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.lib.lexers.html#module-IPython.lib.lexers" title="IPython.lib.lexers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.lexers</span></code></a></p></td>
+<td><p>Defines a variety of Pygments lexers for highlighting IPython code.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.lib.pretty.html#module-IPython.lib.pretty" title="IPython.lib.pretty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.pretty</span></code></a></p></td>
+<td><p>Python advanced pretty printer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.lib.security.html#module-IPython.lib.security" title="IPython.lib.security"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.lib.security</span></code></a></p></td>
+<td><p>Password generation for the IPython notebook.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.paths.html#module-IPython.paths" title="IPython.paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.paths</span></code></a></p></td>
+<td><p>Find files and directories which IPython uses.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.terminal.debugger.html#module-IPython.terminal.debugger" title="IPython.terminal.debugger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.terminal.debugger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.terminal.embed.html#module-IPython.terminal.embed" title="IPython.terminal.embed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.terminal.embed</span></code></a></p></td>
+<td><p>An embedded IPython shell.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.terminal.interactiveshell.html#module-IPython.terminal.interactiveshell" title="IPython.terminal.interactiveshell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.terminal.interactiveshell</span></code></a></p></td>
+<td><p>IPython terminal interface using prompt_toolkit</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.terminal.ipapp.html#module-IPython.terminal.ipapp" title="IPython.terminal.ipapp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.terminal.ipapp</span></code></a></p></td>
+<td><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Application</span></code> object for the command line <strong class="command">ipython</strong> program.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.terminal.magics.html#module-IPython.terminal.magics" title="IPython.terminal.magics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.terminal.magics</span></code></a></p></td>
+<td><p>Extra magics for terminal use.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.terminal.prompts.html#module-IPython.terminal.prompts" title="IPython.terminal.prompts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.terminal.prompts</span></code></a></p></td>
+<td><p>Terminal input and output prompts.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.terminal.shortcuts.html#module-IPython.terminal.shortcuts" title="IPython.terminal.shortcuts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.terminal.shortcuts</span></code></a></p></td>
+<td><p>Module to define and register Terminal IPython shortcuts with <code class="xref py py-mod docutils literal notranslate"><span class="pre">prompt_toolkit</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.testing.html#module-IPython.testing" title="IPython.testing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing</span></code></a></p></td>
+<td><p>Testing support (tools to test IPython itself).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.testing.decorators.html#module-IPython.testing.decorators" title="IPython.testing.decorators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing.decorators</span></code></a></p></td>
+<td><p>Decorators for labeling test objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.testing.globalipapp.html#module-IPython.testing.globalipapp" title="IPython.testing.globalipapp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing.globalipapp</span></code></a></p></td>
+<td><p>Global IPython app to support test running.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.testing.iptest.html#module-IPython.testing.iptest" title="IPython.testing.iptest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing.iptest</span></code></a></p></td>
+<td><p>IPython Test Suite Runner.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.testing.iptestcontroller.html#module-IPython.testing.iptestcontroller" title="IPython.testing.iptestcontroller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing.iptestcontroller</span></code></a></p></td>
+<td><p>IPython Test Process Controller</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.testing.ipunittest.html#module-IPython.testing.ipunittest" title="IPython.testing.ipunittest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing.ipunittest</span></code></a></p></td>
+<td><p>Experimental code for cleaner support of IPython syntax with unittest.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.testing.skipdoctest.html#module-IPython.testing.skipdoctest" title="IPython.testing.skipdoctest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing.skipdoctest</span></code></a></p></td>
+<td><p>Decorators marks that a doctest should be skipped.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.testing.tools.html#module-IPython.testing.tools" title="IPython.testing.tools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.testing.tools</span></code></a></p></td>
+<td><p>Generic testing tools.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.PyColorize.html#module-IPython.utils.PyColorize" title="IPython.utils.PyColorize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.PyColorize</span></code></a></p></td>
+<td><p>Class and program to colorize python source code for ANSI terminals.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.capture.html#module-IPython.utils.capture" title="IPython.utils.capture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.capture</span></code></a></p></td>
+<td><p>IO capturing utilities.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.colorable.html#module-IPython.utils.colorable" title="IPython.utils.colorable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.colorable</span></code></a></p></td>
+<td><p>Color managing related utilities</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.coloransi.html#module-IPython.utils.coloransi" title="IPython.utils.coloransi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.coloransi</span></code></a></p></td>
+<td><p>Tools for coloring text in ANSI terminals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.contexts.html#module-IPython.utils.contexts" title="IPython.utils.contexts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.contexts</span></code></a></p></td>
+<td><p>Miscellaneous context managers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.data.html#module-IPython.utils.data" title="IPython.utils.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.data</span></code></a></p></td>
+<td><p>Utilities for working with data structures like lists, dicts and tuples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.decorators.html#module-IPython.utils.decorators" title="IPython.utils.decorators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.decorators</span></code></a></p></td>
+<td><p>Decorators that don’t go anywhere else.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.dir2.html#module-IPython.utils.dir2" title="IPython.utils.dir2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.dir2</span></code></a></p></td>
+<td><p>A fancy version of Python’s builtin <a class="reference external" href="https://docs.python.org/3/library/functions.html#dir" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dir()</span></code></a> function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.encoding.html#module-IPython.utils.encoding" title="IPython.utils.encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.encoding</span></code></a></p></td>
+<td><p>Utilities for dealing with text encodings</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.frame.html#module-IPython.utils.frame" title="IPython.utils.frame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.frame</span></code></a></p></td>
+<td><p>Utilities for working with stack frames.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.generics.html#module-IPython.utils.generics" title="IPython.utils.generics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.generics</span></code></a></p></td>
+<td><p>Generic functions for extending IPython.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.importstring.html#module-IPython.utils.importstring" title="IPython.utils.importstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.importstring</span></code></a></p></td>
+<td><p>A simple utility to import something by its string name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.io.html#module-IPython.utils.io" title="IPython.utils.io"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.io</span></code></a></p></td>
+<td><p>IO related utilities.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.ipstruct.html#module-IPython.utils.ipstruct" title="IPython.utils.ipstruct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.ipstruct</span></code></a></p></td>
+<td><p>A dict subclass that supports attribute style access.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.module_paths.html#module-IPython.utils.module_paths" title="IPython.utils.module_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.module_paths</span></code></a></p></td>
+<td><p>Utility functions for finding modules</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.openpy.html#module-IPython.utils.openpy" title="IPython.utils.openpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.openpy</span></code></a></p></td>
+<td><p>Tools to open .py files as Unicode, using the encoding specified within the file, as per PEP 263.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.path.html#module-IPython.utils.path" title="IPython.utils.path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.path</span></code></a></p></td>
+<td><p>Utilities for path handling.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.process.html#module-IPython.utils.process" title="IPython.utils.process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.process</span></code></a></p></td>
+<td><p>Utilities for working with external processes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.sentinel.html#module-IPython.utils.sentinel" title="IPython.utils.sentinel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.sentinel</span></code></a></p></td>
+<td><p>Sentinel class for constants with useful reprs</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.shimmodule.html#module-IPython.utils.shimmodule" title="IPython.utils.shimmodule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.shimmodule</span></code></a></p></td>
+<td><p>A shim module for deprecated imports</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.strdispatch.html#module-IPython.utils.strdispatch" title="IPython.utils.strdispatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.strdispatch</span></code></a></p></td>
+<td><p>String dispatch class to match regexps and dispatch commands.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.sysinfo.html#module-IPython.utils.sysinfo" title="IPython.utils.sysinfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.sysinfo</span></code></a></p></td>
+<td><p>Utilities for getting information about IPython and the system it’s running in.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.syspathcontext.html#module-IPython.utils.syspathcontext" title="IPython.utils.syspathcontext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.syspathcontext</span></code></a></p></td>
+<td><p>Context managers for adding things to sys.path temporarily.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.tempdir.html#module-IPython.utils.tempdir" title="IPython.utils.tempdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.tempdir</span></code></a></p></td>
+<td><p>This module contains classes - NamedFileInTemporaryDirectory, TemporaryWorkingDirectory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.terminal.html#module-IPython.utils.terminal" title="IPython.utils.terminal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.terminal</span></code></a></p></td>
+<td><p>Utilities for working with terminals.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.text.html#module-IPython.utils.text" title="IPython.utils.text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.text</span></code></a></p></td>
+<td><p>Utilities for working with strings and text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.timing.html#module-IPython.utils.timing" title="IPython.utils.timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.timing</span></code></a></p></td>
+<td><p>Utilities for timing code execution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.tokenutil.html#module-IPython.utils.tokenutil" title="IPython.utils.tokenutil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.tokenutil</span></code></a></p></td>
+<td><p>Token-related utilities</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.tz.html#module-IPython.utils.tz" title="IPython.utils.tz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.tz</span></code></a></p></td>
+<td><p>Timezone utilities</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.ulinecache.html#module-IPython.utils.ulinecache" title="IPython.utils.ulinecache"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.ulinecache</span></code></a></p></td>
+<td><p>This module has been deprecated since IPython 6.0.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/IPython.utils.version.html#module-IPython.utils.version" title="IPython.utils.version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.version</span></code></a></p></td>
+<td><p>Utilities for version comparison</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/IPython.utils.wildcard.html#module-IPython.utils.wildcard" title="IPython.utils.wildcard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPython.utils.wildcard</span></code></a></p></td>
+<td><p>Support for wildcard pattern matching in object inspection.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/IPython.html" class="btn btn-neutral float-right" title="IPython" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../coredev/index.html" class="btn btn-neutral float-left" title="Guide for IPython core Developers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

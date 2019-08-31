@@ -1,0 +1,529 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Specific config details &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IPython extensions" href="extensions/index.html" />
+    <link rel="prev" title="IPython shortcuts" href="shortcuts/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Configuration and customization</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#configuring-ipython">Configuring IPython</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="intro.html">Introduction to IPython configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="options/index.html">IPython options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shortcuts/index.html">IPython shortcuts</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Specific config details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#custom-prompts">Custom Prompts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#terminal-colors">Terminal Colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#editor-configuration">Editor configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#extending-and-integrating-with-ipython">Extending and integrating with IPython</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Configuration and customization</a> &raquo;</li>
+        
+      <li>Specific config details</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/config/details.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="specific-config-details">
+<h1>Specific config details<a class="headerlink" href="#specific-config-details" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="custom-prompts">
+<span id="id1"></span><h2>Custom Prompts<a class="headerlink" href="#custom-prompts" title="Permalink to this headline">¶</a></h2>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 5.0.</span></p>
+</div>
+<p>From IPython 5, prompts are produced as a list of Pygments tokens, which are
+tuples of (token_type, text). You can customise prompts by writing a method
+which generates a list of tokens.</p>
+<p>There are four kinds of prompt:</p>
+<ul class="simple">
+<li><p>The <strong>in</strong> prompt is shown before the first line of input
+(default like <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">[1]:</span></code>).</p></li>
+<li><p>The <strong>continuation</strong> prompt is shown before further lines of input
+(default like <code class="docutils literal notranslate"><span class="pre">...:</span></code>).</p></li>
+<li><p>The <strong>rewrite</strong> prompt is shown to highlight how special syntax has been
+interpreted (default like <code class="docutils literal notranslate"><span class="pre">-----&gt;</span></code>).</p></li>
+<li><p>The <strong>out</strong> prompt is shown before the result from evaluating the input
+(default like <code class="docutils literal notranslate"><span class="pre">Out[1]:</span></code>).</p></li>
+</ul>
+<p>Custom prompts are supplied together as a class. If you want to customise only
+some of the prompts, inherit from <a class="reference internal" href="../api/generated/IPython.terminal.prompts.html#IPython.terminal.prompts.Prompts" title="IPython.terminal.prompts.Prompts"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.terminal.prompts.Prompts</span></code></a>,
+which defines the defaults. The required interface is like this:</p>
+<dl class="class">
+<dt id="MyPrompts">
+<em class="property">class </em><code class="sig-name descname">MyPrompts</code><span class="sig-paren">(</span><em class="sig-param">shell</em><span class="sig-paren">)</span><a class="headerlink" href="#MyPrompts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompt style definition. <em>shell</em> is a reference to the
+<a class="reference internal" href="../api/generated/IPython.terminal.interactiveshell.html#IPython.terminal.interactiveshell.TerminalInteractiveShell" title="IPython.terminal.interactiveshell.TerminalInteractiveShell"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalInteractiveShell</span></code></a> instance.</p>
+<dl class="method">
+<dt id="MyPrompts.in_prompt_tokens">
+<code class="sig-name descname">in_prompt_tokens</code><span class="sig-paren">(</span><em class="sig-param">cli=None</em><span class="sig-paren">)</span><a class="headerlink" href="#MyPrompts.in_prompt_tokens" title="Permalink to this definition">¶</a></dt>
+<dt id="MyPrompts.continuation_prompt_tokens">
+<code class="sig-name descname">continuation_prompt_tokens</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cli=None</em>, <em class="sig-param">width=None</em><span class="sig-paren">)</span><a class="headerlink" href="#MyPrompts.continuation_prompt_tokens" title="Permalink to this definition">¶</a></dt>
+<dt id="MyPrompts.rewrite_prompt_tokens">
+<code class="sig-name descname">rewrite_prompt_tokens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MyPrompts.rewrite_prompt_tokens" title="Permalink to this definition">¶</a></dt>
+<dt id="MyPrompts.out_prompt_tokens">
+<code class="sig-name descname">out_prompt_tokens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MyPrompts.out_prompt_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the respective prompts as lists of <code class="docutils literal notranslate"><span class="pre">(token_type,</span> <span class="pre">text)</span></code> tuples.</p>
+<p>For continuation prompts, <em>width</em> is an integer representing the width of
+the prompt area in terminal columns.</p>
+<p><em>cli</em>, where used, is the prompt_toolkit <code class="docutils literal notranslate"><span class="pre">CommandLineInterface</span></code> instance.
+This is mainly for compatibility with the API prompt_toolkit expects.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Here is an example Prompt class that will show the current working directory
+in the input prompt:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.terminal.prompts</span> <span class="kn">import</span> <span class="n">Prompts</span><span class="p">,</span> <span class="n">Token</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">class</span> <span class="nc">MyPrompt</span><span class="p">(</span><span class="n">Prompts</span><span class="p">):</span>
+     <span class="k">def</span> <span class="nf">in_prompt_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+         <span class="k">return</span> <span class="p">[(</span><span class="n">Token</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
+                 <span class="p">(</span><span class="n">Token</span><span class="o">.</span><span class="n">Prompt</span><span class="p">,</span> <span class="s1">&#39; &gt;&gt;&gt;&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>To set the new prompt, assign it to the <code class="docutils literal notranslate"><span class="pre">prompts</span></code> attribute of the IPython
+shell:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">ip</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+   <span class="o">...</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">prompts</span> <span class="o">=</span> <span class="n">MyPrompt</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">bob</span> <span class="o">&gt;&gt;&gt;</span> <span class="c1"># it works</span>
+</pre></div>
+</div>
+<p>See <code class="docutils literal notranslate"><span class="pre">IPython/example/utils/cwd_prompt.py</span></code> for an example of how to write an
+extensions to customise prompts.</p>
+<p>Inside IPython or in a startup script, you can use a custom prompts class
+by setting <code class="docutils literal notranslate"><span class="pre">get_ipython().prompts</span></code> to an <em>instance</em> of the class.
+In configuration, <code class="docutils literal notranslate"><span class="pre">TerminalInteractiveShell.prompts_class</span></code> may be set to
+either the class object, or a string of its full importable name.</p>
+<p>To include invisible terminal control sequences in a prompt, use
+<code class="docutils literal notranslate"><span class="pre">Token.ZeroWidthEscape</span></code> as the token type. Tokens with this type are ignored
+when calculating the width.</p>
+<p>Colours in the prompt are determined by the token types and the highlighting
+style; see below for more details. The tokens used in the default prompts are
+<code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">PromptNum</span></code>, <code class="docutils literal notranslate"><span class="pre">OutPrompt</span></code> and <code class="docutils literal notranslate"><span class="pre">OutPromptNum</span></code>.</p>
+</div>
+<div class="section" id="terminal-colors">
+<span id="termcolour"></span><h2>Terminal Colors<a class="headerlink" href="#terminal-colors" title="Permalink to this headline">¶</a></h2>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 5.0.</span></p>
+</div>
+<p>There are two main configuration options controlling colours.</p>
+<p><code class="docutils literal notranslate"><span class="pre">InteractiveShell.colors</span></code> sets the colour of tracebacks and object info (the
+output from e.g. <code class="docutils literal notranslate"><span class="pre">zip?</span></code>). It may also affect other things if the option below
+is set to <code class="docutils literal notranslate"><span class="pre">'legacy'</span></code>. It has four case-insensitive values:
+<code class="docutils literal notranslate"><span class="pre">'nocolor',</span> <span class="pre">'neutral',</span> <span class="pre">'linux',</span> <span class="pre">'lightbg'</span></code>. The default is <em>neutral</em>, which
+should be legible on either dark or light terminal backgrounds. <em>linux</em> is
+optimised for dark backgrounds and <em>lightbg</em> for light ones.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TerminalInteractiveShell.highlighting_style</span></code> determines prompt colours and
+syntax highlighting. It takes the name (as a string) or class (as a subclass of
+<code class="docutils literal notranslate"><span class="pre">pygments.style.Style</span></code>) of a Pygments style, or the special value <code class="docutils literal notranslate"><span class="pre">'legacy'</span></code>
+to pick a style in accordance with <code class="docutils literal notranslate"><span class="pre">InteractiveShell.colors</span></code>.</p>
+<p>You can see the Pygments styles available on your system by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pygments</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">pygments</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">get_all_styles</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Additionally, <code class="docutils literal notranslate"><span class="pre">TerminalInteractiveShell.highlighting_style_overrides</span></code> can override
+specific styles in the highlighting. It should be a dictionary mapping Pygments
+token types to strings defining the style. See <a class="reference external" href="http://pygments.org/docs/styles/#creating-own-styles">Pygments’ documentation</a> for the language used
+to define styles.</p>
+<div class="section" id="colors-in-the-pager">
+<h3>Colors in the pager<a class="headerlink" href="#colors-in-the-pager" title="Permalink to this headline">¶</a></h3>
+<p>On some systems, the default pager has problems with ANSI colour codes.
+To configure your default pager to allow these:</p>
+<ol class="arabic simple">
+<li><p>Set the environment PAGER variable to <code class="docutils literal notranslate"><span class="pre">less</span></code>.</p></li>
+<li><p>Set the environment LESS variable to <code class="docutils literal notranslate"><span class="pre">-r</span></code> (plus any other options
+you always want to pass to less by default). This tells less to
+properly interpret control sequences, which is how color
+information is given to your terminal.</p></li>
+</ol>
+</div>
+</div>
+<div class="section" id="editor-configuration">
+<span id="editors"></span><h2>Editor configuration<a class="headerlink" href="#editor-configuration" title="Permalink to this headline">¶</a></h2>
+<p>IPython can integrate with text editors in a number of different ways:</p>
+<ul class="simple">
+<li><p>Editors (such as <a class="reference external" href="http://www.gnu.org/software/emacs/">(X)Emacs</a>, <a class="reference external" href="http://www.vim.org/">vim</a> and <a class="reference external" href="http://macromates.com/">TextMate</a>) can
+send code to IPython for execution.</p></li>
+<li><p>IPython’s <code class="docutils literal notranslate"><span class="pre">%edit</span></code> magic command can open an editor of choice to edit
+a code block.</p></li>
+</ul>
+<p>The %edit command (and its alias %ed) will invoke the editor set in your
+environment as <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">EDITOR</span></code>. If this variable is not set, it will default
+to vi under Linux/Unix and to notepad under Windows. You may want to set this
+variable properly and to a lightweight editor which doesn’t take too long to
+start (that is, something other than a new instance of Emacs). This way you
+can edit multi-line code quickly and with the power of a real editor right
+inside IPython.</p>
+<p>You can also control the editor by setting <code class="xref py py-attr docutils literal notranslate"><span class="pre">TerminalInteractiveShell.editor</span></code>
+in <code class="file docutils literal notranslate"><span class="pre">ipython_config.py</span></code>.</p>
+<div class="section" id="vim">
+<h3>Vim<a class="headerlink" href="#vim" title="Permalink to this headline">¶</a></h3>
+<p>Paul Ivanov’s <a class="reference external" href="https://github.com/ivanov/vim-ipython">vim-ipython</a> provides
+powerful IPython integration for vim.</p>
+</div>
+<div class="section" id="x-emacs">
+<span id="emacs"></span><h3>(X)Emacs<a class="headerlink" href="#x-emacs" title="Permalink to this headline">¶</a></h3>
+<p>If you are a dedicated Emacs user, and want to use Emacs when IPython’s
+<code class="docutils literal notranslate"><span class="pre">%edit</span></code> magic command is called you should set up the Emacs server so that
+new requests are handled by the original process. This means that almost no
+time is spent in handling the request (assuming an Emacs process is already
+running). For this to work, you need to set your EDITOR environment variable
+to ‘emacsclient’. The code below, supplied by Francois Pinard, can then be
+used in your <code class="file docutils literal notranslate"><span class="pre">.emacs</span></code> file to enable the server:</p>
+<div class="highlight-common-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">defvar</span> <span class="nv">server-buffer-clients</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nb">and</span> <span class="p">(</span><span class="nb">fboundp</span> <span class="ss">&#39;server-start</span><span class="p">)</span> <span class="p">(</span><span class="nb">string-equal</span> <span class="p">(</span><span class="nv">getenv</span> <span class="s">&quot;TERM&quot;</span><span class="p">)</span> <span class="ss">&#39;xterm</span><span class="p">))</span>
+  <span class="p">(</span><span class="nv">server-start</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">defun</span> <span class="nv">fp-kill-server-with-buffer-routine</span> <span class="p">()</span>
+    <span class="p">(</span><span class="nb">and</span> <span class="nv">server-buffer-clients</span> <span class="p">(</span><span class="nv">server-done</span><span class="p">)))</span>
+  <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;kill-buffer-hook</span> <span class="ss">&#39;fp-kill-server-with-buffer-routine</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Thanks to the work of Alexander Schmolck and Prabhu Ramachandran,
+currently (X)Emacs and IPython get along very well in other ways.</p>
+<p>With (X)EMacs &gt;= 24, You can enable IPython in python-mode with:</p>
+<div class="highlight-common-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;python</span><span class="p">)</span>
+<span class="p">(</span><span class="k">setq</span> <span class="nv">python-shell-interpreter</span> <span class="s">&quot;ipython&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="keyboard-shortcuts">
+<span id="custom-keyboard-shortcuts"></span><h2>Keyboard Shortcuts<a class="headerlink" href="#keyboard-shortcuts" title="Permalink to this headline">¶</a></h2>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 5.0.</span></p>
+</div>
+<p>You can customise keyboard shortcuts for terminal IPython. Put code like this in
+a <a class="reference internal" href="../interactive/tutorial.html#startup-files"><span class="std std-ref">startup file</span></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython</span> <span class="k">import</span> <span class="n">get_ipython</span>
+<span class="kn">from</span> <span class="nn">prompt_toolkit.enums</span> <span class="k">import</span> <span class="n">DEFAULT_BUFFER</span>
+<span class="kn">from</span> <span class="nn">prompt_toolkit.keys</span> <span class="k">import</span> <span class="n">Keys</span>
+<span class="kn">from</span> <span class="nn">prompt_toolkit.filters</span> <span class="k">import</span> <span class="n">HasFocus</span><span class="p">,</span> <span class="n">HasSelection</span><span class="p">,</span> <span class="n">ViInsertMode</span><span class="p">,</span> <span class="n">EmacsInsertMode</span>
+
+<span class="n">ip</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="n">insert_mode</span> <span class="o">=</span> <span class="n">ViInsertMode</span><span class="p">()</span> <span class="o">|</span> <span class="n">EmacsInsertMode</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">insert_unexpected</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">current_buffer</span>
+    <span class="n">buf</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s1">&#39;The Spanish Inquisition&#39;</span><span class="p">)</span>
+<span class="c1"># Register the shortcut if IPython is using prompt_toolkit</span>
+<span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="s1">&#39;pt_app&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">registry</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">pt_app</span><span class="o">.</span><span class="n">key_bindings</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">add_binding</span><span class="p">(</span><span class="n">Keys</span><span class="o">.</span><span class="n">ControlN</span><span class="p">,</span>
+                     <span class="nb">filter</span><span class="o">=</span><span class="p">(</span><span class="n">HasFocus</span><span class="p">(</span><span class="n">DEFAULT_BUFFER</span><span class="p">)</span>
+                             <span class="o">&amp;</span> <span class="o">~</span><span class="n">HasSelection</span><span class="p">()</span>
+                             <span class="o">&amp;</span> <span class="n">insert_mode</span><span class="p">))(</span><span class="n">insert_unexpected</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is a second example that bind the key sequence <code class="docutils literal notranslate"><span class="pre">j</span></code>, <code class="docutils literal notranslate"><span class="pre">k</span></code> to switch to
+VI input mode to <code class="docutils literal notranslate"><span class="pre">Normal</span></code> when in insert mode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython</span> <span class="k">import</span> <span class="n">get_ipython</span>
+<span class="kn">from</span> <span class="nn">prompt_toolkit.enums</span> <span class="k">import</span> <span class="n">DEFAULT_BUFFER</span>
+<span class="kn">from</span> <span class="nn">prompt_toolkit.filters</span> <span class="k">import</span> <span class="n">HasFocus</span><span class="p">,</span> <span class="n">ViInsertMode</span>
+<span class="kn">from</span> <span class="nn">prompt_toolkit.key_binding.vi_state</span> <span class="k">import</span> <span class="n">InputMode</span>
+
+<span class="n">ip</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">switch_to_navigation_mode</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+   <span class="n">vi_state</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">vi_state</span>
+   <span class="n">vi_state</span><span class="o">.</span><span class="n">input_mode</span> <span class="o">=</span> <span class="n">InputMode</span><span class="o">.</span><span class="n">NAVIGATION</span>
+
+<span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="s1">&#39;pt_app&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+   <span class="n">registry</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">pt_app</span><span class="o">.</span><span class="n">key_bindings</span>
+   <span class="n">registry</span><span class="o">.</span><span class="n">add_binding</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;j&#39;</span><span class="p">,</span><span class="sa">u</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+                        <span class="nb">filter</span><span class="o">=</span><span class="p">(</span><span class="n">HasFocus</span><span class="p">(</span><span class="n">DEFAULT_BUFFER</span><span class="p">)</span>
+                                 <span class="o">&amp;</span> <span class="n">ViInsertMode</span><span class="p">()))(</span><span class="n">switch_to_navigation_mode</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information on filters and what you can do with the <code class="docutils literal notranslate"><span class="pre">event</span></code> object,
+<a class="reference external" href="http://python-prompt-toolkit.readthedocs.io/en/latest/pages/building_prompts.html#adding-custom-key-bindings">see the prompt_toolkit docs</a>.</p>
+<div class="section" id="enter-to-execute">
+<h3>Enter to execute<a class="headerlink" href="#enter-to-execute" title="Permalink to this headline">¶</a></h3>
+<p>In the Terminal IPython shell – which by default uses the <code class="docutils literal notranslate"><span class="pre">prompt_toolkit</span></code>
+interface, the semantic meaning of pressing the <kbd class="kbd docutils literal notranslate">Enter</kbd> key can be
+ambiguous. In some case <kbd class="kbd docutils literal notranslate">Enter</kbd> should execute code, and in others it
+should add a new line. IPython uses heuristics to decide whether to execute or
+insert a new line at cursor position. For example, if we detect that the current
+code is not valid Python, then the user is likely editing code and the right
+behavior is to likely to insert a new line. If the current code is a simple
+statement like <code class="docutils literal notranslate"><span class="pre">ord('*')</span></code>, then the right behavior is likely to execute. Though
+the exact desired semantics often varies from users to users.</p>
+<p>As the exact behavior of <kbd class="kbd docutils literal notranslate">Enter</kbd> is ambiguous, it has been special cased
+to allow users to completely configure the behavior they like. Hence you can
+have enter always execute code. If you prefer fancier behavior, you need to get
+your hands dirty and read the <code class="docutils literal notranslate"><span class="pre">prompt_toolkit</span></code> and IPython documentation
+though. See <a class="reference external" href="https://github.com/ipython/ipython/pull/10500/">PR #10500</a>, set the
+<code class="docutils literal notranslate"><span class="pre">c.TerminalInteractiveShell.handle_return</span></code> option and get inspiration from the
+following example that only auto-executes the input if it begins with a bang or
+a modulo character (<code class="docutils literal notranslate"><span class="pre">!</span></code> or <code class="docutils literal notranslate"><span class="pre">%</span></code>). To use the following code, add it to your
+IPython configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">custom_return</span><span class="p">(</span><span class="n">shell</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;This function is required by the API. It takes a reference to</span>
+<span class="sd">    the shell, which is the same thing `get_ipython()` evaluates to.</span>
+<span class="sd">    This function must return a function that handles each keypress</span>
+<span class="sd">    event. That function, named `handle` here, references `shell`</span>
+<span class="sd">    by closure.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;This function is called each time `Enter` is pressed,</span>
+<span class="sd">        and takes a reference to a Prompt Toolkit event object.</span>
+<span class="sd">        If the current input starts with a bang or modulo, then</span>
+<span class="sd">        the input is executed, otherwise a newline is entered,</span>
+<span class="sd">        followed by any spaces needed to auto-indent.&quot;&quot;&quot;</span>
+
+        <span class="c1"># set up a few handy references to nested items...</span>
+
+        <span class="n">buffer</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">current_buffer</span>
+        <span class="n">document</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">document</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;!&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">):</span> <span class="c1"># execute the input...</span>
+
+            <span class="n">buffer</span><span class="o">.</span><span class="n">accept_action</span><span class="o">.</span><span class="n">validate_and_handle</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">cli</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># insert a newline with auto-indentation...</span>
+
+            <span class="k">if</span> <span class="n">document</span><span class="o">.</span><span class="n">line_count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[:</span><span class="n">document</span><span class="o">.</span><span class="n">cursor_position</span><span class="p">]</span>
+            <span class="n">indent</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">check_complete</span><span class="p">(</span><span class="n">text</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">insert_text</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">indent</span><span class="p">)</span>
+
+            <span class="c1"># if you just wanted a plain newline without any indentation, you</span>
+            <span class="c1"># could use `buffer.insert_text(&#39;\n&#39;)` instead of the lines above</span>
+
+    <span class="k">return</span> <span class="n">handle</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">TerminalInteractiveShell</span><span class="o">.</span><span class="n">handle_return</span> <span class="o">=</span> <span class="n">custom_return</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="extensions/index.html" class="btn btn-neutral float-right" title="IPython extensions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="shortcuts/index.html" class="btn btn-neutral float-left" title="IPython shortcuts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Making simple Python wrapper kernels &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Execution semantics in the IPython kernel" href="execution.html" />
+    <link rel="prev" title="How IPython works" href="how_ipython_works.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer’s guide for third party tools and libraries</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="how_ipython_works.html">How IPython works</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Making simple Python wrapper kernels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-steps">Required steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-steps">Optional steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="execution.html">Execution semantics in the IPython kernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexer.html">New IPython Console Lexer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">Overview of the IPython configuration system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inputhook_app.html">IPython GUI Support Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Developer’s guide for third party tools and libraries</a> &raquo;</li>
+        
+      <li>Making simple Python wrapper kernels</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/development/wrapperkernels.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="making-simple-python-wrapper-kernels">
+<h1>Making simple Python wrapper kernels<a class="headerlink" href="#making-simple-python-wrapper-kernels" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.0.</span></p>
+</div>
+<p>You can now re-use the kernel machinery in IPython to easily make new kernels.
+This is useful for languages that have Python bindings, such as <a class="reference external" href="http://www.gnu.org/software/octave/">Octave</a> (via
+<a class="reference external" href="http://blink1073.github.io/oct2py/">Oct2Py</a>), or languages
+where the REPL can be controlled in a tty using <a class="reference external" href="http://pexpect.readthedocs.io/en/latest/">pexpect</a>,
+such as bash.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://github.com/takluyver/bash_kernel">bash_kernel</a></dt><dd><p>A simple kernel for bash, written using this machinery</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="required-steps">
+<h2>Required steps<a class="headerlink" href="#required-steps" title="Permalink to this headline">¶</a></h2>
+<p>Subclass <code class="xref py py-class docutils literal notranslate"><span class="pre">ipykernel.kernelbase.Kernel</span></code>, and implement the
+following methods and attributes:</p>
+<dl class="class">
+<dt id="MyKernel">
+<em class="property">class </em><code class="sig-name descname">MyKernel</code><a class="headerlink" href="#MyKernel" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="MyKernel.implementation">
+<code class="sig-name descname">implementation</code><a class="headerlink" href="#MyKernel.implementation" title="Permalink to this definition">¶</a></dt>
+<dt id="MyKernel.implementation_version">
+<code class="sig-name descname">implementation_version</code><a class="headerlink" href="#MyKernel.implementation_version" title="Permalink to this definition">¶</a></dt>
+<dt id="MyKernel.language">
+<code class="sig-name descname">language</code><a class="headerlink" href="#MyKernel.language" title="Permalink to this definition">¶</a></dt>
+<dt id="MyKernel.language_version">
+<code class="sig-name descname">language_version</code><a class="headerlink" href="#MyKernel.language_version" title="Permalink to this definition">¶</a></dt>
+<dt id="MyKernel.banner">
+<code class="sig-name descname">banner</code><a class="headerlink" href="#MyKernel.banner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information for <a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#msging-kernel-info" title="(in jupyter_client v6.0)"><span>Kernel info</span></a> replies. ‘Implementation’ refers
+to the kernel (e.g. IPython), and ‘language’ refers to the language it
+interprets (e.g. Python). The ‘banner’ is displayed to the user in console
+UIs before the first prompt. All of these values are strings.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="MyKernel.language_info">
+<code class="sig-name descname">language_info</code><a class="headerlink" href="#MyKernel.language_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Language information for <a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#msging-kernel-info" title="(in jupyter_client v6.0)"><span>Kernel info</span></a> replies, in a dictionary.
+This should contain the key <code class="docutils literal notranslate"><span class="pre">mimetype</span></code> with the mimetype of code in the
+target language (e.g. <code class="docutils literal notranslate"><span class="pre">'text/x-python'</span></code>), and <code class="docutils literal notranslate"><span class="pre">file_extension</span></code> (e.g.
+<code class="docutils literal notranslate"><span class="pre">'py'</span></code>).
+It may also contain keys <code class="docutils literal notranslate"><span class="pre">codemirror_mode</span></code> and <code class="docutils literal notranslate"><span class="pre">pygments_lexer</span></code> if they
+need to differ from <a class="reference internal" href="#MyKernel.language" title="MyKernel.language"><code class="xref py py-attr docutils literal notranslate"><span class="pre">language</span></code></a>.</p>
+<p>Other keys may be added to this later.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="MyKernel.do_execute">
+<code class="sig-name descname">do_execute</code><span class="sig-paren">(</span><em class="sig-param">code</em>, <em class="sig-param">silent</em>, <em class="sig-param">store_history=True</em>, <em class="sig-param">user_expressions=None</em>, <em class="sig-param">allow_stdin=False</em><span class="sig-paren">)</span><a class="headerlink" href="#MyKernel.do_execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute user code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The code to be executed.</p></li>
+<li><p><strong>silent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether to display output.</p></li>
+<li><p><strong>store_history</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether to record this code in history and
+increase the execution count. If silent is True, this is implicitly
+False.</p></li>
+<li><p><strong>user_expressions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Mapping of names to expressions to evaluate
+after the code has run. You can ignore this if you need to.</p></li>
+<li><p><strong>allow_stdin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether the frontend can provide input on request
+(e.g. for Python’s <code class="xref py py-func docutils literal notranslate"><span class="pre">raw_input()</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+<p>Your method should return a dict containing the fields described in
+<a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#execution-results" title="(in jupyter_client v6.0)"><span>Execution results</span></a>. To display output, it can send messages
+using <code class="xref py py-meth docutils literal notranslate"><span class="pre">send_response()</span></code>.
+See <a class="reference internal" href="messaging.html"><span class="doc">Messaging in IPython</span></a> for details of the different message types.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>To launch your kernel, add this at the end of your module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ipykernel.kernelapp</span> <span class="k">import</span> <span class="n">IPKernelApp</span>
+    <span class="n">IPKernelApp</span><span class="o">.</span><span class="n">launch_instance</span><span class="p">(</span><span class="n">kernel_class</span><span class="o">=</span><span class="n">MyKernel</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">echokernel.py</span></code> will simply echo any input it’s given to stdout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipykernel.kernelbase</span> <span class="k">import</span> <span class="n">Kernel</span>
+
+<span class="k">class</span> <span class="nc">EchoKernel</span><span class="p">(</span><span class="n">Kernel</span><span class="p">):</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="s1">&#39;Echo&#39;</span>
+    <span class="n">implementation_version</span> <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+    <span class="n">language</span> <span class="o">=</span> <span class="s1">&#39;no-op&#39;</span>
+    <span class="n">language_version</span> <span class="o">=</span> <span class="s1">&#39;0.1&#39;</span>
+    <span class="n">language_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mimetype&#39;</span><span class="p">:</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">}</span>
+    <span class="n">banner</span> <span class="o">=</span> <span class="s2">&quot;Echo kernel - as useful as a parrot&quot;</span>
+
+    <span class="k">def</span> <span class="nf">do_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">silent</span><span class="p">,</span> <span class="n">store_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">user_expressions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">allow_stdin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="n">stream_content</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;stdout&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="n">code</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iopub_socket</span><span class="p">,</span> <span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="n">stream_content</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ok&#39;</span><span class="p">,</span>
+                <span class="c1"># The base class increments the execution count</span>
+                <span class="s1">&#39;execution_count&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_count</span><span class="p">,</span>
+                <span class="s1">&#39;payload&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;user_expressions&#39;</span><span class="p">:</span> <span class="p">{},</span>
+               <span class="p">}</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ipykernel.kernelapp</span> <span class="k">import</span> <span class="n">IPKernelApp</span>
+    <span class="n">IPKernelApp</span><span class="o">.</span><span class="n">launch_instance</span><span class="p">(</span><span class="n">kernel_class</span><span class="o">=</span><span class="n">EchoKernel</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here’s the Kernel spec <code class="docutils literal notranslate"><span class="pre">kernel.json</span></code> file for this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;argv&quot;</span><span class="p">:[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span><span class="s2">&quot;echokernel&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{connection_file}</span><span class="s2">&quot;</span><span class="p">],</span>
+ <span class="s2">&quot;display_name&quot;</span><span class="p">:</span><span class="s2">&quot;Echo&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="optional-steps">
+<h2>Optional steps<a class="headerlink" href="#optional-steps" title="Permalink to this headline">¶</a></h2>
+<p>You can override a number of other methods to improve the functionality of your
+kernel. All of these methods should return a dictionary as described in the
+relevant section of the <a class="reference internal" href="messaging.html"><span class="doc">messaging spec</span></a>.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-name descname">MyKernel</code></dt>
+<dd><dl class="method">
+<dt id="MyKernel.do_complete">
+<code class="sig-name descname">do_complete</code><span class="sig-paren">(</span><em class="sig-param">code</em>, <em class="sig-param">cusor_pos</em><span class="sig-paren">)</span><a class="headerlink" href="#MyKernel.do_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Code completion</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The code already present</p></li>
+<li><p><strong>cursor_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The position in the code where completion is requested</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#msging-completion" title="(in jupyter_client v6.0)"><span>Completion</span></a> messages</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="MyKernel.do_inspect">
+<code class="sig-name descname">do_inspect</code><span class="sig-paren">(</span><em class="sig-param">code</em>, <em class="sig-param">cusor_pos</em>, <em class="sig-param">detail_level=0</em><span class="sig-paren">)</span><a class="headerlink" href="#MyKernel.do_inspect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object introspection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The code</p></li>
+<li><p><strong>cursor_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The position in the code where introspection is requested</p></li>
+<li><p><strong>detail_level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – 0 or 1 for more or less detail. In IPython, 1 gets
+the source code.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#msging-inspection" title="(in jupyter_client v6.0)"><span>Introspection</span></a> messages</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="MyKernel.do_history">
+<code class="sig-name descname">do_history</code><span class="sig-paren">(</span><em class="sig-param">hist_access_type</em>, <em class="sig-param">output</em>, <em class="sig-param">raw</em>, <em class="sig-param">session=None</em>, <em class="sig-param">start=None</em>, <em class="sig-param">stop=None</em>, <em class="sig-param">n=None</em>, <em class="sig-param">pattern=None</em>, <em class="sig-param">unique=False</em><span class="sig-paren">)</span><a class="headerlink" href="#MyKernel.do_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>History access. Only the relevant parameters for the type of history
+request concerned will be passed, so your method definition must have defaults
+for all the arguments shown with defaults here.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#msging-history" title="(in jupyter_client v6.0)"><span>History</span></a> messages</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="MyKernel.do_is_complete">
+<code class="sig-name descname">do_is_complete</code><span class="sig-paren">(</span><em class="sig-param">code</em><span class="sig-paren">)</span><a class="headerlink" href="#MyKernel.do_is_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is code entered in a console-like interface complete and ready to execute,
+or should a continuation prompt be shown?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The code entered so far - possibly multiple lines</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#msging-is-complete" title="(in jupyter_client v6.0)"><span>Code completeness</span></a> messages</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="MyKernel.do_shutdown">
+<code class="sig-name descname">do_shutdown</code><span class="sig-paren">(</span><em class="sig-param">restart</em><span class="sig-paren">)</span><a class="headerlink" href="#MyKernel.do_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shutdown the kernel. You only need to handle your own clean up - the kernel
+machinery will take care of cleaning up its own things before stopping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>restart</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether the kernel will be started again afterwards</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#msging-shutdown" title="(in jupyter_client v6.0)"><span>Kernel shutdown</span></a> messages</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="execution.html" class="btn btn-neutral float-right" title="Execution semantics in the IPython kernel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="how_ipython_works.html" class="btn btn-neutral float-left" title="How IPython works" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,456 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Overview &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="What’s new in IPython" href="whatsnew/index.html" />
+    <link rel="prev" title="IPython Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">IPython Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#enhanced-interactive-python-shell">Enhanced interactive Python shell</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#main-features-of-the-interactive-shell">Main features of the interactive shell</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#decoupled-two-process-model">Decoupled two-process model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interactive-parallel-computing">Interactive parallel computing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#portability-and-python-requirements">Portability and Python requirements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/overview.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="overview">
+<span id="id1"></span><h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>One of Python’s most useful features is its interactive interpreter.
+It allows for very fast testing of ideas without the overhead of
+creating test files as is typical in most programming languages.
+However, the interpreter supplied with the standard Python distribution
+is somewhat limited for extended interactive use.</p>
+<p>The goal of IPython is to create a comprehensive environment for
+interactive and exploratory computing.  To support this goal, IPython
+has three main components:</p>
+<ul class="simple">
+<li><p>An enhanced interactive Python shell.</p></li>
+<li><p>A decoupled <a class="reference internal" href="#ipythonzmq"><span class="std std-ref">two-process communication model</span></a>, which
+allows for multiple clients to connect to a computation kernel, most notably
+the web-based notebook provided with <a class="reference external" href="https://jupyter.org">Jupyter</a>.</p></li>
+<li><p>An architecture for interactive parallel computing now part of the
+<code class="docutils literal notranslate"><span class="pre">ipyparallel</span></code> package.</p></li>
+</ul>
+<p>All of IPython is open source (released under the revised BSD license).</p>
+<div class="section" id="enhanced-interactive-python-shell">
+<h2>Enhanced interactive Python shell<a class="headerlink" href="#enhanced-interactive-python-shell" title="Permalink to this headline">¶</a></h2>
+<p>IPython’s interactive shell (<strong class="command">ipython</strong>), has the following goals,
+amongst others:</p>
+<ol class="arabic simple">
+<li><p>Provide an interactive shell superior to Python’s default. IPython
+has many features for tab-completion, object introspection, system shell
+access, command history retrieval across sessions, and its own special
+command system for adding functionality when working interactively. It
+tries to be a very efficient environment both for Python code development
+and for exploration of problems using Python objects (in situations like
+data analysis).</p></li>
+<li><p>Serve as an embeddable, ready to use interpreter for your own
+programs. An interactive IPython shell can be started with a single call
+from inside another program, providing access to the current namespace.
+This can be very useful both for debugging purposes and for situations
+where a blend of batch-processing and interactive exploration are needed.</p></li>
+<li><p>Offer a flexible framework which can be used as the base
+environment for working with other systems, with Python as the underlying
+bridge language. Specifically scientific environments like Mathematica,
+IDL and Matlab inspired its design, but similar ideas can be
+useful in many fields.</p></li>
+<li><p>Allow interactive testing of threaded graphical toolkits. IPython
+has support for interactive, non-blocking control of GTK, Qt, WX, GLUT, and
+OS X applications via special threading flags. The normal Python
+shell can only do this for Tkinter applications.</p></li>
+</ol>
+<div class="section" id="main-features-of-the-interactive-shell">
+<h3>Main features of the interactive shell<a class="headerlink" href="#main-features-of-the-interactive-shell" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Dynamic object introspection. One can access docstrings, function
+definition prototypes, source code, source files and other details
+of any object accessible to the interpreter with a single
+keystroke (<code class="samp docutils literal notranslate"><span class="pre">?</span></code>, and using <code class="samp docutils literal notranslate"><span class="pre">??</span></code> provides additional detail).</p></li>
+<li><p>Searching through modules and namespaces with <code class="samp docutils literal notranslate"><span class="pre">*</span></code> wildcards, both
+when using the <code class="samp docutils literal notranslate"><span class="pre">?</span></code> system and via the <code class="samp docutils literal notranslate"><span class="pre">%psearch</span></code> command.</p></li>
+<li><p>Completion in the local namespace, by typing <kbd class="kbd docutils literal notranslate">TAB</kbd> at the prompt.
+This works for keywords, modules, methods, variables and files in the
+current directory. This is supported via the <code class="docutils literal notranslate"><span class="pre">prompt_toolkit</span></code> library.
+Custom completers can be implemented easily for different purposes
+(system commands, magic arguments etc.)</p></li>
+<li><p>Numbered input/output prompts with command history (persistent
+across sessions and tied to each profile), full searching in this
+history and caching of all input and output.</p></li>
+<li><p>User-extensible ‘magic’ commands. A set of commands prefixed with
+<code class="samp docutils literal notranslate"><span class="pre">%</span></code>  or <code class="samp docutils literal notranslate"><span class="pre">%%</span></code> is available for controlling IPython itself and provides
+directory control, namespace information and many aliases to
+common system shell commands.</p></li>
+<li><p>Alias facility for defining your own system aliases.</p></li>
+<li><p>Complete system shell access. Lines starting with <code class="samp docutils literal notranslate"><span class="pre">!</span></code> are passed
+directly to the system shell, and using <code class="samp docutils literal notranslate"><span class="pre">!!</span></code> or <code class="samp docutils literal notranslate"><span class="pre">var</span> <span class="pre">=</span> <span class="pre">!cmd</span></code>
+captures shell output into python variables for further use.</p></li>
+<li><p>The ability to expand python variables when calling the system shell. In a
+shell command, any python variable prefixed with <code class="samp docutils literal notranslate"><span class="pre">$</span></code> is expanded. A
+double <code class="samp docutils literal notranslate"><span class="pre">$$</span></code> allows passing a literal <code class="samp docutils literal notranslate"><span class="pre">$</span></code> to the shell (for access
+to shell and environment variables like <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">PATH</span></code>).</p></li>
+<li><p>Filesystem navigation, via a magic <code class="samp docutils literal notranslate"><span class="pre">%cd</span></code> command, along with a
+persistent bookmark system (using <code class="samp docutils literal notranslate"><span class="pre">%bookmark</span></code>) for fast access to
+frequently visited directories.</p></li>
+<li><p>A lightweight persistence framework via the <code class="samp docutils literal notranslate"><span class="pre">%store</span></code> command, which
+allows you to save arbitrary Python variables. These get restored
+when you run the <code class="samp docutils literal notranslate"><span class="pre">%store</span> <span class="pre">-r</span></code> command.</p></li>
+<li><p>Automatic indentation and highlighting of code as you type (through the
+<code class="docutils literal notranslate"><span class="pre">prompt_toolkit</span></code> library).</p></li>
+<li><p>Macro system for quickly re-executing multiple lines of previous
+input with a single name via the <code class="samp docutils literal notranslate"><span class="pre">%macro</span></code> command. Macros can be
+stored persistently via <code class="samp docutils literal notranslate"><span class="pre">%store</span></code> and edited via <code class="samp docutils literal notranslate"><span class="pre">%edit</span></code>.</p></li>
+<li><p>Session logging (you can then later use these logs as code in your
+programs). Logs can optionally timestamp all input, and also store
+session output (marked as comments, so the log remains valid
+Python source code).</p></li>
+<li><p>Session restoring: logs can be replayed to restore a previous
+session to the state where you left it.</p></li>
+<li><p>Verbose and colored exception traceback printouts. Easier to parse
+visually, and in verbose mode they produce a lot of useful
+debugging information (basically a terminal version of the cgitb
+module).</p></li>
+<li><p>Auto-parentheses via the <code class="samp docutils literal notranslate"><span class="pre">%autocall</span></code> command: callable objects can be
+executed without parentheses: <code class="samp docutils literal notranslate"><span class="pre">sin</span> <span class="pre">3</span></code> is automatically converted to
+<code class="samp docutils literal notranslate"><span class="pre">sin(3)</span></code></p></li>
+<li><p>Auto-quoting: using <code class="samp docutils literal notranslate"><span class="pre">,</span></code>, or <code class="samp docutils literal notranslate"><span class="pre">;</span></code> as the first character forces
+auto-quoting of the rest of the line: <code class="samp docutils literal notranslate"><span class="pre">,my_function</span> <span class="pre">a</span> <span class="pre">b</span></code> becomes
+automatically <code class="samp docutils literal notranslate"><span class="pre">my_function(&quot;a&quot;,&quot;b&quot;)</span></code>, while <code class="samp docutils literal notranslate"><span class="pre">;my_function</span> <span class="pre">a</span> <span class="pre">b</span></code>
+becomes <code class="samp docutils literal notranslate"><span class="pre">my_function(&quot;a</span> <span class="pre">b&quot;)</span></code>.</p></li>
+<li><p>Extensible input syntax. You can define filters that pre-process
+user input to simplify input in special situations. This allows
+for example pasting multi-line code fragments which start with
+<code class="samp docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code> or <code class="samp docutils literal notranslate"><span class="pre">...</span></code> such as those from other python sessions or the
+standard Python documentation.</p></li>
+<li><p>Flexible <a class="reference internal" href="development/config.html#config-overview"><span class="std std-ref">configuration system</span></a>. It uses a
+configuration file which allows permanent setting of all command-line
+options, module loading, code and file execution. The system allows
+recursive file inclusion, so you can have a base file with defaults and
+layers which load other customizations for particular projects.</p></li>
+<li><p>Embeddable. You can call IPython as a python shell inside your own
+python programs. This can be used both for debugging code or for
+providing interactive abilities to your programs with knowledge
+about the local namespaces (very useful in debugging and data
+analysis situations).</p></li>
+<li><p>Easy debugger access. You can set IPython to call up an enhanced version of
+the Python debugger (pdb) every time there is an uncaught exception. This
+drops you inside the code which triggered the exception with all the data
+live and it is possible to navigate the stack to rapidly isolate the source
+of a bug. The <code class="samp docutils literal notranslate"><span class="pre">%run</span></code> magic command (with the <code class="samp docutils literal notranslate"><span class="pre">-d</span></code> option) can run
+any script under pdb’s control, automatically setting initial breakpoints for
+you.  This version of pdb has IPython-specific improvements, including
+tab-completion and traceback coloring support. For even easier debugger
+access, try <code class="samp docutils literal notranslate"><span class="pre">%debug</span></code> after seeing an exception.</p></li>
+<li><p>Profiler support. You can run single statements (similar to
+<code class="samp docutils literal notranslate"><span class="pre">profile.run()</span></code>) or complete programs under the profiler’s control.
+While this is possible with standard cProfile or profile modules,
+IPython wraps this functionality with magic commands (see <code class="samp docutils literal notranslate"><span class="pre">%prun</span></code>
+and <code class="samp docutils literal notranslate"><span class="pre">%run</span> <span class="pre">-p</span></code>) convenient for rapid interactive work.</p></li>
+<li><p>Simple timing information. You can use the <code class="samp docutils literal notranslate"><span class="pre">%timeit</span></code> command to get
+the execution time of a Python statement or expression. This machinery is
+intelligent enough to do more repetitions for commands that finish very
+quickly in order to get a better estimate of their running time.</p></li>
+</ul>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">%</span><span class="k">timeit</span> 1+1
+<span class="go">10000000 loops, best of 3: 25.5 ns per loop</span>
+
+<span class="gp">In [2]: </span><span class="o">%</span><span class="k">timeit</span> [math.sin(x) for x in range(5000)]
+<span class="go">1000 loops, best of 3: 719 µs per loop</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>To get the timing information for more than one expression, use the
+<code class="samp docutils literal notranslate"><span class="pre">%%timeit</span></code> cell magic command.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Doctest support. The special <code class="samp docutils literal notranslate"><span class="pre">%doctest_mode</span></code> command toggles a mode
+to use doctest-compatible prompts, so you can use IPython sessions as
+doctest code. By default, IPython also allows you to paste existing
+doctests, and strips out the leading <code class="samp docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code> and <code class="samp docutils literal notranslate"><span class="pre">...</span></code> prompts in
+them.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="decoupled-two-process-model">
+<span id="ipythonzmq"></span><h2>Decoupled two-process model<a class="headerlink" href="#decoupled-two-process-model" title="Permalink to this headline">¶</a></h2>
+<p>IPython has abstracted and extended the notion of a traditional
+<em>Read-Evaluate-Print Loop</em> (REPL) environment by decoupling the <em>evaluation</em>
+into its own process. We call this process a <strong>kernel</strong>: it receives execution
+instructions from clients and communicates the results back to them.</p>
+<p>This decoupling allows us to have several clients connected to the same
+kernel, and even allows clients and kernels to live on different machines.
+With the exclusion of the traditional single process terminal-based IPython
+(what you start if you run <code class="docutils literal notranslate"><span class="pre">ipython</span></code> without any subcommands), all
+other IPython machinery uses this two-process model. Most of this is now part
+of the <code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> project, which includes <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">console</span></code>,  <code class="docutils literal notranslate"><span class="pre">jupyter</span>
+<span class="pre">qtconsole</span></code>, and <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">notebook</span></code>.</p>
+<p>As an example, this means that when you start <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">qtconsole</span></code>, you’re
+really starting two processes, a kernel and a Qt-based client which can send
+commands to and receive results from that kernel. If there is already a kernel
+running that you want to connect to, you can pass the  <code class="docutils literal notranslate"><span class="pre">--existing</span></code> flag
+which will skip initiating a new kernel and connect to the most recent kernel,
+instead. To connect to a specific kernel once you have several kernels
+running, use the <code class="docutils literal notranslate"><span class="pre">%connect_info</span></code> magic to get the unique connection file,
+which will be something like <code class="docutils literal notranslate"><span class="pre">--existing</span> <span class="pre">kernel-19732.json</span></code> but with
+different numbers which correspond to the Process ID of the kernel.</p>
+<p>You can read more about using <a class="reference external" href="https://jupyter.org/qtconsole/">jupyter qtconsole</a>, and
+<a class="reference external" href="http://jupyter-notebook.readthedocs.io/en/latest/">jupyter notebook</a>. There
+is also a <a class="reference external" href="https://jupyter-client.readthedocs.io/en/latest/messaging.html#messaging" title="(in jupyter_client v6.0)"><span class="xref std std-ref">message spec</span></a> which documents the protocol for
+communication between kernels
+and clients.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="http://nbviewer.ipython.org/urls/raw.github.com/ipython/ipython/1.x/examples/notebooks/Frontend-Kernel%20Model.ipynb">Frontend/Kernel Model</a> example notebook</p>
+</div>
+</div>
+<div class="section" id="interactive-parallel-computing">
+<h2>Interactive parallel computing<a class="headerlink" href="#interactive-parallel-computing" title="Permalink to this headline">¶</a></h2>
+<p>This functionality is optional and now part of the <a class="reference external" href="http://ipyparallel.readthedocs.io/">ipyparallel</a> project.</p>
+<div class="section" id="portability-and-python-requirements">
+<h3>Portability and Python requirements<a class="headerlink" href="#portability-and-python-requirements" title="Permalink to this headline">¶</a></h3>
+<p>Version 7.0+ supports Python 3.4 and higher.
+Versions 6.x support Python 3.3 and higher.
+Versions 2.0 to 5.x work with Python 2.7.x releases and Python 3.3 and higher.
+Version 1.0 additionally worked with Python 2.6 and 3.2.
+Version 0.12 was the first version to fully support Python 3.</p>
+<p>IPython is known to work on the following operating systems:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Linux</p></li>
+<li><p>Most other Unix-like OSs (AIX, Solaris, BSD, etc.)</p></li>
+<li><p>Mac OS X</p></li>
+<li><p>Windows (CygWin, XP, Vista, etc.)</p></li>
+</ul>
+</div></blockquote>
+<p>See <a class="reference internal" href="install/index.html#install-index"><span class="std std-ref">here</span></a> for instructions on how to install IPython.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="whatsnew/index.html" class="btn btn-neutral float-right" title="What’s new in IPython" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="IPython Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

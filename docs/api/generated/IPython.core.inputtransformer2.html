@@ -1,0 +1,638 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Module: core.inputtransformer2 &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Module: core.interactiveshell" href="IPython.core.interactiveshell.html" />
+    <link rel="prev" title="Module: core.inputtransformer" href="IPython.core.inputtransformer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">The IPython API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="IPython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.conftest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">conftest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.alias.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.alias</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.application.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.application</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.autocall.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.autocall</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.builtin_trap.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.builtin_trap</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.compilerop.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.compilerop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.completer.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.completer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.completerlib.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.completerlib</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.crashhandler.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.crashhandler</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.debugger.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.debugger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.error.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.error</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.events.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.events</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.excolors.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.excolors</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.extensions.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.extensions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.formatters.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.formatters</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.getipython.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.getipython</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.history.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.history</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.historyapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.historyapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.hooks.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.hooks</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.inputsplitter.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputsplitter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.inputtransformer.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputtransformer</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputtransformer2</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#classes">7 Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">8 Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.interactiveshell.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.interactiveshell</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.logger.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.logger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.macro.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.macro</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.magic.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.magic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.magic_arguments.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.magic_arguments</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.oinspect.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.oinspect</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.page.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.page</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.payload.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.payload</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.payloadpage.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.payloadpage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.prefilter.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.prefilter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.profileapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.profileapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.profiledir.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.profiledir</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.prompts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.prompts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.pylabtools.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.pylabtools</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.shellapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.shellapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.splitinput.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.splitinput</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.core.ultratb.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.ultratb</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.display.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">display</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.backgroundjobs.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.backgroundjobs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.clipboard.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.clipboard</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.deepreload.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.deepreload</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.demo.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.demo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.editorhooks.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.editorhooks</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.guisupport.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.guisupport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.inputhook.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.inputhook</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.latextools.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.latextools</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.lexers.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.lexers</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.pretty.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.pretty</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.lib.security.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">lib.security</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.paths.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">paths</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.terminal.debugger.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.debugger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.terminal.embed.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.embed</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.terminal.interactiveshell.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.interactiveshell</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.terminal.ipapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.ipapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.terminal.magics.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.magics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.terminal.prompts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.prompts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.terminal.shortcuts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">terminal.shortcuts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.decorators.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.decorators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.globalipapp.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.globalipapp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.iptest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.iptest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.iptestcontroller.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.iptestcontroller</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.ipunittest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.ipunittest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.skipdoctest.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.skipdoctest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.testing.tools.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">testing.tools</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.PyColorize.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.PyColorize</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.capture.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.capture</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.colorable.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.colorable</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.coloransi.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.coloransi</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.contexts.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.contexts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.data.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.data</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.decorators.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.decorators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.dir2.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.dir2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.encoding.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.encoding</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.frame.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.frame</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.generics.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.generics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.importstring.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.importstring</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.io.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.io</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.ipstruct.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.ipstruct</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.module_paths.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.module_paths</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.openpy.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.openpy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.path.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.path</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.process.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.process</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.sentinel.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.sentinel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.shimmodule.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.shimmodule</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.strdispatch.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.strdispatch</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.sysinfo.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.sysinfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.syspathcontext.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.syspathcontext</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.tempdir.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.tempdir</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.terminal.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.terminal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.text.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.text</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.timing.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.timing</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.tokenutil.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.tokenutil</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.tz.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.tz</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.ulinecache.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.ulinecache</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.version.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.version</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="IPython.utils.wildcard.html">Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.wildcard</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">The IPython API</a> &raquo;</li>
+        
+      <li>Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputtransformer2</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/api/generated/IPython.core.inputtransformer2.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="module-IPython.core.inputtransformer2">
+<span id="module-core-inputtransformer2"></span><h1>Module: <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.inputtransformer2</span></code><a class="headerlink" href="#module-IPython.core.inputtransformer2" title="Permalink to this headline">¶</a></h1>
+<p>Input transformer machinery to support IPython special syntax.</p>
+<p>This includes the machinery to recognise and transform <code class="docutils literal notranslate"><span class="pre">%magic</span></code> commands,
+<code class="docutils literal notranslate"><span class="pre">!system</span></code> commands, <code class="docutils literal notranslate"><span class="pre">help?</span></code> querying, prompt stripping, and so forth.</p>
+<p>Added: IPython 7.0. Replaces inputsplitter and inputtransformer which were
+deprecated in 7.0.</p>
+<div class="section" id="classes">
+<h2>7 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="IPython.core.inputtransformer2.PromptStripper">
+<em class="property">class </em><code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">PromptStripper</code><span class="sig-paren">(</span><em class="sig-param">prompt_re</em>, <em class="sig-param">initial_re=None</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.PromptStripper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Remove matching input prompts from a block of input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt_re</strong> (<em>regular expression</em>) – A regular expression matching any input prompt (including continuation,
+e.g. <code class="docutils literal notranslate"><span class="pre">...</span></code>)</p></li>
+<li><p><strong>initial_re</strong> (<em>regular expression</em><em>, </em><em>optional</em>) – A regular expression matching only the initial prompt, but not continuation.
+If no initial expression is given, prompt_re will be used everywhere.
+Used mainly for plain Python prompts (<code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code>), where the continuation prompt
+<code class="docutils literal notranslate"><span class="pre">...</span></code> is a valid Python expression in Python 3, so shouldn’t be stripped.</p></li>
+<li><p><strong>initial_re and prompt_re differ</strong><strong>,</strong> (<em>If</em>) – </p></li>
+<li><p><strong>initial_re will be tested against the first line.</strong> (<em>only</em>) – </p></li>
+<li><p><strong>any prompt is found on the first two lines</strong><strong>,</strong> (<em>If</em>) – </p></li>
+<li><p><strong>will be stripped from the rest of the block.</strong> (<em>prompts</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.PromptStripper.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">prompt_re</em>, <em class="sig-param">initial_re=None</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.PromptStripper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="IPython.core.inputtransformer2.TokenTransformBase">
+<em class="property">class </em><code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">TokenTransformBase</code><span class="sig-paren">(</span><em class="sig-param">start</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.TokenTransformBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for transformations which examine tokens.</p>
+<p>Special syntax should not be transformed when it occurs inside strings or
+comments. This is hard to reliably avoid with regexes. The solution is to
+tokenise the code as Python, and recognise the special syntax in the tokens.</p>
+<p>IPython’s special syntax is not valid Python syntax, so tokenising may go
+wrong after the special syntax starts. These classes therefore find and
+transform <em>one</em> instance of special syntax at a time into regular Python
+syntax. After each transformation, tokens are regenerated to find the next
+piece of special syntax.</p>
+<p>Subclasses need to implement one class method (find)
+and one regular method (transform).</p>
+<p>The priority attribute can select which transformation to apply if multiple
+transformers match in the same place. Lower numbers have higher priority.
+This allows “%magic?” to be turned into a help call rather than a magic call.</p>
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.TokenTransformBase.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">start</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.TokenTransformBase.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.TokenTransformBase.find">
+<em class="property">classmethod </em><code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param">tokens_by_line</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.TokenTransformBase.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find one instance of special syntax in the provided tokens.</p>
+<p>Tokens are grouped into logical lines for convenience,
+so it is easy to e.g. look at the first token of each line.
+<em>tokens_by_line</em> is a list of lists of tokenize.TokenInfo objects.</p>
+<p>This should return an instance of its class, pointing to the start
+position it has found, or None if it found no match.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.TokenTransformBase.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">lines: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.TokenTransformBase.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform one instance of special syntax found by <code class="docutils literal notranslate"><span class="pre">find()</span></code></p>
+<p>Takes a list of strings representing physical lines,
+returns a similar list of transformed lines.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="IPython.core.inputtransformer2.MagicAssign">
+<em class="property">class </em><code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">MagicAssign</code><span class="sig-paren">(</span><em class="sig-param">start</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.MagicAssign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#IPython.core.inputtransformer2.TokenTransformBase" title="IPython.core.inputtransformer2.TokenTransformBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.core.inputtransformer2.TokenTransformBase</span></code></a></p>
+<p>Transformer for assignments from magics (a = %foo)</p>
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.MagicAssign.find">
+<em class="property">classmethod </em><code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param">tokens_by_line</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.MagicAssign.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the first magic assignment (a = %foo) in the cell.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.MagicAssign.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">lines: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.MagicAssign.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a magic assignment found by the <code class="docutils literal notranslate"><span class="pre">find()</span></code> classmethod.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="IPython.core.inputtransformer2.SystemAssign">
+<em class="property">class </em><code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">SystemAssign</code><span class="sig-paren">(</span><em class="sig-param">start</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.SystemAssign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#IPython.core.inputtransformer2.TokenTransformBase" title="IPython.core.inputtransformer2.TokenTransformBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.core.inputtransformer2.TokenTransformBase</span></code></a></p>
+<p>Transformer for assignments from system commands (a = !foo)</p>
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.SystemAssign.find">
+<em class="property">classmethod </em><code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param">tokens_by_line</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.SystemAssign.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the first system assignment (a = !foo) in the cell.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.SystemAssign.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">lines: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.SystemAssign.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a system assignment found by the <code class="docutils literal notranslate"><span class="pre">find()</span></code> classmethod.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="IPython.core.inputtransformer2.EscapedCommand">
+<em class="property">class </em><code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">EscapedCommand</code><span class="sig-paren">(</span><em class="sig-param">start</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.EscapedCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#IPython.core.inputtransformer2.TokenTransformBase" title="IPython.core.inputtransformer2.TokenTransformBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.core.inputtransformer2.TokenTransformBase</span></code></a></p>
+<p>Transformer for escaped commands like %foo, !foo, or /foo</p>
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.EscapedCommand.find">
+<em class="property">classmethod </em><code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param">tokens_by_line</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.EscapedCommand.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the first escaped command (%foo, !foo, etc.) in the cell.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.EscapedCommand.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">lines</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.EscapedCommand.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform an escaped line found by the <code class="docutils literal notranslate"><span class="pre">find()</span></code> classmethod.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="IPython.core.inputtransformer2.HelpEnd">
+<em class="property">class </em><code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">HelpEnd</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">q_locn</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.HelpEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#IPython.core.inputtransformer2.TokenTransformBase" title="IPython.core.inputtransformer2.TokenTransformBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.core.inputtransformer2.TokenTransformBase</span></code></a></p>
+<p>Transformer for help syntax: obj? and obj??</p>
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.HelpEnd.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">q_locn</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.HelpEnd.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.HelpEnd.find">
+<em class="property">classmethod </em><code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param">tokens_by_line</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.HelpEnd.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the first help command (foo?) in the cell.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.HelpEnd.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">lines</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.HelpEnd.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a help command found by the <code class="docutils literal notranslate"><span class="pre">find()</span></code> classmethod.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="IPython.core.inputtransformer2.TransformerManager">
+<em class="property">class </em><code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">TransformerManager</code><a class="headerlink" href="#IPython.core.inputtransformer2.TransformerManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Applies various transformations to a cell or code block.</p>
+<p>The key methods for external use are <code class="docutils literal notranslate"><span class="pre">transform_cell()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">check_complete()</span></code>.</p>
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.TransformerManager.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.TransformerManager.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.TransformerManager.check_complete">
+<code class="sig-name descname">check_complete</code><span class="sig-paren">(</span><em class="sig-param">cell: str</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.TransformerManager.check_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether a block of code is ready to execute, or should be continued</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source</strong> (<em>string</em>) – Python input code, which can be multiline.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>status</strong> (<em>str</em>) – One of ‘complete’, ‘incomplete’, or ‘invalid’ if source is not a
+prefix of valid code.</p></li>
+<li><p><strong>indent_spaces</strong> (<em>int or None</em>) – The number of spaces by which to indent the next line of code. If
+status is not ‘incomplete’, this is None.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.TransformerManager.do_one_token_transform">
+<code class="sig-name descname">do_one_token_transform</code><span class="sig-paren">(</span><em class="sig-param">lines</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.TransformerManager.do_one_token_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and run the transform earliest in the code.</p>
+<p>Returns (changed, lines).</p>
+<p>This method is called repeatedly until changed is False, indicating
+that all available transformations are complete.</p>
+<p>The tokens following IPython special syntax might not be valid, so
+the transformed code is retokenised every time to identify the next
+piece of special syntax. Hopefully long code cells are mostly valid
+Python, not using lots of IPython special syntax, so this shouldn’t be
+a performance issue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IPython.core.inputtransformer2.TransformerManager.transform_cell">
+<code class="sig-name descname">transform_cell</code><span class="sig-paren">(</span><em class="sig-param">cell: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#IPython.core.inputtransformer2.TransformerManager.transform_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms a cell of input code</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>8 Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.leading_empty_lines">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">leading_empty_lines</code><span class="sig-paren">(</span><em class="sig-param">lines</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.leading_empty_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove leading empty lines</p>
+<p>If the leading lines are empty or contain only whitespace, they will be
+removed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.leading_indent">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">leading_indent</code><span class="sig-paren">(</span><em class="sig-param">lines</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.leading_indent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove leading indentation.</p>
+<p>If the first line starts with a spaces or tabs, the same whitespace will be
+removed from each following line in the cell.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.cell_magic">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">cell_magic</code><span class="sig-paren">(</span><em class="sig-param">lines</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.cell_magic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.find_end_of_continued_line">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">find_end_of_continued_line</code><span class="sig-paren">(</span><em class="sig-param">lines</em>, <em class="sig-param">start_line: int</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.find_end_of_continued_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the last line of a line explicitly extended using backslashes.</p>
+<p>Uses 0-indexed line numbers.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.assemble_continued_line">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">assemble_continued_line</code><span class="sig-paren">(</span><em class="sig-param">lines, start: Tuple[int, int], end_line: int</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.assemble_continued_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assemble a single line from multiple continued line pieces</p>
+<p>Continued lines are lines ending in <code class="docutils literal notranslate"><span class="pre">\</span></code>, and the line following the last
+<code class="docutils literal notranslate"><span class="pre">\</span></code> in the block.</p>
+<p>For example, this code continues over multiple lines:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">assign_ix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> \
+     <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">assign_ix</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> \
+     <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">assign_ix</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">string</span> <span class="o">==</span> <span class="s1">&#39;%&#39;</span><span class="p">)</span> \
+     <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">assign_ix</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">NAME</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>This statement contains four continued line pieces.
+Assembling these pieces into a single line would give:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">assign_ix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">assign_ix</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>This uses 0-indexed line numbers. <em>start</em> is (lineno, colno).</p>
+<p>Used to allow <code class="docutils literal notranslate"><span class="pre">%magic</span></code> and <code class="docutils literal notranslate"><span class="pre">!system</span></code> commands to be continued over
+multiple lines.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.make_tokens_by_line">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">make_tokens_by_line</code><span class="sig-paren">(</span><em class="sig-param">lines: List[str]</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.make_tokens_by_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tokenize a series of lines and group tokens by line.</p>
+<p>The tokens for a multiline Python string or expression are grouped as one
+line. All lines except the last lines should keep their line ending (‘n’,
+‘rn’) for this to properly work. Use <code class="docutils literal notranslate"><span class="pre">.splitlines(keeplineending=True)</span></code>
+for example when passing block of text to this function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.show_linewise_tokens">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">show_linewise_tokens</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.show_linewise_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>For investigation and debugging</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="IPython.core.inputtransformer2.find_last_indent">
+<code class="sig-prename descclassname">IPython.core.inputtransformer2.</code><code class="sig-name descname">find_last_indent</code><span class="sig-paren">(</span><em class="sig-param">lines</em><span class="sig-paren">)</span><a class="headerlink" href="#IPython.core.inputtransformer2.find_last_indent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="IPython.core.interactiveshell.html" class="btn btn-neutral float-right" title="Module: core.interactiveshell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="IPython.core.inputtransformer.html" class="btn btn-neutral float-left" title="Module: core.inputtransformer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

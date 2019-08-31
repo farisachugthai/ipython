@@ -1,0 +1,685 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>5.x Series &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Issues closed in the 5.x development cycle" href="github-stats-5.html" />
+    <link rel="prev" title="Issues closed in the 6.x development cycle" href="github-stats-6.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">What’s new in IPython</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.html">Development version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version7.html">7.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-7.html">Issues closed in the 7.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version6.html">6.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-6.html">Issues closed in the 6.x development cycle</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5.x Series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-8-0">IPython 5.8.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-7">IPython 5.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-6">IPython 5.6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-5">IPython 5.5</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#system-wide-config">System Wide config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#progressbar">ProgressBar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#misc">Misc</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-4-1">IPython 5.4.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-4">IPython 5.4</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configurable-terminalinteractiveshell">Configurable TerminalInteractiveShell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#define-repr-mimebundle">Define <code class="docutils literal notranslate"><span class="pre">_repr_mimebundle_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#execution-heuristics">Execution Heuristics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implement-display-ids">Implement Display IDs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#display-function">Display function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#miscs">Miscs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-3">IPython 5.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-2-2">IPython 5.2.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-2-1">IPython 5.2.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-2">IPython 5.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-1">IPython 5.1</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#true-color-feature">True Color feature</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-5-0">IPython 5.0</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#new-terminal-interface">New terminal interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backwards-incompatible-changes">Backwards incompatible changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#provisional-changes">Provisional Changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deprecated-features">Deprecated Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#known-issues">Known Issues:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-5.html">Issues closed in the 5.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version4.html">4.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-4.html">Issues closed in the 4.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version3.html">3.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-3.html">Issues closed in the 3.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version3_widget_migration.html">Migrating Widgets to IPython 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version2.0.html">2.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-2.0.html">Issues closed in the 2.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version1.0.html">1.0 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-1.0.html">Issues closed in the 1.0 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.13.html">0.13 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.13.html">Issues closed in the 0.13 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.12.html">0.12 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.12.html">Issues closed in the 0.12 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.11.html">0.11 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.11.html">Issues closed in the 0.11 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.10.html">0.10 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.9.html">0.9 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.8.html">0.8 series</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">What’s new in IPython</a> &raquo;</li>
+        
+      <li>5.x Series</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/whatsnew/version5.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="x-series">
+<h1>5.x Series<a class="headerlink" href="#x-series" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ipython-5-8-0">
+<span id="whatsnew580"></span><h2>IPython 5.8.0<a class="headerlink" href="#ipython-5-8-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Update inspecting function/methods for future-proofing. <a class="reference external" href="https://github.com/ipython/ipython/pull/11139/">PR #11139</a></p></li>
+</ul>
+</div>
+<div class="section" id="ipython-5-7">
+<span id="whatsnew570"></span><h2>IPython 5.7<a class="headerlink" href="#ipython-5-7" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Fix IPython trying to import non-existing matplotlib backends <a class="reference external" href="https://github.com/ipython/ipython/pull/11087/">PR #11087</a></p></li>
+<li><p>fix for display hook not publishing object metadata <a class="reference external" href="https://github.com/ipython/ipython/pull/11101/">PR #11101</a></p></li>
+</ul>
+</div>
+<div class="section" id="ipython-5-6">
+<span id="whatsnew560"></span><h2>IPython 5.6<a class="headerlink" href="#ipython-5-6" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>In Python 3.6 and above, dictionaries preserve the order items were added to
+them. On these versions, IPython will display dictionaries in their native
+order, rather than sorting by the keys (<a class="reference external" href="https://github.com/ipython/ipython/pull/10958/">PR #10958</a>).</p></li>
+<li><p><a class="reference internal" href="../api/generated/IPython.display.html#IPython.display.ProgressBar" title="IPython.display.ProgressBar"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgressBar</span></code></a> can now be used as an iterator
+(<a class="reference external" href="https://github.com/ipython/ipython/pull/10813/">PR #10813</a>).</p></li>
+<li><p>The shell object gains a <a class="reference internal" href="../api/generated/IPython.core.interactiveshell.html#IPython.core.interactiveshell.InteractiveShell.check_complete" title="IPython.core.interactiveshell.InteractiveShell.check_complete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check_complete()</span></code></a> method,
+to allow a smoother transition to new input processing machinery planned for
+IPython 7 (<a class="reference external" href="https://github.com/ipython/ipython/pull/11044/">PR #11044</a>).</p></li>
+<li><p>IPython should start faster, as it no longer looks for all available pygments
+styles on startup (<a class="reference external" href="https://github.com/ipython/ipython/pull/10859/">PR #10859</a>).</p></li>
+</ul>
+<p>You can see all the PR marked for the <a class="reference external" href="https://github.com/ipython/ipython/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+milestone%3A5.6+is%3Aclosed+NOT+%22Backport+PR%22+">5.6. milestone</a>,
+and all the <a class="reference external" href="https://github.com/ipython/ipython/pulls?utf8=%E2%9C%93&amp;q=is%3Apr%20milestone%3A5.6%20is%3Aclosed%20%22Backport%20PR%22%20">backport versions</a>.</p>
+</div>
+<div class="section" id="ipython-5-5">
+<span id="whatsnew550"></span><h2>IPython 5.5<a class="headerlink" href="#ipython-5-5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="system-wide-config">
+<h3>System Wide config<a class="headerlink" href="#system-wide-config" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>IPython now looks for config files in <code class="docutils literal notranslate"><span class="pre">{sys.prefix}/etc/ipython</span></code>
+for environment-specific configuration.</p></li>
+<li><p>Startup files can be found in <code class="docutils literal notranslate"><span class="pre">/etc/ipython/startup</span></code> or <code class="docutils literal notranslate"><span class="pre">{sys.prefix}/etc/ipython/startup</span></code>
+in addition to the profile directory, for system-wide or env-specific startup files.</p></li>
+</ul>
+<p>See <a class="reference external" href="https://github.com/ipython/ipython/pull/10644/">PR #10644</a></p>
+</div>
+<div class="section" id="progressbar">
+<h3>ProgressBar<a class="headerlink" href="#progressbar" title="Permalink to this headline">¶</a></h3>
+<p>IPython now has built-in support for progressbars:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">ProgressBar</span>
+<span class="o">...</span>  <span class="p">:</span> <span class="n">pb</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">...</span>  <span class="p">:</span> <span class="n">pb</span>
+
+<span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">pb</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># progress bar in cell 1 updates.</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://github.com/ipython/ipython/pull/10755/">PR #10755</a></p>
+</div>
+<div class="section" id="misc">
+<h3>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">IPython.core.display:Pretty._repr_pretty_</span></code> had the wrong signature.
+(<a class="reference external" href="https://github.com/ipython/ipython/pull/10625/">PR #10625</a>)</p></li>
+<li><p><code class="xref std std-magic docutils literal notranslate"><span class="pre">%timeit</span></code> now give a correct <code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code> if naked <code class="docutils literal notranslate"><span class="pre">return</span></code> used.
+(<a class="reference external" href="https://github.com/ipython/ipython/pull/10637/">PR #10637</a>)</p></li>
+<li><p>Prepare the <code class="docutils literal notranslate"><span class="pre">:ipython:</span></code> directive to be compatible with Sphinx 1.7.
+(<a class="reference external" href="https://github.com/ipython/ipython/pull/10668/">PR #10668</a>)</p></li>
+<li><p>Make IPython work with OpenSSL in FIPS mode; change hash algorithm of input
+from md5 to sha1. (<a class="reference external" href="https://github.com/ipython/ipython/pull/10696/">PR #10696</a>)</p></li>
+<li><p>Clear breakpoints before running any script with debugger. (<a class="reference external" href="https://github.com/ipython/ipython/pull/10699/">PR #10699</a>)</p></li>
+<li><p>Document that <code class="xref std std-magic docutils literal notranslate"><span class="pre">%profile</span></code> is deprecated, not to be confused with <code class="xref std std-magic docutils literal notranslate"><span class="pre">%prun</span></code>. (<a class="reference external" href="https://github.com/ipython/ipython/pull/10707/">PR #10707</a>)</p></li>
+<li><p>Limit default number of returned completions to 500. (<a class="reference external" href="https://github.com/ipython/ipython/pull/10743/">PR #10743</a>)</p></li>
+</ul>
+</div></blockquote>
+<p>You can see all the PR marked for the <a class="reference external" href="https://github.com/ipython/ipython/pulls?q=is%3Apr%20milestone%3A5.5%20is%3Aclosed%20NOT%20%22Backport%20PR%22">5.5. milestone</a>,
+and all the <a class="reference external" href="https://github.com/ipython/ipython/pulls?utf8=%E2%9C%93&amp;q=is%3Apr%20milestone%3A5.5%20is%3Aclosed%20%22Backport%20PR%22%20">backport versions</a>.</p>
+</div>
+</div>
+<div class="section" id="ipython-5-4-1">
+<h2>IPython 5.4.1<a class="headerlink" href="#ipython-5-4-1" title="Permalink to this headline">¶</a></h2>
+<p>Released a few hours after 5.4, fix a crash when
+<code class="docutils literal notranslate"><span class="pre">backports.shutil-get-terminal-size</span></code> is not installed. <a class="reference external" href="https://github.com/ipython/ipython/issues/10629/">#10629</a></p>
+</div>
+<div class="section" id="ipython-5-4">
+<span id="whatsnew540"></span><h2>IPython 5.4<a class="headerlink" href="#ipython-5-4" title="Permalink to this headline">¶</a></h2>
+<p>IPython 5.4-LTS is the first release of IPython after the release of the 6.x
+series which is Python 3 only. It backports most of the new exposed API
+additions made in IPython 6.0 and 6.1 and avoid having to write conditional
+logics depending of the version of IPython.</p>
+<p>Please upgrade to pip 9 or greater before upgrading IPython.
+Failing to do so on Python 2 may lead to a broken IPython install.</p>
+<div class="section" id="configurable-terminalinteractiveshell">
+<h3>Configurable TerminalInteractiveShell<a class="headerlink" href="#configurable-terminalinteractiveshell" title="Permalink to this headline">¶</a></h3>
+<p>Backported from the 6.x branch as an exceptional new feature. See
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10373/">PR #10373</a> and <a class="reference external" href="https://github.com/ipython/ipython/issues/10364/">#10364</a></p>
+<p>IPython gained a new <code class="docutils literal notranslate"><span class="pre">c.TerminalIPythonApp.interactive_shell_class</span></code> option
+that allow to customize the class used to start the terminal frontend. This
+should allow user to use custom interfaces, like reviving the former readline
+interface which is now a separate package not maintained by the core team.</p>
+</div>
+<div class="section" id="define-repr-mimebundle">
+<h3>Define <code class="docutils literal notranslate"><span class="pre">_repr_mimebundle_</span></code><a class="headerlink" href="#define-repr-mimebundle" title="Permalink to this headline">¶</a></h3>
+<p>Object can now define <code class="docutils literal notranslate"><span class="pre">_repr_mimebundle_</span></code> in place of multiple <code class="docutils literal notranslate"><span class="pre">_repr_*_</span></code>
+methods and return a full mimebundle. This greatly simplify many implementation
+and allow to publish custom mimetypes (like geojson, plotly, dataframes….).
+See the <code class="docutils literal notranslate"><span class="pre">Custom</span> <span class="pre">Display</span> <span class="pre">Logic</span></code> example notebook for more informations.</p>
+</div>
+<div class="section" id="execution-heuristics">
+<h3>Execution Heuristics<a class="headerlink" href="#execution-heuristics" title="Permalink to this headline">¶</a></h3>
+<p>The heuristic for execution in the command line interface is now more biased
+toward executing for single statement. While in IPython 4.x and before a single
+line would be executed when enter is pressed, IPython 5.x would insert a new
+line. For single line statement this is not true anymore and if a single line is
+valid Python, IPython will execute it regardless of the cursor position. Use
+<kbd class="kbd docutils literal notranslate">Ctrl-O</kbd> to insert a new line. <a class="reference external" href="https://github.com/ipython/ipython/pull/10489/">PR #10489</a></p>
+</div>
+<div class="section" id="implement-display-ids">
+<h3>Implement Display IDs<a class="headerlink" href="#implement-display-ids" title="Permalink to this headline">¶</a></h3>
+<p>Implement display id and ability to update a given display. This should greatly
+simplify a lot of code by removing the need for widgets and allow other frontend
+to implement things like progress-bars.  See <a class="reference external" href="https://github.com/ipython/ipython/pull/10048/">PR #10048</a></p>
+</div>
+<div class="section" id="display-function">
+<h3>Display function<a class="headerlink" href="#display-function" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="../api/generated/IPython.display.html#IPython.display.display" title="IPython.display.display"><code class="xref py py-func docutils literal notranslate"><span class="pre">display()</span></code></a> function is now available by
+default in an IPython session, meaning users can call it on any object to see
+their rich representation. This should allow for better interactivity both at
+the REPL and in notebook environment.</p>
+<p>Scripts and library that rely on display and may be run outside of IPython still
+need to import the display function using <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">IPython.display</span> <span class="pre">import</span>
+<span class="pre">display</span></code>. See <a class="reference external" href="https://github.com/ipython/ipython/pull/10596/">PR #10596</a></p>
+</div>
+<div class="section" id="miscs">
+<h3>Miscs<a class="headerlink" href="#miscs" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_mp_main_</span></code> is not reloaded which fixes issues with multiprocessing.
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10523/">PR #10523</a></p></li>
+<li><p>Use user colorscheme in Pdb as well <a class="reference external" href="https://github.com/ipython/ipython/pull/10479/">PR #10479</a></p></li>
+<li><p>Faster shutdown. <a class="reference external" href="https://github.com/ipython/ipython/pull/10408/">PR #10408</a></p></li>
+<li><p>Fix a crash in reverse search. <a class="reference external" href="https://github.com/ipython/ipython/pull/10371/">PR #10371</a></p></li>
+<li><p>added <code class="docutils literal notranslate"><span class="pre">Completer.backslash_combining_completions</span></code> boolean option to
+deactivate backslash-tab completion that may conflict with windows path.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="ipython-5-3">
+<h2>IPython 5.3<a class="headerlink" href="#ipython-5-3" title="Permalink to this headline">¶</a></h2>
+<p>Released on February 24th, 2017. Remarkable changes and fixes:</p>
+<ul class="simple">
+<li><p>Fix a bug in <code class="docutils literal notranslate"><span class="pre">set_next_input</span></code> leading to a crash of terminal IPython.
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10231/">PR #10231</a>, <a class="reference external" href="https://github.com/ipython/ipython/issues/10296/">#10296</a>, <a class="reference external" href="https://github.com/ipython/ipython/issues/10229/">#10229</a></p></li>
+<li><p>Always wait for editor inputhook for terminal IPython <a class="reference external" href="https://github.com/ipython/ipython/pull/10239/">PR #10239</a>,
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10240/">PR #10240</a></p></li>
+<li><p>Disable <code class="docutils literal notranslate"><span class="pre">_ipython_display_</span></code> in terminal <a class="reference external" href="https://github.com/ipython/ipython/pull/10249/">PR #10249</a>, <a class="reference external" href="https://github.com/ipython/ipython/pull/10274/">PR #10274</a></p></li>
+<li><p>Update terminal colors to be more visible by default on windows
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10260/">PR #10260</a>, <a class="reference external" href="https://github.com/ipython/ipython/pull/10238/">PR #10238</a>, <a class="reference external" href="https://github.com/ipython/ipython/issues/10281/">#10281</a></p></li>
+<li><p>Add Ctrl-Z shortcut (suspend) in terminal debugger <a class="reference external" href="https://github.com/ipython/ipython/pull/10254/">PR #10254</a>,
+<a class="reference external" href="https://github.com/ipython/ipython/issues/10273/">#10273</a></p></li>
+<li><p>Indent on new line by looking at the text before the cursor <a class="reference external" href="https://github.com/ipython/ipython/pull/10264/">PR #10264</a>,
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10275/">PR #10275</a>, <a class="reference external" href="https://github.com/ipython/ipython/issues/9283/">#9283</a></p></li>
+<li><p>Update QtEventloop integration to fix some matplotlib integration issues
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10201/">PR #10201</a>, <a class="reference external" href="https://github.com/ipython/ipython/pull/10311/">PR #10311</a>, <a class="reference external" href="https://github.com/ipython/ipython/issues/10201/">#10201</a></p></li>
+<li><p>Respect completions display style in terminal debugger <a class="reference external" href="https://github.com/ipython/ipython/pull/10305/">PR #10305</a>,
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10313/">PR #10313</a></p></li>
+<li><p>Add a config option <code class="docutils literal notranslate"><span class="pre">TerminalInteractiveShell.extra_open_editor_shortcuts</span></code>
+to enable extra shortcuts to open the input in an editor. These are <kbd class="kbd docutils literal notranslate">v</kbd>
+in vi mode, and <kbd class="kbd docutils literal notranslate">C-X C-E</kbd> in emacs mode (<a class="reference external" href="https://github.com/ipython/ipython/pull/10330/">PR #10330</a>).
+The <kbd class="kbd docutils literal notranslate">F2</kbd> shortcut is always enabled.</p></li>
+</ul>
+</div>
+<div class="section" id="ipython-5-2-2">
+<h2>IPython 5.2.2<a class="headerlink" href="#ipython-5-2-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Fix error when starting with <code class="docutils literal notranslate"><span class="pre">IPCompleter.limit_to__all__</span></code> configured.</p></li>
+</ul>
+</div>
+<div class="section" id="ipython-5-2-1">
+<h2>IPython 5.2.1<a class="headerlink" href="#ipython-5-2-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Fix tab completion in the debugger. <a class="reference external" href="https://github.com/ipython/ipython/pull/10223/">PR #10223</a></p></li>
+</ul>
+</div>
+<div class="section" id="ipython-5-2">
+<h2>IPython 5.2<a class="headerlink" href="#ipython-5-2" title="Permalink to this headline">¶</a></h2>
+<p>Released on January 29th, 2017. Remarkable changes and fixes:</p>
+<ul class="simple">
+<li><p>restore IPython’s debugger to raise on quit. <a class="reference external" href="https://github.com/ipython/ipython/pull/10009/">PR #10009</a></p></li>
+<li><p>The configuration value <code class="docutils literal notranslate"><span class="pre">c.TerminalInteractiveShell.highlighting_style</span></code> can
+now directly take a class argument for custom color style. <a class="reference external" href="https://github.com/ipython/ipython/pull/9848/">PR #9848</a></p></li>
+<li><p>Correctly handle matplotlib figures dpi <a class="reference external" href="https://github.com/ipython/ipython/pull/9868/">PR #9868</a></p></li>
+<li><p>Deprecate <code class="docutils literal notranslate"><span class="pre">-e</span></code> flag for the <code class="docutils literal notranslate"><span class="pre">%notebook</span></code> magic that had no effects.
+<a class="reference external" href="https://github.com/ipython/ipython/pull/9872/">PR #9872</a></p></li>
+<li><p>You can now press F2 while typing at a terminal prompt to edit the contents
+in your favourite terminal editor. Set the <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">EDITOR</span></code> environment
+variable to pick which editor is used. <a class="reference external" href="https://github.com/ipython/ipython/pull/9929/">PR #9929</a></p></li>
+<li><p>sdists will now only be <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> as per upstream PyPI requirements.
+<a class="reference external" href="https://github.com/ipython/ipython/pull/9925/">PR #9925</a></p></li>
+<li><p><a class="reference internal" href="../api/generated/IPython.core.debugger.html#module-IPython.core.debugger" title="IPython.core.debugger"><code class="xref any py py-mod docutils literal notranslate"><span class="pre">IPython.core.debugger</span></code></a> have gained a <code class="docutils literal notranslate"><span class="pre">set_trace()</span></code> method for
+convenience. <a class="reference external" href="https://github.com/ipython/ipython/pull/9947/">PR #9947</a></p></li>
+<li><p>The ‘smart command mode’ added to the debugger in 5.0 was removed, as more
+people preferred the previous behaviour. Therefore, debugger commands such as
+<code class="docutils literal notranslate"><span class="pre">c</span></code> will act as debugger commands even when <code class="docutils literal notranslate"><span class="pre">c</span></code> is defined as a variable.
+<a class="reference external" href="https://github.com/ipython/ipython/pull/10050/">PR #10050</a></p></li>
+<li><p>Fixes OS X event loop issues at startup, <a class="reference external" href="https://github.com/ipython/ipython/pull/10150/">PR #10150</a></p></li>
+<li><p>Deprecate the <code class="docutils literal notranslate"><span class="pre">%autoindent</span></code> magic. <a class="reference external" href="https://github.com/ipython/ipython/pull/10176/">PR #10176</a></p></li>
+<li><p>Emit a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#DeprecationWarning" title="(in Python v3.7)"><code class="xref any docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> when setting the deprecated
+<code class="docutils literal notranslate"><span class="pre">limit_to_all</span></code> option of the completer. <a class="reference external" href="https://github.com/ipython/ipython/pull/10198/">PR #10198</a></p></li>
+<li><p>The <code class="xref std std-cellmagic docutils literal notranslate"><span class="pre">%%capture</span></code> magic can now capture the result of a cell (from an
+expression on the last line), as well as printed and displayed output.
+<a class="reference external" href="https://github.com/ipython/ipython/pull/9851/">PR #9851</a>.</p></li>
+</ul>
+<p>Changes of behavior to <a class="reference internal" href="../api/generated/IPython.terminal.embed.html#IPython.terminal.embed.InteractiveShellEmbed" title="IPython.terminal.embed.InteractiveShellEmbed"><code class="xref any py py-class docutils literal notranslate"><span class="pre">InteractiveShellEmbed</span></code></a>.</p>
+<p><a class="reference internal" href="../api/generated/IPython.terminal.embed.html#IPython.terminal.embed.InteractiveShellEmbed" title="IPython.terminal.embed.InteractiveShellEmbed"><code class="xref any py py-class docutils literal notranslate"><span class="pre">InteractiveShellEmbed</span></code></a> interactive behavior have changed a bit in between
+5.1 and 5.2. By default <code class="docutils literal notranslate"><span class="pre">%kill_embedded</span></code> magic will prevent further invocation
+of the current <code class="docutils literal notranslate"><span class="pre">call</span> <span class="pre">location</span></code> instead of preventing further invocation of
+the current instance creation location. For most use case this will not change
+much for you, though previous behavior was confusing and less consistent with
+previous IPython versions.</p>
+<p>You can now deactivate instances by using <code class="docutils literal notranslate"><span class="pre">%kill_embedded</span> <span class="pre">--instance</span></code> flag,
+(or <code class="docutils literal notranslate"><span class="pre">-i</span></code> in short). The <code class="docutils literal notranslate"><span class="pre">%kill_embedded</span></code> magic also gained a
+<code class="docutils literal notranslate"><span class="pre">--yes</span></code>/<code class="docutils literal notranslate"><span class="pre">-y</span></code> option which skip confirmation step, and  <code class="docutils literal notranslate"><span class="pre">-x</span></code>/<code class="docutils literal notranslate"><span class="pre">--exit</span></code>
+which also exit the current embedded call without asking for confirmation.</p>
+<p>See <a class="reference external" href="https://github.com/ipython/ipython/pull/10207/">PR #10207</a>.</p>
+</div>
+<div class="section" id="ipython-5-1">
+<h2>IPython 5.1<a class="headerlink" href="#ipython-5-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Broken <code class="docutils literal notranslate"><span class="pre">%timeit</span></code> on Python2 due to the use of <code class="docutils literal notranslate"><span class="pre">__qualname__</span></code>. <a class="reference external" href="https://github.com/ipython/ipython/pull/9804/">PR #9804</a></p></li>
+<li><p>Restore <code class="docutils literal notranslate"><span class="pre">%gui</span> <span class="pre">qt</span></code> to create and return a <code class="docutils literal notranslate"><span class="pre">QApplication</span></code> if necessary. <a class="reference external" href="https://github.com/ipython/ipython/pull/9789/">PR #9789</a></p></li>
+<li><p>Don’t set terminal title by default. <a class="reference external" href="https://github.com/ipython/ipython/pull/9801/">PR #9801</a></p></li>
+<li><p>Preserve indentation when inserting newlines with <code class="docutils literal notranslate"><span class="pre">Ctrl-O</span></code>. <a class="reference external" href="https://github.com/ipython/ipython/pull/9770/">PR #9770</a></p></li>
+<li><p>Restore completion in debugger. <a class="reference external" href="https://github.com/ipython/ipython/pull/9785/">PR #9785</a></p></li>
+<li><p>Deprecate <code class="docutils literal notranslate"><span class="pre">IPython.core.debugger.Tracer()</span></code> in favor of simpler, newer, APIs. <a class="reference external" href="https://github.com/ipython/ipython/pull/9731/">PR #9731</a></p></li>
+<li><p>Restore <code class="docutils literal notranslate"><span class="pre">NoOpContext</span></code> context manager removed by mistake, and add <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>. <a class="reference external" href="https://github.com/ipython/ipython/pull/9765/">PR #9765</a></p></li>
+<li><p>Add option allowing <code class="docutils literal notranslate"><span class="pre">Prompt_toolkit</span></code> to use 24bits colors. <a class="reference external" href="https://github.com/ipython/ipython/pull/9736/">PR #9736</a></p></li>
+<li><p>Fix for closing interactive matplotlib windows on OS X. <a class="reference external" href="https://github.com/ipython/ipython/pull/9854/">PR #9854</a></p></li>
+<li><p>An embedded interactive shell instance can be used more than once. <a class="reference external" href="https://github.com/ipython/ipython/pull/9843/">PR #9843</a></p></li>
+<li><p>More robust check for whether IPython is in a terminal. <a class="reference external" href="https://github.com/ipython/ipython/pull/9833/">PR #9833</a></p></li>
+<li><p>Better pretty-printing of dicts on PyPy. <a class="reference external" href="https://github.com/ipython/ipython/pull/9827/">PR #9827</a></p></li>
+<li><p>Some coloured output now looks better on dark background command prompts in Windows.
+<a class="reference external" href="https://github.com/ipython/ipython/pull/9838/">PR #9838</a></p></li>
+<li><p>Improved tab completion of paths on Windows . <a class="reference external" href="https://github.com/ipython/ipython/pull/9826/">PR #9826</a></p></li>
+<li><p>Fix tkinter event loop integration on Python 2 with <code class="docutils literal notranslate"><span class="pre">future</span></code> installed. <a class="reference external" href="https://github.com/ipython/ipython/pull/9824/">PR #9824</a></p></li>
+<li><p>Restore <code class="docutils literal notranslate"><span class="pre">Ctrl-\</span></code> as a shortcut to quit IPython.</p></li>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">get_ipython()</span></code> accessible when modules are imported by startup files. <a class="reference external" href="https://github.com/ipython/ipython/pull/9818/">PR #9818</a></p></li>
+<li><p>Add support for running directories containing a <code class="docutils literal notranslate"><span class="pre">__main__.py</span></code> file with the
+<code class="docutils literal notranslate"><span class="pre">ipython</span></code> command. <a class="reference external" href="https://github.com/ipython/ipython/pull/9813/">PR #9813</a></p></li>
+</ul>
+<div class="section" id="true-color-feature">
+<h3>True Color feature<a class="headerlink" href="#true-color-feature" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">prompt_toolkit</span></code> uses pygments styles for syntax highlighting. By default, the
+colors specified in the style are approximated using a standard 256-color
+palette. <code class="docutils literal notranslate"><span class="pre">prompt_toolkit</span></code> also supports 24bit, a.k.a. “true”, a.k.a. 16-million
+color escape sequences which enable compatible terminals to display the exact
+colors specified instead of an approximation. This true_color option exposes
+that capability in prompt_toolkit to the IPython shell.</p>
+<p>Here is a good source for the current state of true color support in various
+terminal emulators and software projects: <a class="reference external" href="https://gist.github.com/XVilka/8346728">https://gist.github.com/XVilka/8346728</a></p>
+</div>
+</div>
+<div class="section" id="ipython-5-0">
+<h2>IPython 5.0<a class="headerlink" href="#ipython-5-0" title="Permalink to this headline">¶</a></h2>
+<p>Released July 7, 2016</p>
+<div class="section" id="new-terminal-interface">
+<h3>New terminal interface<a class="headerlink" href="#new-terminal-interface" title="Permalink to this headline">¶</a></h3>
+<p>IPython 5 features a major upgrade to the terminal interface, bringing live
+syntax highlighting as you type, proper multiline editing and multiline paste,
+and tab completions that don’t clutter up your history.</p>
+<a class="reference external image-reference" href="../_images/ptshell_features.png"><img alt="New terminal interface features" class="align-center" src="../_images/ptshell_features.png" /></a>
+<p>These features are provided by the Python library <a class="reference external" href="http://python-prompt-toolkit.readthedocs.io/en/stable/">prompt_toolkit</a>, which replaces
+<code class="docutils literal notranslate"><span class="pre">readline</span></code> throughout our terminal interface.</p>
+<p>Relying on this pure-Python, cross platform module also makes it simpler to
+install IPython. We have removed dependencies on <code class="docutils literal notranslate"><span class="pre">pyreadline</span></code> for Windows and
+<code class="docutils literal notranslate"><span class="pre">gnureadline</span></code> for Mac.</p>
+</div>
+<div class="section" id="backwards-incompatible-changes">
+<h3>Backwards incompatible changes<a class="headerlink" href="#backwards-incompatible-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">%install_ext</span></code> magic function, deprecated since 4.0, has now been deleted.
+You can distribute and install extensions as packages on PyPI.</p></li>
+<li><p>Callbacks registered while an event is being handled will now only be called
+for subsequent events; previously they could be called for the current event.
+Similarly, callbacks removed while handling an event <em>will</em> always get that
+event. See <a class="reference external" href="https://github.com/ipython/ipython/issues/9447/">#9447</a> and <a class="reference external" href="https://github.com/ipython/ipython/pull/9453/">PR #9453</a>.</p></li>
+<li><p>Integration with pydb has been removed since pydb development has been stopped
+since 2012, and pydb is not installable from PyPI.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">autoedit_syntax</span></code> option has apparently been broken for many years.
+It has been removed.</p></li>
+</ul>
+<div class="section" id="id2">
+<h4>New terminal interface<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>The overhaul of the terminal interface will probably cause a range of minor
+issues for existing users.
+This is inevitable for such a significant change, and we’ve done our best to
+minimise these issues.
+Some changes that we’re aware of, with suggestions on how to handle them:</p>
+<p>IPython no longer uses readline configuration (<code class="docutils literal notranslate"><span class="pre">~/.inputrc</span></code>). We hope that
+the functionality you want (e.g. vi input mode) will be available by configuring
+IPython directly (see <a class="reference internal" href="../config/options/terminal.html"><span class="doc">Terminal IPython options</span></a>).
+If something’s missing, please file an issue.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">PromptManager</span></code> class has been removed, and the prompt machinery simplified.
+See <a class="reference internal" href="../config/details.html#custom-prompts"><span class="std std-ref">Custom Prompts</span></a> to customise prompts with the new machinery.</p>
+<p><a class="reference internal" href="../api/generated/IPython.core.debugger.html#module-IPython.core.debugger" title="IPython.core.debugger"><code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.core.debugger</span></code></a> now provides a plainer interface.
+<a class="reference internal" href="../api/generated/IPython.terminal.debugger.html#module-IPython.terminal.debugger" title="IPython.terminal.debugger"><code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.terminal.debugger</span></code></a> contains the terminal debugger using
+prompt_toolkit.</p>
+<p>There are new options to configure the colours used in syntax highlighting.
+We have tried to integrate them with our classic  <code class="docutils literal notranslate"><span class="pre">--colors</span></code> option and
+<code class="docutils literal notranslate"><span class="pre">%colors</span></code> magic, but there’s a mismatch in possibilities, so some configurations
+may produce unexpected results. See <a class="reference internal" href="../config/details.html#termcolour"><span class="std std-ref">Terminal Colors</span></a> for more information.</p>
+<p>The new interface is not compatible with Emacs ‘inferior-shell’ feature. To
+continue using this, add the <code class="docutils literal notranslate"><span class="pre">--simple-prompt</span></code> flag to the command Emacs
+runs. This flag disables most IPython features, relying on Emacs to provide
+things like tab completion.</p>
+</div>
+</div>
+<div class="section" id="provisional-changes">
+<h3>Provisional Changes<a class="headerlink" href="#provisional-changes" title="Permalink to this headline">¶</a></h3>
+<p>Provisional changes are experimental functionality that may, or may not, make
+it into a future version of IPython, and which API may change without warnings.
+Activating these features and using these API are at your own risk, and may have
+security implication for your system, especially if used with the Jupyter notebook,</p>
+<p>When running via the Jupyter notebook interfaces, or other compatible client,
+you can enable rich documentation experimental functionality:</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">docrepr</span></code> package is installed setting the boolean flag
+<code class="docutils literal notranslate"><span class="pre">InteractiveShell.sphinxify_docstring</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>, will process the various
+object through sphinx before displaying them (see the <code class="docutils literal notranslate"><span class="pre">docrepr</span></code> package
+documentation for more information.</p>
+<p>You need to also enable the IPython pager display rich HTML representation
+using the <code class="docutils literal notranslate"><span class="pre">InteractiveShell.enable_html_pager</span></code> boolean configuration option.
+As usual you can set these configuration options globally in your configuration
+files, alternatively you can turn them on dynamically using the following
+snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ip</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">sphinxify_docstring</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">enable_html_pager</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>You can test the effect of various combinations of the above configuration in
+the Jupyter notebook, with things example like :</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+np.histogram<span class="o">?</span>
+</pre></div>
+</div>
+<p>This is part of an effort to make Documentation in Python richer and provide in
+the long term if possible dynamic examples that can contain math, images,
+widgets… As stated above this is nightly experimental feature with a lot of
+(fun) problem to solve. We would be happy to get your feedback and expertise on
+it.</p>
+</div>
+<div class="section" id="deprecated-features">
+<h3>Deprecated Features<a class="headerlink" href="#deprecated-features" title="Permalink to this headline">¶</a></h3>
+<p>Some deprecated features are listed in this section. Don’t forget to enable
+<code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> as an error if you are using IPython in a Continuous
+Integration setup or in your testing in general:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;.*&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;yourmodule.*&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hooks.fix_error_editor</span></code> seems unused and is pending deprecation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IPython/core/excolors.py:ExceptionColors</span></code> is  deprecated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IPython.core.InteractiveShell:write()</span></code> is deprecated; use <code class="docutils literal notranslate"><span class="pre">sys.stdout</span></code> instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IPython.core.InteractiveShell:write_err()</span></code> is deprecated; use <code class="docutils literal notranslate"><span class="pre">sys.stderr</span></code> instead.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">formatter</span></code> keyword argument to <code class="docutils literal notranslate"><span class="pre">Inspector.info</span></code> in <code class="docutils literal notranslate"><span class="pre">IPython.core.oinspec</span></code> has no effect.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">global_ns</span></code> keyword argument of IPython Embed was deprecated, and has no effect. Use <code class="docutils literal notranslate"><span class="pre">module</span></code> keyword argument instead.</p></li>
+</ul>
+</div>
+<div class="section" id="known-issues">
+<h3>Known Issues:<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Esc&gt;</span></code> Key does not dismiss the completer and does not clear the current
+buffer. This is an on purpose modification due to current technical
+limitation. Cf <a class="reference external" href="https://github.com/ipython/ipython/pull/9572/">PR #9572</a>. Escape the control character which is used
+for other shortcut, and there is no practical way to distinguish. Use Ctr-G
+or Ctrl-C as an alternative.</p></li>
+<li><p>Cannot use <code class="docutils literal notranslate"><span class="pre">Shift-Enter</span></code> and <code class="docutils literal notranslate"><span class="pre">Ctrl-Enter</span></code> to submit code in terminal. cf
+<a class="reference external" href="https://github.com/ipython/ipython/issues/9587/">#9587</a> and <a class="reference external" href="https://github.com/ipython/ipython/issues/9401/">#9401</a>. In terminal there is no practical way to
+distinguish these key sequences from a normal new line return.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PageUp</span></code> and <code class="docutils literal notranslate"><span class="pre">pageDown</span></code> do not move through completion menu.</p></li>
+<li><p>Color styles might not adapt to terminal emulator themes. This will need new
+version of Pygments to be released, and can be mitigated with custom themes.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="github-stats-5.html" class="btn btn-neutral float-right" title="Issues closed in the 5.x development cycle" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="github-stats-6.html" class="btn btn-neutral float-left" title="Issues closed in the 6.x development cycle" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

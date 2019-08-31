@@ -1,0 +1,434 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>IPython as a system shell &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Asynchronous in REPL: Autoawait" href="autoawait.html" />
+    <link rel="prev" title="IPython reference" href="reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html">Introducing IPython</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Rich Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#id1">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html">IPython reference</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">IPython as a system shell</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aliases">Aliases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#directory-management">Directory management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prompt-customization">Prompt customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#string-lists">String lists</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#real-world-example-remove-all-files-outside-version-control">Real world example: remove all files outside version control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-n-s-p-properties">The .n, .s, .p properties</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoawait.html">Asynchronous in REPL: Autoawait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips.html">IPython Tips &amp; Tricks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-ipython-diff.html">Python vs IPython</a></li>
+<li class="toctree-l2"><a class="reference internal" href="magics.html">Built-in magic commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorial</a> &raquo;</li>
+        
+      <li>IPython as a system shell</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/interactive/shell.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="ipython-as-a-system-shell">
+<span id="ipython-as-shell"></span><h1>IPython as a system shell<a class="headerlink" href="#ipython-as-a-system-shell" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to adapt IPython for system shell usage. In the past, IPython
+shipped a special ‘sh’ profile for this purpose, but it had been quarantined
+since 0.11 release, and in 1.0 it was removed altogether. Nevertheless, much
+of this section relies on machinery which does not require a custom profile.</p>
+<p>You can set up your own ‘sh’ <a class="reference internal" href="../config/intro.html#profiles"><span class="std std-ref">profile</span></a> to be different from
+the default profile such that:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Prompt shows the current directory (see <a class="reference internal" href="#prompt-customization">Prompt customization</a>)</p></li>
+<li><p>Make system commands directly available (in alias table) by running the
+<code class="docutils literal notranslate"><span class="pre">%rehashx</span></code> magic. If you install new programs along your PATH, you might
+want to run <code class="docutils literal notranslate"><span class="pre">%rehashx</span></code> to update the alias table</p></li>
+<li><p>turn <code class="docutils literal notranslate"><span class="pre">%autocall</span></code> to full mode</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="environment-variables">
+<h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>Rather than manipulating os.environ directly, you may like to use the magic
+<code class="docutils literal notranslate"><span class="pre">%env</span></code> command.  With no arguments, this displays all environment variables
+and values.  To get the value of a specific variable, use <code class="docutils literal notranslate"><span class="pre">%env</span> <span class="pre">var</span></code>.  To set
+the value of a specific variable, use <code class="docutils literal notranslate"><span class="pre">%env</span> <span class="pre">foo</span> <span class="pre">bar</span></code>, <code class="docutils literal notranslate"><span class="pre">%env</span> <span class="pre">foo=bar</span></code>.  By
+default values are considered to be strings so quoting them is unnecessary.
+However, Python variables are expanded as usual in the magic command, so
+<code class="docutils literal notranslate"><span class="pre">%env</span> <span class="pre">foo=$bar</span></code> means “set the environment variable foo to the value of the
+Python variable <code class="docutils literal notranslate"><span class="pre">bar</span></code>”.</p>
+</div>
+<div class="section" id="aliases">
+<h2>Aliases<a class="headerlink" href="#aliases" title="Permalink to this headline">¶</a></h2>
+<p>Once you run <code class="docutils literal notranslate"><span class="pre">%rehashx</span></code>, all of your $PATH has been loaded as IPython aliases,
+so you should be able to type any normal system command and have it executed.
+See <code class="docutils literal notranslate"><span class="pre">%alias?</span></code>  and <code class="docutils literal notranslate"><span class="pre">%unalias?</span></code> for details on the alias facilities. See also
+<code class="docutils literal notranslate"><span class="pre">%rehashx?</span></code> for details on the mechanism used to load $PATH.</p>
+</div>
+<div class="section" id="directory-management">
+<h2>Directory management<a class="headerlink" href="#directory-management" title="Permalink to this headline">¶</a></h2>
+<p>Since each command passed by IPython to the underlying system is executed
+in a subshell which exits immediately, you can NOT use !cd to navigate
+the filesystem.</p>
+<p>IPython provides its own builtin <code class="docutils literal notranslate"><span class="pre">%cd</span></code> magic command to move in the
+filesystem (the % is not required with automagic on). It also maintains
+a list of visited directories (use <code class="docutils literal notranslate"><span class="pre">%dhist</span></code> to see it) and allows direct
+switching to any of them. Type <code class="docutils literal notranslate"><span class="pre">cd?</span></code> for more details.</p>
+<p><code class="docutils literal notranslate"><span class="pre">%pushd</span></code>, <code class="docutils literal notranslate"><span class="pre">%popd</span></code> and <code class="docutils literal notranslate"><span class="pre">%dirs</span></code> are provided for directory stack handling.</p>
+</div>
+<div class="section" id="prompt-customization">
+<h2>Prompt customization<a class="headerlink" href="#prompt-customization" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="../config/details.html#custom-prompts"><span class="std std-ref">Custom Prompts</span></a>.</p>
+</div>
+<div class="section" id="string-lists">
+<span id="id1"></span><h2>String lists<a class="headerlink" href="#string-lists" title="Permalink to this headline">¶</a></h2>
+<p>String lists (IPython.utils.text.SList) are handy way to process output
+from system commands. They are produced by <code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">=</span> <span class="pre">!cmd</span></code> syntax.</p>
+<p>First, we acquire the output of ‘ls -l’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Q:doc/examples]|2&gt; lines = !ls -l
+ ==
+[&#39;total 23&#39;,
+ &#39;-rw-rw-rw- 1 ville None 1163 Sep 30  2006 example-demo.py&#39;,
+ &#39;-rw-rw-rw- 1 ville None 1927 Sep 30  2006 example-embed-short.py&#39;,
+ &#39;-rwxrwxrwx 1 ville None 4606 Sep  1 17:15 example-embed.py&#39;,
+ &#39;-rwxrwxrwx 1 ville None 1017 Sep 30  2006 example-gnuplot.py&#39;,
+ &#39;-rwxrwxrwx 1 ville None  339 Jun 11 18:01 extension.py&#39;,
+ &#39;-rwxrwxrwx 1 ville None  113 Dec 20  2006 seteditor.py&#39;,
+ &#39;-rwxrwxrwx 1 ville None  245 Dec 12  2006 seteditor.pyc&#39;]
+</pre></div>
+</div>
+<p>Now, let’s take a look at the contents of ‘lines’ (the first number is
+the list element number):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="n">doc</span><span class="o">/</span><span class="n">examples</span><span class="p">]</span><span class="o">|</span><span class="mi">3</span><span class="o">&gt;</span> <span class="n">lines</span>
+                <span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span> <span class="n">SList</span> <span class="p">(</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="o">.</span><span class="n">grep</span><span class="p">(),</span> <span class="o">.</span><span class="n">fields</span><span class="p">()</span> <span class="n">available</span><span class="p">)</span><span class="o">.</span> <span class="n">Value</span><span class="p">:</span>
+
+<span class="mi">0</span><span class="p">:</span> <span class="n">total</span> <span class="mi">23</span>
+<span class="mi">1</span><span class="p">:</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span> <span class="mi">1163</span> <span class="n">Sep</span> <span class="mi">30</span>  <span class="mi">2006</span> <span class="n">example</span><span class="o">-</span><span class="n">demo</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">2</span><span class="p">:</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span> <span class="mi">1927</span> <span class="n">Sep</span> <span class="mi">30</span>  <span class="mi">2006</span> <span class="n">example</span><span class="o">-</span><span class="n">embed</span><span class="o">-</span><span class="n">short</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">3</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span> <span class="mi">4606</span> <span class="n">Sep</span>  <span class="mi">1</span> <span class="mi">17</span><span class="p">:</span><span class="mi">15</span> <span class="n">example</span><span class="o">-</span><span class="n">embed</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">4</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span> <span class="mi">1017</span> <span class="n">Sep</span> <span class="mi">30</span>  <span class="mi">2006</span> <span class="n">example</span><span class="o">-</span><span class="n">gnuplot</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">5</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span>  <span class="mi">339</span> <span class="n">Jun</span> <span class="mi">11</span> <span class="mi">18</span><span class="p">:</span><span class="mi">01</span> <span class="n">extension</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">6</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span>  <span class="mi">113</span> <span class="n">Dec</span> <span class="mi">20</span>  <span class="mi">2006</span> <span class="n">seteditor</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">7</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span>  <span class="mi">245</span> <span class="n">Dec</span> <span class="mi">12</span>  <span class="mi">2006</span> <span class="n">seteditor</span><span class="o">.</span><span class="n">pyc</span>
+</pre></div>
+</div>
+<p>Now, let’s filter out the ‘embed’ lines:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="n">doc</span><span class="o">/</span><span class="n">examples</span><span class="p">]</span><span class="o">|</span><span class="mi">4</span><span class="o">&gt;</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">grep</span><span class="p">(</span><span class="s1">&#39;embed&#39;</span><span class="p">,</span><span class="n">prune</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="n">doc</span><span class="o">/</span><span class="n">examples</span><span class="p">]</span><span class="o">|</span><span class="mi">5</span><span class="o">&gt;</span> <span class="n">l2</span>
+                <span class="o">&lt;</span><span class="mi">5</span><span class="o">&gt;</span> <span class="n">SList</span> <span class="p">(</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="o">.</span><span class="n">grep</span><span class="p">(),</span> <span class="o">.</span><span class="n">fields</span><span class="p">()</span> <span class="n">available</span><span class="p">)</span><span class="o">.</span> <span class="n">Value</span><span class="p">:</span>
+
+<span class="mi">0</span><span class="p">:</span> <span class="n">total</span> <span class="mi">23</span>
+<span class="mi">1</span><span class="p">:</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span> <span class="mi">1163</span> <span class="n">Sep</span> <span class="mi">30</span>  <span class="mi">2006</span> <span class="n">example</span><span class="o">-</span><span class="n">demo</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">2</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span> <span class="mi">1017</span> <span class="n">Sep</span> <span class="mi">30</span>  <span class="mi">2006</span> <span class="n">example</span><span class="o">-</span><span class="n">gnuplot</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">3</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span>  <span class="mi">339</span> <span class="n">Jun</span> <span class="mi">11</span> <span class="mi">18</span><span class="p">:</span><span class="mi">01</span> <span class="n">extension</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">4</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span>  <span class="mi">113</span> <span class="n">Dec</span> <span class="mi">20</span>  <span class="mi">2006</span> <span class="n">seteditor</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">5</span><span class="p">:</span> <span class="o">-</span><span class="n">rwxrwxrwx</span> <span class="mi">1</span> <span class="n">ville</span> <span class="kc">None</span>  <span class="mi">245</span> <span class="n">Dec</span> <span class="mi">12</span>  <span class="mi">2006</span> <span class="n">seteditor</span><span class="o">.</span><span class="n">pyc</span>
+</pre></div>
+</div>
+<p>Now, we want strings having just file names and permissions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="n">doc</span><span class="o">/</span><span class="n">examples</span><span class="p">]</span><span class="o">|</span><span class="mi">6</span><span class="o">&gt;</span> <span class="n">l2</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+                <span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span> <span class="n">SList</span> <span class="p">(</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="o">.</span><span class="n">grep</span><span class="p">(),</span> <span class="o">.</span><span class="n">fields</span><span class="p">()</span> <span class="n">available</span><span class="p">)</span><span class="o">.</span> <span class="n">Value</span><span class="p">:</span>
+
+<span class="mi">0</span><span class="p">:</span> <span class="n">total</span>
+<span class="mi">1</span><span class="p">:</span> <span class="n">example</span><span class="o">-</span><span class="n">demo</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">rw</span><span class="o">-</span>
+<span class="mi">2</span><span class="p">:</span> <span class="n">example</span><span class="o">-</span><span class="n">gnuplot</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">rwxrwxrwx</span>
+<span class="mi">3</span><span class="p">:</span> <span class="n">extension</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">rwxrwxrwx</span>
+<span class="mi">4</span><span class="p">:</span> <span class="n">seteditor</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">rwxrwxrwx</span>
+<span class="mi">5</span><span class="p">:</span> <span class="n">seteditor</span><span class="o">.</span><span class="n">pyc</span> <span class="o">-</span><span class="n">rwxrwxrwx</span>
+</pre></div>
+</div>
+<p>Note how the line with ‘total’ does not raise IndexError.</p>
+<p>If you want to split these (yielding lists), call fields() without
+arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="n">doc</span><span class="o">/</span><span class="n">examples</span><span class="p">]</span><span class="o">|</span><span class="mi">7</span><span class="o">&gt;</span> <span class="n">_</span><span class="o">.</span><span class="n">fields</span><span class="p">()</span>
+                <span class="o">&lt;</span><span class="mi">7</span><span class="o">&gt;</span>
+<span class="p">[[</span><span class="s1">&#39;total&#39;</span><span class="p">],</span>
+ <span class="p">[</span><span class="s1">&#39;example-demo.py&#39;</span><span class="p">,</span> <span class="s1">&#39;-rw-rw-rw-&#39;</span><span class="p">],</span>
+ <span class="p">[</span><span class="s1">&#39;example-gnuplot.py&#39;</span><span class="p">,</span> <span class="s1">&#39;-rwxrwxrwx&#39;</span><span class="p">],</span>
+ <span class="p">[</span><span class="s1">&#39;extension.py&#39;</span><span class="p">,</span> <span class="s1">&#39;-rwxrwxrwx&#39;</span><span class="p">],</span>
+ <span class="p">[</span><span class="s1">&#39;seteditor.py&#39;</span><span class="p">,</span> <span class="s1">&#39;-rwxrwxrwx&#39;</span><span class="p">],</span>
+ <span class="p">[</span><span class="s1">&#39;seteditor.pyc&#39;</span><span class="p">,</span> <span class="s1">&#39;-rwxrwxrwx&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>If you want to pass these separated with spaces to a command (typical
+for lists if files), use the .s property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Q:doc/examples]|13&gt; files = l2.fields(8).s
+[Q:doc/examples]|14&gt; files
+                &lt;14&gt; &#39;example-demo.py example-gnuplot.py extension.py seteditor.py seteditor.pyc&#39;
+[Q:doc/examples]|15&gt; ls $files
+example-demo.py  example-gnuplot.py  extension.py  seteditor.py  seteditor.pyc
+</pre></div>
+</div>
+<p>SLists are inherited from normal Python lists, so every list method is
+available:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="n">doc</span><span class="o">/</span><span class="n">examples</span><span class="p">]</span><span class="o">|</span><span class="mi">21</span><span class="o">&gt;</span> <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;hey&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="real-world-example-remove-all-files-outside-version-control">
+<h3>Real world example: remove all files outside version control<a class="headerlink" href="#real-world-example-remove-all-files-outside-version-control" title="Permalink to this headline">¶</a></h3>
+<p>First, capture output of “hg status”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Q:/ipython]|28&gt; out = !hg status
+ ==
+[&#39;M IPython\\extensions\\ipy_kitcfg.py&#39;,
+ &#39;M IPython\\extensions\\ipy_rehashdir.py&#39;,
+...
+ &#39;? build\\lib\\IPython\\Debugger.py&#39;,
+ &#39;? build\\lib\\IPython\\extensions\\InterpreterExec.py&#39;,
+ &#39;? build\\lib\\IPython\\extensions\\InterpreterPasteInput.py&#39;,
+...
+</pre></div>
+</div>
+<p>(lines starting with ? are not under version control).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="o">/</span><span class="n">ipython</span><span class="p">]</span><span class="o">|</span><span class="mi">35</span><span class="o">&gt;</span> <span class="n">junk</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">grep</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\?&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">[</span><span class="n">Q</span><span class="p">:</span><span class="o">/</span><span class="n">ipython</span><span class="p">]</span><span class="o">|</span><span class="mi">36</span><span class="o">&gt;</span> <span class="n">junk</span>
+            <span class="o">&lt;</span><span class="mi">36</span><span class="o">&gt;</span> <span class="n">SList</span> <span class="p">(</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="o">.</span><span class="n">grep</span><span class="p">(),</span> <span class="o">.</span><span class="n">fields</span><span class="p">()</span> <span class="n">availab</span>
+<span class="o">...</span>
+<span class="mi">10</span><span class="p">:</span> <span class="n">build</span>\<span class="n">bdist</span><span class="o">.</span><span class="n">win32</span>\<span class="n">winexe</span>\<span class="n">temp</span>\<span class="n">_ctypes</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">11</span><span class="p">:</span> <span class="n">build</span>\<span class="n">bdist</span><span class="o">.</span><span class="n">win32</span>\<span class="n">winexe</span>\<span class="n">temp</span>\<span class="n">_hashlib</span><span class="o">.</span><span class="n">py</span>
+<span class="mi">12</span><span class="p">:</span> <span class="n">build</span>\<span class="n">bdist</span><span class="o">.</span><span class="n">win32</span>\<span class="n">winexe</span>\<span class="n">temp</span>\<span class="n">_socket</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Now we can just remove these files by doing ‘rm $junk.s’.</p>
+</div>
+<div class="section" id="the-n-s-p-properties">
+<h3>The .n, .s, .p properties<a class="headerlink" href="#the-n-s-p-properties" title="Permalink to this headline">¶</a></h3>
+<p>Properties of <a class="reference external" href="https://ipython.readthedocs.io/en/stable/api/generated/IPython.utils.text.html?highlight=SList#IPython.utils.text.SList">SList</a> wrapper
+provide a convenient ways to use contained text in different formats:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.n</span></code> returns (original) string with lines separated by a newline</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.s</span></code> returns string with lines separated by single space (for
+convenient passing to system commands)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.p</span></code> returns list of “path” objects from detected file names</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="autoawait.html" class="btn btn-neutral float-right" title="Asynchronous in REPL: Autoawait" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="reference.html" class="btn btn-neutral float-left" title="IPython reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

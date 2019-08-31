@@ -1,0 +1,2717 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>IPython kernel options &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="IPython shortcuts" href="../shortcuts/index.html" />
+    <link rel="prev" title="Terminal IPython options" href="terminal.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Configuration and customization</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#configuring-ipython">Configuring IPython</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../intro.html">Introduction to IPython configuration</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">IPython options</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="terminal.html">Terminal IPython options</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">IPython kernel options</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../shortcuts/index.html">IPython shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../details.html">Specific config details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#extending-and-integrating-with-ipython">Extending and integrating with IPython</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Configuration and customization</a> &raquo;</li>
+        
+          <li><a href="index.html">IPython options</a> &raquo;</li>
+        
+      <li>IPython kernel options</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/config/options/kernel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="ipython-kernel-options">
+<h1>IPython kernel options<a class="headerlink" href="#ipython-kernel-options" title="Permalink to this headline">¶</a></h1>
+<p>These options can be used in <code class="file docutils literal notranslate"><span class="pre">ipython_kernel_config.py</span></code>. The kernel also respects any options in <code class="docutils literal notranslate"><span class="pre">ipython_config.py</span></code></p>
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.connection_file">
+<code class="sig-name descname">ConnectionFileMixin.connection_file</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.connection_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>JSON file in which to store connection info [default: kernel-&lt;pid&gt;.json]</p>
+<p>This file will contain the IP, ports, and authentication key needed to connect
+clients to this kernel. By default, this file will be created in the security dir
+of the current profile, but can be specified by absolute path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.control_port">
+<code class="sig-name descname">ConnectionFileMixin.control_port</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.control_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the control (ROUTER) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.hb_port">
+<code class="sig-name descname">ConnectionFileMixin.hb_port</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.hb_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the heartbeat port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.iopub_port">
+<code class="sig-name descname">ConnectionFileMixin.iopub_port</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.iopub_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the iopub (PUB) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.ip">
+<code class="sig-name descname">ConnectionFileMixin.ip</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the kernel’s IP address [default localhost].
+If the IP address is something other than localhost, then
+Consoles on other machines will be able to connect
+to the Kernel, so be careful!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.shell_port">
+<code class="sig-name descname">ConnectionFileMixin.shell_port</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.shell_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the shell (ROUTER) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.stdin_port">
+<code class="sig-name descname">ConnectionFileMixin.stdin_port</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.stdin_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the stdin (ROUTER) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ConnectionFileMixin.transport">
+<code class="sig-name descname">ConnectionFileMixin.transport</code><a class="headerlink" href="#configtrait-ConnectionFileMixin.transport" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'tcp'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ipc'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'tcp'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.code_to_run">
+<code class="sig-name descname">InteractiveShellApp.code_to_run</code><a class="headerlink" href="#configtrait-InteractiveShellApp.code_to_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the given command string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-c</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.exec_PYTHONSTARTUP">
+<code class="sig-name descname">InteractiveShellApp.exec_PYTHONSTARTUP</code><a class="headerlink" href="#configtrait-InteractiveShellApp.exec_PYTHONSTARTUP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the file referenced by the PYTHONSTARTUP environment
+variable at IPython startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.exec_files">
+<code class="sig-name descname">InteractiveShellApp.exec_files</code><a class="headerlink" href="#configtrait-InteractiveShellApp.exec_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of files to run at IPython startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.exec_lines">
+<code class="sig-name descname">InteractiveShellApp.exec_lines</code><a class="headerlink" href="#configtrait-InteractiveShellApp.exec_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>lines of code to run at IPython startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.extensions">
+<code class="sig-name descname">InteractiveShellApp.extensions</code><a class="headerlink" href="#configtrait-InteractiveShellApp.extensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of dotted module names of IPython extensions to load.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.extra_extension">
+<code class="sig-name descname">InteractiveShellApp.extra_extension</code><a class="headerlink" href="#configtrait-InteractiveShellApp.extra_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>dotted module name of an IPython extension to load.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--ext</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.file_to_run">
+<code class="sig-name descname">InteractiveShellApp.file_to_run</code><a class="headerlink" href="#configtrait-InteractiveShellApp.file_to_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>A file to be run</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.gui">
+<code class="sig-name descname">InteractiveShellApp.gui</code><a class="headerlink" href="#configtrait-InteractiveShellApp.gui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable GUI event loop integration with any of (‘glut’, ‘gtk’, ‘gtk2’, ‘gtk3’, ‘osx’, ‘pyglet’, ‘qt’, ‘qt4’, ‘qt5’, ‘tk’, ‘wx’, ‘gtk2’, ‘qt4’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'glut'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk2'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk3'</span></code>, <code class="docutils literal notranslate"><span class="pre">'osx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pyglet'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt5'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'wx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk2'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code></p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--gui</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.hide_initial_ns">
+<code class="sig-name descname">InteractiveShellApp.hide_initial_ns</code><a class="headerlink" href="#configtrait-InteractiveShellApp.hide_initial_ns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should variables loaded at startup (by startup files, exec_lines, etc.)
+be hidden from tools like %who?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.matplotlib">
+<code class="sig-name descname">InteractiveShellApp.matplotlib</code><a class="headerlink" href="#configtrait-InteractiveShellApp.matplotlib" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure matplotlib for interactive use with
+the default matplotlib backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="docutils literal notranslate"><span class="pre">'agg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk3'</span></code>, <code class="docutils literal notranslate"><span class="pre">'inline'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ipympl'</span></code>, <code class="docutils literal notranslate"><span class="pre">'nbagg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'notebook'</span></code>, <code class="docutils literal notranslate"><span class="pre">'osx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pdf'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ps'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt5'</span></code>, <code class="docutils literal notranslate"><span class="pre">'svg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'widget'</span></code>, <code class="docutils literal notranslate"><span class="pre">'wx'</span></code></p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--matplotlib</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.module_to_run">
+<code class="sig-name descname">InteractiveShellApp.module_to_run</code><a class="headerlink" href="#configtrait-InteractiveShellApp.module_to_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the module as a script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-m</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.pylab">
+<code class="sig-name descname">InteractiveShellApp.pylab</code><a class="headerlink" href="#configtrait-InteractiveShellApp.pylab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-load matplotlib and numpy for interactive use,
+selecting a particular matplotlib backend and loop integration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="docutils literal notranslate"><span class="pre">'agg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk3'</span></code>, <code class="docutils literal notranslate"><span class="pre">'inline'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ipympl'</span></code>, <code class="docutils literal notranslate"><span class="pre">'nbagg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'notebook'</span></code>, <code class="docutils literal notranslate"><span class="pre">'osx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pdf'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ps'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt5'</span></code>, <code class="docutils literal notranslate"><span class="pre">'svg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'widget'</span></code>, <code class="docutils literal notranslate"><span class="pre">'wx'</span></code></p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--pylab</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.pylab_import_all">
+<code class="sig-name descname">InteractiveShellApp.pylab_import_all</code><a class="headerlink" href="#configtrait-InteractiveShellApp.pylab_import_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, IPython will populate the user namespace with numpy, pylab, etc.
+and an <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">*</span></code> is done from numpy and pylab, when using pylab mode.</p>
+<p>When False, pylab mode should not import any names into the user namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShellApp.reraise_ipython_extension_failures">
+<code class="sig-name descname">InteractiveShellApp.reraise_ipython_extension_failures</code><a class="headerlink" href="#configtrait-InteractiveShellApp.reraise_ipython_extension_failures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reraise exceptions encountered loading IPython extensions?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Application.log_datefmt">
+<code class="sig-name descname">Application.log_datefmt</code><a class="headerlink" href="#configtrait-Application.log_datefmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>The date format used by logging formatters for %(asctime)s</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'%Y-%m-%d</span> <span class="pre">%H:%M:%S'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Application.log_format">
+<code class="sig-name descname">Application.log_format</code><a class="headerlink" href="#configtrait-Application.log_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Logging format template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'[%(name)s]%(highlevel)s</span> <span class="pre">%(message)s'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Application.log_level">
+<code class="sig-name descname">Application.log_level</code><a class="headerlink" href="#configtrait-Application.log_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the log level by value or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">10</span></code>, <code class="docutils literal notranslate"><span class="pre">20</span></code>, <code class="docutils literal notranslate"><span class="pre">30</span></code>, <code class="docutils literal notranslate"><span class="pre">40</span></code>, <code class="docutils literal notranslate"><span class="pre">50</span></code>, <code class="docutils literal notranslate"><span class="pre">'DEBUG'</span></code>, <code class="docutils literal notranslate"><span class="pre">'INFO'</span></code>, <code class="docutils literal notranslate"><span class="pre">'WARN'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ERROR'</span></code>, <code class="docutils literal notranslate"><span class="pre">'CRITICAL'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">30</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--log-level</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.auto_create">
+<code class="sig-name descname">BaseIPythonApplication.auto_create</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.auto_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to create profile dir if it doesn’t exist</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.copy_config_files">
+<code class="sig-name descname">BaseIPythonApplication.copy_config_files</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.copy_config_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to install the default config files into the profile dir.
+If a new profile is being created, and IPython contains config files for that
+profile, then they will be staged into the new directory.  Otherwise,
+default config files will be automatically generated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.extra_config_file">
+<code class="sig-name descname">BaseIPythonApplication.extra_config_file</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.extra_config_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to an extra config file to load.</p>
+<p>If specified, load this config file in addition to any other IPython config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--config</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.ipython_dir">
+<code class="sig-name descname">BaseIPythonApplication.ipython_dir</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.ipython_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the IPython directory. This directory is used for logging
+configuration (through profiles), history storage, etc. The default
+is usually $HOME/.ipython. This option can also be specified through
+the environment variable IPYTHONDIR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--ipython-dir</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.log_datefmt">
+<code class="sig-name descname">BaseIPythonApplication.log_datefmt</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.log_datefmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>The date format used by logging formatters for %(asctime)s</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'%Y-%m-%d</span> <span class="pre">%H:%M:%S'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.log_format">
+<code class="sig-name descname">BaseIPythonApplication.log_format</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.log_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Logging format template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'[%(name)s]%(highlevel)s</span> <span class="pre">%(message)s'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.log_level">
+<code class="sig-name descname">BaseIPythonApplication.log_level</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.log_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the log level by value or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">10</span></code>, <code class="docutils literal notranslate"><span class="pre">20</span></code>, <code class="docutils literal notranslate"><span class="pre">30</span></code>, <code class="docutils literal notranslate"><span class="pre">40</span></code>, <code class="docutils literal notranslate"><span class="pre">50</span></code>, <code class="docutils literal notranslate"><span class="pre">'DEBUG'</span></code>, <code class="docutils literal notranslate"><span class="pre">'INFO'</span></code>, <code class="docutils literal notranslate"><span class="pre">'WARN'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ERROR'</span></code>, <code class="docutils literal notranslate"><span class="pre">'CRITICAL'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">30</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.overwrite">
+<code class="sig-name descname">BaseIPythonApplication.overwrite</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.overwrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to overwrite existing config files when copying</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.profile">
+<code class="sig-name descname">BaseIPythonApplication.profile</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>The IPython profile to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'default'</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--profile</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-BaseIPythonApplication.verbose_crash">
+<code class="sig-name descname">BaseIPythonApplication.verbose_crash</code><a class="headerlink" href="#configtrait-BaseIPythonApplication.verbose_crash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a massive crash report when IPython encounters what may be an
+internal error.  The default is to append a short message to the
+usual traceback</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.auto_create">
+<code class="sig-name descname">IPKernelApp.auto_create</code><a class="headerlink" href="#configtrait-IPKernelApp.auto_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to create profile dir if it doesn’t exist</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.code_to_run">
+<code class="sig-name descname">IPKernelApp.code_to_run</code><a class="headerlink" href="#configtrait-IPKernelApp.code_to_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the given command string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.connection_file">
+<code class="sig-name descname">IPKernelApp.connection_file</code><a class="headerlink" href="#configtrait-IPKernelApp.connection_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>JSON file in which to store connection info [default: kernel-&lt;pid&gt;.json]</p>
+<p>This file will contain the IP, ports, and authentication key needed to connect
+clients to this kernel. By default, this file will be created in the security dir
+of the current profile, but can be specified by absolute path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-f</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.control_port">
+<code class="sig-name descname">IPKernelApp.control_port</code><a class="headerlink" href="#configtrait-IPKernelApp.control_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the control (ROUTER) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--control</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.copy_config_files">
+<code class="sig-name descname">IPKernelApp.copy_config_files</code><a class="headerlink" href="#configtrait-IPKernelApp.copy_config_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to install the default config files into the profile dir.
+If a new profile is being created, and IPython contains config files for that
+profile, then they will be staged into the new directory.  Otherwise,
+default config files will be automatically generated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.displayhook_class">
+<code class="sig-name descname">IPKernelApp.displayhook_class</code><a class="headerlink" href="#configtrait-IPKernelApp.displayhook_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>The importstring for the DisplayHook factory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>DottedObjectName</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'ipykernel.displayhook.ZMQDisplayHook'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.exec_PYTHONSTARTUP">
+<code class="sig-name descname">IPKernelApp.exec_PYTHONSTARTUP</code><a class="headerlink" href="#configtrait-IPKernelApp.exec_PYTHONSTARTUP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the file referenced by the PYTHONSTARTUP environment
+variable at IPython startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.exec_files">
+<code class="sig-name descname">IPKernelApp.exec_files</code><a class="headerlink" href="#configtrait-IPKernelApp.exec_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of files to run at IPython startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.exec_lines">
+<code class="sig-name descname">IPKernelApp.exec_lines</code><a class="headerlink" href="#configtrait-IPKernelApp.exec_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>lines of code to run at IPython startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.extensions">
+<code class="sig-name descname">IPKernelApp.extensions</code><a class="headerlink" href="#configtrait-IPKernelApp.extensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of dotted module names of IPython extensions to load.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.extra_config_file">
+<code class="sig-name descname">IPKernelApp.extra_config_file</code><a class="headerlink" href="#configtrait-IPKernelApp.extra_config_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to an extra config file to load.</p>
+<p>If specified, load this config file in addition to any other IPython config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.extra_extension">
+<code class="sig-name descname">IPKernelApp.extra_extension</code><a class="headerlink" href="#configtrait-IPKernelApp.extra_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>dotted module name of an IPython extension to load.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.file_to_run">
+<code class="sig-name descname">IPKernelApp.file_to_run</code><a class="headerlink" href="#configtrait-IPKernelApp.file_to_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>A file to be run</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.gui">
+<code class="sig-name descname">IPKernelApp.gui</code><a class="headerlink" href="#configtrait-IPKernelApp.gui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable GUI event loop integration with any of (‘glut’, ‘gtk’, ‘gtk2’, ‘gtk3’, ‘osx’, ‘pyglet’, ‘qt’, ‘qt4’, ‘qt5’, ‘tk’, ‘wx’, ‘gtk2’, ‘qt4’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'glut'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk2'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk3'</span></code>, <code class="docutils literal notranslate"><span class="pre">'osx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pyglet'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt5'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'wx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk2'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.hb_port">
+<code class="sig-name descname">IPKernelApp.hb_port</code><a class="headerlink" href="#configtrait-IPKernelApp.hb_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the heartbeat port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--hb</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.hide_initial_ns">
+<code class="sig-name descname">IPKernelApp.hide_initial_ns</code><a class="headerlink" href="#configtrait-IPKernelApp.hide_initial_ns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should variables loaded at startup (by startup files, exec_lines, etc.)
+be hidden from tools like %who?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.interrupt">
+<code class="sig-name descname">IPKernelApp.interrupt</code><a class="headerlink" href="#configtrait-IPKernelApp.interrupt" title="Permalink to this definition">¶</a></dt>
+<dd><p>ONLY USED ON WINDOWS
+Interrupt this process when the parent is signaled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.iopub_port">
+<code class="sig-name descname">IPKernelApp.iopub_port</code><a class="headerlink" href="#configtrait-IPKernelApp.iopub_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the iopub (PUB) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--iopub</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.ip">
+<code class="sig-name descname">IPKernelApp.ip</code><a class="headerlink" href="#configtrait-IPKernelApp.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the kernel’s IP address [default localhost].
+If the IP address is something other than localhost, then
+Consoles on other machines will be able to connect
+to the Kernel, so be careful!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--ip</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.ipython_dir">
+<code class="sig-name descname">IPKernelApp.ipython_dir</code><a class="headerlink" href="#configtrait-IPKernelApp.ipython_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the IPython directory. This directory is used for logging
+configuration (through profiles), history storage, etc. The default
+is usually $HOME/.ipython. This option can also be specified through
+the environment variable IPYTHONDIR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.kernel_class">
+<code class="sig-name descname">IPKernelApp.kernel_class</code><a class="headerlink" href="#configtrait-IPKernelApp.kernel_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Kernel subclass to be used.</p>
+<p>This should allow easy re-use of the IPKernelApp entry point
+to configure and launch kernels other than IPython’s own.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Type</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'ipykernel.ipkernel.IPythonKernel'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.log_datefmt">
+<code class="sig-name descname">IPKernelApp.log_datefmt</code><a class="headerlink" href="#configtrait-IPKernelApp.log_datefmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>The date format used by logging formatters for %(asctime)s</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'%Y-%m-%d</span> <span class="pre">%H:%M:%S'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.log_format">
+<code class="sig-name descname">IPKernelApp.log_format</code><a class="headerlink" href="#configtrait-IPKernelApp.log_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Logging format template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'[%(name)s]%(highlevel)s</span> <span class="pre">%(message)s'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.log_level">
+<code class="sig-name descname">IPKernelApp.log_level</code><a class="headerlink" href="#configtrait-IPKernelApp.log_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the log level by value or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">10</span></code>, <code class="docutils literal notranslate"><span class="pre">20</span></code>, <code class="docutils literal notranslate"><span class="pre">30</span></code>, <code class="docutils literal notranslate"><span class="pre">40</span></code>, <code class="docutils literal notranslate"><span class="pre">50</span></code>, <code class="docutils literal notranslate"><span class="pre">'DEBUG'</span></code>, <code class="docutils literal notranslate"><span class="pre">'INFO'</span></code>, <code class="docutils literal notranslate"><span class="pre">'WARN'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ERROR'</span></code>, <code class="docutils literal notranslate"><span class="pre">'CRITICAL'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">30</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.matplotlib">
+<code class="sig-name descname">IPKernelApp.matplotlib</code><a class="headerlink" href="#configtrait-IPKernelApp.matplotlib" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure matplotlib for interactive use with
+the default matplotlib backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="docutils literal notranslate"><span class="pre">'agg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk3'</span></code>, <code class="docutils literal notranslate"><span class="pre">'inline'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ipympl'</span></code>, <code class="docutils literal notranslate"><span class="pre">'nbagg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'notebook'</span></code>, <code class="docutils literal notranslate"><span class="pre">'osx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pdf'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ps'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt5'</span></code>, <code class="docutils literal notranslate"><span class="pre">'svg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'widget'</span></code>, <code class="docutils literal notranslate"><span class="pre">'wx'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.module_to_run">
+<code class="sig-name descname">IPKernelApp.module_to_run</code><a class="headerlink" href="#configtrait-IPKernelApp.module_to_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the module as a script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.no_stderr">
+<code class="sig-name descname">IPKernelApp.no_stderr</code><a class="headerlink" href="#configtrait-IPKernelApp.no_stderr" title="Permalink to this definition">¶</a></dt>
+<dd><p>redirect stderr to the null device</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--no-stderr</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.no_stdout">
+<code class="sig-name descname">IPKernelApp.no_stdout</code><a class="headerlink" href="#configtrait-IPKernelApp.no_stdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>redirect stdout to the null device</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--no-stdout</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.outstream_class">
+<code class="sig-name descname">IPKernelApp.outstream_class</code><a class="headerlink" href="#configtrait-IPKernelApp.outstream_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>The importstring for the OutStream factory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>DottedObjectName</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'ipykernel.iostream.OutStream'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.overwrite">
+<code class="sig-name descname">IPKernelApp.overwrite</code><a class="headerlink" href="#configtrait-IPKernelApp.overwrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to overwrite existing config files when copying</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.parent_handle">
+<code class="sig-name descname">IPKernelApp.parent_handle</code><a class="headerlink" href="#configtrait-IPKernelApp.parent_handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>kill this process if its parent dies.  On Windows, the argument
+specifies the HANDLE of the parent process, otherwise it is simply boolean.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.profile">
+<code class="sig-name descname">IPKernelApp.profile</code><a class="headerlink" href="#configtrait-IPKernelApp.profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>The IPython profile to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'default'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.pylab">
+<code class="sig-name descname">IPKernelApp.pylab</code><a class="headerlink" href="#configtrait-IPKernelApp.pylab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-load matplotlib and numpy for interactive use,
+selecting a particular matplotlib backend and loop integration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="docutils literal notranslate"><span class="pre">'agg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gtk3'</span></code>, <code class="docutils literal notranslate"><span class="pre">'inline'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ipympl'</span></code>, <code class="docutils literal notranslate"><span class="pre">'nbagg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'notebook'</span></code>, <code class="docutils literal notranslate"><span class="pre">'osx'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pdf'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ps'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt4'</span></code>, <code class="docutils literal notranslate"><span class="pre">'qt5'</span></code>, <code class="docutils literal notranslate"><span class="pre">'svg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'widget'</span></code>, <code class="docutils literal notranslate"><span class="pre">'wx'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.pylab_import_all">
+<code class="sig-name descname">IPKernelApp.pylab_import_all</code><a class="headerlink" href="#configtrait-IPKernelApp.pylab_import_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, IPython will populate the user namespace with numpy, pylab, etc.
+and an <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">*</span></code> is done from numpy and pylab, when using pylab mode.</p>
+<p>When False, pylab mode should not import any names into the user namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.quiet">
+<code class="sig-name descname">IPKernelApp.quiet</code><a class="headerlink" href="#configtrait-IPKernelApp.quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only send stdout/stderr to output stream</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.reraise_ipython_extension_failures">
+<code class="sig-name descname">IPKernelApp.reraise_ipython_extension_failures</code><a class="headerlink" href="#configtrait-IPKernelApp.reraise_ipython_extension_failures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reraise exceptions encountered loading IPython extensions?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.shell_port">
+<code class="sig-name descname">IPKernelApp.shell_port</code><a class="headerlink" href="#configtrait-IPKernelApp.shell_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the shell (ROUTER) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--shell</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.stdin_port">
+<code class="sig-name descname">IPKernelApp.stdin_port</code><a class="headerlink" href="#configtrait-IPKernelApp.stdin_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the stdin (ROUTER) port [default: random]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--stdin</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.transport">
+<code class="sig-name descname">IPKernelApp.transport</code><a class="headerlink" href="#configtrait-IPKernelApp.transport" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'tcp'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ipc'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'tcp'</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--transport</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPKernelApp.verbose_crash">
+<code class="sig-name descname">IPKernelApp.verbose_crash</code><a class="headerlink" href="#configtrait-IPKernelApp.verbose_crash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a massive crash report when IPython encounters what may be an
+internal error.  The default is to append a short message to the
+usual traceback</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Kernel._darwin_app_nap">
+<code class="sig-name descname">Kernel._darwin_app_nap</code><a class="headerlink" href="#configtrait-Kernel._darwin_app_nap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to use appnope for compatibility with OS X App Nap.</p>
+<p>Only affects OS X &gt;= 10.9.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Kernel._execute_sleep">
+<code class="sig-name descname">Kernel._execute_sleep</code><a class="headerlink" href="#configtrait-Kernel._execute_sleep" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Float</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0.0005</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Kernel._poll_interval">
+<code class="sig-name descname">Kernel._poll_interval</code><a class="headerlink" href="#configtrait-Kernel._poll_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Float</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0.01</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Kernel.stop_on_error_timeout">
+<code class="sig-name descname">Kernel.stop_on_error_timeout</code><a class="headerlink" href="#configtrait-Kernel.stop_on_error_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>time (in seconds) to wait for messages to arrive
+when aborting queued requests after an error.</p>
+<p>Requests that arrive within this window after an error
+will be cancelled.</p>
+<p>Increase in the event of unusually slow network
+causing significant delays,
+which can manifest as e.g. “Run all” in a notebook
+aborting some, but not all, messages after an error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Float</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0.1</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPythonKernel._darwin_app_nap">
+<code class="sig-name descname">IPythonKernel._darwin_app_nap</code><a class="headerlink" href="#configtrait-IPythonKernel._darwin_app_nap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to use appnope for compatibility with OS X App Nap.</p>
+<p>Only affects OS X &gt;= 10.9.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPythonKernel._execute_sleep">
+<code class="sig-name descname">IPythonKernel._execute_sleep</code><a class="headerlink" href="#configtrait-IPythonKernel._execute_sleep" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Float</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0.0005</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPythonKernel._poll_interval">
+<code class="sig-name descname">IPythonKernel._poll_interval</code><a class="headerlink" href="#configtrait-IPythonKernel._poll_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Float</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0.01</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPythonKernel.help_links">
+<code class="sig-name descname">IPythonKernel.help_links</code><a class="headerlink" href="#configtrait-IPythonKernel.help_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPythonKernel.stop_on_error_timeout">
+<code class="sig-name descname">IPythonKernel.stop_on_error_timeout</code><a class="headerlink" href="#configtrait-IPythonKernel.stop_on_error_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>time (in seconds) to wait for messages to arrive
+when aborting queued requests after an error.</p>
+<p>Requests that arrive within this window after an error
+will be cancelled.</p>
+<p>Increase in the event of unusually slow network
+causing significant delays,
+which can manifest as e.g. “Run all” in a notebook
+aborting some, but not all, messages after an error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Float</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0.1</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-IPythonKernel.use_experimental_completions">
+<code class="sig-name descname">IPythonKernel.use_experimental_completions</code><a class="headerlink" href="#configtrait-IPythonKernel.use_experimental_completions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this flag to False to deactivate the use of experimental IPython completion APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.ast_node_interactivity">
+<code class="sig-name descname">InteractiveShell.ast_node_interactivity</code><a class="headerlink" href="#configtrait-InteractiveShell.ast_node_interactivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘all’, ‘last’, ‘last_expr’ or ‘none’, ‘last_expr_or_assign’ specifying
+which nodes should be run interactively (displaying output from expressions).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'all'</span></code>, <code class="docutils literal notranslate"><span class="pre">'last'</span></code>, <code class="docutils literal notranslate"><span class="pre">'last_expr'</span></code>, <code class="docutils literal notranslate"><span class="pre">'none'</span></code>, <code class="docutils literal notranslate"><span class="pre">'last_expr_or_assign'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'last_expr'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.ast_transformers">
+<code class="sig-name descname">InteractiveShell.ast_transformers</code><a class="headerlink" href="#configtrait-InteractiveShell.ast_transformers" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of ast.NodeTransformer subclass instances, which will be applied
+to user input before code is run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.autoawait">
+<code class="sig-name descname">InteractiveShell.autoawait</code><a class="headerlink" href="#configtrait-InteractiveShell.autoawait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically run await statement in the top level repl.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.autocall">
+<code class="sig-name descname">InteractiveShell.autocall</code><a class="headerlink" href="#configtrait-InteractiveShell.autocall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make IPython automatically call any callable object even if you didn’t
+type explicit parentheses. For example, ‘str 43’ becomes ‘str(43)’
+automatically. The value can be ‘0’ to disable the feature, ‘1’ for
+‘smart’ autocall, where it is not applied if there are no more
+arguments on the line, and ‘2’ for ‘full’ autocall, where all callable
+objects are automatically called (even if no arguments are present).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--autocall</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.autoindent">
+<code class="sig-name descname">InteractiveShell.autoindent</code><a class="headerlink" href="#configtrait-InteractiveShell.autoindent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Autoindent IPython code entered interactively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--autoindent</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.automagic">
+<code class="sig-name descname">InteractiveShell.automagic</code><a class="headerlink" href="#configtrait-InteractiveShell.automagic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable magic commands to be called without the leading %.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--automagic</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.banner1">
+<code class="sig-name descname">InteractiveShell.banner1</code><a class="headerlink" href="#configtrait-InteractiveShell.banner1" title="Permalink to this definition">¶</a></dt>
+<dd><p>The part of the banner to be printed before the profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;Python</span> <span class="pre">3.7.4</span> <span class="pre">(default,</span> <span class="pre">Aug</span>&#160; <span class="pre">9</span> <span class="pre">2019,</span> <span class="pre">18:34:13)</span> <span class="pre">[MSC</span> <span class="pre">v.1915</span> <span class="pre">64...</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.banner2">
+<code class="sig-name descname">InteractiveShell.banner2</code><a class="headerlink" href="#configtrait-InteractiveShell.banner2" title="Permalink to this definition">¶</a></dt>
+<dd><p>The part of the banner to be printed after the profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.cache_size">
+<code class="sig-name descname">InteractiveShell.cache_size</code><a class="headerlink" href="#configtrait-InteractiveShell.cache_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the size of the output cache.  The default is 1000, you can
+change it permanently in your config file.  Setting it to 0 completely
+disables the caching system, and the minimum value accepted is 3 (if
+you provide a value less than 3, it is reset to 0 and a warning is
+issued).  This limit is defined because otherwise you’ll spend more
+time re-flushing a too small cache than working</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--cache-size</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.color_info">
+<code class="sig-name descname">InteractiveShell.color_info</code><a class="headerlink" href="#configtrait-InteractiveShell.color_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use colors for displaying information about objects. Because this
+information is passed through a pager (like ‘less’), and some pagers
+get confused with color codes, this capability can be turned off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--color-info</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.colors">
+<code class="sig-name descname">InteractiveShell.colors</code><a class="headerlink" href="#configtrait-InteractiveShell.colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the color scheme (NoColor, Neutral, Linux, or LightBG).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'Neutral'</span></code>, <code class="docutils literal notranslate"><span class="pre">'NoColor'</span></code>, <code class="docutils literal notranslate"><span class="pre">'LightBG'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Linux'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'Neutral'</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--colors</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.debug">
+<code class="sig-name descname">InteractiveShell.debug</code><a class="headerlink" href="#configtrait-InteractiveShell.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.disable_failing_post_execute">
+<code class="sig-name descname">InteractiveShell.disable_failing_post_execute</code><a class="headerlink" href="#configtrait-InteractiveShell.disable_failing_post_execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t call post-execute functions that have failed in the past.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.display_page">
+<code class="sig-name descname">InteractiveShell.display_page</code><a class="headerlink" href="#configtrait-InteractiveShell.display_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, anything that would be passed to the pager
+will be displayed as regular output instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.enable_html_pager">
+<code class="sig-name descname">InteractiveShell.enable_html_pager</code><a class="headerlink" href="#configtrait-InteractiveShell.enable_html_pager" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Provisional API) enables html representation in mime bundles sent
+to pagers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.history_length">
+<code class="sig-name descname">InteractiveShell.history_length</code><a class="headerlink" href="#configtrait-InteractiveShell.history_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total length of command history</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">10000</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.history_load_length">
+<code class="sig-name descname">InteractiveShell.history_load_length</code><a class="headerlink" href="#configtrait-InteractiveShell.history_load_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of saved history entries to be loaded
+into the history buffer at startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.ipython_dir">
+<code class="sig-name descname">InteractiveShell.ipython_dir</code><a class="headerlink" href="#configtrait-InteractiveShell.ipython_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.logappend">
+<code class="sig-name descname">InteractiveShell.logappend</code><a class="headerlink" href="#configtrait-InteractiveShell.logappend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start logging to the given file in append mode.
+Use <code class="docutils literal notranslate"><span class="pre">logfile</span></code> to specify a log file to <strong>overwrite</strong> logs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--logappend</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.logfile">
+<code class="sig-name descname">InteractiveShell.logfile</code><a class="headerlink" href="#configtrait-InteractiveShell.logfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the logfile to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--logfile</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.logstart">
+<code class="sig-name descname">InteractiveShell.logstart</code><a class="headerlink" href="#configtrait-InteractiveShell.logstart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start logging to the default log file in overwrite mode.
+Use <code class="docutils literal notranslate"><span class="pre">logappend</span></code> to specify a log file to <strong>append</strong> logs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.loop_runner">
+<code class="sig-name descname">InteractiveShell.loop_runner</code><a class="headerlink" href="#configtrait-InteractiveShell.loop_runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the loop runner that will be used to execute top-level asynchronous code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'IPython.core.interactiveshell._asyncio_runner'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.object_info_string_level">
+<code class="sig-name descname">InteractiveShell.object_info_string_level</code><a class="headerlink" href="#configtrait-InteractiveShell.object_info_string_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.pdb">
+<code class="sig-name descname">InteractiveShell.pdb</code><a class="headerlink" href="#configtrait-InteractiveShell.pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically call the pdb debugger after every exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--pdb</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.prompt_in1">
+<code class="sig-name descname">InteractiveShell.prompt_in1</code><a class="headerlink" href="#configtrait-InteractiveShell.prompt_in1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'In</span> <span class="pre">[\\#]:</span> <span class="pre">'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.prompt_in2">
+<code class="sig-name descname">InteractiveShell.prompt_in2</code><a class="headerlink" href="#configtrait-InteractiveShell.prompt_in2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'</span>&#160;&#160; <span class="pre">.\\D.:</span> <span class="pre">'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.prompt_out">
+<code class="sig-name descname">InteractiveShell.prompt_out</code><a class="headerlink" href="#configtrait-InteractiveShell.prompt_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'Out[\\#]:</span> <span class="pre">'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.prompts_pad_left">
+<code class="sig-name descname">InteractiveShell.prompts_pad_left</code><a class="headerlink" href="#configtrait-InteractiveShell.prompts_pad_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.quiet">
+<code class="sig-name descname">InteractiveShell.quiet</code><a class="headerlink" href="#configtrait-InteractiveShell.quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.separate_in">
+<code class="sig-name descname">InteractiveShell.separate_in</code><a class="headerlink" href="#configtrait-InteractiveShell.separate_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>SeparateUnicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'\\n'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.separate_out">
+<code class="sig-name descname">InteractiveShell.separate_out</code><a class="headerlink" href="#configtrait-InteractiveShell.separate_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>SeparateUnicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.separate_out2">
+<code class="sig-name descname">InteractiveShell.separate_out2</code><a class="headerlink" href="#configtrait-InteractiveShell.separate_out2" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>SeparateUnicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.show_rewritten_input">
+<code class="sig-name descname">InteractiveShell.show_rewritten_input</code><a class="headerlink" href="#configtrait-InteractiveShell.show_rewritten_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show rewritten input, e.g. for autocall.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.sphinxify_docstring">
+<code class="sig-name descname">InteractiveShell.sphinxify_docstring</code><a class="headerlink" href="#configtrait-InteractiveShell.sphinxify_docstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enables rich html representation of docstrings. (This requires the
+docrepr module).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.wildcards_case_sensitive">
+<code class="sig-name descname">InteractiveShell.wildcards_case_sensitive</code><a class="headerlink" href="#configtrait-InteractiveShell.wildcards_case_sensitive" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-InteractiveShell.xmode">
+<code class="sig-name descname">InteractiveShell.xmode</code><a class="headerlink" href="#configtrait-InteractiveShell.xmode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch modes for the IPython exception handlers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'Context'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Plain'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Verbose'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Minimal'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'Context'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.ast_node_interactivity">
+<code class="sig-name descname">ZMQInteractiveShell.ast_node_interactivity</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.ast_node_interactivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘all’, ‘last’, ‘last_expr’ or ‘none’, ‘last_expr_or_assign’ specifying
+which nodes should be run interactively (displaying output from expressions).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'all'</span></code>, <code class="docutils literal notranslate"><span class="pre">'last'</span></code>, <code class="docutils literal notranslate"><span class="pre">'last_expr'</span></code>, <code class="docutils literal notranslate"><span class="pre">'none'</span></code>, <code class="docutils literal notranslate"><span class="pre">'last_expr_or_assign'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'last_expr'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.ast_transformers">
+<code class="sig-name descname">ZMQInteractiveShell.ast_transformers</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.ast_transformers" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of ast.NodeTransformer subclass instances, which will be applied
+to user input before code is run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.autoawait">
+<code class="sig-name descname">ZMQInteractiveShell.autoawait</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.autoawait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically run await statement in the top level repl.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.autocall">
+<code class="sig-name descname">ZMQInteractiveShell.autocall</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.autocall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make IPython automatically call any callable object even if you didn’t
+type explicit parentheses. For example, ‘str 43’ becomes ‘str(43)’
+automatically. The value can be ‘0’ to disable the feature, ‘1’ for
+‘smart’ autocall, where it is not applied if there are no more
+arguments on the line, and ‘2’ for ‘full’ autocall, where all callable
+objects are automatically called (even if no arguments are present).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.automagic">
+<code class="sig-name descname">ZMQInteractiveShell.automagic</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.automagic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable magic commands to be called without the leading %.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.banner1">
+<code class="sig-name descname">ZMQInteractiveShell.banner1</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.banner1" title="Permalink to this definition">¶</a></dt>
+<dd><p>The part of the banner to be printed before the profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;Python</span> <span class="pre">3.7.4</span> <span class="pre">(default,</span> <span class="pre">Aug</span>&#160; <span class="pre">9</span> <span class="pre">2019,</span> <span class="pre">18:34:13)</span> <span class="pre">[MSC</span> <span class="pre">v.1915</span> <span class="pre">64...</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.banner2">
+<code class="sig-name descname">ZMQInteractiveShell.banner2</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.banner2" title="Permalink to this definition">¶</a></dt>
+<dd><p>The part of the banner to be printed after the profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.cache_size">
+<code class="sig-name descname">ZMQInteractiveShell.cache_size</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.cache_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the size of the output cache.  The default is 1000, you can
+change it permanently in your config file.  Setting it to 0 completely
+disables the caching system, and the minimum value accepted is 3 (if
+you provide a value less than 3, it is reset to 0 and a warning is
+issued).  This limit is defined because otherwise you’ll spend more
+time re-flushing a too small cache than working</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.color_info">
+<code class="sig-name descname">ZMQInteractiveShell.color_info</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.color_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use colors for displaying information about objects. Because this
+information is passed through a pager (like ‘less’), and some pagers
+get confused with color codes, this capability can be turned off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.colors">
+<code class="sig-name descname">ZMQInteractiveShell.colors</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the color scheme (NoColor, Neutral, Linux, or LightBG).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'Neutral'</span></code>, <code class="docutils literal notranslate"><span class="pre">'NoColor'</span></code>, <code class="docutils literal notranslate"><span class="pre">'LightBG'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Linux'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'Neutral'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.debug">
+<code class="sig-name descname">ZMQInteractiveShell.debug</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.disable_failing_post_execute">
+<code class="sig-name descname">ZMQInteractiveShell.disable_failing_post_execute</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.disable_failing_post_execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t call post-execute functions that have failed in the past.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.display_page">
+<code class="sig-name descname">ZMQInteractiveShell.display_page</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.display_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, anything that would be passed to the pager
+will be displayed as regular output instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.enable_html_pager">
+<code class="sig-name descname">ZMQInteractiveShell.enable_html_pager</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.enable_html_pager" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Provisional API) enables html representation in mime bundles sent
+to pagers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.history_length">
+<code class="sig-name descname">ZMQInteractiveShell.history_length</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.history_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total length of command history</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">10000</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.history_load_length">
+<code class="sig-name descname">ZMQInteractiveShell.history_load_length</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.history_load_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of saved history entries to be loaded
+into the history buffer at startup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.ipython_dir">
+<code class="sig-name descname">ZMQInteractiveShell.ipython_dir</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.ipython_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.logappend">
+<code class="sig-name descname">ZMQInteractiveShell.logappend</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.logappend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start logging to the given file in append mode.
+Use <code class="docutils literal notranslate"><span class="pre">logfile</span></code> to specify a log file to <strong>overwrite</strong> logs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.logfile">
+<code class="sig-name descname">ZMQInteractiveShell.logfile</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.logfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the logfile to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.logstart">
+<code class="sig-name descname">ZMQInteractiveShell.logstart</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.logstart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start logging to the default log file in overwrite mode.
+Use <code class="docutils literal notranslate"><span class="pre">logappend</span></code> to specify a log file to <strong>append</strong> logs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.loop_runner">
+<code class="sig-name descname">ZMQInteractiveShell.loop_runner</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.loop_runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the loop runner that will be used to execute top-level asynchronous code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'IPython.core.interactiveshell._asyncio_runner'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.object_info_string_level">
+<code class="sig-name descname">ZMQInteractiveShell.object_info_string_level</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.object_info_string_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.pdb">
+<code class="sig-name descname">ZMQInteractiveShell.pdb</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically call the pdb debugger after every exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.prompt_in1">
+<code class="sig-name descname">ZMQInteractiveShell.prompt_in1</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.prompt_in1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'In</span> <span class="pre">[\\#]:</span> <span class="pre">'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.prompt_in2">
+<code class="sig-name descname">ZMQInteractiveShell.prompt_in2</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.prompt_in2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'</span>&#160;&#160; <span class="pre">.\\D.:</span> <span class="pre">'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.prompt_out">
+<code class="sig-name descname">ZMQInteractiveShell.prompt_out</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.prompt_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'Out[\\#]:</span> <span class="pre">'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.prompts_pad_left">
+<code class="sig-name descname">ZMQInteractiveShell.prompts_pad_left</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.prompts_pad_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.quiet">
+<code class="sig-name descname">ZMQInteractiveShell.quiet</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.separate_in">
+<code class="sig-name descname">ZMQInteractiveShell.separate_in</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.separate_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>SeparateUnicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'\\n'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.separate_out">
+<code class="sig-name descname">ZMQInteractiveShell.separate_out</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.separate_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>SeparateUnicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.separate_out2">
+<code class="sig-name descname">ZMQInteractiveShell.separate_out2</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.separate_out2" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>SeparateUnicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.show_rewritten_input">
+<code class="sig-name descname">ZMQInteractiveShell.show_rewritten_input</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.show_rewritten_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show rewritten input, e.g. for autocall.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.sphinxify_docstring">
+<code class="sig-name descname">ZMQInteractiveShell.sphinxify_docstring</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.sphinxify_docstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enables rich html representation of docstrings. (This requires the
+docrepr module).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.wildcards_case_sensitive">
+<code class="sig-name descname">ZMQInteractiveShell.wildcards_case_sensitive</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.wildcards_case_sensitive" title="Permalink to this definition">¶</a></dt>
+<dd><p>No description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ZMQInteractiveShell.xmode">
+<code class="sig-name descname">ZMQInteractiveShell.xmode</code><a class="headerlink" href="#configtrait-ZMQInteractiveShell.xmode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch modes for the IPython exception handlers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'Context'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Plain'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Verbose'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Minimal'</span></code></p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'Context'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-ProfileDir.location">
+<code class="sig-name descname">ProfileDir.location</code><a class="headerlink" href="#configtrait-ProfileDir.location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the profile location directly. This overrides the logic used by the
+<code class="docutils literal notranslate"><span class="pre">profile</span></code> option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--profile-dir</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.buffer_threshold">
+<code class="sig-name descname">Session.buffer_threshold</code><a class="headerlink" href="#configtrait-Session.buffer_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Threshold (in bytes) beyond which an object’s buffer should be extracted to avoid pickling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1024</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.check_pid">
+<code class="sig-name descname">Session.check_pid</code><a class="headerlink" href="#configtrait-Session.check_pid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to check PID to protect against calls after fork.</p>
+<p>This check can be disabled if fork-safety is handled elsewhere.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.copy_threshold">
+<code class="sig-name descname">Session.copy_threshold</code><a class="headerlink" href="#configtrait-Session.copy_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Threshold (in bytes) beyond which a buffer should be sent without copying.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">65536</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.debug">
+<code class="sig-name descname">Session.debug</code><a class="headerlink" href="#configtrait-Session.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug output in the Session</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.digest_history_size">
+<code class="sig-name descname">Session.digest_history_size</code><a class="headerlink" href="#configtrait-Session.digest_history_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum number of digests to remember.</p>
+<p>The digest history will be culled when it exceeds this value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">65536</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.item_threshold">
+<code class="sig-name descname">Session.item_threshold</code><a class="headerlink" href="#configtrait-Session.item_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum number of items for a container to be introspected for custom serialization.
+Containers larger than this are pickled outright.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Int</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">64</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.key">
+<code class="sig-name descname">Session.key</code><a class="headerlink" href="#configtrait-Session.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>execution key, for signing messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>CBytes</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">b''</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.keyfile">
+<code class="sig-name descname">Session.keyfile</code><a class="headerlink" href="#configtrait-Session.keyfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>path to file containing execution key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--keyfile</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.metadata">
+<code class="sig-name descname">Session.metadata</code><a class="headerlink" href="#configtrait-Session.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Metadata dictionary, which serves as the default top-level metadata dict for each message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.packer">
+<code class="sig-name descname">Session.packer</code><a class="headerlink" href="#configtrait-Session.packer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the packer for serializing messages.
+Should be one of ‘json’, ‘pickle’, or an import name
+for a custom callable serializer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>DottedObjectName</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'json'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.session">
+<code class="sig-name descname">Session.session</code><a class="headerlink" href="#configtrait-Session.session" title="Permalink to this definition">¶</a></dt>
+<dd><p>The UUID identifying this session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>CUnicode</p>
+</dd>
+<dt class="field-even">CLI option</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">--ident</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.signature_scheme">
+<code class="sig-name descname">Session.signature_scheme</code><a class="headerlink" href="#configtrait-Session.signature_scheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>The digest scheme used to construct the message signatures.
+Must have the form ‘hmac-HASH’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'hmac-sha256'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.unpacker">
+<code class="sig-name descname">Session.unpacker</code><a class="headerlink" href="#configtrait-Session.unpacker" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the unpacker for unserializing messages.
+Only used with custom functions for <code class="docutils literal notranslate"><span class="pre">packer</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>DottedObjectName</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'json'</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="configtrait">
+<dt id="configtrait-Session.username">
+<code class="sig-name descname">Session.username</code><a class="headerlink" href="#configtrait-Session.username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Username for the Session. Default is your system username.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Trait type</dt>
+<dd class="field-odd"><p>Unicode</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">'username'</span></code></p>
+</dd>
+<dt class="field-odd">CLI option</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">--user</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../shortcuts/index.html" class="btn btn-neutral float-right" title="IPython shortcuts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="terminal.html" class="btn btn-neutral float-left" title="Terminal IPython options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

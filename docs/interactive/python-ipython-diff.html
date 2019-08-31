@@ -1,0 +1,445 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Python vs IPython &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Built-in magic commands" href="magics.html" />
+    <link rel="prev" title="IPython Tips &amp; Tricks" href="tips.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html">Introducing IPython</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Rich Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#id1">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html">IPython reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shell.html">IPython as a system shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autoawait.html">Asynchronous in REPL: Autoawait</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips.html">IPython Tips &amp; Tricks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Python vs IPython</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quick-overview">Quick overview:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-help">Accessing help</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shell-assignment">Shell Assignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#magics">Magics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#combining-it-all">Combining it all</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="magics.html">Built-in magic commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorial</a> &raquo;</li>
+        
+      <li>Python vs IPython</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/interactive/python-ipython-diff.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="python-vs-ipython">
+<h1>Python vs IPython<a class="headerlink" href="#python-vs-ipython" title="Permalink to this headline">¶</a></h1>
+<p>This document is meant to highlight the main differences between the Python
+language and what are the specific construct you can do only in IPython.</p>
+<p>Unless expressed otherwise all of the construct you will see here will raise a
+<code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code> if run in a pure Python shell, or if executing in a Python
+script.</p>
+<p>Each of these features are describe more in details in further part of the documentation.</p>
+<div class="section" id="quick-overview">
+<h2>Quick overview:<a class="headerlink" href="#quick-overview" title="Permalink to this headline">¶</a></h2>
+<p>All the following construct are valid IPython syntax:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">?</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">?</span>object
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span>object<span class="o">?</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span>*pattern*<span class="o">?</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">%</span><span class="k">shell</span> like --syntax
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">!</span>ls
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">my_files</span> <span class="o">=</span> <span class="o">!</span>ls ~/
+<span class="gp">In [1]: </span><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="nb">file</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">my_file</span><span class="p">):</span>
+<span class="gp">   ...: </span>    <span class="n">raw</span> <span class="o">=</span> <span class="o">!</span><span class="nb">echo</span> <span class="nv">$file</span>
+<span class="gp">   ...: </span>    <span class="o">!</span><span class="nb">echo</span> <span class="o">{</span>files<span class="o">[</span><span class="m">0</span><span class="o">]</span>.upper<span class="o">()}</span> <span class="nv">$raw</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">%%perl</span> magic --function
+<span class="gp">   ...: </span><span class="nv">@months</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;July&quot;</span><span class="p">,</span> <span class="s">&quot;August&quot;</span><span class="p">,</span> <span class="s">&quot;September&quot;</span><span class="p">);</span>
+<span class="gp">   ...: </span><span class="k">print</span> <span class="nv">$months</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>Each of these construct is compile by IPython into valid python code and will
+do most of the time what you expect it will do. Let see each of these example
+in more detail.</p>
+</div>
+<div class="section" id="accessing-help">
+<h2>Accessing help<a class="headerlink" href="#accessing-help" title="Permalink to this headline">¶</a></h2>
+<p>As IPython is mostly an interactive shell, the question mark is a simple
+shortcut to get help. A question mark alone will bring up the IPython help:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">?</span>
+
+<span class="go">IPython -- An enhanced Interactive Python</span>
+<span class="go">=========================================</span>
+
+<span class="go">IPython offers a combination of convenient shell features, special commands</span>
+<span class="go">and a history mechanism for both input (command history) and output (results</span>
+<span class="go">caching, similar to Mathematica). It is intended to be a fully compatible</span>
+<span class="go">replacement for the standard Python interpreter, while offering vastly</span>
+<span class="go">improved functionality and flexibility.</span>
+
+<span class="go">At your system command line, type &#39;ipython -h&#39; to see the command line</span>
+<span class="go">options available. This document only describes interactive features.</span>
+
+<span class="go">MAIN FEATURES</span>
+<span class="gt">-------------</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>A single question mark before, or after an object available in current
+namespace will show help relative to this object:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span>object<span class="o">?</span>
+<span class="go">Docstring: The most base type</span>
+<span class="go">Type:      type</span>
+</pre></div>
+</div>
+<p>A double question mark will try to pull out more information about the object,
+and if possible display the python source code of this object.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">collections</span>
+<span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> collections.Counter<span class="o">??</span>
+
+<span class="n">Init</span> <span class="n">signature</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+<span class="n">Source</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="s1">&#39;&#39;&#39;Dict subclass for counting hashable items.  Sometimes called a bag</span>
+<span class="s1">    or multiset.  Elements are stored as dictionary keys and their counts</span>
+<span class="s1">    are stored as dictionary values.</span>
+
+<span class="s1">    &gt;&gt;&gt; c = Counter(&#39;abcdeabcdabcaba&#39;)  # count elements from a string</span>
+
+<span class="s1">    &gt;&gt;&gt; c.most_common(3)                # three most common elements</span>
+<span class="s1">    [(&#39;a&#39;, 5), (&#39;b&#39;, 4), (&#39;c&#39;, 3)]</span>
+<span class="s1">    &gt;&gt;&gt; sorted(c)                       # list all unique elements</span>
+<span class="s1">    [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;]</span>
+<span class="s1">    &gt;&gt;&gt; &#39;&#39;.join(sorted(c.elements()))   # list elements with repetitions</span>
+<span class="s1">    &#39;aaaaabbbbcccdde&#39;</span>
+<span class="s1">    ...</span>
+</pre></div>
+</div>
+<p>If you are looking for an object, the use of wildcards <code class="docutils literal notranslate"><span class="pre">*</span></code> in conjunction
+with question mark will allow you to search current namespace for object with
+matching names:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span>*int*<span class="o">?</span>
+<span class="go">FloatingPointError</span>
+<span class="go">int</span>
+<span class="go">print</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="shell-assignment">
+<h2>Shell Assignment<a class="headerlink" href="#shell-assignment" title="Permalink to this headline">¶</a></h2>
+<p>When doing interactive computing it is common to need to access the underlying shell.
+This is doable through the use of the exclamation mark <code class="docutils literal notranslate"><span class="pre">!</span></code> (or bang).</p>
+<p>This allow to execute simple command when present in beginning of line:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">!</span>pwd
+<span class="o">/</span><span class="n">User</span><span class="o">/</span><span class="n">home</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>Change directory:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">!</span><span class="nb">cd</span> /var/etc
+</pre></div>
+</div>
+<p>Or edit file:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">!</span>mvim myfile.txt
+</pre></div>
+</div>
+<p>The line after the bang can call any program installed in the underlying
+shell, and support variable expansion in the form of <code class="docutils literal notranslate"><span class="pre">$variable</span></code> or <code class="docutils literal notranslate"><span class="pre">{variable}</span></code>.
+The later form of expansion supports arbitrary python expression:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="nb">file</span> <span class="o">=</span> <span class="s1">&#39;myfile.txt&#39;</span>
+
+<span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="o">!</span>mv <span class="nv">$file</span> <span class="o">{</span>file.upper<span class="o">()}</span>
+</pre></div>
+</div>
+<p>The bang can also be present in the right hand side of an assignment, just
+after the equal sign, or separated from it by a white space. In which case the
+standard output of the command after the bang <code class="docutils literal notranslate"><span class="pre">!</span></code> will be split out into lines
+in a list-like object and assign to the left hand side.</p>
+<p>This allow you for example to put the list of files of the current working directory in a variable:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">my_files</span> <span class="o">=</span> <span class="o">!</span>ls
+</pre></div>
+</div>
+<p>You can combine the different possibilities in for loops, condition, functions…:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">my_files</span> <span class="o">=</span> <span class="o">!</span>ls ~/
+<span class="n">b</span> <span class="o">=</span> <span class="s2">&quot;backup file&quot;</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="nb">file</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">my_file</span><span class="p">):</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="o">!</span><span class="nb">echo</span> <span class="nv">$backup</span> <span class="nv">$file</span>
+    <span class="o">!</span>cp <span class="nv">$file</span> <span class="o">{</span>file.split<span class="o">(</span><span class="s1">&#39;.&#39;</span><span class="o">)[</span><span class="m">0</span><span class="o">]</span>+<span class="s1">&#39;.bak&#39;</span><span class="o">}</span>
+</pre></div>
+</div>
+<div class="section" id="magics">
+<h3>Magics<a class="headerlink" href="#magics" title="Permalink to this headline">¶</a></h3>
+<p>Magics function are often present in the form of shell-like syntax, but are
+under the hood python function. The syntax and assignment possibility are
+similar to the one with the bang (<code class="docutils literal notranslate"><span class="pre">!</span></code>) syntax, but with more flexibility and
+power. Magic function start with a percent sign (<code class="docutils literal notranslate"><span class="pre">%</span></code>) or double percent (<code class="docutils literal notranslate"><span class="pre">%%</span></code>).</p>
+<p>A magic call with a sign percent will act only one line:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">%</span><span class="k">xmode</span>
+<span class="ne">Exception</span> <span class="n">reporting</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Verbose</span>
+</pre></div>
+</div>
+<p>And support assignment:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">results</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -r1 -n1 -o list(range(1000))
+<span class="go">1 loops, best of 1: 21.1 µs per loop</span>
+
+<span class="gp">In [2]: </span><span class="n">results</span>
+<span class="gh">Out[2]: </span><span class="go">&lt;TimeitResult : 1 loops, best of 1: 21.1 µs per loop&gt;</span>
+</pre></div>
+</div>
+<p>Magic with two percent sign can spread over multiple lines, but do not support assignment:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">%%</span><span class="k">bash</span>
+...  : echo &quot;My shell is:&quot; $SHELL
+...  : echo &quot;My disk usage is:&quot;
+...  : df -h
+My shell is: /usr/local/bin/bash
+My disk usage is:
+Filesystem      Size   Used  Avail Capacity  iused   ifree %iused  Mounted on
+/dev/disk1     233Gi  216Gi   16Gi    94% 56788108 4190706   93%   /
+devfs          190Ki  190Ki    0Bi   100%      656       0  100%   /dev
+map -hosts       0Bi    0Bi    0Bi   100%        0       0  100%   /net
+map auto_home    0Bi    0Bi    0Bi   100%        0       0  100%   /hom
+</pre></div>
+</div>
+</div>
+<div class="section" id="combining-it-all">
+<h3>Combining it all<a class="headerlink" href="#combining-it-all" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>find a snippet that combine all that into one thing!
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="magics.html" class="btn btn-neutral float-right" title="Built-in magic commands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tips.html" class="btn btn-neutral float-left" title="IPython Tips &amp; Tricks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

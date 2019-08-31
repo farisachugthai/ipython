@@ -9,7 +9,7 @@ dependencies:
 - pytest
 - testpath
 - matplotlib
+- prompt_toolkit
+- ipykernel
 - pip:
     - docrepr
-    - prompt_toolkit
-    - ipykernel

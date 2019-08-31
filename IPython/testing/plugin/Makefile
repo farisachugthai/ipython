@@ -1,10 +1,13 @@
 # Set this prefix to where you want to install the plugin
-PREFIX=/usr/local
+PREFIX=~/.local
 
 NOSE0=nosetests -vs --with-doctest --doctest-tests --detailed-errors
-NOSE=nosetests -vvs --with-ipdoctest --doctest-tests --doctest-extension=txt \
+# NOSE=nosetests -vvs --with-ipdoctest --doctest-tests --doctest-extension=txt \
 --detailed-errors
 
+# Apparently the --with-ipdoctest parameter doesn't exist to nose
+# NOSE=nosetests -vvs --with-ipdoctest --doctest-tests --doctest-extension=txt \
+	#
 SRC=ipdoctest.py setup.py ../decorators.py
 
 # Default target for clean 'make'

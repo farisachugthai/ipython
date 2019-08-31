@@ -1,0 +1,512 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Guide for IPython core Developers &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The IPython API" href="../api/index.html" />
+    <link rel="prev" title="IPython GUI Support Notes" href="../development/inputhook_app.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Guide for IPython core Developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#backporting-pull-requests">Backporting Pull requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ipython-release-process">IPython release process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#set-environment-variables">1. Set Environment variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-github-stats-and-finish-release-note">2. Create GitHub stats and finish release note</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#make-sure-the-repository-is-clean">3. Make sure the repository is clean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-the-release-version-number">4. Update the release version number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-the-tools-build-release-script">5. Run the <code class="docutils literal notranslate"><span class="pre">tools/build_release</span></code> script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-and-push-the-new-tag">6. Create and push the new tag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-the-release-script">7. Run the release script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#draft-a-short-release-announcement">8. Draft a short release announcement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-milestones-on-github">9. Update milestones on GitHub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-the-ipython-website">10. Update the IPython website</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-readthedocs">11. Update readthedocs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-the-conda-forge-feedstock">12. Update the Conda-Forge feedstock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celebrate">13. Celebrate!</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#old-documentation">Old Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Guide for IPython core Developers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/coredev/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="guide-for-ipython-core-developers">
+<span id="core-developer-guide"></span><h1>Guide for IPython core Developers<a class="headerlink" href="#guide-for-ipython-core-developers" title="Permalink to this headline">¶</a></h1>
+<p>This guide documents the development of IPython itself.  Alternatively,
+developers of third party tools and libraries that use IPython should see the
+<a class="reference internal" href="../development/index.html"><span class="doc">Developer’s guide for third party tools and libraries</span></a>.</p>
+<p>For instructions on how to make a developer install see <a class="reference internal" href="../install/install.html#devinstall"><span class="std std-ref">Installing the development version</span></a>.</p>
+<div class="section" id="backporting-pull-requests">
+<h2>Backporting Pull requests<a class="headerlink" href="#backporting-pull-requests" title="Permalink to this headline">¶</a></h2>
+<p>All pull requests should usually be made against <code class="docutils literal notranslate"><span class="pre">master</span></code>, if a Pull Request
+need to be backported to an earlier release; then it should be tagged with the
+correct <code class="docutils literal notranslate"><span class="pre">milestone</span></code>.</p>
+<p>If you tag a pull request with a milestone <strong>before</strong> merging the pull request,
+and the base ref is <code class="docutils literal notranslate"><span class="pre">master</span></code>, then our backport bot should automatically create
+a corresponding pull-request that backport on the correct branch.</p>
+<p>If you have write access to the IPython repository you can also just mention the
+<strong>backport bot</strong> to do the work for you. The bot is evolving so instructions may
+be different. At the time of this writing you can use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@meeseeksdev</span><span class="p">[</span><span class="n">bot</span><span class="p">]</span> <span class="n">backport</span> <span class="p">[</span><span class="n">to</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">branchname</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The bot will attempt to backport the current pull-request and issue a PR if
+possible.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> and <code class="docutils literal notranslate"><span class="pre">[bot]</span></code> when mentioning the bot should be optional and can
+be omitted.</p>
+</div>
+<p>If the pull request cannot be automatically backported, the bot should tell you
+so on the PR and apply a “Need manual backport” tag to the origin PR.</p>
+</div>
+<div class="section" id="ipython-release-process">
+<span id="release-process"></span><h2>IPython release process<a class="headerlink" href="#ipython-release-process" title="Permalink to this headline">¶</a></h2>
+<p>This document contains the process that is used to create an IPython release.</p>
+<p>Conveniently, the <code class="docutils literal notranslate"><span class="pre">release</span></code> script in the <code class="docutils literal notranslate"><span class="pre">tools</span></code> directory of the <code class="docutils literal notranslate"><span class="pre">IPython</span></code>
+repository automates most of the release process. This document serves as a
+handy reminder and checklist for the release manager.</p>
+<p>During the release process, you might need the extra following dependencies:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">keyring</span></code> to access your GitHub authentication tokens</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graphviz</span></code> to generate some graphs in the documentation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ghpro</span></code> to generate the stats</p></li>
+</ul>
+</div></blockquote>
+<p>Make sure you have all the required dependencies to run the tests as well.</p>
+<p>You can try to <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">tools/release_helper.sh</span></code> when releasing via bash, it
+should guide you through most of the process.</p>
+<div class="section" id="set-environment-variables">
+<h3>1. Set Environment variables<a class="headerlink" href="#set-environment-variables" title="Permalink to this headline">¶</a></h3>
+<p>Set environment variables to document previous release tag, current
+release milestone, current release version, and git tag.</p>
+<p>These variables may be used later to copy/paste as answers to the script
+questions instead of typing the appropriate command when the time comes. These
+variables are not used by the scripts directly; therefore, there is no need to
+<code class="docutils literal notranslate"><span class="pre">export</span></code> them. The format for bash is as follows, but note that these values
+are just an example valid only for the 5.0 release; you’ll need to update them
+for the release you are actually making:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PREV_RELEASE</span><span class="o">=</span><span class="mf">4.2</span><span class="o">.</span><span class="mi">1</span>
+<span class="n">MILESTONE</span><span class="o">=</span><span class="mf">5.0</span>
+<span class="n">VERSION</span><span class="o">=</span><span class="mf">5.0</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">BRANCH</span><span class="o">=</span><span class="n">master</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-github-stats-and-finish-release-note">
+<h3>2. Create GitHub stats and finish release note<a class="headerlink" href="#create-github-stats-and-finish-release-note" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This step is optional if making a Beta or RC release.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before generating the GitHub stats, verify that all closed issues and pull
+requests have <a class="reference external" href="https://github.com/ipython/ipython/wiki/Dev:-GitHub-workflow#milestones">appropriate milestones</a>.
+<a class="reference external" href="https://github.com/ipython/ipython/issues?q=is%3Aclosed+no%3Amilestone+is%3Aissue">This search</a>
+should return no results before creating the GitHub stats.</p>
+</div>
+<p>If a major release:</p>
+<blockquote>
+<div><ul>
+<li><p>merge any pull request notes into what’s new:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">tools</span><span class="o">/</span><span class="n">update_whatsnew</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</li>
+<li><p>update <code class="docutils literal notranslate"><span class="pre">docs/source/whatsnew/development.rst</span></code>, to ensure it covers
+the major release features</p></li>
+<li><p>move the contents of <code class="docutils literal notranslate"><span class="pre">development.rst</span></code> to <code class="docutils literal notranslate"><span class="pre">versionX.rst</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> is
+the numerical release version</p></li>
+<li><p>generate summary of GitHub contributions, which can be done with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python tools/github_stats.py --milestone $MILESTONE &gt; stats.rst
+</pre></div>
+</div>
+<p>which may need some manual cleanup of <code class="docutils literal notranslate"><span class="pre">stats.rst</span></code>. Add the cleaned
+<code class="docutils literal notranslate"><span class="pre">stats.rst</span></code> results to <code class="docutils literal notranslate"><span class="pre">docs/source/whatsnew/github-stats-X.rst</span></code>
+where <code class="docutils literal notranslate"><span class="pre">X</span></code> is the numerical release version (don’t forget to add it to
+the git repository as well). If creating a major release, make a new
+<code class="docutils literal notranslate"><span class="pre">github-stats-X.rst</span></code> file; if creating a minor release, the content
+from <code class="docutils literal notranslate"><span class="pre">stats.rst</span></code> may simply be added to the top of an existing
+<code class="docutils literal notranslate"><span class="pre">github-stats-X.rst</span></code> file.</p>
+</li>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">docs/source/whatsnew/index.rst</span></code> to list the new <code class="docutils literal notranslate"><span class="pre">github-stats-X</span></code>
+file you just created.</p></li>
+<li><p>You do not need to temporarily remove the first entry called
+<code class="docutils literal notranslate"><span class="pre">development</span></code>, nor re-add it after the release, it will automatically be
+hidden when releasing a stable version of IPython (if <code class="docutils literal notranslate"><span class="pre">_version_extra</span></code>
+in <code class="docutils literal notranslate"><span class="pre">release.py</span></code> is an empty string.</p>
+<p>Make sure that the stats file has a header or it won’t be rendered in
+the final documentation.</p>
+</li>
+</ul>
+</div></blockquote>
+<p>To find duplicates and update <code class="docutils literal notranslate"><span class="pre">.mailmap</span></code>, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>git log --format=&quot;%aN &lt;%aE&gt;&quot; $PREV_RELEASE... | sort -u -f
+</pre></div>
+</div>
+<p>If a minor release you might need to do some of the above points manually, and
+forward port the changes.</p>
+</div>
+<div class="section" id="make-sure-the-repository-is-clean">
+<h3>3. Make sure the repository is clean<a class="headerlink" href="#make-sure-the-repository-is-clean" title="Permalink to this headline">¶</a></h3>
+<dl>
+<dt>of any file that could be problematic.</dt><dd><p>Remove all non-tracked files with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clean</span> <span class="o">-</span><span class="n">xfdi</span>
+</pre></div>
+</div>
+<p>This will ask for confirmation before removing all untracked files. Make
+sure the <code class="docutils literal notranslate"><span class="pre">dist/</span></code> folder is clean to avoid any stale builds from
+previous build attempts.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="update-the-release-version-number">
+<h3>4. Update the release version number<a class="headerlink" href="#update-the-release-version-number" title="Permalink to this headline">¶</a></h3>
+<p>Edit <code class="docutils literal notranslate"><span class="pre">IPython/core/release.py</span></code> to have the current version.</p>
+<p>in particular, update version number and <code class="docutils literal notranslate"><span class="pre">_version_extra</span></code> content in
+<code class="docutils literal notranslate"><span class="pre">IPython/core/release.py</span></code>.</p>
+<p>Step 5 will validate your changes automatically, but you might still want to
+make sure the version number matches pep440.</p>
+<p>In particular, <code class="docutils literal notranslate"><span class="pre">rc</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> are not separated by <code class="docutils literal notranslate"><span class="pre">.</span></code> or the <code class="docutils literal notranslate"><span class="pre">sdist</span></code>
+and <code class="docutils literal notranslate"><span class="pre">bdist</span></code> will appear as different releases. For example, a valid version
+number for a release candidate (rc) release is: <code class="docutils literal notranslate"><span class="pre">1.3rc1</span></code>. Notice that there
+is no separator between the ‘3’ and the ‘r’. Check the environment variable
+<code class="docutils literal notranslate"><span class="pre">$VERSION</span></code> as well.</p>
+<p>You will likely just have to modify/comment/uncomment one of the lines setting
+<code class="docutils literal notranslate"><span class="pre">_version_extra</span></code></p>
+</div>
+<div class="section" id="run-the-tools-build-release-script">
+<h3>5. Run the <code class="docutils literal notranslate"><span class="pre">tools/build_release</span></code> script<a class="headerlink" href="#run-the-tools-build-release-script" title="Permalink to this headline">¶</a></h3>
+<p>Running <code class="docutils literal notranslate"><span class="pre">tools/build_release</span></code> does all the file checking and building that
+the real release script will do. This makes test installations, checks that
+the build procedure runs OK, and tests other steps in the release process.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">build_release</span></code> script will in particular verify that the version number
+match PEP 440, in order to avoid surprise at the time of build upload.</p>
+<p>We encourage creating a test build of the docs as well.</p>
+</div>
+<div class="section" id="create-and-push-the-new-tag">
+<h3>6. Create and push the new tag<a class="headerlink" href="#create-and-push-the-new-tag" title="Permalink to this headline">¶</a></h3>
+<p>Commit the changes to release.py:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>git commit -am &quot;release $VERSION&quot; -S
+git push origin $BRANCH
+</pre></div>
+</div>
+<p>(omit the <code class="docutils literal notranslate"><span class="pre">-S</span></code> if you are no signing the package)</p>
+<p>Create and push the tag:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>git tag -am &quot;release $VERSION&quot; &quot;$VERSION&quot; -s
+git push origin $VERSION
+</pre></div>
+</div>
+<p>(omit the <code class="docutils literal notranslate"><span class="pre">-s</span></code> if you are no signing the package)</p>
+<p>Update release.py back to <code class="docutils literal notranslate"><span class="pre">x.y-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">x.y-maint</span></code> commit and push:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>git commit -am &quot;back to development&quot; -S
+git push origin $BRANCH
+</pre></div>
+</div>
+<p>(omit the <code class="docutils literal notranslate"><span class="pre">-S</span></code> if you are no signing the package)</p>
+<p>Now checkout the tag we just made:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>git checkout $VERSION
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-the-release-script">
+<h3>7. Run the release script<a class="headerlink" href="#run-the-release-script" title="Permalink to this headline">¶</a></h3>
+<p>Run the <code class="docutils literal notranslate"><span class="pre">release</span></code> script, this step requires having a current wheel, Python
+&gt;=3.4 and Python 2.7.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">tools</span><span class="o">/</span><span class="n">release</span>
+</pre></div>
+</div>
+<p>This makes the tarballs and wheels, and puts them under the <code class="docutils literal notranslate"><span class="pre">dist/</span></code>
+folder. Be sure to test the <code class="docutils literal notranslate"><span class="pre">wheels</span></code>  and the <code class="docutils literal notranslate"><span class="pre">sdist</span></code> locally before
+uploading them to PyPI. We do not use an universal wheel as each wheel
+installs an <code class="docutils literal notranslate"><span class="pre">ipython2</span></code> or <code class="docutils literal notranslate"><span class="pre">ipython3</span></code> script, depending on the version of
+Python it is built for. Using an universal wheel would prevent this.</p>
+<p>Use the following to actually upload the result of the build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">tools</span><span class="o">/</span><span class="n">release</span> <span class="n">upload</span>
+</pre></div>
+</div>
+<p>It should posts them to <code class="docutils literal notranslate"><span class="pre">archive.ipython.org</span></code> and to PyPI.</p>
+<p>PyPI/Warehouse will automatically hide previous releases. If you are uploading
+a non-stable version, make sure to log-in to PyPI and un-hide previous version.</p>
+</div>
+<div class="section" id="draft-a-short-release-announcement">
+<h3>8. Draft a short release announcement<a class="headerlink" href="#draft-a-short-release-announcement" title="Permalink to this headline">¶</a></h3>
+<p>The announcement should include:</p>
+<ul class="simple">
+<li><p>release highlights</p></li>
+<li><p>a link to the html version of the <em>What’s new</em> section of the documentation</p></li>
+<li><p>a link to upgrade or installation tips (if necessary)</p></li>
+</ul>
+<p>Post the announcement to the mailing list and or blog, and link from Twitter.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are doing a RC or Beta, you can likely skip the next steps.</p>
+</div>
+</div>
+<div class="section" id="update-milestones-on-github">
+<h3>9. Update milestones on GitHub<a class="headerlink" href="#update-milestones-on-github" title="Permalink to this headline">¶</a></h3>
+<p>These steps will bring milestones up to date:</p>
+<ul class="simple">
+<li><p>close the just released milestone</p></li>
+<li><p>open a new milestone for the next release (x, y+1), if the milestone doesn’t
+exist already</p></li>
+</ul>
+</div>
+<div class="section" id="update-the-ipython-website">
+<h3>10. Update the IPython website<a class="headerlink" href="#update-the-ipython-website" title="Permalink to this headline">¶</a></h3>
+<p>The IPython website should document the new release:</p>
+<ul class="simple">
+<li><p>add release announcement (news, announcements)</p></li>
+<li><p>update current version and download links</p></li>
+<li><p>update links on the documentation page (especially if a major release)</p></li>
+</ul>
+</div>
+<div class="section" id="update-readthedocs">
+<h3>11. Update readthedocs<a class="headerlink" href="#update-readthedocs" title="Permalink to this headline">¶</a></h3>
+<p>Make sure to update readthedocs and set the latest tag as stable, as well as
+checking that previous release is still building under its own tag.</p>
+</div>
+<div class="section" id="update-the-conda-forge-feedstock">
+<h3>12. Update the Conda-Forge feedstock<a class="headerlink" href="#update-the-conda-forge-feedstock" title="Permalink to this headline">¶</a></h3>
+<p>Follow the instructions on <a class="reference external" href="https://github.com/conda-forge/ipython-feedstock">the repository</a></p>
+</div>
+<div class="section" id="celebrate">
+<h3>13. Celebrate!<a class="headerlink" href="#celebrate" title="Permalink to this headline">¶</a></h3>
+<p>Celebrate the release and please thank the contributors for their work. Great
+job!</p>
+</div>
+</div>
+<div class="section" id="old-documentation">
+<h2>Old Documentation<a class="headerlink" href="#old-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Out of date documentation is still available and have been kept for archival purposes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Developers documentation used to be on the IPython wiki, but are now out of
+date. The wiki is though still available for historical reasons: <a class="reference external" href="https://github.com/ipython/ipython/wiki/Dev:-Index">Old IPython
+GitHub Wiki.</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../api/index.html" class="btn btn-neutral float-right" title="The IPython API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../development/inputhook_app.html" class="btn btn-neutral float-left" title="IPython GUI Support Notes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

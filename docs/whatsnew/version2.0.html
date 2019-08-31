@@ -1,0 +1,596 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2.x Series &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Issues closed in the 2.x development cycle" href="github-stats-2.0.html" />
+    <link rel="prev" title="Migrating Widgets to IPython 3" href="version3_widget_migration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">What’s new in IPython</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.html">Development version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version7.html">7.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-7.html">Issues closed in the 7.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version6.html">6.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-6.html">Issues closed in the 6.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version5.html">5.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-5.html">Issues closed in the 5.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version4.html">4.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-4.html">Issues closed in the 4.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version3.html">3.x Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-3.html">Issues closed in the 3.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version3_widget_migration.html">Migrating Widgets to IPython 3</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2.x Series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#release-2-4">Release 2.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-2-3-1">Release 2.3.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-2-3-0">Release 2.3.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-2-2-0">Release 2.2.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-2-1-0">Release 2.1.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-2-0-0">Release 2.0.0</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#new-stuff-in-the-ipython-notebook">New stuff in the IPython notebook</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#single-codebase-python-3-support">Single codebase Python 3 support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#selecting-matplotlib-figure-formats">Selecting matplotlib figure formats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clear-output-changes">clear_output changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extending-configurable-containers">Extending configurable containers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#changes-to-hidden-namespace-on-startup">Changes to hidden namespace on startup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-dill-to-expand-serialization-support">Using dill to expand serialization support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#new-ipython-console-lexer">New IPython console lexer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#displayformatter-changes">DisplayFormatter changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-changes">Other changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backwards-incompatible-changes">Backwards incompatible changes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-2.0.html">Issues closed in the 2.x development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version1.0.html">1.0 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-1.0.html">Issues closed in the 1.0 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.13.html">0.13 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.13.html">Issues closed in the 0.13 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.12.html">0.12 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.12.html">Issues closed in the 0.12 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.11.html">0.11 Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github-stats-0.11.html">Issues closed in the 0.11 development cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.10.html">0.10 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.9.html">0.9 series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version0.8.html">0.8 series</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/index.html">Developer’s guide for third party tools and libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">What’s new in IPython</a> &raquo;</li>
+        
+      <li>2.x Series</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/whatsnew/version2.0.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="x-series">
+<h1>2.x Series<a class="headerlink" href="#x-series" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="release-2-4">
+<h2>Release 2.4<a class="headerlink" href="#release-2-4" title="Permalink to this headline">¶</a></h2>
+<p>January, 2014</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some of the patches marked for 2.4 were left out of 2.4.0.
+Please use 2.4.1.</p>
+</div>
+<ul class="simple">
+<li><p>backport read support for nbformat v4 from IPython 3</p></li>
+<li><p>support for PyQt5 in the kernel (not QtConsole)</p></li>
+<li><p>support for Pygments 2.0</p></li>
+</ul>
+<p>For more information on what fixes have been backported to 2.4,
+see our <a class="reference internal" href="github-stats-2.0.html#issues-list-200"><span class="std std-ref">detailed release info</span></a>.</p>
+</div>
+<div class="section" id="release-2-3-1">
+<h2>Release 2.3.1<a class="headerlink" href="#release-2-3-1" title="Permalink to this headline">¶</a></h2>
+<p>November, 2014</p>
+<ul class="simple">
+<li><p>Fix CRCRLF line-ending bug in notebooks on Windows</p></li>
+</ul>
+<p>For more information on what fixes have been backported to 2.3.1,
+see our <a class="reference internal" href="github-stats-2.0.html#issues-list-200"><span class="std std-ref">detailed release info</span></a>.</p>
+</div>
+<div class="section" id="release-2-3-0">
+<h2>Release 2.3.0<a class="headerlink" href="#release-2-3-0" title="Permalink to this headline">¶</a></h2>
+<p>October, 2014</p>
+<ul class="simple">
+<li><p>improve qt5 support</p></li>
+<li><p>prevent notebook data loss with atomic writes</p></li>
+</ul>
+<p>For more information on what fixes have been backported to 2.3,
+see our <a class="reference internal" href="github-stats-2.0.html#issues-list-200"><span class="std std-ref">detailed release info</span></a>.</p>
+</div>
+<div class="section" id="release-2-2-0">
+<h2>Release 2.2.0<a class="headerlink" href="#release-2-2-0" title="Permalink to this headline">¶</a></h2>
+<p>August, 2014</p>
+<ul class="simple">
+<li><p>Add CORS configuration</p></li>
+</ul>
+<p>For more information on what fixes have been backported to 2.2,
+see our <a class="reference internal" href="github-stats-2.0.html#issues-list-200"><span class="std std-ref">detailed release info</span></a>.</p>
+</div>
+<div class="section" id="release-2-1-0">
+<h2>Release 2.1.0<a class="headerlink" href="#release-2-1-0" title="Permalink to this headline">¶</a></h2>
+<p>May, 2014</p>
+<p>IPython 2.1 is the first bugfix release for 2.0.
+For more information on what fixes have been backported to 2.1,
+see our <a class="reference internal" href="github-stats-2.0.html#issues-list-200"><span class="std std-ref">detailed release info</span></a>.</p>
+</div>
+<div class="section" id="release-2-0-0">
+<h2>Release 2.0.0<a class="headerlink" href="#release-2-0-0" title="Permalink to this headline">¶</a></h2>
+<p>April, 2014</p>
+<p>IPython 2.0 requires Python ≥ 2.7.2 or ≥ 3.3.0.
+It does not support Python 3.0, 3.1, 3.2, 2.5, or 2.6.</p>
+<p>The principal milestones of 2.0 are:</p>
+<ul class="simple">
+<li><p>interactive widgets for the notebook</p></li>
+<li><p>directory navigation in the notebook dashboard</p></li>
+<li><p>persistent URLs for notebooks</p></li>
+<li><p>a new modal user interface in the notebook</p></li>
+<li><p>a security model for notebooks</p></li>
+</ul>
+<p>Contribution summary since IPython 1.0 in August, 2013:</p>
+<ul class="simple">
+<li><p>~8 months of work</p></li>
+<li><p>~650 pull requests merged</p></li>
+<li><p>~400 issues closed (non-pull requests)</p></li>
+<li><p>contributions from ~100 authors</p></li>
+<li><p>~4000 commits</p></li>
+</ul>
+<p>The amount of work included in this release is so large that we can only cover
+here the main highlights; please see our <a class="reference internal" href="github-stats-2.0.html#issues-list-200"><span class="std std-ref">detailed release statistics</span></a> for links to every issue and pull request closed on GitHub
+as well as a full list of individual contributors.</p>
+<div class="section" id="new-stuff-in-the-ipython-notebook">
+<h3>New stuff in the IPython notebook<a class="headerlink" href="#new-stuff-in-the-ipython-notebook" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="directory-navigation">
+<h4>Directory navigation<a class="headerlink" href="#directory-navigation" title="Permalink to this headline">¶</a></h4>
+<a class="reference internal image-reference" href="../_images/treeview.png"><img alt="Directory navigation" class="align-center" src="../_images/treeview.png" style="width: 392px;" /></a>
+<p>The IPython notebook dashboard allows navigation into subdirectories.
+URLs are persistent based on the notebook’s path and name,
+so no more random UUID URLs.</p>
+<p>Serving local files no longer needs the <code class="docutils literal notranslate"><span class="pre">files/</span></code> prefix.
+Relative links across notebooks and other files should work just as if notebooks were regular HTML files.</p>
+</div>
+<div class="section" id="interactive-widgets">
+<h4>Interactive widgets<a class="headerlink" href="#interactive-widgets" title="Permalink to this headline">¶</a></h4>
+<a class="reference internal image-reference" href="../_images/widgets.png"><img alt="Interactive widgets" class="align-center" src="../_images/widgets.png" style="width: 392px;" /></a>
+<p>IPython 2.0 adds <code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.html.widgets</span></code>, for manipulating
+Python objects in the kernel with GUI controls in the notebook.
+IPython comes with a few built-in widgets for simple data types,
+and an API designed for developers to build more complex widgets.
+See the <a class="reference external" href="http://nbviewer.ipython.org/github/ipython/ipython/blob/2.x/examples/Interactive%20Widgets/Index.ipynb">widget docs</a> for more information.</p>
+</div>
+<div class="section" id="modal-user-interface">
+<h4>Modal user interface<a class="headerlink" href="#modal-user-interface" title="Permalink to this headline">¶</a></h4>
+<p>The notebook has added separate Edit and Command modes,
+allowing easier keyboard commands and making keyboard shortcut customization possible.
+See the new <a class="reference external" href="http://nbviewer.ipython.org/github/ipython/ipython/blob/2.x/examples/Notebook/User%20Interface.ipynb">User Interface notebook</a> for more information.</p>
+<p>You can familiarize yourself with the updated notebook user interface, including an
+explanation of Edit and Command modes, by going through the short guided tour
+which can be started from the Help menu.</p>
+<a class="reference internal image-reference" href="../_images/user-interface.png"><img alt="Interface tour" class="align-center" src="../_images/user-interface.png" style="width: 392px;" /></a>
+</div>
+<div class="section" id="security">
+<h4>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h4>
+<p>2.0 introduces a security model for notebooks,
+to prevent untrusted code from executing on users’ behalf when notebooks open.
+A quick summary of the model:</p>
+<ul class="simple">
+<li><p>Trust is determined by signing notebooks.</p></li>
+<li><p>Untrusted HTML output is sanitized.</p></li>
+<li><p>Untrusted Javascript is never executed.</p></li>
+<li><p>HTML and Javascript in Markdown are never trusted.</p></li>
+</ul>
+</div>
+<div class="section" id="dashboard-running-tab">
+<h4>Dashboard “Running” tab<a class="headerlink" href="#dashboard-running-tab" title="Permalink to this headline">¶</a></h4>
+<a class="reference internal image-reference" href="../_images/running-crop.png"><img alt="Running tab" class="align-center" src="../_images/running-crop.png" style="width: 392px;" /></a>
+<p>The dashboard now has a “Running” tab which shows all of the running notebooks.</p>
+</div>
+</div>
+<div class="section" id="single-codebase-python-3-support">
+<h3>Single codebase Python 3 support<a class="headerlink" href="#single-codebase-python-3-support" title="Permalink to this headline">¶</a></h3>
+<p>IPython previously supported Python 3 by running 2to3 during setup. We
+have now switched to a single codebase which runs natively on Python 2.7
+and 3.3.</p>
+<p>For notes on how to maintain this, see <a class="reference internal" href="../development/pycompat.html"><span class="doc">Writing code for Python 2 and 3</span></a>.</p>
+</div>
+<div class="section" id="selecting-matplotlib-figure-formats">
+<h3>Selecting matplotlib figure formats<a class="headerlink" href="#selecting-matplotlib-figure-formats" title="Permalink to this headline">¶</a></h3>
+<p>Deprecate single-format <code class="docutils literal notranslate"><span class="pre">InlineBackend.figure_format</span></code>
+configurable in favor of <code class="docutils literal notranslate"><span class="pre">InlineBackend.figure_formats</span></code>,
+which is a set, supporting multiple simultaneous figure formats (e.g. png, pdf).</p>
+<p>This is available at runtime with the new API function <a class="reference internal" href="../api/generated/IPython.display.html#IPython.display.set_matplotlib_formats" title="IPython.display.set_matplotlib_formats"><code class="xref py py-func docutils literal notranslate"><span class="pre">IPython.display.set_matplotlib_formats()</span></code></a>.</p>
+</div>
+<div class="section" id="clear-output-changes">
+<h3>clear_output changes<a class="headerlink" href="#clear-output-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>There is no longer a 500ms delay when calling <code class="docutils literal notranslate"><span class="pre">clear_output</span></code>.</p></li>
+<li><p>The ability to clear stderr and stdout individually was removed.</p></li>
+<li><p>A new <code class="docutils literal notranslate"><span class="pre">wait</span></code> flag that prevents <code class="docutils literal notranslate"><span class="pre">clear_output</span></code> from being executed until new
+output is available.  This eliminates animation flickering by allowing the
+user to double buffer the output.</p></li>
+<li><p>The output div height is remembered when the <code class="docutils literal notranslate"><span class="pre">wait=True</span></code> flag is used.</p></li>
+</ul>
+</div>
+<div class="section" id="extending-configurable-containers">
+<h3>Extending configurable containers<a class="headerlink" href="#extending-configurable-containers" title="Permalink to this headline">¶</a></h3>
+<p>Some configurable traits are containers (list, dict, set)
+Config objects now support calling <code class="docutils literal notranslate"><span class="pre">extend</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code>, <code class="docutils literal notranslate"><span class="pre">insert</span></code>, etc.
+on traits in config files, which will ultimately result in calling
+those methods on the original object.</p>
+<p>The effect being that you can now add to containers without having to copy/paste
+the initial value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">InlineBackend</span><span class="o">.</span><span class="n">rc</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="s1">&#39;figure.figsize&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="changes-to-hidden-namespace-on-startup">
+<h3>Changes to hidden namespace on startup<a class="headerlink" href="#changes-to-hidden-namespace-on-startup" title="Permalink to this headline">¶</a></h3>
+<p>Previously, all names declared in code run at startup
+(startup files, <code class="docutils literal notranslate"><span class="pre">ipython</span> <span class="pre">-i</span> <span class="pre">script.py</span></code>, etc.)
+were added to the hidden namespace, which hides the names from tools like <code class="docutils literal notranslate"><span class="pre">%whos</span></code>.
+There are two changes to this behavior:</p>
+<ol class="arabic simple">
+<li><p>Scripts run on the command-line <code class="docutils literal notranslate"><span class="pre">ipython</span> <span class="pre">-i</span> <span class="pre">script.py``now</span> <span class="pre">behave</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">as</span> <span class="pre">if</span> <span class="pre">they</span> <span class="pre">were</span>
+<span class="pre">passed</span> <span class="pre">to</span> <span class="pre">``%run</span></code>, so their variables are never hidden.</p></li>
+<li><p>A boolean config flag <code class="docutils literal notranslate"><span class="pre">InteractiveShellApp.hide_initial_ns</span></code> has been added to optionally
+disable the hidden behavior altogether. The default behavior is unchanged.</p></li>
+</ol>
+</div>
+<div class="section" id="using-dill-to-expand-serialization-support">
+<h3>Using dill to expand serialization support<a class="headerlink" href="#using-dill-to-expand-serialization-support" title="Permalink to this headline">¶</a></h3>
+<p>The new function <code class="xref py py-func docutils literal notranslate"><span class="pre">use_dill()</span></code> allows
+dill to extend serialization support in <code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.parallel</span></code> (closures, etc.).
+A <code class="xref py py-meth docutils literal notranslate"><span class="pre">DirectView.use_dill()</span></code> convenience method was also added, to enable dill
+locally and on all engines with one call.</p>
+</div>
+<div class="section" id="new-ipython-console-lexer">
+<h3>New IPython console lexer<a class="headerlink" href="#new-ipython-console-lexer" title="Permalink to this headline">¶</a></h3>
+<p>The IPython console lexer has been rewritten and now supports tracebacks
+and customized input/output prompts. See the <a class="reference internal" href="../development/lexer.html#console-lexer"><span class="std std-ref">new lexer docs</span></a>
+for details.</p>
+</div>
+<div class="section" id="displayformatter-changes">
+<h3>DisplayFormatter changes<a class="headerlink" href="#displayformatter-changes" title="Permalink to this headline">¶</a></h3>
+<p>There was no official way to query or remove callbacks in the Formatter API.
+To remedy this, the following methods are added to <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFormatter</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lookup(instance)</span></code> - return appropriate callback or a given object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lookup_by_type(type_or_str)</span></code> - return appropriate callback for a given type or <code class="docutils literal notranslate"><span class="pre">'mod.name'</span></code> type string</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pop(type_or_str)</span></code> - remove a type (by type or string).
+Pass a second argument to avoid KeyError (like dict).</p></li>
+</ul>
+<p>All of the above methods raise a KeyError if no match is found.</p>
+<p>And the following methods are changed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">for_type(type_or_str)</span></code> - behaves the same as before, only adding support for <code class="docutils literal notranslate"><span class="pre">'mod.name'</span></code>
+type strings in addition to plain types. This removes the need for <code class="docutils literal notranslate"><span class="pre">for_type_by_name()</span></code>,
+but it remains for backward compatibility.</p></li>
+</ul>
+<p>Formatters can now raise NotImplementedError in addition to returning None
+to indicate that they cannot format a given object.</p>
+<div class="section" id="exceptions-and-warnings">
+<h4>Exceptions and Warnings<a class="headerlink" href="#exceptions-and-warnings" title="Permalink to this headline">¶</a></h4>
+<p>Exceptions are no longer silenced when formatters fail.
+Instead, these are turned into a <a class="reference internal" href="../api/generated/IPython.core.formatters.html#IPython.core.formatters.FormatterWarning" title="IPython.core.formatters.FormatterWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">FormatterWarning</span></code></a>.
+A FormatterWarning will also be issued if a formatter returns data of an invalid type
+(e.g. an integer for ‘image/png’).</p>
+</div>
+</div>
+<div class="section" id="other-changes">
+<h3>Other changes<a class="headerlink" href="#other-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">%%capture</span></code> cell magic now captures the rich display output, not just
+stdout/stderr</p></li>
+<li><p>In notebook, Showing tooltip on tab has been disables to avoid conflict with
+completion, Shift-Tab could still be used to invoke tooltip when inside
+function signature and/or on selection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">object_info_request</span></code> has been replaced by <code class="docutils literal notranslate"><span class="pre">object_info</span></code> for consistency in the javascript API.
+<code class="docutils literal notranslate"><span class="pre">object_info</span></code> is a simpler interface to register callback that is incompatible with <code class="docutils literal notranslate"><span class="pre">object_info_request</span></code>.</p></li>
+<li><p>Previous versions of IPython on Linux would use the XDG config directory,
+creating <code class="file docutils literal notranslate"><span class="pre">~/.config/ipython</span></code> by default. We have decided to go
+back to <code class="file docutils literal notranslate"><span class="pre">~/.ipython</span></code> for consistency among systems. IPython will
+issue a warning if it finds the XDG location, and will move it to the new
+location if there isn’t already a directory there.</p></li>
+<li><p>Equations, images and tables are now centered in Markdown cells.</p></li>
+<li><p>Multiline equations are now centered in output areas; single line equations
+remain left justified.</p></li>
+<li><p>IPython config objects can be loaded from and serialized to JSON.
+JSON config file have the same base name as their <code class="docutils literal notranslate"><span class="pre">.py</span></code> counterpart,
+and will be loaded with higher priority if found.</p></li>
+<li><p>bash completion updated with support for all ipython subcommands and flags, including nbconvert</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ipython</span> <span class="pre">history</span> <span class="pre">trim</span></code>: added <code class="docutils literal notranslate"><span class="pre">--keep=&lt;N&gt;</span></code> as an alias for the more verbose
+<code class="docutils literal notranslate"><span class="pre">--HistoryTrim.keep=&lt;N&gt;</span></code></p></li>
+<li><p>New <code class="docutils literal notranslate"><span class="pre">ipython</span> <span class="pre">history</span> <span class="pre">clear</span></code> subcommand, which is the same as the newly supported
+<code class="docutils literal notranslate"><span class="pre">ipython</span> <span class="pre">history</span> <span class="pre">trim</span> <span class="pre">--keep=0</span></code></p></li>
+<li><p>You can now run notebooks in an interactive session via <code class="docutils literal notranslate"><span class="pre">%run</span> <span class="pre">notebook.ipynb</span></code>.</p></li>
+<li><p>Print preview is back in the notebook menus, along with options to
+download the open notebook in various formats. This is powered by
+nbconvert.</p></li>
+<li><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">PandocMissing</span></code> exceptions will be
+raised if Pandoc is unavailable, and warnings will be printed if the version
+found is too old. The recommended Pandoc version for use with nbconvert is
+1.12.1.</p></li>
+<li><p>The InlineBackend.figure_format now supports JPEG output if PIL/Pillow is available.</p></li>
+<li><p>Input transformers (see <a class="reference internal" href="../config/inputtransforms.html"><span class="doc">Custom input transformation</span></a>) may now raise
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#SyntaxError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SyntaxError</span></code></a> if they determine that input is invalid. The input
+transformation machinery in IPython will handle displaying the exception to
+the user and resetting state.</p></li>
+<li><p>Calling <code class="docutils literal notranslate"><span class="pre">container.show()</span></code> on javascript display is deprecated and will
+trigger errors on future IPython notebook versions. <code class="docutils literal notranslate"><span class="pre">container</span></code> now show
+itself as soon as non-empty</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">InlineBackend.print_figure_kwargs</span></code> to allow passing keyword arguments
+to matplotlib’s <code class="docutils literal notranslate"><span class="pre">Canvas.print_figure</span></code>. This can be used to change the value of
+<code class="docutils literal notranslate"><span class="pre">bbox_inches</span></code>, which is ‘tight’ by default, or set the quality of JPEG figures.</p></li>
+<li><p>A new callback system has been introduced. For details, see <a class="reference internal" href="../config/callbacks.html"><span class="doc">IPython Events</span></a>.</p></li>
+<li><p>jQuery and require.js are loaded from CDNs in the default HTML template,
+so javascript is available in static HTML export (e.g. nbviewer).</p></li>
+</ul>
+</div>
+<div class="section" id="backwards-incompatible-changes">
+<h3>Backwards incompatible changes<a class="headerlink" href="#backwards-incompatible-changes" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Python 2.6 and 3.2 are no longer supported: the minimum required
+Python versions are now 2.7 and 3.3.</p></li>
+<li><p>The Transformer classes have been renamed to Preprocessor in nbconvert and
+their <code class="docutils literal notranslate"><span class="pre">call</span></code> methods have been renamed to <code class="docutils literal notranslate"><span class="pre">preprocess</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">call</span></code> methods of nbconvert post-processors have been renamed to
+<code class="docutils literal notranslate"><span class="pre">postprocess</span></code>.</p></li>
+<li><p>The module <code class="docutils literal notranslate"><span class="pre">IPython.core.fakemodule</span></code> has been removed.</p></li>
+<li><p>The alias system has been reimplemented to use magic functions. There should be little
+visible difference while automagics are enabled, as they are by default, but parts of the
+<a class="reference internal" href="../api/generated/IPython.core.alias.html#IPython.core.alias.AliasManager" title="IPython.core.alias.AliasManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">AliasManager</span></code></a> API have been removed.</p></li>
+<li><p>We fixed an issue with switching between matplotlib inline and GUI backends,
+but the fix requires matplotlib 1.1 or newer.  So from now on, we consider
+matplotlib 1.1 to be the minimally supported version for IPython. Older
+versions for the most part will work, but we make no guarantees about it.</p></li>
+<li><p>The <strong class="command">pycolor</strong> command has been removed. We recommend the much more capable
+<strong class="command">pygmentize</strong> command from the <a class="reference external" href="http://pygments.org/">Pygments</a> project.
+If you need to keep the exact output of <strong class="command">pycolor</strong>, you can still use
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">IPython.utils.PyColorize</span> <span class="pre">foo.py</span></code>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.lib.irunner</span></code> and its command-line entry point have been removed.
+It had fallen out of use long ago.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">input_prefilter</span></code> hook has been removed, as it was never
+actually used by the code. The input transformer system offers much
+more powerful APIs to work with input code. See
+<a class="reference internal" href="../config/inputtransforms.html"><span class="doc">Custom input transformation</span></a> for details.</p></li>
+<li><p><a class="reference internal" href="../api/generated/IPython.core.inputsplitter.html#IPython.core.inputsplitter.IPythonInputSplitter" title="IPython.core.inputsplitter.IPythonInputSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPython.core.inputsplitter.IPythonInputSplitter</span></code></a> no longer has a method
+<code class="docutils literal notranslate"><span class="pre">source_raw_reset()</span></code>, but gains <a class="reference internal" href="../api/generated/IPython.core.inputsplitter.html#IPython.core.inputsplitter.IPythonInputSplitter.raw_reset" title="IPython.core.inputsplitter.IPythonInputSplitter.raw_reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">raw_reset()</span></code></a>
+instead. Use of <code class="docutils literal notranslate"><span class="pre">source_raw_reset</span></code> can be replaced with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <span class="n">isp</span><span class="o">.</span><span class="n">source_raw</span>
+<span class="n">transformed</span> <span class="o">=</span> <span class="n">isp</span><span class="o">.</span><span class="n">source_reset</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>The Azure notebook manager was removed as it was no longer compatible with the notebook storage scheme.</p></li>
+<li><p>Simplifying configurable URLs</p>
+<ul class="simple">
+<li><p>base_project_url is renamed to base_url (base_project_url is kept as a deprecated alias, for now)</p></li>
+<li><p>base_kernel_url configurable is removed (use base_url)</p></li>
+<li><p>websocket_url configurable is removed (use base_url)</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="github-stats-2.0.html" class="btn btn-neutral float-right" title="Issues closed in the 2.x development cycle" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="version3_widget_migration.html" class="btn btn-neutral float-left" title="Migrating Widgets to IPython 3" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

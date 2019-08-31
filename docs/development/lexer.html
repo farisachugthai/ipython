@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>New IPython Console Lexer &mdash; IPython 7.9.0.dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Overview of the IPython configuration system" href="config.html" />
+    <link rel="prev" title="Execution semantics in the IPython kernel" href="execution.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> IPython
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                7.9.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">IPython Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">What’s new in IPython</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interactive/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../config/index.html">Configuration and customization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer’s guide for third party tools and libraries</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="how_ipython_works.html">How IPython works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wrapperkernels.html">Making simple Python wrapper kernels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="execution.html">Execution semantics in the IPython kernel</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">New IPython Console Lexer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">Overview of the IPython configuration system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inputhook_app.html">IPython GUI Support Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../coredev/index.html">Guide for IPython core Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">The IPython API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sphinxext.html">IPython Sphinx Directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About IPython</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IPython</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Developer’s guide for third party tools and libraries</a> &raquo;</li>
+        
+      <li>New IPython Console Lexer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/development/lexer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This documentation covers a development version of IPython. The development
+version may differ significantly from the latest stable release.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This documentation covers IPython versions 6.0 and higher. Beginning with
+version 6.0, IPython stopped supporting compatibility with Python versions
+lower than 3.3 including all versions of Python 2.7.</p>
+<p>If you are looking for an IPython version compatible with Python 2.7,
+please use the IPython 5.x LTS release and refer to its documentation (LTS
+is the long term support release).</p>
+</div>
+<div class="section" id="new-ipython-console-lexer">
+<span id="console-lexer"></span><h1>New IPython Console Lexer<a class="headerlink" href="#new-ipython-console-lexer" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.0.0.</span></p>
+</div>
+<p>The IPython console lexer has been rewritten and now supports tracebacks
+and customized input/output prompts. An entire suite of lexers is now
+available at <a class="reference internal" href="../api/generated/IPython.lib.lexers.html#module-IPython.lib.lexers" title="IPython.lib.lexers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.lib.lexers</span></code></a>. These include:</p>
+<dl class="simple">
+<dt>IPythonLexer &amp; IPython3Lexer</dt><dd><p>Lexers for pure IPython (python + magic/shell commands)</p>
+</dd>
+<dt>IPythonPartialTracebackLexer &amp; IPythonTracebackLexer</dt><dd><p>Supports 2.x and 3.x via the keyword <code class="docutils literal notranslate"><span class="pre">python3</span></code>. The partial traceback
+lexer reads everything but the Python code appearing in a traceback.
+The full lexer combines the partial lexer with an IPython lexer.</p>
+</dd>
+<dt>IPythonConsoleLexer</dt><dd><p>A lexer for IPython console sessions, with support for tracebacks.
+Supports 2.x and 3.x via the keyword <code class="docutils literal notranslate"><span class="pre">python3</span></code>.</p>
+</dd>
+<dt>IPyLexer</dt><dd><p>A friendly lexer which examines the first line of text and from it,
+decides whether to use an IPython lexer or an IPython console lexer.
+Supports 2.x and 3.x via the keyword <code class="docutils literal notranslate"><span class="pre">python3</span></code>.</p>
+</dd>
+</dl>
+<p>Previously, the <code class="xref py py-class docutils literal notranslate"><span class="pre">IPythonConsoleLexer</span></code> class was available at
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">IPython.sphinxext.ipython_console_hightlight</span></code>.  It was inserted
+into Pygments’ list of available lexers under the name <code class="docutils literal notranslate"><span class="pre">ipython</span></code>.  It should
+be mentioned that this name is inaccurate, since an IPython console session
+is not the same as IPython code (which itself is a superset of the Python
+language).</p>
+<p>Now, the Sphinx extension inserts two console lexers into Pygments’ list of
+available lexers. Both are IPyLexer instances under the names: <code class="docutils literal notranslate"><span class="pre">ipython</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ipython3</span></code>. Although the names can be confusing (as mentioned above), their
+continued use is, in part, to maintain backwards compatibility and to
+aid typical usage. If a project needs to make Pygments aware of more than just
+the IPyLexer class, then one should not make the IPyLexer class available under
+the name <code class="docutils literal notranslate"><span class="pre">ipython</span></code> and use <code class="docutils literal notranslate"><span class="pre">ipy</span></code> or some other non-conflicting value.</p>
+<p>Code blocks such as:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">code-block</span><span class="p">::</span> <span class="k">ipython</span>
+
+    <span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="mi">2</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>will continue to work as before, but now, they will also properly highlight
+tracebacks.  For pure IPython code, the same lexer will also work:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">code-block</span><span class="p">::</span> <span class="k">ipython</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
+    <span class="o">!</span><span class="nb">echo</span> <span class="nv">$x</span>
+</pre></div>
+</div>
+<p>Since the first line of the block did not begin with a standard IPython console
+prompt, the entire block is assumed to consist of IPython code instead.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="config.html" class="btn btn-neutral float-right" title="Overview of the IPython configuration system" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="execution.html" class="btn btn-neutral float-left" title="Execution semantics in the IPython kernel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright The IPython Development Team
+      <span class="lastupdated">
+        Last updated on Aug 30, 2019.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
