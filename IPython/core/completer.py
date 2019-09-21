@@ -1,12 +1,12 @@
 """Completion for IPython.
 
-This module started as fork of the rlcompleter module in the Python standard
+This module started as fork of the :mod:`rlcompleter` module in the Python standard
 library.  The original enhancements made to rlcompleter have been sent
 upstream and were accepted as of Python 2.3,
 
 This module now support a wide variety of completion mechanism both available
 for normal classic Python code, as well as completer for IPython specific
-Syntax like magics.
+syntax like magics.
 
 Latex and Unicode completion
 ============================
@@ -19,8 +19,8 @@ Forward latex/unicode completion
 --------------------------------
 
 Forward completion allows you to easily type a unicode character using its latex
-name, or unicode long description. To do so type a backslash follow by the
-relevant name and press tab:
+name, or unicode long description. To do so type a backslash, :kbd:`\`,
+followed by the relevant name and press the completion trigger key, :kbd:`Tab`:
 
 
 Using latex completion:
@@ -39,9 +39,13 @@ or using unicode completion:
     α
 
 
-Only valid Python identifiers will complete. Combining characters (like arrow or
-dots) are also available, unlike latex they need to be put after the their
-counterpart that is to say, `F\\\\vec<tab>` is correct, not `\\\\vec<tab>F`.
+Only valid Python identifiers will complete the current line.
+
+After pressing the trigger key, characters such as arrow keys or
+dots may also be used. However, they need to be put after their
+counterpart which stands in contrast to a system like LaTex.
+
+That is to say, `F\\\\vec<tab>` is correct, not `\\\\vec<tab>F`.
 
 Some browsers are known to display combining characters incorrectly.
 
@@ -78,7 +82,7 @@ You will find that the following are experimental:
     - :any:`Completion`
     - :any:`rectify_completions`
 
-.. note::
+.. todo::
 
     better name for :any:`rectify_completions` ?
 
@@ -148,9 +152,9 @@ try:
     JEDI_INSTALLED = True
 except ImportError:
     JEDI_INSTALLED = False
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Public API
 __all__ = ['Completer', 'IPCompleter']
@@ -394,7 +398,8 @@ class Completion:
 
     def __repr__(self):
         return '<Completion start=%s end=%s text=%r type=%r, signature=%r,>' % \
-                (self.start, self.end, self.text, self.type or '?', self.signature or '?')
+            (self.start, self.end, self.text,
+             self.type or '?', self.signature or '?')
 
     def __eq__(self, other) -> Bool:
         """
@@ -596,8 +601,7 @@ class Completer(Configurable):
 
     jedi_compute_type_timeout = Int(
         default_value=400,
-        help=
-        """Experimental: restrict time (in milliseconds) during which Jedi can compute types.
+        help="""Experimental: restrict time (in milliseconds) during which Jedi can compute types.
         Set to 0 to stop computing types. Non-zero value lower than 100ms may hurt
         performance by preventing jedi to build its cache.
         """).tag(config=True)
@@ -605,7 +609,7 @@ class Completer(Configurable):
     debug = Bool(default_value=False,
                  help='Enable debug for the Completer. Mostly print extra '
                       'information for experimental jedi integration.')\
-                      .tag(config=True)
+        .tag(config=True)
 
     backslash_combining_completions = Bool(
         True,
@@ -743,7 +747,7 @@ class Completer(Configurable):
             raise
         except Exception:
             # Silence errors from completion function
-            #raise # dbg
+            # raise # dbg
             pass
         # Build match list to return
         n = len(attr)
@@ -1137,11 +1141,11 @@ class IPCompleter(Completer):
         else:
             self.clean_glob = self._clean_glob
 
-        #regexp to parse docstring for function signature
+        # regexp to parse docstring for function signature
         self.docstring_sig_re = re.compile(r'^[\w|\s.]+\(([^)]*)\).*')
         self.docstring_kwd_re = re.compile(r'[\s|\[]*(\w+)(?:\s*=\s*.*)')
-        #use this if positional argument name is also needed
-        #= re.compile(r'[\s|\[]*(\w+)(?:\s*=?\s*.*)')
+        # use this if positional argument name is also needed
+        # = re.compile(r'[\s|\[]*(\w+)(?:\s*=?\s*.*)')
 
         self.magic_arg_matchers = [
             self.magic_config_matches,
@@ -1327,7 +1331,7 @@ class IPCompleter(Completer):
                 c for c in self.shell.configurables
                 if c.__class__.class_traits(config=True)
             ]),
-                             key=lambda x: x.__class__.__name__)
+                key=lambda x: x.__class__.__name__)
             classnames = [c.__class__.__name__ for c in classes]
 
             # return all classnames if config or %config is given
@@ -1345,7 +1349,7 @@ class IPCompleter(Completer):
             if texts[1].find('.') < 0:
                 return classname_matches
             elif len(classname_matches) == 1 and \
-                            classname_matches[0] == classname:
+                    classname_matches[0] == classname:
                 cls = classes[classnames.index(classname)].__class__
                 help = cls.class_get_help()
                 # strip leading '--' from cl-args:
@@ -1397,19 +1401,19 @@ class IPCompleter(Completer):
         if self.global_namespace is not None:
             namespaces.append(self.global_namespace)
 
-        completion_filter = lambda x: x
+        def completion_filter(x): return x
         offset = cursor_to_position(text, cursor_line, cursor_column)
         # filter output if we are completing for object members
         if offset:
             pre = text[offset - 1]
             if pre == '.':
                 if self.omit__names == 2:
-                    completion_filter = lambda c: not c.name.startswith('_')
+                    def completion_filter(c): return not c.name.startswith('_')
                 elif self.omit__names == 1:
-                    completion_filter = lambda c: not (c.name.startswith(
+                    def completion_filter(c): return not (c.name.startswith(
                         '__') and c.name.endswith('__'))
                 elif self.omit__names == 0:
-                    completion_filter = lambda x: x
+                    def completion_filter(x): return x
                 else:
                     raise ValueError(
                         "Don't understand self.omit__names == {}".format(
@@ -1492,11 +1496,11 @@ class IPCompleter(Completer):
         if doc is None:
             return []
 
-        #care only the firstline
+        # care only the firstline
         line = doc.lstrip().splitlines()[0]
 
         #p = re.compile(r'^[\w|\s.]+\(([^)]*)\).*')
-        #'min(iterable[, key=func])\n' -> 'iterable[, key=func]'
+        # 'min(iterable[, key=func])\n' -> 'iterable[, key=func]'
         sig = self.docstring_sig_re.search(line)
         if sig is None:
             return []
@@ -1504,7 +1508,7 @@ class IPCompleter(Completer):
         sig = sig.groups()[0].split(',')
         ret = []
         for s in sig:
-            #re.compile(r'[\s|\[]*(\w+)(?:\s*=\s*.*)')
+            # re.compile(r'[\s|\[]*(\w+)(?:\s*=\s*.*)')
             ret += self.docstring_kwd_re.findall(s)
         return ret
 
@@ -1517,8 +1521,8 @@ class IPCompleter(Completer):
             pass
         elif not (inspect.isfunction(obj) or inspect.ismethod(obj)):
             if inspect.isclass(obj):
-                #for cython embedsignature=True the constructor docstring
-                #belongs to the object itself not __init__
+                # for cython embedsignature=True the constructor docstring
+                # belongs to the object itself not __init__
                 ret += self._default_arguments_from_docstring(
                     getattr(obj, '__doc__', ''))
                 # for classes, check for __init__,__new__
@@ -1640,7 +1644,7 @@ class IPCompleter(Completer):
                 except Exception:
                     return []
             elif _safe_isinstance(obj, 'numpy', 'ndarray') or\
-                 _safe_isinstance(obj, 'numpy', 'void'):
+                    _safe_isinstance(obj, 'numpy', 'void'):
                 return obj.dtype.names or []
             return []
 
@@ -2088,7 +2092,8 @@ class IPCompleter(Completer):
                 name_text, name_matches = meth(base_text)
                 if name_text:
                     return name_text, name_matches[:MATCHES_LIMIT], \
-                           [meth.__qualname__]*min(len(name_matches), MATCHES_LIMIT), ()
+                        [meth.__qualname__] * \
+                        min(len(name_matches), MATCHES_LIMIT), ()
 
         # If no line buffer is given, assume the input text is all there was
         if line_buffer is None:
@@ -2149,8 +2154,7 @@ class IPCompleter(Completer):
                 seen.add(t)
 
         _filtered_matches = sorted(
-            set(filtered_matches), key=lambda x: completions_sorting_key(x[0]))\
-            [:MATCHES_LIMIT]
+            set(filtered_matches), key=lambda x: completions_sorting_key(x[0]))[:MATCHES_LIMIT]
 
         _matches = [m[0] for m in _filtered_matches]
         origins = [m[1] for m in _filtered_matches]

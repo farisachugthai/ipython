@@ -4,18 +4,19 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+from base64 import encodebytes
 from io import BytesIO, open
 import os
-import tempfile
 import shutil
 import subprocess
-from base64 import encodebytes
+import tempfile
 import textwrap
 
-from IPython.utils.process import find_cmd, FindCmdError
+from traitlets import List, Bool, Unicode
 from traitlets.config import get_config
 from traitlets.config.configurable import SingletonConfigurable
-from traitlets import List, Bool, Unicode
+
+from IPython.utils.process import find_cmd, FindCmdError
 from IPython.utils.py3compat import cast_unicode
 
 
@@ -154,10 +155,6 @@ def latex_to_png_dvipng(s, wrap, color='Black', scale=1.0):
                 ["dvipng", "-T", "tight", "-x", "1500", "-z", "9",
                  "-bg", "transparent", "-o", outfile, dvifile], cwd=workdir,
                 stdout=devnull, stderr=devnull)
-=======
-            subprocess.check_call(
-                ["latex", "-halt-on-error", "-interaction", "batchmode", tmpfile],
-                cwd=workdir, stdout=devnull, stderr=devnull)
 
             resolution = round(150*scale)
 

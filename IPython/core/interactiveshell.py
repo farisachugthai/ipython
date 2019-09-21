@@ -57,7 +57,7 @@ from IPython.core.payload import PayloadManager
 from IPython.core.prefilter import PrefilterManager
 from IPython.core.profiledir import ProfileDir
 from IPython.core.usage import default_banner
-from IPython.display import display
+from IPython.core.display import display
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils import PyColorize
 from IPython.utils import io
@@ -128,11 +128,11 @@ else:
 
 
 def removed_co_newlocals(function: types.FunctionType) -> types.FunctionType:
-    """Return a function that do not create a new local scope. 
+    """Return a function that do not create a new local scope.
 
     Given a function, create a clone of this function where the co_newlocal flag
     has been removed, making this function code actually run in the sourounding
-    scope. 
+    scope.
 
     We need this in order to run asynchronous code in user level namespace.
     """
@@ -922,9 +922,9 @@ class InteractiveShell(SingletonConfigurable):
         virtualenv was built, and it ignores the --no-site-packages option. A
         warning will appear suggesting the user installs IPython in the
         virtualenv, but for many cases, it probably works well enough.
-        
+
         Adapted from code snippets online.
-        
+
         http://blog.ufsoft.org/2009/1/29/ipython-and-virtualenv
         """
         if 'VIRTUAL_ENV' not in os.environ:
@@ -1113,7 +1113,7 @@ class InteractiveShell(SingletonConfigurable):
 
     def register_post_execute(self, func):
         """DEPRECATED: Use ip.events.register('post_run_cell', func)
-        
+
         Register a function for calling after code execution.
         """
         warn(
@@ -1135,14 +1135,14 @@ class InteractiveShell(SingletonConfigurable):
 
     def new_main_mod(self, filename, modname):
         """Return a new 'main' module object for user code execution.
-        
+
         ``filename`` should be the path of the script which will be run in the
         module. Requests with the same filename will get the same module, with
         its namespace cleared.
-        
+
         ``modname`` should be the module name - normally either '__main__' or
         the basename of the file without the extension.
-        
+
         When scripts are executed via %run, we must keep a reference to their
         __main__ module around so that Python doesn't
         clear it, rendering references to module globals useless.
@@ -1329,10 +1329,10 @@ class InteractiveShell(SingletonConfigurable):
 
     def prepare_user_module(self, user_module=None, user_ns=None):
         """Prepare the module and namespace in which user code will be run.
-        
+
         When IPython is started normally, both parameters are None: a new module
         is created automatically, and its __dict__ used as the namespace.
-        
+
         If only user_module is provided, its __dict__ is used as the namespace.
         If only user_ns is provided, a dummy module is created, and user_ns
         becomes the global namespace. If both are provided (as they may be
@@ -1456,7 +1456,7 @@ class InteractiveShell(SingletonConfigurable):
     def all_ns_refs(self):
         """Get a list of references to all the namespace dictionaries in which
         IPython might store a user-created object.
-        
+
         Note that this does not include the displayhook, which also caches
         objects from the output."""
         return [self.user_ns, self.user_global_ns, self.user_ns_hidden] + \
@@ -1634,11 +1634,11 @@ class InteractiveShell(SingletonConfigurable):
     def drop_by_id(self, variables):
         """Remove a dict of variables from the user namespace, if they are the
         same as the values in the dictionary.
-        
+
         This is intended for use by extensions: variables that they've added can
         be taken back out if they are unloaded, without removing any that the
         user has overwritten.
-        
+
         Parameters
         ----------
         variables : dict
@@ -1944,10 +1944,10 @@ class InteractiveShell(SingletonConfigurable):
 
         def validate_stb(stb):
             """validate structured traceback return type
-            
+
             return type of CustomTB *should* be a list of strings, but allow
             single strings or None, which are harmless.
-            
+
             This function will *always* return a list of strings,
             and will raise a TypeError if stb is inappropriate.
             """
@@ -1971,7 +1971,7 @@ class InteractiveShell(SingletonConfigurable):
 
             def wrapped(self, etype, value, tb, tb_offset=None):
                 """wrap CustomTB handler, to protect IPython from user code
-                
+
                 This makes it harder (but not impossible) for custom exception
                 handlers to crash IPython.
                 """
@@ -2021,10 +2021,10 @@ class InteractiveShell(SingletonConfigurable):
 
     def _get_exc_info(self, exc_tuple=None):
         """get exc_info from a given tuple, sys.exc_info() or sys.last_type etc.
-        
+
         Ensures sys.last_type,value,traceback hold the exc_info we found,
         from whichever source.
-        
+
         raises ValueError if none of these contain any information
         """
         if exc_tuple is None:
@@ -2053,7 +2053,7 @@ class InteractiveShell(SingletonConfigurable):
 
     def show_usage_error(self, exc):
         """Show a short message for UsageErrors
-        
+
         These are special exceptions that shouldn't show a traceback.
         """
         print("UsageError: %s" % exc, file=sys.stderr)
@@ -2178,7 +2178,7 @@ class InteractiveShell(SingletonConfigurable):
 
     def init_readline(self):
         """DEPRECATED
-        
+
         Moved to terminal subclass, here only to simplify the init logic."""
         # Set a number of methods that depend on readline to be no-op
         warnings.warn(
@@ -2369,7 +2369,7 @@ class InteractiveShell(SingletonConfigurable):
 
         line : str
           The rest of the input line as a single string.
-          
+
         _stack_depth : int
           If run_line_magic() is called from magic() then _stack_depth=2.
           This is added to ensure backward compatibility for use of 'get_ipython().magic()'
@@ -2689,7 +2689,7 @@ class InteractiveShell(SingletonConfigurable):
 
     def _user_obj_error(self):
         """return simple exception dict
-        
+
         for use in user_expressions
         """
 
@@ -2707,7 +2707,7 @@ class InteractiveShell(SingletonConfigurable):
 
     def _format_user_obj(self, obj):
         """format a user object to display dict
-        
+
         for use in user_expressions
         """
 
@@ -3221,13 +3221,13 @@ class InteractiveShell(SingletonConfigurable):
 
     def transform_ast(self, node):
         """Apply the AST transformations from self.ast_transformers
-        
+
         Parameters
         ----------
         node : ast.Node
           The root node to be transformed. Typically called with the ast.Module
           produced by parsing user input.
-        
+
         Returns
         -------
         An ast.Node corresponding to the node it was called with. Note that it
@@ -3280,7 +3280,7 @@ class InteractiveShell(SingletonConfigurable):
           Experimental value: 'async' Will try to run top level interactive
           async/await code in default runner, this will not respect the
           interactivity setting and will only run the last node if it is an
-          expression. 
+          expression.
 
         compiler : callable
           A function with the same interface as the built-in compile(), to turn
@@ -3510,14 +3510,14 @@ class InteractiveShell(SingletonConfigurable):
 
     def enable_matplotlib(self, gui=None):
         """Enable interactive matplotlib and inline figure support.
-        
+
         This takes the following steps:
-        
+
         1. select the appropriate eventloop and matplotlib backend
         2. set up matplotlib for interactive use with that backend
         3. configure formatters for inline figure display
         4. enable the selected gui eventloop
-        
+
         Parameters
         ----------
         gui : optional, string
@@ -3560,7 +3560,7 @@ class InteractiveShell(SingletonConfigurable):
         namespace all of numpy and pylab, and configures IPython to correctly
         interact with the GUI event loop.  The GUI backend to be used can be
         optionally selected with the optional ``gui`` argument.
-        
+
         This method only adds preloading the namespace to InteractiveShell.enable_matplotlib.
 
         Parameters

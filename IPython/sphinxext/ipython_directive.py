@@ -174,15 +174,15 @@ To Do
 
 # Authors
 # =======
-# 
+#
 # - John D Hunter: original author.
 # - Fernando Perez: refactoring, documentation, cleanups, port to 0.11.
 # - VáclavŠmilauer <eudoxos-AT-arcig.cz>: Prompt generalizations.
 # - Skipper Seabold, refactoring, cleanups, pure python addition
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib
 import atexit
@@ -213,15 +213,16 @@ try:
 except Exception:
     pass
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # for tokenizing blocks
-COMMENT, INPUT, OUTPUT =  range(3)
+COMMENT, INPUT, OUTPUT = range(3)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Functions and class declarations
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def block_parser(part, rgxin, rgxout, fmtin, fmtout):
     """
@@ -251,7 +252,7 @@ def block_parser(part, rgxin, rgxout, fmtin, fmtout):
     decorator = None
     while 1:
 
-        if i==N:
+        if i == N:
             # nothing left to parse -- the last line
             break
 
@@ -274,7 +275,7 @@ def block_parser(part, rgxin, rgxout, fmtin, fmtout):
             lineno, inputline = int(matchin.group(1)), matchin.group(2)
 
             # the ....: continuation string
-            continuation = '   %s:'%''.join(['.']*(len(str(lineno))+2))
+            continuation = '   %s:' % ''.join(['.'] * (len(str(lineno)) + 2))
             Nc = len(continuation)
             # input lines can continue on for more than one line, if
             # we have a '\' line continuation char or a function call
@@ -284,14 +285,14 @@ def block_parser(part, rgxin, rgxout, fmtin, fmtout):
             # multiline as well as any echo text
 
             rest = []
-            while i<N:
+            while i < N:
 
                 # look ahead; if the next line is blank, or a comment, or
                 # an output line, we're done
 
                 nextline = lines[i]
                 matchout = rgxout.match(nextline)
-                #print "nextline=%s, continuation=%s, starts=%s"%(nextline, continuation, nextline.startswith(continuation))
+                # print "nextline=%s, continuation=%s, starts=%s"%(nextline, continuation, nextline.startswith(continuation))
                 if matchout or nextline.startswith('#'):
                     break
                 elif nextline.startswith(continuation):
@@ -305,10 +306,10 @@ def block_parser(part, rgxin, rgxout, fmtin, fmtout):
                     if nextline and nextline[0] == ' ':
                         nextline = nextline[1:]
 
-                    inputline += '\n' +  nextline
+                    inputline += '\n' + nextline
                 else:
                     rest.append(nextline)
-                i+= 1
+                i += 1
 
             block.append((INPUT, (decorator, inputline, '\n'.join(rest))))
             continue
@@ -318,7 +319,7 @@ def block_parser(part, rgxin, rgxout, fmtin, fmtout):
         matchout = rgxout.match(line)
         if matchout:
             lineno, output = int(matchout.group(1)), matchout.group(2)
-            if i<N-1:
+            if i < N - 1:
                 output = '\n'.join([output] + lines[i:])
 
             block.append((OUTPUT, output))
@@ -347,7 +348,7 @@ class EmbeddedSphinxShell(object):
         # create a profile so instance history isn't saved
         tmp_profile_dir = tempfile.mkdtemp(prefix='profile_')
         profname = 'auto_profile_sphinx_build'
-        pdir = os.path.join(tmp_profile_dir,profname)
+        pdir = os.path.join(tmp_profile_dir, profname)
         profile = ProfileDir.create_profile_dir(pdir)
 
         # Create and initialize global ipython, but don't start its mainloop.
@@ -416,10 +417,10 @@ class EmbeddedSphinxShell(object):
         source_dir = self.source_dir
         saveargs = decorator.split(' ')
         filename = saveargs[1]
-        # insert relative path to image file in source 
+        # insert relative path to image file in source
         # as absolute path for Sphinx
         # sphinx expects a posix path, even on Windows
-        posix_path = pathlib.Path(savefig_dir,filename).as_posix()
+        posix_path = pathlib.Path(savefig_dir, filename).as_posix()
         outfile = '/' + os.path.relpath(posix_path, source_dir)
 
         imagerows = ['.. image:: %s' % outfile]
@@ -428,9 +429,9 @@ class EmbeddedSphinxShell(object):
             arg, val = kwarg.split('=')
             arg = arg.strip()
             val = val.strip()
-            imagerows.append('   :%s: %s'%(arg, val))
+            imagerows.append('   :%s: %s' % (arg, val))
 
-        image_file = os.path.basename(outfile) # only return file name
+        image_file = os.path.basename(outfile)  # only return file name
         image_directive = '\n'.join(imagerows)
         return image_file, image_directive
 
@@ -444,22 +445,22 @@ class EmbeddedSphinxShell(object):
         image_file = None
         image_directive = None
 
-        is_verbatim = decorator=='@verbatim' or self.is_verbatim
-        is_doctest = (decorator is not None and \
-                     decorator.startswith('@doctest')) or self.is_doctest
-        is_suppress = decorator=='@suppress' or self.is_suppress
-        is_okexcept = decorator=='@okexcept' or self.is_okexcept
-        is_okwarning = decorator=='@okwarning' or self.is_okwarning
+        is_verbatim = decorator == '@verbatim' or self.is_verbatim
+        is_doctest = (decorator is not None and
+                      decorator.startswith('@doctest')) or self.is_doctest
+        is_suppress = decorator == '@suppress' or self.is_suppress
+        is_okexcept = decorator == '@okexcept' or self.is_okexcept
+        is_okwarning = decorator == '@okwarning' or self.is_okwarning
         is_savefig = decorator is not None and \
-                     decorator.startswith('@savefig')
+            decorator.startswith('@savefig')
 
         input_lines = input.split('\n')
         if len(input_lines) > 1:
             if input_lines[-1] != "":
-                input_lines.append('') # make sure there's a blank line
-                                       # so splitter buffer gets reset
+                input_lines.append('')  # make sure there's a blank line
+                # so splitter buffer gets reset
 
-        continuation = '   %s:'%''.join(['.']*(len(str(lineno))+2))
+        continuation = '   %s:' % ''.join(['.'] * (len(str(lineno)) + 2))
 
         if is_savefig:
             image_file, image_directive = self.process_image(decorator)
@@ -477,22 +478,23 @@ class EmbeddedSphinxShell(object):
         with warnings.catch_warnings(record=True) as ws:
             if input_lines[0].endswith(';'):
                 is_semicolon = True
-            #for i, line in enumerate(input_lines):
+            # for i, line in enumerate(input_lines):
 
             # process the first input line
             if is_verbatim:
                 self.process_input_lines([''])
-                self.IP.execution_count += 1 # increment it anyway
+                self.IP.execution_count += 1  # increment it anyway
             else:
                 # only submit the line in non-verbatim mode
-                self.process_input_lines(input_lines, store_history=store_history)
+                self.process_input_lines(input_lines,
+                                         store_history=store_history)
 
         if not is_suppress:
             for i, line in enumerate(input_lines):
                 if i == 0:
-                    formatted_line = '%s %s'%(input_prompt, line)
+                    formatted_line = '%s %s' % (input_prompt, line)
                 else:
-                    formatted_line = '%s %s'%(continuation, line)
+                    formatted_line = '%s %s' % (continuation, line)
                 ret.append(formatted_line)
 
         if not is_suppress and len(rest.strip()) and is_verbatim:
@@ -559,36 +561,42 @@ class EmbeddedSphinxShell(object):
 
         # output any exceptions raised during execution to stdout
         # unless :okexcept: has been specified.
-        if not is_okexcept and (("Traceback" in processed_output) or ("SyntaxError" in processed_output)):
-            s =  "\nException in %s at block ending on line %s\n" % (filename, lineno)
+        if not is_okexcept and (("Traceback" in processed_output) or
+                                ("SyntaxError" in processed_output)):
+            s = "\nException in %s at block ending on line %s\n" % (filename,
+                                                                    lineno)
             s += "Specify :okexcept: as an option in the ipython:: block to suppress this message\n"
             sys.stdout.write('\n\n>>>' + ('-' * 73))
             sys.stdout.write(s)
             sys.stdout.write(processed_output)
             sys.stdout.write('<<<' + ('-' * 73) + '\n\n')
             if self.warning_is_error:
-                raise RuntimeError('Non Expected exception in `{}` line {}'.format(filename, lineno))
+                raise RuntimeError(
+                    'Non Expected exception in `{}` line {}'.format(
+                        filename, lineno))
 
         # output any warning raised during execution to stdout
         # unless :okwarning: has been specified.
         if not is_okwarning:
             for w in ws:
-                s =  "\nWarning in %s at block ending on line %s\n" % (filename, lineno)
+                s = "\nWarning in %s at block ending on line %s\n" % (filename,
+                                                                      lineno)
                 s += "Specify :okwarning: as an option in the ipython:: block to suppress this message\n"
                 sys.stdout.write('\n\n>>>' + ('-' * 73))
                 sys.stdout.write(s)
                 sys.stdout.write(('-' * 76) + '\n')
-                s=warnings.formatwarning(w.message, w.category,
-                                         w.filename, w.lineno, w.line)
+                s = warnings.formatwarning(w.message, w.category, w.filename,
+                                           w.lineno, w.line)
                 sys.stdout.write(s)
                 sys.stdout.write('<<<' + ('-' * 73) + '\n')
                 if self.warning_is_error:
-                    raise RuntimeError('Non Expected warning in `{}` line {}'.format(filename, lineno))
+                    raise RuntimeError(
+                        'Non Expected warning in `{}` line {}'.format(
+                            filename, lineno))
 
         self.cout.truncate(0)
-        return (ret, input_lines, processed_output,
-                is_doctest, decorator, image_file, image_directive)
-
+        return (ret, input_lines, processed_output, is_doctest, decorator,
+                image_file, image_directive)
 
     def process_output(self, data, output_prompt, input_lines, output,
                        is_doctest, decorator, image_file):
@@ -603,7 +611,7 @@ class EmbeddedSphinxShell(object):
 
         if is_doctest and output is not None:
 
-            found = output # This is the processed output
+            found = output  # This is the processed output
             found = found.strip()
             submitted = data.strip()
 
@@ -624,8 +632,11 @@ class EmbeddedSphinxShell(object):
                      'Raw content: \n{1}\n\n'
                      'Input line(s):\n{TAB}{2}\n\n'
                      'Output line(s):\n{TAB}{3}\n\n')
-                e = e.format(source, content, '\n'.join(input_lines),
-                             repr(found), TAB=TAB)
+                e = e.format(source,
+                             content,
+                             '\n'.join(input_lines),
+                             repr(found),
+                             TAB=TAB)
                 raise RuntimeError(e)
             found = found[len(output_prompt):].strip()
 
@@ -639,8 +650,12 @@ class EmbeddedSphinxShell(object):
                          'On input line(s):\n{TAB}{2}\n\n'
                          'we found output:\n{TAB}{3}\n\n'
                          'instead of the expected:\n{TAB}{4}\n\n')
-                    e = e.format(source, content, '\n'.join(input_lines),
-                                 repr(found), repr(submitted), TAB=TAB)
+                    e = e.format(source,
+                                 content,
+                                 '\n'.join(input_lines),
+                                 repr(found),
+                                 repr(submitted),
+                                 TAB=TAB)
                     raise RuntimeError(e)
             else:
                 self.custom_doctest(decorator, input_lines, found, submitted)
@@ -650,7 +665,7 @@ class EmbeddedSphinxShell(object):
         # https://github.com/ipython/ipython/issues/5776
         out_data = []
 
-        is_verbatim = decorator=='@verbatim' or self.is_verbatim
+        is_verbatim = decorator == '@verbatim' or self.is_verbatim
         if is_verbatim and data.strip():
             # Note that `ret` in `process_block` has '' as its last element if
             # the code block was in verbatim mode. So if there is no submitted
@@ -680,8 +695,8 @@ class EmbeddedSphinxShell(object):
         Saves the image file to disk.
         """
         self.ensure_pyplot()
-        command = 'plt.gcf().savefig("%s")'%image_file
-        #print 'SAVEFIG', command  # dbg
+        command = 'plt.gcf().savefig("%s")' % image_file
+        # print 'SAVEFIG', command  # dbg
         self.process_input_line('bookmark ipy_thisdir', store_history=False)
         self.process_input_line('cd -b ipy_savedir', store_history=False)
         self.process_input_line(command, store_history=False)
@@ -711,7 +726,7 @@ class EmbeddedSphinxShell(object):
                 found_input = True
                 (out_data, input_lines, output, is_doctest,
                  decorator, image_file, image_directive) = \
-                          self.process_input(data, input_prompt, lineno)
+                    self.process_input(data, input_prompt, lineno)
             elif token == OUTPUT:
                 if not found_input:
 
@@ -746,7 +761,7 @@ class EmbeddedSphinxShell(object):
                     # We need to remove the last element of `ret` that was
                     # added in `process_input`, as it is '' and would introduce
                     # an undesirable newline.
-                    assert(ret[-1] == '')
+                    assert (ret[-1] == '')
                     del ret[-1]
 
             if out_data:
@@ -793,8 +808,8 @@ class EmbeddedSphinxShell(object):
         the content as a list as if it were ipython code
         """
         output = []
-        savefig = False # keep up with this to clear figure
-        multiline = False # to handle line continuation
+        savefig = False  # keep up with this to clear figure
+        multiline = False  # to handle line continuation
         multiline_start = None
         fmtin = self.promptin
 
@@ -811,7 +826,7 @@ class EmbeddedSphinxShell(object):
             if line_stripped.startswith('@'):
                 output.extend([line])
                 if 'savefig' in line:
-                    savefig = True # and need to clear figure
+                    savefig = True  # and need to clear figure
                 continue
 
             # handle comments
@@ -820,7 +835,7 @@ class EmbeddedSphinxShell(object):
                 continue
 
             # deal with lines checking for multiline
-            continuation  = u'   %s:'% ''.join(['.']*(len(str(ct))+2))
+            continuation = u'   %s:' % ''.join(['.'] * (len(str(ct)) + 2))
             if not multiline:
                 modified = u"%s %s" % (fmtin % ct, line_stripped)
                 output.append(modified)
@@ -828,10 +843,10 @@ class EmbeddedSphinxShell(object):
                 try:
                     ast.parse(line_stripped)
                     output.append(u'')
-                except Exception: # on a multiline
+                except Exception:  # on a multiline
                     multiline = True
                     multiline_start = lineno
-            else: # still on a multiline
+            else:  # still on a multiline
                 modified = u'%s %s' % (continuation, line)
                 output.append(modified)
 
@@ -841,8 +856,8 @@ class EmbeddedSphinxShell(object):
                     if len(nextline) - len(nextline.lstrip()) > 3:
                         continue
                 try:
-                    mod = ast.parse(
-                            '\n'.join(content[multiline_start:lineno+1]))
+                    mod = ast.parse('\n'.join(content[multiline_start:lineno +
+                                                      1]))
                     if isinstance(mod.body[0], ast.FunctionDef):
                         # check to see if we have the whole function
                         for element in mod.body[0].body:
@@ -854,7 +869,7 @@ class EmbeddedSphinxShell(object):
                 except Exception:
                     pass
 
-            if savefig: # clear figure if plotted
+            if savefig:  # clear figure if plotted
                 self.ensure_pyplot()
                 self.process_input_line('plt.clf()', store_history=False)
                 self.clear_cout()
@@ -882,15 +897,16 @@ class IPythonDirective(Directive):
 
     has_content = True
     required_arguments = 0
-    optional_arguments = 4 # python, suppress, verbatim, doctest
+    optional_arguments = 4  # python, suppress, verbatim, doctest
     final_argumuent_whitespace = True
-    option_spec = { 'python': directives.unchanged,
-                    'suppress' : directives.flag,
-                    'verbatim' : directives.flag,
-                    'doctest' : directives.flag,
-                    'okexcept': directives.flag,
-                    'okwarning': directives.flag
-                  }
+    option_spec = {
+        'python': directives.unchanged,
+        'suppress': directives.flag,
+        'verbatim': directives.flag,
+        'doctest': directives.flag,
+        'okexcept': directives.flag,
+        'okwarning': directives.flag
+    }
 
     shell = None
 
@@ -906,22 +922,23 @@ class IPythonDirective(Directive):
         savefig_dir = os.path.join(source_dir, savefig_dir)
 
         # get regex and prompt stuff
-        rgxin      = config.ipython_rgxin
-        rgxout     = config.ipython_rgxout
-        warning_is_error= config.ipython_warning_is_error
-        promptin   = config.ipython_promptin
-        promptout  = config.ipython_promptout
+        rgxin = config.ipython_rgxin
+        rgxout = config.ipython_rgxout
+        warning_is_error = config.ipython_warning_is_error
+        promptin = config.ipython_promptin
+        promptout = config.ipython_promptout
         mplbackend = config.ipython_mplbackend
         exec_lines = config.ipython_execlines
         hold_count = config.ipython_holdcount
 
-        return (savefig_dir, source_dir, rgxin, rgxout,
-                promptin, promptout, mplbackend, exec_lines, hold_count, warning_is_error)
+        return (savefig_dir, source_dir, rgxin, rgxout, promptin, promptout,
+                mplbackend, exec_lines, hold_count, warning_is_error)
 
     def setup(self):
         # Get configuration values.
         (savefig_dir, source_dir, rgxin, rgxout, promptin, promptout,
-         mplbackend, exec_lines, hold_count, warning_is_error) = self.get_config_options()
+         mplbackend, exec_lines, hold_count,
+         warning_is_error) = self.get_config_options()
 
         try:
             os.makedirs(savefig_dir)
@@ -946,8 +963,8 @@ class IPythonDirective(Directive):
             self.shell.directive = self
 
         # reset the execution count if we haven't processed this doc
-        #NOTE: this may be borked if there are multiple seen_doc tmp files
-        #check time stamp?
+        # NOTE: this may be borked if there are multiple seen_doc tmp files
+        # check time stamp?
         if not self.state.document.current_source in self.seen_docs:
             self.shell.IP.history_manager.reset()
             self.shell.IP.execution_count = 1
@@ -964,7 +981,7 @@ class IPythonDirective(Directive):
         self.shell.warning_is_error = warning_is_error
 
         # setup bookmark for saving figures directory
-        self.shell.process_input_line('bookmark ipy_savedir %s'%savefig_dir,
+        self.shell.process_input_line('bookmark ipy_savedir %s' % savefig_dir,
                                       store_history=False)
         self.shell.clear_cout()
 
@@ -979,7 +996,7 @@ class IPythonDirective(Directive):
     def run(self):
         debug = False
 
-        #TODO, any reason block_parser can't be a method of embeddable shell
+        # TODO, any reason block_parser can't be a method of embeddable shell
         # then we wouldn't have to carry these around
         rgxin, rgxout, promptin, promptout = self.setup()
 
@@ -1007,16 +1024,16 @@ class IPythonDirective(Directive):
             if len(block):
                 rows, figure = self.shell.process_block(block)
                 for row in rows:
-                    lines.extend(['   {0}'.format(line)
-                                  for line in row.split('\n')])
+                    lines.extend(
+                        ['   {0}'.format(line) for line in row.split('\n')])
 
                 if figure is not None:
                     figures.append(figure)
             else:
                 message = 'Code input with no code at {}, line {}'\
-                            .format(
-                                self.state.document.current_source,
-                                self.state.document.current_line)
+                    .format(
+                        self.state.document.current_source,
+                        self.state.document.current_line)
                 if self.shell.warning_is_error:
                     raise RuntimeError(message)
                 else:
@@ -1041,6 +1058,7 @@ class IPythonDirective(Directive):
         self.teardown()
 
         return []
+
 
 # Enable as a proper Sphinx directive
 def setup(app):
@@ -1073,6 +1091,7 @@ def setup(app):
 
     metadata = {'parallel_read_safe': True, 'parallel_write_safe': True}
     return metadata
+
 
 # Simple smoke test, needs to be converted to a proper automatic test.
 def test():
@@ -1110,7 +1129,7 @@ Out[2]: 'HELLO WORLD'
 In [3]: x.st<TAB>
 x.startswith  x.strip
 """,
-    r"""
+        r"""
 
 In [130]: url = 'http://ichart.finance.yahoo.com/table.csv?s=CROX\
    .....: &d=9&e=22&f=2009&g=d&a=1&br=8&c=2006&ignore=.csv'
@@ -1121,7 +1140,7 @@ In [131]: print url.split('&')
 In [60]: import urllib
 
 """,
-    r"""\
+        r"""\
 
 In [133]: import numpy.random
 
@@ -1143,8 +1162,7 @@ array([[ 0.64524308,  0.59943846],
        [ 0.0072729 ,  0.34273127]])
 
 """,
-
-    r"""
+        r"""
 In [106]: print x
 jdh
 
@@ -1163,7 +1181,6 @@ In [109]: for i in range(10):
 8
 9
 """,
-
         r"""
 
 In [144]: from pylab import *
@@ -1178,7 +1195,6 @@ In [151]: hist(np.random.randn(10000), 100);
 @savefig test_plot.png width=4in
 In [151]: plot(np.random.randn(10000), 'o');
    """,
-
         r"""
 # use a semicolon to suppress the output
 In [151]: plt.clf()
@@ -1190,7 +1206,7 @@ In [151]: plot([1,2,3])
 In [151]: hist(np.random.randn(10000), 100);
 
 """,
-     r"""
+        r"""
 # update the current fig
 In [151]: ylabel('number')
 
@@ -1228,23 +1244,30 @@ array([[ inf,  nan,   2.,   3.],
 
 
         """,
-        ]
+    ]
     # skip local-file depending first example:
     examples = examples[1:]
 
-    #ipython_directive.DEBUG = True  # dbg
-    #options = dict(suppress=True)  # dbg
+    # ipython_directive.DEBUG = True  # dbg
+    # options = dict(suppress=True)  # dbg
     options = {}
     for example in examples:
         content = example.split('\n')
-        IPythonDirective('debug', arguments=None, options=options,
-                          content=content, lineno=0,
-                          content_offset=None, block_text=None,
-                          state=None, state_machine=None,
-                          )
+        IPythonDirective(
+            'debug',
+            arguments=None,
+            options=options,
+            content=content,
+            lineno=0,
+            content_offset=None,
+            block_text=None,
+            state=None,
+            state_machine=None,
+        )
+
 
 # Run test suite as a script
-if __name__=='__main__':
+if __name__ == '__main__':
     if not os.path.isdir('_static'):
         os.mkdir('_static')
     test()
