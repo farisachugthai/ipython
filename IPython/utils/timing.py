@@ -66,7 +66,7 @@ except ImportError:
         This just returns perf_counter() and zero."""
         return time.perf_counter(),0.0
 
-    
+
 def timings_out(reps,func,*args,**kw):
     """timings_out(reps,func,*args,**kw) -> (t_total,t_per_call,output)
 

@@ -75,58 +75,6 @@ The IPython directive outputs code-blocks with the language 'ipython'. So
 if you do not have the syntax highlighting extension enabled as well, then
 all rendered code-blocks will be uncolored. By default this directive assumes
 that your prompts are unchanged IPython ones, but this can be customized.
-The configurable options that can be placed in conf.py are:
-
-ipython_savefig_dir:
-    The directory in which to save the figures. This is relative to the
-    Sphinx source directory. The default is `html_static_path`.
-ipython_rgxin:
-    The compiled regular expression to denote the start of IPython input
-    lines. The default is ``re.compile('In \\[(\\d+)\\]:\\s?(.*)\\s*')``. You
-    shouldn't need to change this.
-ipython_warning_is_error: [default to True]
-    Fail the build if something unexpected happen, for example if a block raise
-    an exception but does not have the `:okexcept:` flag. The exact behavior of
-    what is considered strict, may change between the sphinx directive version.
-ipython_rgxout:
-    The compiled regular expression to denote the start of IPython output
-    lines. The default is ``re.compile('Out\\[(\\d+)\\]:\\s?(.*)\\s*')``. You
-    shouldn't need to change this.
-ipython_promptin:
-    The string to represent the IPython input prompt in the generated ReST.
-    The default is ``'In [%d]:'``. This expects that the line numbers are used
-    in the prompt.
-ipython_promptout:
-    The string to represent the IPython prompt in the generated ReST. The
-    default is ``'Out [%d]:'``. This expects that the line numbers are used
-    in the prompt.
-ipython_mplbackend:
-    The string which specifies if the embedded Sphinx shell should import
-    Matplotlib and set the backend. The value specifies a backend that is
-    passed to `matplotlib.use()` before any lines in `ipython_execlines` are
-    executed. If not specified in conf.py, then the default value of 'agg' is
-    used. To use the IPython directive without matplotlib as a dependency, set
-    the value to `None`. It may end up that matplotlib is still imported
-    if the user specifies so in `ipython_execlines` or makes use of the
-    @savefig pseudo decorator.
-ipython_execlines:
-    A list of strings to be exec'd in the embedded Sphinx shell. Typical
-    usage is to make certain packages always available. Set this to an empty
-    list if you wish to have no imports always available. If specified in
-    ``conf.py`` as `None`, then it has the effect of making no imports available.
-    If omitted from conf.py altogether, then the default value of
-    ['import numpy as np', 'import matplotlib.pyplot as plt'] is used.
-ipython_holdcount
-    When the @suppress pseudo-decorator is used, the execution count can be
-    incremented or not. The default behavior is to hold the execution count,
-    corresponding to a value of `True`. Set this to `False` to increment
-    the execution count after each suppressed command.
-
-As an example, to use the IPython directive when `matplotlib` is not available,
-one sets the backend to `None`::
-
-    ipython_mplbackend = None
-
 An example usage of the directive is:
 
 .. code-block:: rst
@@ -162,13 +110,6 @@ or :okwarning: options:
 
         In [1]: 1/0
         In [2]: # raise warning.
-
-To Do
-=====
-
-- Turn the ad-hoc test() function into a real test suite.
-- Break up ipython-specific functionality from matplotlib stuff into better
-  separated code.
 
 """
 

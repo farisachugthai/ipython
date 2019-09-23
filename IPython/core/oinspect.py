@@ -1043,7 +1043,7 @@ class Inspector(Colorable):
 
           - show_all(False): show all names, including those starting with
             underscores.
-            
+
           - list_types(False): list all available object types for object matching.
         """
         #print 'ps pattern:<%r>' % pattern # dbg

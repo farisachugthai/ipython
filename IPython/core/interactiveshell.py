@@ -15,6 +15,7 @@ import ast
 import asyncio
 import atexit
 import builtins as builtin_mod
+import code
 import functools
 import inspect
 import os
@@ -88,12 +89,12 @@ from ast import AST
 from IPython.utils.contexts import NoOpContext
 
 try:
-    import docrepr.sphinxify as sphx
+    import docrepr
 
     def sphinxify(doc):
         with TemporaryDirectory() as dirname:
             return {
-                'text/html': sphx.sphinxify(doc, dirname),
+                'text/html': docrepr.sphinxify.sphinxify(doc, dirname),
                 'text/plain': doc
             }
 except ImportError:
@@ -156,6 +157,13 @@ def removed_co_newlocals(function: types.FunctionType) -> types.FunctionType:
 # we still need to run things using the asyncio eventloop, but there is no
 # async integration
 from .async_helpers import (_asyncio_runner, _asyncify, _pseudo_sync_runner)
+
+# Why is this ALLLLL over this source code? Why not just do something like
+from . import async_helpers
+if hasattr('async_helpers', 'curio_runner'):
+    # then import it fuck the version check it's gonna make everything so much harder to maintain!!!
+    from .async_helpers import _curio_runner
+
 if sys.version_info > (3, 5):
     from .async_helpers import _curio_runner, _trio_runner, _should_be_async
 else:
@@ -2176,17 +2184,6 @@ class InteractiveShell(SingletonConfigurable):
     # Things related to readline
     #-------------------------------------------------------------------------
 
-    def init_readline(self):
-        """DEPRECATED
-
-        Moved to terminal subclass, here only to simplify the init logic."""
-        # Set a number of methods that depend on readline to be no-op
-        warnings.warn(
-            '`init_readline` is no-op since IPython 5.0 and is Deprecated',
-            DeprecationWarning,
-            stacklevel=2)
-        self.set_custom_completer = no_op
-
     @skip_doctest
     def set_next_input(self, s, replace=False):
         """ Sets the 'default' input string for the next command line.
@@ -2531,8 +2528,16 @@ class InteractiveShell(SingletonConfigurable):
           Command to execute (can not end in '&', as background processes are
           not supported.  Should not be a command that expects input
           other than simple text.
+
         """
         if cmd.rstrip().endswith('&'):
+
+            # UHHHHHHH?????
+            # =============
+            # #) %%bg is one way to send jobs to the bg
+            # #) ../lib/backgroundjobs.py
+
+
             # this is *far* from a rigorous test
             # We do not support backgrounding processes because we either use
             # pexpect or pipes to read from.  Users can always just call
@@ -2543,6 +2548,8 @@ class InteractiveShell(SingletonConfigurable):
         # we explicitly do NOT return the subprocess status code, because
         # a non-None value would trigger :func:`sys.displayhook` calls.
         # Instead, we store the exit_code in user_ns.
+
+        # .. todo:: Can we notify them in any other way than 2500 lines deep in the source code leaving 1 comment?
         self.user_ns['_exit_code'] = system(self.var_expand(cmd, depth=1))
 
     def system_raw(self, cmd):
@@ -2579,7 +2586,11 @@ class InteractiveShell(SingletonConfigurable):
             executable = os.environ.get('SHELL', None)
             try:
                 # Use env shell instead of default /bin/sh
-                ec = subprocess.call(cmd, shell=True, executable=executable)
+                # **TODO**:
+                # Where was executable=executable defined previously?
+                ec = subprocess.call(cmd, shell=True
+                # , executable=executable
+                )
             except KeyboardInterrupt:
                 # intercept control-C; a long traceback is not useful here
                 print('\n' + self.get_exception_only(), file=sys.stderr)
@@ -3233,6 +3244,7 @@ class InteractiveShell(SingletonConfigurable):
         An ast.Node corresponding to the node it was called with. Note that it
         may also modify the passed object, so don't rely on references to the
         original AST.
+
         """
         for transformer in self.ast_transformers:
             try:
@@ -3277,10 +3289,10 @@ class InteractiveShell(SingletonConfigurable):
           or the last assignment. Other values for this parameter will raise a
           ValueError.
 
-          Experimental value: 'async' Will try to run top level interactive
-          async/await code in default runner, this will not respect the
-          interactivity setting and will only run the last node if it is an
-          expression.
+        Experimental value: 'async' Will try to run top level interactive
+        async/await code in default runner, this will not respect the
+        interactivity setting and will only run the last node if it is an
+        expression.
 
         compiler : callable
           A function with the same interface as the built-in compile(), to turn
@@ -3292,6 +3304,11 @@ class InteractiveShell(SingletonConfigurable):
         -------
         True if an exception occurred while running code, False if it finished
         running.
+
+        Raises
+        ------
+        ValueError
+
         """
         if not nodelist:
             return

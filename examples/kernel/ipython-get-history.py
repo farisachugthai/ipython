@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Extract a session from the IPython input history.
+r"""Extract a session from the IPython input history.
 
 Usage:
   ipython-get-history.py sessionnumber [outputfile]
@@ -15,6 +15,43 @@ Example:
 This script is a simple demonstration of HistoryAccessor. It should be possible
 to build much more flexible and powerful tools to browse and pull from the
 history database.
+
+Todo
+----
+
+Uh this is just about as annoying as it gets.
+
+
+.. ipython::
+    :okexcept:
+
+    PS C:\Users\faris\src\ipython\examples\kernel> python .\ipython-get-history.py
+
+    Traceback (most recent call 
+    last):                                                                                                                
+
+    File ".\ipython-
+    get-history.py", line 23, in <module>                                                                                             
+    
+    session_number = int(sys.argv[1])
+
+    IndexError: list index out of range
+
+    PS C:\Users\faris\src\ipython\examples\kernel> python .\ipython-get-history.py 0
+
+    # coding: utf-8
+
+    PS C:\Users\faris\src\ipython\examples\kernel> python .\ipython-get-history.py 1
+
+    # coding: utf-8
+
+    Traceback (most recent call last):
+
+    File ".\ipython-get-history.py", line 39, in <module>
+    dest.write(cell + '\n')
+    TypeError: can't concat str to bytes
+
+
 """
 import sys
 
