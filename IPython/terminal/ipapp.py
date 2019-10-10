@@ -26,7 +26,9 @@ from IPython.core.application import (ProfileDir, BaseIPythonApplication,
 from IPython.core.magics import (ScriptMagics, LoggingMagics)
 from IPython.core.shellapp import (InteractiveShellApp, shell_flags,
                                    shell_aliases)
-from IPython.extensions.storemagic import StoreMagics
+
+# why is storemagics still here we deprecated that??
+# from IPython.extensions.storemagic import StoreMagics
 from .interactiveshell import TerminalInteractiveShell
 from IPython.paths import get_ipython_dir
 from traitlets import (Bool, List, default, observe, Type)
@@ -190,7 +192,12 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
 
     @default('classes')
     def _classes_default(self):
-        """This has to be in a method, for TerminalIPythonApp to be available."""
+        """This has to be in a method, for TerminalIPythonApp to be available.
+
+        But ffs can't we generate that dynamically? We have to modify that
+        `StoreMagics` was deprecated in like 4 spots and it's not gonna be
+        clean or easy.
+        """
         return [
             InteractiveShellApp,  # ShellApp comes before TerminalApp, because
             self.__class__,  # it will also affect subclasses (e.g. QtConsole)
@@ -201,7 +208,6 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             IPCompleter,
             ScriptMagics,
             LoggingMagics,
-            StoreMagics,
         ]
 
     deprecated_subcommands = dict(

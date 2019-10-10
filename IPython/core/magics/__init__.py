@@ -1,18 +1,18 @@
 """Implementation of all the magic functions built into IPython.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012 The IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-from ..magic import Magics, magics_class
+from IPython.core.magic import Magics, magics_class
 from .auto import AutoMagics
 from .basic import BasicMagics, AsyncMagics
 from .code import CodeMagics, MacroToEdit
@@ -21,16 +21,17 @@ from .display import DisplayMagics
 from .execution import ExecutionMagics
 from .extension import ExtensionMagics
 from .history import HistoryMagics
-from .logging import LoggingMagics
+from .ipy_logging import LoggingMagics  # This module used to be called logging
+# ....guys we can't seriously be shadowing built-in module names like wtf
 from .namespace import NamespaceMagics
 from .osm import OSMagics
 from .packaging import PackagingMagics
 from .pylab import PylabMagics
 from .script import ScriptMagics
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 @magics_class

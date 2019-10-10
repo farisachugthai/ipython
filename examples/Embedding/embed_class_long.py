@@ -17,33 +17,44 @@ The code in this file is deliberately extra-verbose, meant for learning."""
 # Try running this code both at the command line and from inside IPython (with
 # %run example-embed.py)
 
+from IPython.terminal.embed import InteractiveShellEmbed
+from IPython import get_ipython
+from traitlets.config.loader import Config
 from IPython.terminal.prompts import Prompts, Token
+
 
 class CustomPrompt(Prompts):
 
     def in_prompt_tokens(self, cli=None):
 
-       return [
+        return [
             (Token.Prompt, 'In <'),
             (Token.PromptNum, str(self.shell.execution_count)),
             (Token.Prompt, '>: '),
-            ]
+        ]
 
     def out_prompt_tokens(self):
-       return [
+        return [
             (Token.OutPrompt, 'Out<'),
             (Token.OutPromptNum, str(self.shell.execution_count)),
             (Token.OutPrompt, '>: '),
         ]
- 
 
-from traitlets.config.loader import Config
+
 try:
-    get_ipython
+    ipshell = get_ipython()
+
+# Is this line supposed to imply that if you run
+#    >>> ipshell = get_ipython() from a plain shell that you'll get a nameerror?
+# Because get_ipython() doesn't raise any errors and there shouldn't be any situations
+# in which a nameerror is raised.
+
+# If I'm missing something than can we document this?
+# Because I'm assuming I'm not the only person confused by this.
 except NameError:
     nested = 0
     cfg = Config()
-    cfg.TerminalInteractiveShell.prompts_class=CustomPrompt
+    cfg.TerminalInteractiveShell.prompts_class = CustomPrompt
 else:
     print("Running nested copies of IPython.")
     print("The prompts for the nested copy have been modified")
@@ -51,19 +62,18 @@ else:
     nested = 1
 
 # First import the embeddable shell class
-from IPython.terminal.embed import InteractiveShellEmbed
 
 # Now create an instance of the embeddable shell. The first argument is a
 # string with options exactly as you would type them if you were starting
 # IPython at the system command line. Any parameters you want to define for
 # configuration can thus be specified here.
 ipshell = InteractiveShellEmbed(config=cfg,
-                       banner1 = 'Dropping into IPython',
-                       exit_msg = 'Leaving Interpreter, back to program.')
+                                banner1='Dropping into IPython',
+                                exit_msg='Leaving Interpreter, back to program.')
 
 # Make a second instance, you can have as many as you want.
 ipshell2 = InteractiveShellEmbed(config=cfg,
-                        banner1 = 'Second IPython instance.')
+                                 banner1='Second IPython instance.')
 
 print('\nHello. This is printed from the main controller program.\n')
 
@@ -76,7 +86,7 @@ ipshell('***Called from top level. '
 
 print('\nBack in caller program, moving along...\n')
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # More details:
 
 # InteractiveShellEmbed instances don't print the standard system banner and
@@ -108,16 +118,19 @@ print('\nBack in caller program, moving along...\n')
 ipshell.banner2 = 'Entering interpreter - New Banner'
 ipshell.exit_msg = 'Leaving interpreter - New exit_msg'
 
+
 def foo(m):
     s = 'spam'
     ipshell('***In foo(). Try %whos, or print s or m:')
-    print('foo says m = ',m)
+    print('foo says m = ', m)
+
 
 def bar(n):
     s = 'eggs'
     ipshell('***In bar(). Try %whos, or print s or n:')
-    print('bar says n = ',n)
-    
+    print('bar says n = ', n)
+
+
 # Some calls to the above functions which will trigger IPython:
 print('Main program calling foo("eggs")\n')
 foo('eggs')

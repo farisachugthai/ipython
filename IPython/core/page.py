@@ -20,7 +20,7 @@ import tempfile
 
 from io import UnsupportedOperation
 
-from IPython import get_ipython
+from IPython.core.get_ipython import get_ipython
 from IPython.core.display import display
 from IPython.core.error import TryNext
 from IPython.utils.data import chop

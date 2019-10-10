@@ -7,7 +7,7 @@
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
-
+import logging
 import os
 import re
 import shlex
@@ -19,7 +19,8 @@ from IPython.core.magic import Magics, magics_class, line_magic
 
 def _is_conda_environment():
     """Return True if the current Python executable is in a conda env"""
-    # TODO: does this need to change on windows?
+    # does this need to change on windows?
+    # As it's set up as of 10/07/2019, no it does not.
     conda_history = os.path.join(sys.prefix, 'conda-meta', 'history')
     return os.path.exists(conda_history)
 
@@ -28,6 +29,7 @@ def _get_conda_executable():
     """Find the path to the conda executable"""
     # Check if there is a conda executable in the same directory as the Python executable.
     # This is the case within conda's root environment.
+    # This isn't the case on Windows!!!!
     conda = os.path.join(os.path.dirname(sys.executable), 'conda')
     if os.path.isfile(conda):
         return conda
@@ -35,6 +37,7 @@ def _get_conda_executable():
     # Otherwise, attempt to extract the executable from conda history.
     # This applies in any conda environment.
     R = re.compile(r"^#\s*cmd:\s*(?P<command>.*conda)\s[create|install]")
+    logging.debug('R compiled to: ', R)
     with open(os.path.join(sys.prefix, 'conda-meta', 'history')) as f:
         for line in f:
             match = R.match(line)
@@ -83,7 +86,7 @@ class PackagingMagics(Magics):
     @line_magic
     def conda(self, line):
         """Run the conda package manager within the current kernel.
-        
+
         Usage:
           %conda install [pkgs]
         """

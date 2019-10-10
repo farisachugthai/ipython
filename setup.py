@@ -4,73 +4,46 @@
 
 Under Posix environments it works like a typical setup.py script.
 Under Windows, the command sdist is not supported, since IPython
-requires utilities which are not available under Windows."""
+requires utilities which are not available under Windows.
 
-#-----------------------------------------------------------------------------
-#  Copyright (c) 2008-2011, IPython Development Team.
-#  Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
-#  Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
-#  Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
-#
-#  Distributed under the terms of the Modified BSD License.
-#
-#  The full license is in the file COPYING.rst, distributed with this software.
-#-----------------------------------------------------------------------------
+.. todo:: Fix disutils warning
 
+    C:\tools\miniconda3\lib\distutils\dist.py:274: UserWarning: Unknown distribution option: 'project_urls'
+    warnings.warn(msg)
+
+    That's a little obnoxious
+
+-----------------------------------------------------------------------------
+
+  Copyright (c) 2008-2011, IPython Development Team.
+  Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
+  Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
+  Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
+
+  Distributed under the terms of the Modified BSD License.
+
+  The full license is in the file COPYING.rst, distributed with this software.
+
+-----------------------------------------------------------------------------
+
+"""
 from __future__ import print_function
 
 import os
 import sys
 
-# **Python version check**
-#
-# This check is also made in IPython/__init__, don't forget to update both when
-# changing Python version requirements.
-if sys.version_info < (3, 5):
-    pip_message = 'This may be due to an out of date pip. Make sure you have pip >= 9.0.1.'
-    try:
-        import pip
-        pip_version = tuple([int(x) for x in pip.__version__.split('.')[:3]])
-        if pip_version < (9, 0, 1):
-            pip_message = 'Your pip version is out of date, please install pip >= 9.0.1. '\
-            'pip {} detected.'.format(pip.__version__)
-        else:
-            # pip is new enough - it must be something else
-            pip_message = ''
-    except Exception:
-        pass
+from distutils.command.sdist import sdist
 
-    error = """
-IPython 7.0+ supports Python 3.5 and above.
-When using Python 2.7, please install IPython 5.x LTS Long Term Support version.
-Python 3.3 and 3.4 were supported up to IPython 6.x.
-
-See IPython `README.rst` file for more information:
-
-    https://github.com/ipython/ipython/blob/master/README.rst
-
-Python {py} detected.
-{pip}
-""".format(py=sys.version_info, pip=pip_message)
-
-    print(error, file=sys.stderr)
-    sys.exit(1)
-
-# At least we're on the python version we need, move on.
+from distutils.core import setup
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
 
-from distutils.core import setup
-
 # Our own imports
-from setupbase import target_update
-
 from setupbase import (
     setup_args,
-    find_packages,
     find_package_data,
     check_package_data_first,
     find_entry_points,
@@ -82,6 +55,11 @@ from setupbase import (
     install_scripts_for_symlink,
     unsymlink,
 )
+from setupbase import target_update
+
+# What's up with the setuptools embargo?
+import setuptools
+from setuptools import find_packages
 
 isfile = os.path.isfile
 pjoin = os.path.join
@@ -118,9 +96,9 @@ if len(sys.argv) >= 2 and sys.argv[1] in ('sdist', 'bdist_rpm'):
 
     [target_update(*t) for t in to_update]
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Find all the packages, package data, and data_files
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 packages = find_packages()
 package_data = find_package_data()
@@ -131,11 +109,10 @@ setup_args['packages'] = packages
 setup_args['package_data'] = package_data
 setup_args['data_files'] = data_files
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # custom distutils commands
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # imports here, so they are after setuptools import if there was one
-from distutils.command.sdist import sdist
 
 setup_args['cmdclass'] = {
     'build_py': check_package_data_first(git_prebuild('IPython')),
@@ -146,9 +123,9 @@ setup_args['cmdclass'] = {
     'unsymlink': unsymlink,
 }
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Handle scripts, dependencies, and setuptools specific things
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 # For some commands, use setuptools.  Note that we do NOT list install here!
 # If you want a setuptools-enhanced install, just run 'setupegg.py install'
@@ -261,9 +238,9 @@ else:
 
     setup_args['cmdclass']['build_scripts'] = build_scripts_entrypt
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Do the actual setup now
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 setup_args.update(setuptools_extra_args)
 
@@ -273,4 +250,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

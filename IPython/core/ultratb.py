@@ -106,11 +106,12 @@ except AttributeError:  # Python 3
     generate_tokens = tokenize.tokenize
 
 # For purposes of monkeypatching inspect to fix a bug in it.
-from inspect import getsourcefile, getfile, getmodule, \
-    ismodule, isclass, ismethod, isfunction, istraceback, isframe, iscode
+from inspect import (getsourcefile, getfile, getmodule,
+                     ismodule, isclass, ismethod, isfunction,
+                     istraceback, isframe, iscode)
 
 # IPython's own modules
-from IPython import get_ipython
+from IPython.core.get_ipython import get_ipython
 from IPython.core import debugger
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.excolors import exception_colors

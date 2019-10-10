@@ -14,9 +14,12 @@
 #
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
-
-import sys
 import os
+import shutil
+import sys
+
+from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
+
 
 # http://read-the-docs.readthedocs.io/en/latest/faq.html
 ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
@@ -59,7 +62,7 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.graphviz',
+    'sphinx.ext.todo',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'sphinx.ext.napoleon',  # to preprocess docstrings
@@ -67,6 +70,9 @@ extensions = [
     'magics',
     'configtraits',
 ]
+
+if shutil.which('dot'):
+    extensions.append('sphinx.ext.graphviz')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -299,3 +305,16 @@ modindex_common_prefix = ['IPython.']
 # delete release info to avoid pickling errors from sphinx
 
 del iprelease
+
+
+def setup(app):
+    """Add in the Sphinx directive for `confval`.
+
+    Also define the IPyLexer's while we're here.
+    """
+    app.add_object_type('confval', 'confval',
+                        objname='configuration value',
+                        indextemplate='pair: %s; configuration value')
+
+    app.add_lexer('ipythontb', IPythonTracebackLexer)
+    app.add_lexer('ipy', IPyLexer)

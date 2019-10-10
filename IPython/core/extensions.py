@@ -1,9 +1,33 @@
 # encoding: utf-8
-"""A class for managing IPython extensions."""
+"""A class for managing IPython extensions.
+
+.. todo:: Wait wasn't this deprecated as the way to write extensions????
+
+Read the main class docstring for `ExtensionManager`.
+Dude I think the "write everything in $IPYTHONDIR/extensions"
+way of doing things was deprecated.
+
+We should probably take it out of the docstring no?
+
+omfg. Dude I got that idea **FROM THIS FILE**
+
+Keep reading to line 94...::
+
+    if mod.__file__.startswith(self.ipython_extension_dir):
+        print((
+            "Loading extensions from {dir} is deprecated. "
+            "We recommend managing extensions like any "
+            "other Python packages, in site-packages.").format(
+                dir=compress_user(self.ipython_extension_dir)))
+
+
+Also low-key why does print have 2 ()'s in it lol?
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+
+"""
 import os
 import os.path
 import sys
@@ -33,7 +57,7 @@ class ExtensionManager(Configurable):
     the only argument.  You can do anything you want with IPython at
     that point, including defining new magic and aliases, adding new
     components, etc.
-    
+
     You can also optionally define an :func:`unload_ipython_extension(ipython)`
     function, which will be called if the user unloads or reloads the extension.
     The extension manager will only call :func:`load_ipython_extension` again
@@ -44,6 +68,7 @@ class ExtensionManager(Configurable):
     to make it easy to write extensions, you can also put your extensions
     in ``os.path.join(self.ipython_dir, 'extensions')``.  This directory
     is added to ``sys.path`` automatically.
+
     """
 
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
@@ -95,7 +120,7 @@ class ExtensionManager(Configurable):
 
         This function looks up the extension's name in ``sys.modules`` and
         simply calls ``mod.unload_ipython_extension(self)``.
-        
+
         Returns the string "no unload function" if the extension doesn't define
         a function to unload itself, "not loaded" if the extension isn't loaded,
         otherwise None.

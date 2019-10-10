@@ -5,16 +5,16 @@ Qt4's inputhook support function
 Author: Christian Boos
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 import signal
@@ -24,16 +24,83 @@ from IPython.core.interactiveshell import InteractiveShell
 from IPython.external.qt_for_kernel import QtCore, QtGui
 from IPython.lib.inputhook import allow_CTRL_C, ignore_CTRL_C, stdin_ready
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Module Globals
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 got_kbdint = False
 sigint_timer = None
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Utilities
+# -----------------------------------------------------------------------------
+
+
+def _ignore_CTRL_C_posix():
+    """Ignore CTRL+C (SIGINT)."""
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+
+def _allow_CTRL_C_posix():
+    """Take CTRL+C into account (SIGINT)."""
+    signal.signal(signal.SIGINT, signal.default_int_handler)
+
+
+def _stdin_ready_posix():
+    """Return True if there's something to read on stdin (posix version)."""
+    infds, outfds, erfds = select.select([sys.stdin], [], [], 0)
+    return bool(infds)
+
+
+def _stdin_ready_nt():
+    """Return True if there's something to read on stdin (nt version)."""
+    return msvcrt.kbhit()
+
+
+def _stdin_ready_other():
+    """Return True, assuming there's something to read on stdin."""
+    return True
+
+
+def _ignore_CTRL_C_posix():
+    """Ignore CTRL+C (SIGINT)."""
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+
+def _allow_CTRL_C_posix():
+    """Take CTRL+C into account (SIGINT)."""
+    signal.signal(signal.SIGINT, signal.default_int_handler)
+
+
+def _ignore_CTRL_C_other():
+    """Ignore CTRL+C (not implemented)."""
+    pass
+
+
+def _allow_CTRL_C_other():
+    """Take CTRL+C into account (not implemented)."""
+    pass
+
+
+if os.name == 'posix':
+    import select
+    import signal
+    stdin_ready = _stdin_ready_posix
+    ignore_CTRL_C = _ignore_CTRL_C_posix
+    allow_CTRL_C = _allow_CTRL_C_posix
+elif os.name == 'nt':
+    import msvcrt
+    stdin_ready = _stdin_ready_nt
+    ignore_CTRL_C = _ignore_CTRL_C_other
+    allow_CTRL_C = _allow_CTRL_C_other
+else:
+    stdin_ready = _stdin_ready_other
+    ignore_CTRL_C = _ignore_CTRL_C_other
+    allow_CTRL_C = _allow_CTRL_C_other
+
+# -----------------------------------------------------------------------------
 # Code
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def create_inputhook_qt4(mgr, app=None):

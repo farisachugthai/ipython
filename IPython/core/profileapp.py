@@ -10,16 +10,16 @@ Authors:
 
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2008  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 
@@ -30,9 +30,9 @@ from IPython.utils.importstring import import_item
 from IPython.paths import get_ipython_dir, get_ipython_package_dir
 from traitlets import Unicode, Bool, Dict, observe
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Constants
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 create_help = """Create an IPython profile by name
 
@@ -87,13 +87,13 @@ ipython profile list -h    # show the help string for the list subcommand
 ipython locate profile foo # print the path to the directory for profile 'foo'
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Profile Application Class (for `ipython profile` subcommand)
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def list_profiles_in(path):
-    """list profiles in a given root directory"""
+    """List profiles in a given root directory."""
     profiles = []
 
     # for python 3.6+ rewrite to: with os.scandir(path) as dirlist:
@@ -105,7 +105,7 @@ def list_profiles_in(path):
 
 
 def list_bundled_profiles():
-    """list profiles that are bundled with IPython."""
+    """List profiles that are bundled with IPython."""
     path = os.path.join(get_ipython_package_dir(), u'core', u'profile')
     profiles = []
 
@@ -205,7 +205,7 @@ create_flags['parallel'] = ({
         'parallel': True
     }
 }, "Include the config files for parallel "
-                            "computing apps (ipengine, ipcontroller, etc.)")
+    "computing apps (ipengine, ipcontroller, etc.)")
 
 
 class ProfileCreate(BaseIPythonApplication):

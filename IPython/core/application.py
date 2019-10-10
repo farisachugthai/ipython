@@ -7,6 +7,11 @@ handling configuration and creating configurables.
 
 The job of an :class:`Application` is to create the master configuration
 object and then create the configurable objects, passing the config to them.
+
+.. note:: Windows Users
+
+    System configuration data is placed in :envvar:`PROGRAMDATA`.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -157,7 +162,7 @@ class BaseIPythonApplication(Application):
         return [os.getcwd()]
 
     extra_config_file = Unicode(help="""Path to an extra config file to load.
-    
+
     If specified, load this config file in addition to any other IPython config.
     """).tag(config=True)
 
@@ -235,8 +240,7 @@ class BaseIPythonApplication(Application):
 
     verbose_crash = Bool(
         False,
-        help=
-        """Create a massive crash report when IPython encounters what may be an
+        help="""Create a massive crash report when IPython encounters what may be an
         internal error.  The default is to append a short message to the
         usual traceback""").tag(config=True)
 
@@ -254,9 +258,9 @@ class BaseIPythonApplication(Application):
             self.log.error("Current working directory doesn't exist.")
             self.exit(1)
 
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Various stages of Application creation
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     deprecated_subcommands = {}
 
@@ -282,7 +286,7 @@ class BaseIPythonApplication(Application):
 
     def excepthook(self, etype, evalue, tb):
         """this is sys.excepthook after init_crashhandler
-        
+
         set self.verbose_crash=True to use our full crashhandler, instead of
         a regular traceback with a short message (crash_handler_lite)
         """
@@ -440,7 +444,18 @@ class BaseIPythonApplication(Application):
         self._in_init_profile_dir = False
 
     def init_config_files(self):
-        """[optionally] copy default config files into profile dir."""
+        """Initialize the user's config files and place them into `profiledir`.
+
+        Attributes
+        ----------
+        self.copy_config_files : Bool
+            Configuration parameter to specify whether to copy default config
+            files into self.profile_dir.
+
+        self.overwrite : Bool
+            Whether to overwrite existing files in `self.profile_dir`.
+
+        """
         self.config_file_paths.extend(ENV_CONFIG_DIRS)
         self.config_file_paths.extend(SYSTEM_CONFIG_DIRS)
         # copy config files

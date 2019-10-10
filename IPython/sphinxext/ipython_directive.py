@@ -111,6 +111,12 @@ or :okwarning: options:
         In [1]: 1/0
         In [2]: # raise warning.
 
+
+.. admonition:: This is a terribly documented piece of work.
+
+    Like you may have to go through this and just add as many docstrings
+    as you need to figure out what the fuck is going on.
+
 """
 
 # Authors
@@ -835,6 +841,10 @@ class EmbeddedSphinxShell(object):
 
 
 class IPythonDirective(Directive):
+    """Implement the :rst:directive:`ipython` directive.
+
+
+    """
 
     has_content = True
     required_arguments = 0
@@ -876,7 +886,7 @@ class IPythonDirective(Directive):
                 mplbackend, exec_lines, hold_count, warning_is_error)
 
     def setup(self):
-        # Get configuration values.
+        """Get configuration values."""
         (savefig_dir, source_dir, rgxin, rgxout, promptin, promptout,
          mplbackend, exec_lines, hold_count,
          warning_is_error) = self.get_config_options()
@@ -1001,8 +1011,8 @@ class IPythonDirective(Directive):
         return []
 
 
-# Enable as a proper Sphinx directive
 def setup(app):
+    """Enable as a proper Sphinx directive."""
     setup.app = app
 
     app.add_directive('ipython', IPythonDirective)

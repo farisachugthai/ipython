@@ -3,8 +3,48 @@
 IPython: tools for interactive and parallel computing in Python.
 
 https://ipython.org
+
+**Python version check**
+This check is also made in IPython/__init__, don't forget to update both when
+changing Python version requirements.
+
+From setup.py::
+
+    >>> if sys.version_info < (3, 5):
+        >>> pip_message = 'This may be due to an out of date pip. Make sure you have pip >= 9.0.1.'
+        >>> try:
+            >>> import pip
+            >>> pip_version = tuple([int(x) for x in pip.__version__.split('.')[:3]])
+            >>> if pip_version < (9, 0, 1):
+                >>> pip_message = 'Your pip version is out of date, please install pip >= 9.0.1. '\
+                >>> 'pip {} detected.'.format(pip.__version__)
+            >>> else:
+                >>> # pip is new enough - it must be something else
+                >>> pip_message = ''
+        >>> except Exception:
+            >>> pass
+        >>> error =
+
+
+IPython 7.0+ supports Python 3.5 and above.
+When using Python 2.7, please install IPython 5.x LTS Long Term Support version.
+Python 3.3 and 3.4 were supported up to IPython 6.x.
+
+
+See IPython `README.rst`_ file for more information:
+
+.. _README.rst: https://github.com/ipython/ipython/blob/master/README.rst
+
+
+Python {py} detected.
+{pip}
+.format(py=sys.version_info, pip=pip_message)
+
+print(error, file=sys.stderr)
+sys.exit(1)
+
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2008-2011, IPython Development Team.
 #  Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
 #  Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
@@ -13,12 +53,20 @@ https://ipython.org
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
+from .utils.frame import extract_module_locals
+from .utils.sysinfo import sys_info  # noqa F0401
+from .testing import test  # noqa F0401
+from .core.interactiveshell import InteractiveShell  # noqa F0401
+from .terminal.embed import embed  # noqa F0401
+from .core.application import Application  # noqa F0401
+from .core import release
+from .core.getipython import get_ipython   # noqa F0401
 import os
 import sys
 
@@ -26,9 +74,9 @@ import sys
 from IPython.core.display import *
 from IPython.lib.display import *
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Setup everything
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Don't forget to also update setup.py when this changes!
 if sys.version_info < (3, 5):
@@ -48,19 +96,9 @@ See IPython `README.rst` file for more information:
 # This should probably be in ipapp.py.
 sys.path.append(os.path.join(os.path.dirname(__file__), "extensions"))
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Setup the top level names
-#-----------------------------------------------------------------------------
-
-from .core.getipython import get_ipython
-from .core import release
-from .core.application import Application
-from .terminal.embed import embed
-
-from .core.interactiveshell import InteractiveShell
-from .testing import test
-from .utils.sysinfo import sys_info
-from .utils.frame import extract_module_locals
+# -----------------------------------------------------------------------------
 
 # Release data
 __author__ = '%s <%s>' % (release.author, release.author_email)
@@ -118,11 +156,13 @@ def start_ipython(argv=None, **kwargs):
     ----------
 
     argv : list or None, optional
-        If unspecified or None, IPython will parse command-line options from sys.argv.
+        If unspecified or None, IPython will parse command-line options
+        from sys.argv.
         To prevent any command-line parsing, pass an empty list: `argv=[]`.
     user_ns : dict, optional
-        specify this dictionary to initialize the IPython user namespace with particular values.
-    kwargs : various, optional
+        Specify this dictionary to initialize the IPython user namespace
+        with particular values.
+    \*\*kwargs : dict, optional
         Any other kwargs will be passed to the Application constructor,
         such as `config`.
     """
@@ -131,7 +171,7 @@ def start_ipython(argv=None, **kwargs):
 
 
 def start_kernel(argv=None, **kwargs):
-    """Launch a normal IPython kernel instance (as opposed to embedded)
+    """Launch a normal IPython kernel instance (as opposed to embedded).
 
     `IPython.embed_kernel()` puts a shell in a particular calling scope,
     such as a function or method for debugging purposes,
@@ -144,14 +184,17 @@ def start_kernel(argv=None, **kwargs):
     Parameters
     ----------
 
-    argv : list or None, optional
-        If unspecified or None, IPython will parse command-line options from sys.argv.
+    argv : list, optional
+        If unspecified or `None`, IPython will parse command-line options
+        from `sys.argv`.
         To prevent any command-line parsing, pass an empty list: `argv=[]`.
     user_ns : dict, optional
-        specify this dictionary to initialize the IPython user namespace with particular values.
-    kwargs : various, optional
+        Specify this dictionary to initialize the IPython user namespace
+        with particular values.
+    \*\*kwargs : dict, optional
         Any other kwargs will be passed to the Application constructor,
         such as `config`.
+
     """
     from IPython.kernel.zmq.kernelapp import launch_new_instance
     return launch_new_instance(argv=argv, **kwargs)

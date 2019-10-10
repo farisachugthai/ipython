@@ -130,7 +130,8 @@ class InteractiveShellApp(Configurable):
     ).tag(config=True)
 
     # Extensions that are always loaded (not configurable)
-    default_extensions = List(Unicode(), [u'storemagic']).tag(config=False)
+    # WHY IS STOREMAGIC HARDCODED IN HERE
+    default_extensions = List(Unicode()).tag(config=False)
 
     hide_initial_ns = Bool(
         True,

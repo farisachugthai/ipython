@@ -1,16 +1,16 @@
-"""Implementation of namespace-related magic functions.
-"""
-#-----------------------------------------------------------------------------
+#!/usr/bin/env python3
+"""Implementation of namespace-related magic functions."""
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012 The IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib
 import gc
@@ -26,9 +26,9 @@ from IPython.utils.encoding import DEFAULT_ENCODING
 from IPython.utils.openpy import read_py_file
 from IPython.utils.path import get_py_filename
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 @magics_class
@@ -42,15 +42,19 @@ class NamespaceMagics(Magics):
     def pinfo(self, parameter_s='', namespaces=None):
         """Provide detailed information about an object.
 
-        '%pinfo object' is just a synonym for object? or ?object."""
+        .. magic:: pinfo
 
-        #print 'pinfo par: <%s>' % parameter_s  # dbg
+        `%pinfo` *object* is just a synonym for
+        object :kbd:`?` or :kbd:`?` object.
+        """
+
+        # print 'pinfo par: <%s>' % parameter_s  # dbg
         # detail_level: 0 -> obj? , 1 -> obj??
         detail_level = 0
         # We need to detect if we got called as 'pinfo pinfo foo', which can
         # happen if the user types 'pinfo foo?' at the cmd line.
-        pinfo,qmark1,oname,qmark2 = \
-               re.match(r'(pinfo )?(\?*)(.*?)(\??$)',parameter_s).groups()
+        pinfo, qmark1, oname, qmark2 = \
+            re.match(r'(pinfo )?(\?*)(.*?)(\??$)', parameter_s).groups()
         if pinfo or qmark1 or qmark2:
             detail_level = 1
         if "*" in oname:
@@ -65,7 +69,10 @@ class NamespaceMagics(Magics):
     def pinfo2(self, parameter_s='', namespaces=None):
         """Provide extra detailed information about an object.
 
-        '%pinfo2 object' is just a synonym for object?? or ??object."""
+        .. magic:: pinfo2
+
+        '%pinfo2 object' is just a synonym for object?? or ??object.
+        """
         self.shell._inspect('pinfo',
                             parameter_s,
                             detail_level=1,
@@ -75,6 +82,8 @@ class NamespaceMagics(Magics):
     @line_magic
     def pdef(self, parameter_s='', namespaces=None):
         """Print the call signature for any callable object.
+
+        .. magic:: pdef
 
         If the object is a class, print the constructor information.
 
@@ -106,14 +115,21 @@ class NamespaceMagics(Magics):
     def pfile(self, parameter_s='', namespaces=None):
         """Print (or run through pager) the file where an object is defined.
 
+        .. magic:: pfile
+
         The file opens at the line where the object definition begins. IPython
-        will honor the environment variable PAGER if set, and otherwise will
+        will honor the environment variable :envvar:`PAGER` if set, and otherwise will
         do its best to print the file in a convenient form.
+
+        .. note:: This implementation *I think* is based off of pydoc.
+
+            So don't blame IPython for the shoddy :command:`more` emulation.
 
         If the given argument is not an object currently defined, IPython will
         try to interpret it as a filename (automatically adding a .py extension
-        if needed). You can thus use %pfile as a syntax highlighting code
-        viewer."""
+        if needed). You can thus use `%pfile` as a syntax highlighting code
+        viewer.
+        """
 
         # first interpret argument as an object name
         out = self.shell._inspect('pfile', parameter_s, namespaces)
@@ -132,9 +148,11 @@ class NamespaceMagics(Magics):
     def psearch(self, parameter_s=''):
         """Search for object in namespaces by wildcard.
 
-        %psearch [options] PATTERN [OBJECT TYPE]
+        .. magic:: psearch
 
-        Note: ? can be used as a synonym for %psearch, at the beginning or at
+        .. program:: %psearch [options] PATTERN [OBJECT TYPE]
+
+        Note: :kbd:`?` can be used as a synonym for %psearch, at the beginning or at
         the end: both a*? and ?a* are equivalent to '%psearch a*'.  Still, the
         rest of the command line must be unchanged (options come first), so
         for example the following forms are equivalent
@@ -180,7 +198,7 @@ class NamespaceMagics(Magics):
           'builtin', 'user', 'user_global','internal', 'alias', where
           'builtin' and 'user' are the search defaults.  Note that you should
           not use quotes when specifying namespaces.
-          
+
           -l: List all available object types for object matching. This function
           can be used without arguments.
 
@@ -210,9 +228,9 @@ class NamespaceMagics(Magics):
         Show objects beginning with a single _::
 
           %psearch -a _*         list objects beginning with a single underscore
-          
+
         List available objects::
-        
+
           %psearch -l            list all available object types
         """
         try:
@@ -264,6 +282,8 @@ class NamespaceMagics(Magics):
     def who_ls(self, parameter_s=''):
         """Return a sorted list of all interactive variables.
 
+        .. magic:: who_ls
+
         If arguments are given, only variables of types matching these
         arguments are returned.
 
@@ -289,9 +309,9 @@ class NamespaceMagics(Magics):
         user_ns = self.shell.user_ns
         user_ns_hidden = self.shell.user_ns_hidden
         nonmatching = object()  # This can never be in user_ns
-        out = [ i for i in user_ns
-                if not i.startswith('_') \
-                and (user_ns[i] is not user_ns_hidden.get(i, nonmatching)) ]
+        out = [i for i in user_ns
+               if not i.startswith('_')
+               and (user_ns[i] is not user_ns_hidden.get(i, nonmatching))]
 
         typelist = parameter_s.split()
         if typelist:
@@ -306,23 +326,24 @@ class NamespaceMagics(Magics):
     def who(self, parameter_s=''):
         """Print all interactive variables, with some minimal formatting.
 
-        If any arguments are given, only variables whose type matches one of
-        these are printed.  For example::
+        .. magic:: who
 
-          %who function str
+        If any arguments are given, only variables whose type matches one of
+        these are printed. For example::
+
+            %who function str
 
         will only list functions and strings, excluding all other types of
-        variables.  To find the proper type names, simply use type(var) at a
-        command line to see how python prints type names.  For example:
-
-        ::
+        variables.  To find the proper type names, simply use :func:`type`
+        with a *var* argument at a
+        command line to see how python prints `type` names.  For example.::
 
           In [1]: type('hello')\\
           Out[1]: <type 'str'>
 
-        indicates that the type name for strings is 'str'.
+        indicates that the type name for strings is `str`.
 
-        ``%who`` always excludes executed names loaded through your configuration
+        `%who` always excludes executed names loaded through your configuration
         file and things which are internal to IPython.
 
         This is deliberate, as typically you may load many modules and the
@@ -345,6 +366,7 @@ class NamespaceMagics(Magics):
 
           In [5]: %who str
           beta
+
         """
 
         varlist = self.who_ls(parameter_s)
@@ -368,7 +390,9 @@ class NamespaceMagics(Magics):
     @skip_doctest
     @line_magic
     def whos(self, parameter_s=''):
-        """Like %who, but gives some extra information about each variable.
+        """Like `%who`, but gives some extra information about each variable.
+
+        .. magic:: whos
 
         The same type filtering of %who can be applied here.
 
@@ -385,7 +409,7 @@ class NamespaceMagics(Magics):
         Examples
         --------
 
-        Define two variables and list them with whos::
+        Define two variables and list them with `%whos`::
 
           In [1]: alpha = 123
 
@@ -396,6 +420,7 @@ class NamespaceMagics(Magics):
           --------------------------------
           alpha      int         123
           beta       str         test
+
         """
 
         varnames = self.who_ls(parameter_s)
@@ -454,7 +479,7 @@ class NamespaceMagics(Magics):
         varwidth = max(max(map(len, varnames)), len(varlabel)) + colsep
         typewidth = max(max(map(len, typelist)), len(typelabel)) + colsep
         # table header
-        print(varlabel.ljust(varwidth) + typelabel.ljust(typewidth) + \
+        print(varlabel.ljust(varwidth) + typelabel.ljust(typewidth) +
               ' '+datalabel+'\n' + '-'*(varwidth+typewidth+len(datalabel)+1))
         # and the table itself
         kb = 1024
@@ -499,10 +524,13 @@ class NamespaceMagics(Magics):
 
     @line_magic
     def reset(self, parameter_s=''):
-        """Resets the namespace by removing all names defined by the user, if
-        called without arguments, or by removing some types of objects, such
-        as everything currently in IPython's In[] and Out[] containers (see
-        the parameters for details).
+        """Resets the namespace by removing all names defined by the user.
+
+        .. magic:: reset
+
+        If called without arguments will remove, all the variables defined
+        in the user's namespace, such that everything currently in IPython's
+        In[] and Out[] containers will be removed.
 
         Parameters
         ----------
@@ -523,7 +551,7 @@ class NamespaceMagics(Magics):
 
         See Also
         --------
-        reset_selective : invoked as ``%reset_selective``
+        `%reset_selective`
 
         Examples
         --------
@@ -552,8 +580,9 @@ class NamespaceMagics(Magics):
         Notes
         -----
         Calling this magic from clients that do not implement standard input,
-        such as the ipython notebook interface, will reset the namespace
+        such as the IPython notebook interface, will `%reset` the namespace
         without confirmation.
+
         """
         opts, args = self.parse_options(parameter_s, 'sf', mode='list')
         if 'f' in opts:
@@ -628,30 +657,31 @@ class NamespaceMagics(Magics):
     def reset_selective(self, parameter_s=''):
         """Resets the namespace by removing names defined by the user.
 
+        .. magic:: reset_selecive
+
         Input/Output history are left around in case you need them.
 
-        %reset_selective [-f] regex
+        .. program:: %reset_selective [-f] regex
 
-        No action is taken if regex is not included
+            Reset variables as specified by the user.
+            No action is taken if *regex* is not included
 
-        Options
-          -f : force reset without asking for confirmation.
+        .. program:option:: -f : force reset without asking for confirmation.
 
         See Also
         --------
-        reset : invoked as ``%reset``
+        .. seealso:: `%reset`
 
         Examples
         --------
-
         We first fully reset the namespace so your output looks identical to
-        this example for pedagogical reasons; in practice you do not need a
-        full reset::
+        this example for pedagogical reasons; however, in practice you
+        do not need a full reset::
 
           In [1]: %reset -f
 
         Now, with a clean namespace we can make a few variables and use
-        ``%reset_selective`` to only delete names that match our regexp::
+        `%reset_selective` to only delete names that match our regexp.::
 
           In [2]: a=1; b=2; c=3; b1m=4; b2m=5; b3m=6; b4m=7; b2s=8
 

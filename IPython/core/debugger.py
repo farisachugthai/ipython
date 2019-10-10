@@ -34,7 +34,7 @@ import sys
 import warnings
 import re
 
-from IPython import get_ipython
+from IPython.core.get_ipython import get_ipython
 from IPython.utils import PyColorize
 from IPython.utils import coloransi, py3compat
 from IPython.core.excolors import exception_colors

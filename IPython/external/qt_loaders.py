@@ -219,7 +219,7 @@ def import_pyqt5():
     """
 
     from PyQt5 import QtCore, QtSvg, QtWidgets, QtGui
-    
+
     # Alias PyQt-specific functions for PySide compatibility.
     QtCore.Signal = QtCore.pyqtSignal
     QtCore.Slot = QtCore.pyqtSlot

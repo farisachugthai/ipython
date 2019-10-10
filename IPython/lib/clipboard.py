@@ -1,6 +1,13 @@
-""" Utilities for accessing the platform's clipboard.
-"""
+"""Utilities for accessing the platform's clipboard.
 
+Yo honestly the implementation for this is outrageously shoddy but only
+shows up in %paste or %cpaste {*i forget which right now but it's oddly not
+both*}.
+
+We should try coming up with some kind of shim and then we can get delete
+this too.
+
+"""
 import subprocess
 
 from IPython.core.error import TryNext
@@ -12,7 +19,7 @@ class ClipboardEmpty(ValueError):
 
 
 def win32_clipboard_get():
-    """ Get the current clipboard's text on Windows.
+    """Get the current clipboard's text on Windows.
 
     Requires Mark Hammond's pywin32 extensions.
     """
