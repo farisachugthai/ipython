@@ -253,7 +253,7 @@ class BaseIPythonApplication(Application):
         # ensure current working directory exists
         try:
             os.getcwd()
-        except:
+        except BaseException:
             # exit if cwd doesn't exist
             self.log.error("Current working directory doesn't exist.")
             self.exit(1)

@@ -11,9 +11,18 @@ first argument, because when activated they are registered into IPython as
 instance methods. The self argument will be the IPython running instance
 itself, so hooks have full access to the entire IPython object.
 
-If you wish to define a new hook and activate it, you can make an :doc:`extension
-</config/extensions/index>` or a :ref:`startup script <startup_files>`. For
-example, you could use a startup file like this::
+If you wish to define a new hook and activate it, you can make an
+:doc:`extension </config/extensions/index>`
+or a :ref:`startup script <startup_files>`.
+
+For example, you could use a startup file like this:
+
+Isn't it kinda confusing to say use a startup file when we invoke the
+load_ipython_extension function below?
+
+Why not just say.
+
+For example, you could write an extension like this:
 
     import os
 
@@ -26,15 +35,46 @@ example, you could use a startup file like this::
     def load_ipython_extension(ip):
         ip.set_hook('editor', calljed)
 
+
+Wait but if jed get's called successfully but crashes won't os.system return
+!=0? Isn't it a better idea to do :func:`shutil.which` and make THAT the hook.
+Like I mean.::
+
+    from IPython import get_ipython
+
+    def checkjed(self, filename, lnum):
+        if shutil.which('jed'):
+
+            arbitrary_mapping = {'shell': self,
+            'filename': filename,
+            'line_number': lnum}
+
+            return calljed(arbitrary_mapping)
+        else:
+            raise TryNext()
+
+    def calljed(**kwargs):
+        # Because i have no idea what jed is.
+        raise NotImplementedError
+
+    if __name__ == "__main__":
+        shell = get_ipython()
+        if shell:
+            checkjed(shell, filename=sys.argv[1:], lnum=0)
+
+Generally.
+
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2005 Fernando Perez. <fperez@colorado.edu>
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#*****************************************************************************
+# *****************************************************************************
 
+from IPython.utils.decorators import undoc
+import tempfile
 import os
 import subprocess
 import warnings
@@ -84,10 +124,6 @@ def editor(self, filename, linenum=None, wait=True):
                             shell=True)
     if wait and proc.wait() != 0:
         raise TryNext()
-
-
-import tempfile
-from IPython.utils.decorators import undoc
 
 
 @undoc
@@ -154,7 +190,7 @@ class CommandChainDispatcher:
         TryNext"""
         last_exc = TryNext()
         for prio, cmd in self.chain:
-            #print "prio",prio,"cmd",cmd #dbg
+            # print "prio",prio,"cmd",cmd #dbg
             try:
                 return cmd(*args, **kw)
             except TryNext as exc:
@@ -184,7 +220,7 @@ def shutdown_hook(self):
     Typically, shutdown hooks should raise TryNext so all shutdown ops are done
     """
 
-    #print "default shutdown hook ok" # dbg
+    # print "default shutdown hook ok" # dbg
     return
 
 
@@ -192,7 +228,7 @@ def late_startup_hook(self):
     """ Executed after ipython has been constructed and configured
 
     """
-    #print "default startup hook ok" # dbg
+    # print "default startup hook ok" # dbg
 
 
 def show_in_pager(self, data, start, screen_lines):

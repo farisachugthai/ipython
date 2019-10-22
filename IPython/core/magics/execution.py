@@ -26,7 +26,8 @@ try:
 except ImportError:
     # profile isn't bundled by default in Debian for license reasons
     try:
-        import profile, pstats
+        import profile
+        import pstats
     except ImportError:
         profile = pstats = None
 
@@ -49,18 +50,18 @@ from warnings import warn
 from logging import error
 from io import StringIO
 
-if sys.version_info > (3,8):
+if sys.version_info > (3, 8):
     from ast import Module
-else :
+else:
     # mock the new API, ignore second argument
     # see https://github.com/ipython/ipython/issues/11590
     from ast import Module as OriginalModule
-    Module = lambda nodelist, type_ignores: OriginalModule(nodelist)
+    def Module(nodelist, type_ignores): return OriginalModule(nodelist)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class TimeitResult(object):
@@ -76,7 +77,9 @@ class TimeitResult(object):
     compile_time: (float) time of statement compilation (s)
 
     """
-    def __init__(self, loops, repeat, best, worst, all_runs, compile_time, precision):
+
+    def __init__(self, loops, repeat, best, worst,
+                 all_runs, compile_time, precision):
         self.loops = loops
         self.repeat = repeat
         self.best = best
@@ -84,7 +87,7 @@ class TimeitResult(object):
         self.all_runs = all_runs
         self.compile_time = compile_time
         self._precision = precision
-        self.timings = [ dt / self.loops for dt in all_runs]
+        self.timings = [dt / self.loops for dt in all_runs]
 
     @property
     def average(self):
@@ -93,7 +96,8 @@ class TimeitResult(object):
     @property
     def stdev(self):
         mean = self.average
-        return (math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)) ** 0.5
+        return (
+            math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)) ** 0.5
 
     def __str__(self):
         pm = '+-'
@@ -101,23 +105,23 @@ class TimeitResult(object):
             try:
                 u'\xb1'.encode(sys.stdout.encoding)
                 pm = u'\xb1'
-            except:
+            except BaseException:
                 pass
         return (
             u"{mean} {pm} {std} per loop (mean {pm} std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} each)"
-                .format(
-                    pm = pm,
-                    runs = self.repeat,
-                    loops = self.loops,
-                    loop_plural = "" if self.loops == 1 else "s",
-                    run_plural = "" if self.repeat == 1 else "s",
-                    mean = _format_time(self.average, self._precision),
-                    std = _format_time(self.stdev, self._precision))
-                )
+            .format(
+                pm=pm,
+                runs=self.repeat,
+                loops=self.loops,
+                loop_plural="" if self.loops == 1 else "s",
+                run_plural="" if self.repeat == 1 else "s",
+                mean=_format_time(self.average, self._precision),
+                std=_format_time(self.stdev, self._precision))
+        )
 
-    def _repr_pretty_(self, p , cycle):
+    def _repr_pretty_(self, p, cycle):
         unic = self.__str__()
-        p.text(u'<TimeitResult : '+unic+u'>')
+        p.text(u'<TimeitResult : ' + unic + u'>')
 
 
 class TimeitTemplateFiller(ast.NodeTransformer):
@@ -126,6 +130,7 @@ class TimeitTemplateFiller(ast.NodeTransformer):
     This is quite closely tied to the template definition, which is in
     :meth:`ExecutionMagics.timeit`.
     """
+
     def __init__(self, ast_setup, ast_stmt):
         self.ast_setup = ast_setup
         self.ast_stmt = ast_stmt
@@ -147,11 +152,12 @@ class TimeitTemplateFiller(ast.NodeTransformer):
 
 class Timer(timeit.Timer):
     """Timer class that explicitly uses self.inner
-    
+
     which is an undocumented implementation detail of CPython,
     not shared by PyPy.
     """
     # Timer.timeit copied from CPython 3.4.2
+
     def timeit(self, number=timeit.default_number):
         """Time 'number' executions of the main statement.
 
@@ -196,7 +202,6 @@ python-profiler package from non-free.""")
     @no_var_expand
     @line_cell_magic
     def prun(self, parameter_s='', cell=None):
-
         """Run a statement through the python code profiler.
 
         Usage, in line mode:
@@ -375,13 +380,13 @@ python-profiler package from non-free.""")
         text_file = opts.T[0]
         if dump_file:
             prof.dump_stats(dump_file)
-            print('\n*** Profile stats marshalled to file',\
-                  repr(dump_file)+'.',sys_exit)
+            print('\n*** Profile stats marshalled to file',
+                  repr(dump_file) + '.', sys_exit)
         if text_file:
             with open(text_file, 'w') as pfile:
                 pfile.write(output)
-            print('\n*** Profile printout saved to text file',\
-                  repr(text_file)+'.',sys_exit)
+            print('\n*** Profile printout saved to text file',
+                  repr(text_file) + '.', sys_exit)
 
         if 'r' in opts:
             return stats
@@ -410,10 +415,10 @@ python-profiler package from non-free.""")
 
         if par:
             try:
-                new_pdb = {'off':0,'0':0,'on':1,'1':1}[par]
+                new_pdb = {'off': 0, '0': 0, 'on': 1, '1': 1}[par]
             except KeyError:
-                print ('Incorrect argument. Use on/1, off/0, '
-                       'or nothing for a toggle.')
+                print('Incorrect argument. Use on/1, off/0, '
+                      'or nothing for a toggle.')
                 return
         else:
             # toggle
@@ -421,21 +426,21 @@ python-profiler package from non-free.""")
 
         # set on the shell
         self.shell.call_pdb = new_pdb
-        print('Automatic pdb calling has been turned',on_off(new_pdb))
+        print('Automatic pdb calling has been turned', on_off(new_pdb))
 
     @skip_doctest
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('--breakpoint', '-b', metavar='FILE:LINE',
-        help="""
+                              help="""
         Set break point at LINE in FILE.
         """
-    )
+                              )
     @magic_arguments.argument('statement', nargs='*',
-        help="""
+                              help="""
         Code to run in debugger.
         You can omit this in cell magic mode.
         """
-    )
+                              )
     @no_var_expand
     @line_cell_magic
     def debug(self, line='', cell=None):
@@ -500,7 +505,7 @@ python-profiler package from non-free.""")
             # Ensure it is switched back.
             def xmode_switch_err(name):
                 warn('Error changing %s exception modes.\n%s' %
-                    (name,sys.exc_info()[1]))
+                     (name, sys.exc_info()[1]))
 
             new_mode = s.strip().capitalize()
             original_mode = interactive_tb.mode
@@ -519,11 +524,11 @@ python-profiler package from non-free.""")
     @skip_doctest
     @line_magic
     def run(self, parameter_s='', runner=None,
-                  file_finder=get_py_filename):
+            file_finder=get_py_filename):
         """Run the named file inside IPython as a program.
 
         Usage::
-        
+
           %run [-n -i -e -G]
                [( -t [-N<N>] | -d [-b<N>] | -p [profile options] )]
                ( -m mod | file ) [args]
@@ -553,7 +558,7 @@ python-profiler package from non-free.""")
         *two* back slashes (e.g. ``\\\\*``) to suppress expansions.
         To completely disable these expansions, you can use -G flag.
 
-        On Windows systems, the use of single quotes `'` when specifying 
+        On Windows systems, the use of single quotes `'` when specifying
         a file is not supported. Use double quotes `"`.
 
         Options:
@@ -667,7 +672,8 @@ python-profiler package from non-free.""")
         """
 
         # Logic to handle issue #3664
-        # Add '--' after '-m <module_name>' to ignore additional args passed to a module.
+        # Add '--' after '-m <module_name>' to ignore additional args passed to
+        # a module.
         if '-m' in parameter_s and '--' not in parameter_s:
             argv = shlex.split(parameter_s, posix=(os.name == 'posix'))
             for idx, arg in enumerate(argv):
@@ -688,11 +694,11 @@ python-profiler package from non-free.""")
             modulename = opts["m"][0]
             modpath = find_mod(modulename)
             if modpath is None:
-                warn('%r is not a valid modulename on sys.path'%modulename)
+                warn('%r is not a valid modulename on sys.path' % modulename)
                 return
             arg_lst = [modpath] + arg_lst
         try:
-            fpath = None # initialize to make sure fpath is in scope later
+            fpath = None  # initialize to make sure fpath is in scope later
             fpath = arg_lst[0]
             filename = file_finder(fpath)
         except IndexError:
@@ -704,8 +710,9 @@ python-profiler package from non-free.""")
                 msg = str(e)
             except UnicodeError:
                 msg = e.message
-            if os.name == 'nt' and re.match(r"^'.*'$",fpath):
-                warn('For Windows, use double quotes to wrap a filename: %run "mypath\\myfile.py"')
+            if os.name == 'nt' and re.match(r"^'.*'$", fpath):
+                warn(
+                    'For Windows, use double quotes to wrap a filename: %run "mypath\\myfile.py"')
             error(msg)
             return
 
@@ -720,13 +727,13 @@ python-profiler package from non-free.""")
 
         # Make sure that the running script gets a proper sys.argv as if it
         # were run from a system shell.
-        save_argv = sys.argv # save it for later restoring
+        save_argv = sys.argv  # save it for later restoring
 
         if 'G' in opts:
             args = arg_lst[1:]
         else:
             # tilde and glob expansion
-            args = shellglob(map(os.path.expanduser,  arg_lst[1:]))
+            args = shellglob(map(os.path.expanduser, arg_lst[1:]))
 
         sys.argv = [filename] + args  # put in the proper filename
 
@@ -810,7 +817,7 @@ python-profiler package from non-free.""")
 
                         def run():
                             runner(filename, prog_ns, prog_ns,
-                                    exit_ignore=exit_ignore)
+                                   exit_ignore=exit_ignore)
 
                     if 't' in opts:
                         # timed execution
@@ -892,7 +899,8 @@ python-profiler package from non-free.""")
             deb = self.shell.InteractiveTB.pdb
 
         # deb.checkline() fails if deb.curframe exists but is None; it can
-        # handle it not existing. https://github.com/ipython/ipython/issues/10028
+        # handle it not existing.
+        # https://github.com/ipython/ipython/issues/10028
         if hasattr(deb, 'curframe'):
             del deb.curframe
 
@@ -927,7 +935,9 @@ python-profiler package from non-free.""")
             deb.mainpyfile = deb.canonic(filename)
 
         # Start file run
-        print("NOTE: Enter 'c' at the %s prompt to continue execution." % deb.prompt)
+        print(
+            "NOTE: Enter 'c' at the %s prompt to continue execution." %
+            deb.prompt)
         try:
             if filename:
                 # save filename so it can be used by methods on the deb object
@@ -946,9 +956,8 @@ python-profiler package from non-free.""")
                     break
                 finally:
                     sys.settrace(trace)
-            
 
-        except:
+        except BaseException:
             etype, value, tb = sys.exc_info()
             # Skip three frames in the traceback: the %run one,
             # one inside bdb.py, and the command-line typed by the
@@ -1072,11 +1081,11 @@ python-profiler package from non-free.""")
         does not matter as long as results from timeit.py are not mixed with
         those from %timeit."""
 
-        opts, stmt = self.parse_options(line,'n:r:tcp:qo',
+        opts, stmt = self.parse_options(line, 'n:r:tcp:qo',
                                         posix=False, strict=False)
         if stmt == "" and cell is None:
             return
-        
+
         timefunc = timeit.default_timer
         number = int(getattr(opts, "n", 0))
         default_repeat = 7 if timeit.default_repeat < 7 else timeit.default_repeat
@@ -1093,7 +1102,7 @@ python-profiler package from non-free.""")
         # this code has tight coupling to the inner workings of timeit.Timer,
         # but is there a better way to achieve that the code stmt has access
         # to the shell namespace?
-        transform  = self.shell.transform_cell
+        transform = self.shell.transform_cell
 
         if cell is None:
             # called as line magic
@@ -1124,7 +1133,8 @@ python-profiler package from non-free.""")
                                         '    _t1 = _timer()\n'
                                         '    return _t1 - _t0\n')
 
-        timeit_ast = TimeitTemplateFiller(ast_setup, ast_stmt).visit(timeit_ast_template)
+        timeit_ast = TimeitTemplateFiller(
+            ast_setup, ast_stmt).visit(timeit_ast_template)
         timeit_ast = ast.fix_missing_locations(timeit_ast)
 
         # Track compilation time so it can be reported if too long
@@ -1133,18 +1143,19 @@ python-profiler package from non-free.""")
 
         t0 = clock()
         code = self.shell.compile(timeit_ast, "<magic-timeit>", "exec")
-        tc = clock()-t0
+        tc = clock() - t0
 
         ns = {}
         glob = self.shell.user_ns
-        # handles global vars with same name as local vars. We store them in conflict_globs.
+        # handles global vars with same name as local vars. We store them in
+        # conflict_globs.
         conflict_globs = {}
         if local_ns and cell is None:
             for var_name, var_val in glob.items():
                 if var_name in local_ns:
                     conflict_globs[var_name] = var_val
             glob.update(local_ns)
-            
+
         exec(code, glob, ns)
         timer.inner = ns["inner"]
 
@@ -1162,13 +1173,14 @@ python-profiler package from non-free.""")
         all_runs = timer.repeat(repeat, number)
         best = min(all_runs) / number
         worst = max(all_runs) / number
-        timeit_result = TimeitResult(number, repeat, best, worst, all_runs, tc, precision)
+        timeit_result = TimeitResult(
+            number, repeat, best, worst, all_runs, tc, precision)
 
         # Restore global vars from conflict_globs
         if conflict_globs:
-           glob.update(conflict_globs)
-                
-        if not quiet :
+            glob.update(conflict_globs)
+
+        if not quiet:
             # Check best timing is greater than zero to avoid a
             # ZeroDivisionError.
             # In cases where the slowest timing is lesser than a microsecond
@@ -1178,8 +1190,8 @@ python-profiler package from non-free.""")
                 print("The slowest run took %0.2f times longer than the "
                       "fastest. This could mean that an intermediate result "
                       "is being cached." % (worst / best))
-           
-            print( timeit_result )
+
+            print(timeit_result)
 
             if tc > tc_min:
                 print("Compiler time: %.2f s" % tc)
@@ -1190,13 +1202,13 @@ python-profiler package from non-free.""")
     @no_var_expand
     @needs_local_scope
     @line_cell_magic
-    def time(self,line='', cell=None, local_ns=None):
+    def time(self, line='', cell=None, local_ns=None):
         """Time execution of a Python statement or expression.
 
         The CPU and wall clock times are printed, and the value of the
         expression (if any) is returned.  Note that under Win32, system time
         is always reported as 0, since it can not be measured.
-        
+
         This function can be used both as a line and cell magic:
 
         - In line mode you can time a single-line statement (though multiple
@@ -1250,10 +1262,10 @@ python-profiler package from non-free.""")
           """
 
         # fail immediately if the given expression can't be compiled
-        
+
         if line and cell:
             raise UsageError("Can't use statement directly after '%%time'!")
-        
+
         if cell:
             expr = self.shell.transform_cell(cell)
         else:
@@ -1264,7 +1276,7 @@ python-profiler package from non-free.""")
 
         t0 = clock()
         expr_ast = self.shell.compile.ast_parse(expr)
-        tp = clock()-t0
+        tp = clock() - t0
 
         # Apply AST transformations
         expr_ast = self.shell.transform_ast(expr_ast)
@@ -1272,8 +1284,8 @@ python-profiler package from non-free.""")
         # Minimum time above which compilation time will be reported
         tc_min = 0.1
 
-        expr_val=None
-        if len(expr_ast.body)==1 and isinstance(expr_ast.body[0], ast.Expr):
+        expr_val = None
+        if len(expr_ast.body) == 1 and isinstance(expr_ast.body[0], ast.Expr):
             mode = 'eval'
             source = '<timed eval>'
             expr_ast = ast.Expression(expr_ast.body[0].value)
@@ -1281,26 +1293,27 @@ python-profiler package from non-free.""")
             mode = 'exec'
             source = '<timed exec>'
             # multi-line %%time case
-            if len(expr_ast.body) > 1 and isinstance(expr_ast.body[-1], ast.Expr):
-                expr_val= expr_ast.body[-1]
+            if len(expr_ast.body) > 1 and isinstance(
+                    expr_ast.body[-1], ast.Expr):
+                expr_val = expr_ast.body[-1]
                 expr_ast = expr_ast.body[:-1]
                 expr_ast = Module(expr_ast, [])
                 expr_val = ast.Expression(expr_val.value)
 
         t0 = clock()
         code = self.shell.compile(expr_ast, source, mode)
-        tc = clock()-t0
+        tc = clock() - t0
 
         # skew measurement as little as possible
         glob = self.shell.user_ns
         wtime = time.time
         # time execution
         wall_st = wtime()
-        if mode=='eval':
+        if mode == 'eval':
             st = clock2()
             try:
                 out = eval(code, glob, local_ns)
-            except:
+            except BaseException:
                 self.shell.showtraceback()
                 return
             end = clock2()
@@ -1308,26 +1321,27 @@ python-profiler package from non-free.""")
             st = clock2()
             try:
                 exec(code, glob, local_ns)
-                out=None
+                out = None
                 # multi-line %%time case
                 if expr_val is not None:
                     code_2 = self.shell.compile(expr_val, source, 'eval')
                     out = eval(code_2, glob, local_ns)
-            except:
+            except BaseException:
                 self.shell.showtraceback()
                 return
             end = clock2()
 
         wall_end = wtime()
         # Compute actual times and report
-        wall_time = wall_end-wall_st
-        cpu_user = end[0]-st[0]
-        cpu_sys = end[1]-st[1]
-        cpu_tot = cpu_user+cpu_sys
-        # On windows cpu_sys is always zero, so no new information to the next print 
+        wall_time = wall_end - wall_st
+        cpu_user = end[0] - st[0]
+        cpu_sys = end[1] - st[1]
+        cpu_tot = cpu_user + cpu_sys
+        # On windows cpu_sys is always zero, so no new information to the next
+        # print
         if sys.platform != 'win32':
-            print("CPU times: user %s, sys: %s, total: %s" % \
-                (_format_time(cpu_user),_format_time(cpu_sys),_format_time(cpu_tot)))
+            print("CPU times: user %s, sys: %s, total: %s" %
+                  (_format_time(cpu_user), _format_time(cpu_sys), _format_time(cpu_tot)))
         print("Wall time: %s" % _format_time(wall_time))
         if tc > tc_min:
             print("Compiler : %s" % _format_time(tc))
@@ -1350,9 +1364,9 @@ python-profiler package from non-free.""")
           so that magics are loaded in their transformed version to valid
           Python.  If this option is given, the raw input as typed at the
           command line is used instead.
-          
-          -q: quiet macro definition.  By default, a tag line is printed 
-          to indicate the macro has been created, and then the contents of 
+
+          -q: quiet macro definition.  By default, a tag line is printed
+          to indicate the macro has been created, and then the contents of
           the macro are printed.  If this option is given, then no printout
           is produced once the macro is created.
 
@@ -1398,15 +1412,16 @@ python-profiler package from non-free.""")
           print macro_name
 
         """
-        opts,args = self.parse_options(parameter_s,'rq',mode='list')
+        opts, args = self.parse_options(parameter_s, 'rq', mode='list')
         if not args:   # List existing macros
-            return sorted(k for k,v in self.shell.user_ns.items() if isinstance(v, Macro))
+            return sorted(k for k, v in self.shell.user_ns.items()
+                          if isinstance(v, Macro))
         if len(args) == 1:
             raise UsageError(
                 "%macro insufficient args; usage '%macro name n1-n2 n3-4...")
         name, codefrom = args[0], " ".join(args[1:])
 
-        #print 'rng',ranges  # dbg
+        # print 'rng',ranges  # dbg
         try:
             lines = self.shell.find_user_code(codefrom, 'r' in opts)
         except (ValueError, TypeError) as e:
@@ -1414,14 +1429,16 @@ python-profiler package from non-free.""")
             return
         macro = Macro(lines)
         self.shell.define_macro(name, macro)
-        if not ( 'q' in opts) : 
-            print('Macro `%s` created. To execute, type its name (without quotes).' % name)
+        if not ('q' in opts):
+            print(
+                'Macro `%s` created. To execute, type its name (without quotes).' %
+                name)
             print('=== Macro contents: ===')
             print(macro, end=' ')
 
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('output', type=str, default='', nargs='?',
-        help="""The name of the variable in which to store output.
+                              help="""The name of the variable in which to store output.
         This is a utils.io.CapturedIO object with stdout/err attributes
         for the text of the captured output.
 
@@ -1431,16 +1448,16 @@ python-profiler package from non-free.""")
 
         If unspecified, captured output is discarded.
         """
-    )
+                              )
     @magic_arguments.argument('--no-stderr', action="store_true",
-        help="""Don't capture stderr."""
-    )
+                              help="""Don't capture stderr."""
+                              )
     @magic_arguments.argument('--no-stdout', action="store_true",
-        help="""Don't capture stdout."""
-    )
+                              help="""Don't capture stdout."""
+                              )
     @magic_arguments.argument('--no-display', action="store_true",
-        help="""Don't capture IPython's rich display."""
-    )
+                              help="""Don't capture IPython's rich display."""
+                              )
     @cell_magic
     def capture(self, line, cell):
         """run the cell, capturing stdout, stderr, and IPython's rich display() calls."""
@@ -1453,21 +1470,23 @@ python-profiler package from non-free.""")
         if args.output:
             self.shell.user_ns[args.output] = io
 
+
 def parse_breakpoint(text, current_file):
     '''Returns (file, line) for file:line and (current_file, line) for line'''
     colon = text.find(':')
     if colon == -1:
         return current_file, int(text)
     else:
-        return text[:colon], int(text[colon+1:])
-    
+        return text[:colon], int(text[colon + 1:])
+
+
 def _format_time(timespan, precision=3):
     """Formats the timespan in a human readable form"""
 
     if timespan >= 60.0:
         # we have more than a minute, format that in a human readable form
         # Idea from http://snipplr.com/view/5713/
-        parts = [("d", 60*60*24),("h", 60*60),("min", 60), ("s", 1)]
+        parts = [("d", 60 * 60 * 24), ("h", 60 * 60), ("min", 60), ("s", 1)]
         time = []
         leftover = timespan
         for suffix, length in parts:
@@ -1479,21 +1498,20 @@ def _format_time(timespan, precision=3):
                 break
         return " ".join(time)
 
-    
     # Unfortunately the unicode 'micro' symbol can cause problems in
-    # certain terminals.  
+    # certain terminals.
     # See bug: https://bugs.launchpad.net/ipython/+bug/348466
     # Try to prevent crashes by being more secure than it needs to
     # E.g. eclipse is able to print a µ, but has no sys.stdout.encoding set.
-    units = [u"s", u"ms",u'us',"ns"] # the save value   
+    units = [u"s", u"ms", u'us', "ns"]  # the save value
     if hasattr(sys.stdout, 'encoding') and sys.stdout.encoding:
         try:
             u'\xb5'.encode(sys.stdout.encoding)
-            units = [u"s", u"ms",u'\xb5s',"ns"]
-        except:
+            units = [u"s", u"ms", u'\xb5s', "ns"]
+        except BaseException:
             pass
     scaling = [1, 1e3, 1e6, 1e9]
-        
+
     if timespan > 0.0:
         order = min(-int(math.floor(math.log10(timespan)) // 3), 3)
     else:

@@ -61,14 +61,14 @@ _builtin_type_docstrings = {
 _builtin_func_type = type(all)
 _builtin_meth_type = type(
     str.upper)  # Bound methods have the same type as builtin functions
-#****************************************************************************
+# ****************************************************************************
 # Builtin color schemes
 
 Colors = TermColors  # just a shorthand
 
 InspectColors = PyColorize.ANSICodeColors
 
-#****************************************************************************
+# ****************************************************************************
 # Auxiliary functions and objects
 
 # See the messaging spec for the definition of all these fields.  This list
@@ -218,7 +218,7 @@ def getsource(obj, oname=''):
 
 def is_simple_callable(obj):
     """True if obj is a function ()"""
-    return (inspect.isfunction(obj) or inspect.ismethod(obj) or \
+    return (inspect.isfunction(obj) or inspect.ismethod(obj) or
             isinstance(obj, _builtin_func_type) or isinstance(obj, _builtin_meth_type))
 
 
@@ -297,7 +297,8 @@ def _get_wrapped(obj):
         obj = obj.__wrapped__
         i += 1
         if i > 100:
-            # __wrapped__ is probably a lie, so return the thing we started with
+            # __wrapped__ is probably a lie, so return the thing we started
+            # with
             return orig_obj
     return obj
 
@@ -332,7 +333,7 @@ def find_file(obj):
             except TypeError:
                 # Can happen for builtins
                 pass
-    except:
+    except BaseException:
         pass
     return cast_unicode(fname)
 
@@ -364,7 +365,7 @@ def find_source_lines(obj):
                 lineno = inspect.getsourcelines(obj.__class__)[1]
             else:
                 lineno = None
-    except:
+    except BaseException:
         return None
 
     return lineno
@@ -393,7 +394,7 @@ class Inspector(Colorable):
         try:
             hdef = _render_signature(signature(obj), oname)
             return cast_unicode(hdef)
-        except:
+        except BaseException:
             return None
 
     def __head(self, h):
@@ -793,7 +794,7 @@ class Inspector(Colorable):
             if not callable(obj):
                 try:
                     ds = "Alias to the system command:\n  %s" % obj[1]
-                except:
+                except BaseException:
                     ds = "Alias: " + str(obj)
             else:
                 ds = "Alias to " + str(obj)
@@ -824,7 +825,7 @@ class Inspector(Colorable):
         try:
             bclass = obj.__class__
             out['base_class'] = str(bclass)
-        except:
+        except BaseException:
             pass
 
         # String form, but snip if too long in ? form (full in ??)
@@ -835,9 +836,9 @@ class Inspector(Colorable):
                 if not detail_level and len(ostr) > string_max:
                     ostr = ostr[:shalf] + ' <...> ' + ostr[-shalf:]
                     ostr = ("\n" + " " * len(str_head.expandtabs())).\
-                            join(q.strip() for q in ostr.split("\n"))
+                        join(q.strip() for q in ostr.split("\n"))
                 out[str_head] = ostr
-            except:
+            except BaseException:
                 pass
 
         if ospace:
@@ -936,7 +937,7 @@ class Inspector(Colorable):
             if ds:
                 try:
                     cls = getattr(obj, '__class__')
-                except:
+                except BaseException:
                     class_ds = None
                 else:
                     class_ds = getdoc(cls)
@@ -1046,7 +1047,7 @@ class Inspector(Colorable):
 
           - list_types(False): list all available object types for object matching.
         """
-        #print 'ps pattern:<%r>' % pattern # dbg
+        # print 'ps pattern:<%r>' % pattern # dbg
 
         # defaults
         type_pattern = 'all'
@@ -1075,7 +1076,7 @@ class Inspector(Colorable):
                 raise ValueError('invalid namespace <%s>. Valid names: %s' %
                                  (name, ns_table.keys()))
 
-        #print 'type_pattern:',type_pattern # dbg
+        # print 'type_pattern:',type_pattern # dbg
         search_result, namespaces_seen = set(), set()
         for ns_name in ns_search:
             ns = ns_table[ns_name]

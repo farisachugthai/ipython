@@ -1,8 +1,8 @@
 """Tests for the key interactiveshell module, where the main ipython class is defined.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Module imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # third party
 import nose.tools as nt
@@ -11,9 +11,10 @@ import nose.tools as nt
 
 from IPython import get_ipython
 ip = get_ipython()
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def test_reset():
     """reset must clear most namespaces."""
@@ -38,7 +39,8 @@ def test_reset():
 
 
 # Tests for reporting of exceptions in various modes, handling of SystemExit,
-# and %tb functionality.  This is really a mix of testing ultraTB and interactiveshell.
+# and %tb functionality.  This is really a mix of testing ultraTB and
+# interactiveshell.
 
 def doctest_tb_plain():
     """
@@ -124,6 +126,7 @@ ZeroDivisionError                         Traceback (most recent call last)
 <BLANKLINE>
 ZeroDivisionError: ...
       """
+
 
 def doctest_tb_sysexit():
     """

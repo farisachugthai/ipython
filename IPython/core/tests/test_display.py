@@ -18,19 +18,28 @@ from IPython.testing.tools import AssertPrints, AssertNotPrints
 
 import IPython.testing.decorators as dec
 
+
 def test_image_size():
     """Simple test for display.Image(args, width=x,height=y)"""
     thisurl = 'http://www.google.fr/images/srpr/logo3w.png'
     img = display.Image(url=thisurl, width=200, height=200)
-    nt.assert_equal(u'<img src="%s" width="200" height="200"/>' % (thisurl), img._repr_html_())
-    img = display.Image(url=thisurl, metadata={'width':200, 'height':200})
-    nt.assert_equal(u'<img src="%s" width="200" height="200"/>' % (thisurl), img._repr_html_())
+    nt.assert_equal(
+        u'<img src="%s" width="200" height="200"/>' %
+        (thisurl), img._repr_html_())
+    img = display.Image(url=thisurl, metadata={'width': 200, 'height': 200})
+    nt.assert_equal(
+        u'<img src="%s" width="200" height="200"/>' %
+        (thisurl), img._repr_html_())
     img = display.Image(url=thisurl, width=200)
-    nt.assert_equal(u'<img src="%s" width="200"/>' % (thisurl), img._repr_html_())
+    nt.assert_equal(
+        u'<img src="%s" width="200"/>' %
+        (thisurl), img._repr_html_())
     img = display.Image(url=thisurl)
     nt.assert_equal(u'<img src="%s"/>' % (thisurl), img._repr_html_())
     img = display.Image(url=thisurl, unconfined=True)
-    nt.assert_equal(u'<img src="%s" class="unconfined"/>' % (thisurl), img._repr_html_())
+    nt.assert_equal(
+        u'<img src="%s" class="unconfined"/>' %
+        (thisurl), img._repr_html_())
 
 
 def test_image_mimes():
@@ -45,23 +54,24 @@ def test_image_mimes():
 def test_geojson():
 
     gj = display.GeoJSON(data={
-            "type": "Feature",
-            "geometry": {
+        "type": "Feature",
+        "geometry": {
                 "type": "Point",
                 "coordinates": [-81.327, 296.038]
-            },
-            "properties": {
-                "name": "Inca City"
-            }
         },
+        "properties": {
+            "name": "Inca City"
+        }
+    },
         url_template="http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/{basemap_id}/{z}/{x}/{y}.png",
         layer_options={
             "basemap_id": "celestia_mars-shaded-16k_global",
             "attribution": "Celestia/praesepe",
             "minZoom": 0,
             "maxZoom": 18,
-        })
+    })
     nt.assert_equal(u'<IPython.core.display.GeoJSON object>', str(gj))
+
 
 def test_retina_png():
     here = os.path.dirname(__file__)
@@ -72,6 +82,7 @@ def test_retina_png():
     nt.assert_equal(md['width'], 1)
     nt.assert_equal(md['height'], 1)
 
+
 def test_retina_jpeg():
     here = os.path.dirname(__file__)
     img = display.Image(os.path.join(here, "2x2.jpg"), retina=True)
@@ -81,8 +92,10 @@ def test_retina_jpeg():
     nt.assert_equal(md['width'], 1)
     nt.assert_equal(md['height'], 1)
 
+
 def test_base64image():
     display.Image("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB94BCRQnOqNu0b4AAAAKSURBVAjXY2AAAAACAAHiIbwzAAAAAElFTkSuQmCC")
+
 
 def test_image_filename_defaults():
     '''test format constraint, and validity of jpeg and png'''
@@ -90,19 +103,30 @@ def test_image_filename_defaults():
     nt.assert_raises(ValueError, display.Image, filename=os.path.join(tpath, 'testing/tests/badformat.zip'),
                      embed=True)
     nt.assert_raises(ValueError, display.Image)
-    nt.assert_raises(ValueError, display.Image, data='this is not an image', format='badformat', embed=True)
+    nt.assert_raises(
+        ValueError,
+        display.Image,
+        data='this is not an image',
+        format='badformat',
+        embed=True)
     # check boths paths to allow packages to test at build and install time
     imgfile = os.path.join(tpath, 'core/tests/2x2.png')
     img = display.Image(filename=imgfile)
     nt.assert_equal('png', img.format)
     nt.assert_is_not_none(img._repr_png_())
-    img = display.Image(filename=os.path.join(tpath, 'testing/tests/logo.jpg'), embed=False)
+    img = display.Image(
+        filename=os.path.join(
+            tpath,
+            'testing/tests/logo.jpg'),
+        embed=False)
     nt.assert_equal('jpeg', img.format)
     nt.assert_is_none(img._repr_jpeg_())
+
 
 def _get_inline_config():
     from ipykernel.pylab.config import InlineBackend
     return InlineBackend.instance()
+
 
 @dec.skip_without('matplotlib')
 def test_set_matplotlib_close():
@@ -113,6 +137,7 @@ def test_set_matplotlib_close():
     display.set_matplotlib_close(False)
     assert not cfg.close_figures
 
+
 _fmt_mime_map = {
     'png': 'image/png',
     'jpeg': 'image/jpeg',
@@ -120,6 +145,7 @@ _fmt_mime_map = {
     'retina': 'image/png',
     'svg': 'image/svg+xml',
 }
+
 
 @dec.skip_without('matplotlib')
 def test_set_matplotlib_formats():
@@ -139,6 +165,7 @@ def test_set_matplotlib_formats():
             else:
                 nt.assert_not_in(Figure, f)
 
+
 @dec.skip_without('matplotlib')
 def test_set_matplotlib_formats_kwargs():
     from matplotlib.figure import Figure
@@ -154,6 +181,7 @@ def test_set_matplotlib_formats_kwargs():
     expected.update(cfg.print_figure_kwargs)
     nt.assert_equal(cell, expected)
 
+
 def test_display_available():
     """
     Test that display is available without import
@@ -167,18 +195,20 @@ def test_display_available():
     try:
         ip.run_cell('del display')
     except NameError:
-        pass # it's ok, it might be in builtins
+        pass  # it's ok, it might be in builtins
     # even if deleted it should be back
     with AssertNotPrints('NameError'):
         ip.run_cell('display')
 
-def test_textdisplayobj_pretty_repr():
-     p = display.Pretty("This is a simple test")
-     nt.assert_equal(repr(p), '<IPython.core.display.Pretty object>')
-     nt.assert_equal(p.data, 'This is a simple test')
 
-     p._show_mem_addr = True
-     nt.assert_equal(repr(p), object.__repr__(p))
+def test_textdisplayobj_pretty_repr():
+    p = display.Pretty("This is a simple test")
+    nt.assert_equal(repr(p), '<IPython.core.display.Pretty object>')
+    nt.assert_equal(p.data, 'This is a simple test')
+
+    p._show_mem_addr = True
+    nt.assert_equal(repr(p), object.__repr__(p))
+
 
 def test_displayobject_repr():
     h = display.HTML('<br />')
@@ -195,6 +225,7 @@ def test_displayobject_repr():
     j._show_mem_addr = False
     nt.assert_equal(repr(j), '<IPython.core.display.Javascript object>')
 
+
 @mock.patch('warnings.warn')
 def test_encourage_iframe_over_html(m_warn):
     display.HTML()
@@ -203,7 +234,8 @@ def test_encourage_iframe_over_html(m_warn):
     display.HTML('<br />')
     m_warn.assert_not_called()
 
-    display.HTML('<html><p>Lots of content here</p><iframe src="http://a.com"></iframe>')
+    display.HTML(
+        '<html><p>Lots of content here</p><iframe src="http://a.com"></iframe>')
     m_warn.assert_not_called()
 
     display.HTML('<iframe src="http://a.com"></iframe>')
@@ -213,12 +245,16 @@ def test_encourage_iframe_over_html(m_warn):
     display.HTML('<IFRAME SRC="http://a.com"></IFRAME>')
     m_warn.assert_called_with('Consider using IPython.display.IFrame instead')
 
+
 def test_progress():
     p = display.ProgressBar(10)
-    nt.assert_in('0/10',repr(p))
+    nt.assert_in('0/10', repr(p))
     p.html_width = '100%'
     p.progress = 5
-    nt.assert_equal(p._repr_html_(), "<progress style='width:100%' max='10' value='5'></progress>")
+    nt.assert_equal(
+        p._repr_html_(),
+        "<progress style='width:100%' max='10' value='5'></progress>")
+
 
 def test_progress_iter():
     with capture_output(display=False) as captured:
@@ -228,14 +264,15 @@ def test_progress_iter():
     out = captured.stdout
     nt.assert_in('5/5', out)
 
+
 def test_json():
     d = {'a': 5}
     lis = [d]
     metadata = [
         {'expanded': False, 'root': 'root'},
-        {'expanded': True,  'root': 'root'},
+        {'expanded': True, 'root': 'root'},
         {'expanded': False, 'root': 'custom'},
-        {'expanded': True,  'root': 'custom'},
+        {'expanded': True, 'root': 'custom'},
     ]
     json_objs = [
         display.JSON(d),
@@ -267,6 +304,7 @@ def test_json():
         nt.assert_equal(len(w), 1)
         nt.assert_equal(j._repr_json_(), (lis, metadata[0]))
 
+
 def test_video_embedding():
     """use a tempfile, with dummy-data, to ensure that video embedding doesn't crash"""
     v = display.Video("http://ignored")
@@ -289,24 +327,26 @@ def test_video_embedding():
 
         v = display.Video(f.name, embed=True)
         html = v._repr_html_()
-        nt.assert_in('src="data:video/mp4;base64,YWJj"',html)
+        nt.assert_in('src="data:video/mp4;base64,YWJj"', html)
 
         v = display.Video(f.name, embed=True, mimetype='video/other')
         html = v._repr_html_()
-        nt.assert_in('src="data:video/other;base64,YWJj"',html)
+        nt.assert_in('src="data:video/other;base64,YWJj"', html)
 
         v = display.Video(b'abc', embed=True, mimetype='video/mp4')
         html = v._repr_html_()
-        nt.assert_in('src="data:video/mp4;base64,YWJj"',html)
+        nt.assert_in('src="data:video/mp4;base64,YWJj"', html)
 
         v = display.Video(u'YWJj', embed=True, mimetype='video/xyz')
         html = v._repr_html_()
-        nt.assert_in('src="data:video/xyz;base64,YWJj"',html)
+        nt.assert_in('src="data:video/xyz;base64,YWJj"', html)
+
 
 def test_html_metadata():
     s = "<h1>Test</h1>"
     h = display.HTML(s, metadata={"isolated": True})
     nt.assert_equal(h._repr_html_(), (s, {"isolated": True}))
+
 
 def test_display_id():
     ip = get_ipython()
@@ -418,4 +458,3 @@ def test_display_handle():
         },
         'update': True,
     })
-

@@ -13,16 +13,16 @@ via %run as if it were executed interactively by the user. As of 2011-05-29,
 test_run.py calls it.
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Module imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 import sys
 
 from IPython import get_ipython
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # This needs to be here because nose and other test runners will import
 # this module. Importing this module has potential side effects that we
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     if not '_refbug_cache' in ip.user_ns:
         ip.user_ns['_refbug_cache'] = []
 
-
     aglobal = 'Hello'
+
     def f():
         return aglobal
 
@@ -44,4 +44,4 @@ if __name__ == '__main__':
 
     def call_f():
         for func in cache:
-            print('lowercased:',func().lower())
+            print('lowercased:', func().lower())

@@ -13,18 +13,18 @@ from IPython.paths import get_ipython_package_dir
 from IPython.utils.path import expand_path, ensure_dir_exists
 from traitlets import Unicode, Bool, observe
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Module errors
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class ProfileDirError(Exception):
     pass
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Class for managing profile directories
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class ProfileDir(LoggingConfigurable):
@@ -50,8 +50,7 @@ class ProfileDir(LoggingConfigurable):
 
     location = Unicode(
         u'',
-        help=
-        """Set the profile location directly. This overrides the logic used by the
+        help="""Set the profile location directly. This overrides the logic used by the
         `profile` option.""",
     ).tag(config=True)
 

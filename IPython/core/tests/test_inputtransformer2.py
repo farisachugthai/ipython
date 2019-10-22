@@ -109,14 +109,14 @@ HELP_CONTINUED_LINE = ("""\
 a = \\
 zip?
 """.splitlines(keepends=True), (1, 0),
-[r"get_ipython().set_next_input('a = \\\nzip');get_ipython().run_line_magic('pinfo', 'zip')" + "\n"]
+    [r"get_ipython().set_next_input('a = \\\nzip');get_ipython().run_line_magic('pinfo', 'zip')" + "\n"]
 )
 
 HELP_MULTILINE = ("""\
 (a,
 b) = zip?
 """.splitlines(keepends=True), (1, 0),
-[r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')" + "\n"]
+    [r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')" + "\n"]
 )
 
 
@@ -126,6 +126,7 @@ def null_cleanup_transformer(lines):
     """
     return []
 
+
 def check_make_token_by_line_never_ends_empty():
     """
     Check that not sequence of single or double characters ends up leading to en empty list of tokens
@@ -134,37 +135,48 @@ def check_make_token_by_line_never_ends_empty():
     for c in printable:
         nt.assert_not_equal(make_tokens_by_line(c)[-1], [])
         for k in printable:
-            nt.assert_not_equal(make_tokens_by_line(c+k)[-1], [])
+            nt.assert_not_equal(make_tokens_by_line(c + k)[-1], [])
+
 
 def check_find(transformer, case, match=True):
-    sample, expected_start, _  = case
+    sample, expected_start, _ = case
     tbl = make_tokens_by_line(sample)
     res = transformer.find(tbl)
     if match:
         # start_line is stored 0-indexed, expected values are 1-indexed
-        nt.assert_equal((res.start_line+1, res.start_col), expected_start)
+        nt.assert_equal((res.start_line + 1, res.start_col), expected_start)
         return res
     else:
         nt.assert_is(res, None)
+
 
 def check_transform(transformer_cls, case):
     lines, start, expected = case
     transformer = transformer_cls(start)
     nt.assert_equal(transformer.transform(lines), expected)
 
+
 def test_continued_line():
     lines = MULTILINE_MAGIC_ASSIGN[0]
     nt.assert_equal(ipt2.find_end_of_continued_line(lines, 1), 2)
 
-    nt.assert_equal(ipt2.assemble_continued_line(lines, (1, 5), 2), "foo    bar")
+    nt.assert_equal(
+        ipt2.assemble_continued_line(
+            lines, (1, 5), 2), "foo    bar")
+
 
 def test_find_assign_magic():
     check_find(ipt2.MagicAssign, MULTILINE_MAGIC_ASSIGN)
     check_find(ipt2.MagicAssign, MULTILINE_SYSTEM_ASSIGN, match=False)
-    check_find(ipt2.MagicAssign, MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT, match=False)
+    check_find(
+        ipt2.MagicAssign,
+        MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT,
+        match=False)
+
 
 def test_transform_assign_magic():
     check_transform(ipt2.MagicAssign, MULTILINE_MAGIC_ASSIGN)
+
 
 def test_find_assign_system():
     check_find(ipt2.SystemAssign, MULTILINE_SYSTEM_ASSIGN)
@@ -173,28 +185,34 @@ def test_find_assign_system():
     check_find(ipt2.SystemAssign, (["a=!ls\n"], (1, 2), None))
     check_find(ipt2.SystemAssign, MULTILINE_MAGIC_ASSIGN, match=False)
 
+
 def test_transform_assign_system():
     check_transform(ipt2.SystemAssign, MULTILINE_SYSTEM_ASSIGN)
     check_transform(ipt2.SystemAssign, MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT)
+
 
 def test_find_magic_escape():
     check_find(ipt2.EscapedCommand, MULTILINE_MAGIC)
     check_find(ipt2.EscapedCommand, INDENTED_MAGIC)
     check_find(ipt2.EscapedCommand, MULTILINE_MAGIC_ASSIGN, match=False)
 
+
 def test_transform_magic_escape():
     check_transform(ipt2.EscapedCommand, MULTILINE_MAGIC)
     check_transform(ipt2.EscapedCommand, INDENTED_MAGIC)
+
 
 def test_find_autocalls():
     for case in [AUTOCALL_QUOTE, AUTOCALL_QUOTE2, AUTOCALL_PAREN]:
         print("Testing %r" % case[0])
         check_find(ipt2.EscapedCommand, case)
 
+
 def test_transform_autocall():
     for case in [AUTOCALL_QUOTE, AUTOCALL_QUOTE2, AUTOCALL_PAREN]:
         print("Testing %r" % case[0])
         check_transform(ipt2.EscapedCommand, case)
+
 
 def test_find_help():
     for case in [SIMPLE_HELP, DETAILED_HELP, MAGIC_HELP, HELP_IN_EXPR]:
@@ -213,15 +231,20 @@ def test_find_help():
     # Nor in a string
     check_find(ipt2.HelpEnd, (["foo = '''bar?\n"], None, None), match=False)
 
+
 def test_transform_help():
     tf = ipt2.HelpEnd((1, 0), (1, 9))
     nt.assert_equal(tf.transform(HELP_IN_EXPR[0]), HELP_IN_EXPR[2])
 
     tf = ipt2.HelpEnd((1, 0), (2, 3))
-    nt.assert_equal(tf.transform(HELP_CONTINUED_LINE[0]), HELP_CONTINUED_LINE[2])
+    nt.assert_equal(
+        tf.transform(
+            HELP_CONTINUED_LINE[0]),
+        HELP_CONTINUED_LINE[2])
 
     tf = ipt2.HelpEnd((1, 0), (2, 8))
     nt.assert_equal(tf.transform(HELP_MULTILINE[0]), HELP_MULTILINE[2])
+
 
 def test_find_assign_op_dedent():
     """
@@ -231,8 +254,10 @@ def test_find_assign_op_dedent():
         def __init__(self, s):
             self.string = s
 
-    nt.assert_equal(_find_assign_op([Tk(s) for s in ('','a','=','b')]), 2)
-    nt.assert_equal(_find_assign_op([Tk(s) for s in ('','(', 'a','=','b', ')', '=' ,'5')]), 6)
+    nt.assert_equal(_find_assign_op([Tk(s) for s in ('', 'a', '=', 'b')]), 2)
+    nt.assert_equal(_find_assign_op(
+        [Tk(s) for s in ('', '(', 'a', '=', 'b', ')', '=', '5')]), 6)
+
 
 def test_check_complete():
     cc = ipt2.TransformerManager().check_complete
@@ -245,25 +270,27 @@ def test_check_complete():
     nt.assert_equal(cc("\\\r\n"), ('incomplete', 0))
     nt.assert_equal(cc("a = '''\n   hi"), ('incomplete', 3))
     nt.assert_equal(cc("def a():\n x=1\n global x"), ('invalid', None))
-    nt.assert_equal(cc("a \\ "), ('invalid', None))  # Nothing allowed after backslash
+    # Nothing allowed after backslash
+    nt.assert_equal(cc("a \\ "), ('invalid', None))
     nt.assert_equal(cc("1\\\n+2"), ('complete', None))
     nt.assert_equal(cc("exit"), ('complete', None))
 
     example = dedent("""
         if True:
-            a=1""" )
+            a=1""")
 
     nt.assert_equal(cc(example), ('incomplete', 4))
-    nt.assert_equal(cc(example+'\n'), ('complete', None))
-    nt.assert_equal(cc(example+'\n    '), ('complete', None))
+    nt.assert_equal(cc(example + '\n'), ('complete', None))
+    nt.assert_equal(cc(example + '\n    '), ('complete', None))
 
     # no need to loop on all the letters/numbers.
-    short = '12abAB'+string.printable[62:]
+    short = '12abAB' + string.printable[62:]
     for c in short:
         # test does not raise:
         cc(c)
         for k in short:
-            cc(c+k)
+            cc(c + k)
+
 
 def test_check_complete_II():
     """

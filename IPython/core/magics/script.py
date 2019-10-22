@@ -18,9 +18,9 @@ from IPython.utils import py3compat
 from IPython.utils.process import arg_split
 from traitlets import List, Dict, default
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def script_args(f):
@@ -57,7 +57,7 @@ def script_args(f):
             '--no-raise-error',
             action="store_false",
             dest='raise_error',
-            help="""Whether you should raise an error message in addition to 
+            help="""Whether you should raise an error message in addition to
             a stream on stderr if you get a nonzero exit code.
             """)
     ]
@@ -69,15 +69,15 @@ def script_args(f):
 @magics_class
 class ScriptMagics(Magics):
     """Magics for talking to scripts
-    
+
     This defines a base `%%script` cell magic for running a cell
     with a program in a subprocess, and registers a few top-level
     magics that call %%script with common interpreters.
     """
     script_magics = List(help="""Extra script cell magics to define
-        
+
         This generates simple wrappers of `%%script foo` as `%%foo`.
-        
+
         If you want to add script magics that aren't on your path,
         specify them in script_paths
         """, ).tag(config=True)
@@ -104,9 +104,8 @@ class ScriptMagics(Magics):
         return defaults
 
     script_paths = Dict(
-        help=
-        """Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
-        
+        help="""Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
+
         Only necessary for items in script_magics where the default path will not
         find the right interpreter.
         """).tag(config=True)
@@ -143,10 +142,10 @@ class ScriptMagics(Magics):
 
         # write a basic docstring:
         named_script_magic.__doc__ = \
-        """%%{name} script magic
-        
+            """%%{name} script magic
+
         Run cells with {script} in a subprocess.
-        
+
         This is a shortcut for `%%script {script}`
         """.format(**locals())
 
@@ -157,16 +156,16 @@ class ScriptMagics(Magics):
     @cell_magic("script")
     def shebang(self, line, cell):
         """Run a cell via a shell command
-        
+
         The `%%script` line is like the #! line of script,
         specifying a program (bash, perl, ruby, etc.) with which to run.
-        
+
         The rest of the cell is run by that program.
-        
+
         Examples
         --------
         ::
-        
+
             In [1]: %%script bash
                ...: for i in 1 2 3; do
                ...:   echo $i
@@ -230,8 +229,8 @@ class ScriptMagics(Magics):
             except OSError:
                 pass
             except Exception as e:
-                print("Error while terminating subprocess (pid=%i): %s" \
-                    % (p.pid, e))
+                print("Error while terminating subprocess (pid=%i): %s"
+                      % (p.pid, e))
             return
         out = py3compat.decode(out)
         err = py3compat.decode(err)
@@ -273,7 +272,7 @@ class ScriptMagics(Magics):
             if p.poll() is None:
                 try:
                     p.send_signal(signal.SIGINT)
-                except:
+                except BaseException:
                     pass
         time.sleep(0.1)
         self._gc_bg_processes()
@@ -283,7 +282,7 @@ class ScriptMagics(Magics):
             if p.poll() is None:
                 try:
                     p.terminate()
-                except:
+                except BaseException:
                     pass
         time.sleep(0.1)
         self._gc_bg_processes()
@@ -293,7 +292,7 @@ class ScriptMagics(Magics):
             if p.poll() is None:
                 try:
                     p.kill()
-                except:
+                except BaseException:
                     pass
         self._gc_bg_processes()
 

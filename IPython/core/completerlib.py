@@ -3,17 +3,17 @@
 
 These are all loaded by default by IPython.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2010-2011 The IPython Development Team.
 #
 #  Distributed under the terms of the BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib imports
 import glob
@@ -38,9 +38,9 @@ from IPython import get_ipython
 
 from typing import List
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals and constants
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 _suffixes = all_suffixes()
 
 # Time in seconds after which the rootmodules will be stored permanently in the
@@ -59,9 +59,9 @@ import_re = re.compile(r'(?P<name>[a-zA-Z_][a-zA-Z0-9_]*?)'
 # RE for the ipython %run command (python + ipython scripts)
 magic_run_re = re.compile(r'.*(\.ipy|\.ipynb|\.py[w]?)$')
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Local utilities
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def module_list(path):
@@ -92,7 +92,7 @@ def module_list(path):
     else:
         try:
             files = list(zipimporter(path)._files.keys())
-        except:
+        except BaseException:
             files = []
 
     # Build a list of modules which match the import_re regex.
@@ -162,7 +162,7 @@ def try_import(mod: str, only_modules=False) -> List[str]:
     mod = mod.rstrip('.')
     try:
         m = import_module(mod)
-    except:
+    except BaseException:
         return []
 
     m_is_init = '__init__' in (getattr(m, '__file__', '') or '')
@@ -180,9 +180,9 @@ def try_import(mod: str, only_modules=False) -> List[str]:
     return list(completions_set)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Completion-related functions.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def quick_completer(cmd, completions):
@@ -241,9 +241,9 @@ def module_completion(line):
         return try_import(mod)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Completers
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # These all have the func(self, event) signature to be used as custom
 # completers
 
@@ -274,9 +274,9 @@ def magic_run_completer(self, event):
     else:
         relpath = ''
 
-    #print("\nev=", event)  # dbg
-    #print("rp=", relpath)  # dbg
-    #print('comps=', comps)  # dbg
+    # print("\nev=", event)  # dbg
+    # print("rp=", relpath)  # dbg
+    # print('comps=', comps)  # dbg
 
     lglob = glob.glob
     isdir = os.path.isdir
@@ -304,7 +304,7 @@ def magic_run_completer(self, event):
 
         matches = dirs + pys
 
-    #print('run comp:', dirs+pys) # dbg
+    # print('run comp:', dirs+pys) # dbg
     return [compress_user(p, tilde_expand, tilde_val) for p in matches]
 
 
@@ -313,7 +313,7 @@ def cd_completer(self, event):
     ip = get_ipython()
     relpath = event.symbol
 
-    #print(event) # dbg
+    # print(event) # dbg
     if event.line.endswith('-b') or ' -b ' in event.line:
         # return only bookmark completions
         bkms = self.db.get('bookmarks', None)

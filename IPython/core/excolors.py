@@ -6,12 +6,12 @@ Color schemes for exception handling code in IPython.
 import os
 import warnings
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2005-2006 Fernando Perez <fperez@colorado.edu>
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#*****************************************************************************
+# *****************************************************************************
 
 from IPython.utils.coloransi import ColorSchemeTable, TermColors, ColorScheme
 
@@ -78,7 +78,8 @@ def exception_colors():
             caret=C.NoColor,
             Normal=C.NoColor))
 
-    # make some schemes as instances so we can copy them for modification easily
+    # make some schemes as instances so we can copy them for modification
+    # easily
     ex_colors.add_scheme(
         ColorScheme(
             'Linux',
@@ -130,7 +131,7 @@ def exception_colors():
 
             # Colors for printing the exception
             excName=C.Red,
-            #line = C.Brown,  # brown often is displayed as yellow
+            # line = C.Brown,  # brown often is displayed as yellow
             line=C.Red,
             caret=C.Normal,
             Normal=C.Normal,
@@ -159,7 +160,7 @@ def exception_colors():
 
             # Colors for printing the exception
             excName=C.Red,
-            #line = C.Brown,  # brown often is displayed as yellow
+            # line = C.Brown,  # brown often is displayed as yellow
             line=C.Red,
             caret=C.Normal,
             Normal=C.Normal,

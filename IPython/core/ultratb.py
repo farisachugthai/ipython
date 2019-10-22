@@ -80,13 +80,13 @@ Inheritance diagram:
    :parts: 3
 """
 
-#*****************************************************************************
+# *****************************************************************************
 # Copyright (C) 2001 Nathaniel Gray <n8gray@caltech.edu>
 # Copyright (C) 2001-2004 Fernando Perez <fperez@colorado.edu>
 #
 # Distributed under the terms of the BSD License.  The full license is in
 # the file COPYING, distributed as part of this software.
-#*****************************************************************************
+# *****************************************************************************
 
 import dis
 import inspect
@@ -440,8 +440,8 @@ def is_recursion_error(etype, value, records):
     # by stack frames in IPython itself. >500 frames probably indicates
     # a recursion error.
     return (etype is recursion_error_type) \
-           and "recursion" in str(value).lower() \
-           and len(records) > _FRAME_RECURSION_LIMIT
+        and "recursion" in str(value).lower() \
+        and len(records) > _FRAME_RECURSION_LIMIT
 
 
 def find_recursion(etype, value, records):
@@ -483,7 +483,7 @@ def find_recursion(etype, value, records):
     return last_unique, longest_repeat
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Module classes
 class TBTools(colorable.Colorable):
     """Basic tools used by all traceback printer classes."""
@@ -590,13 +590,13 @@ class TBTools(colorable.Colorable):
         raise NotImplementedError()
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 class ListTB(TBTools):
     """Print traceback information from a traceback list, with optional color.
 
     Calling requires 3 arguments: (etype, evalue, elist)
     as would be obtained by::
-    
+
       etype, evalue, tb = sys.exc_info()
       if tb:
         elist = traceback.extract_tb(tb)
@@ -735,17 +735,19 @@ class ListTB(TBTools):
         else:
             if issubclass(etype, SyntaxError):
                 have_filedata = True
-                if not value.filename: value.filename = "<string>"
+                if not value.filename:
+                    value.filename = "<string>"
                 if value.lineno:
                     lineno = value.lineno
                     textline = linecache.getline(value.filename, value.lineno)
                 else:
                     lineno = 'unknown'
                     textline = ''
-                list.append('%s  File %s"%s"%s, line %s%s%s\n' % \
+                list.append('%s  File %s"%s"%s, line %s%s%s\n' %
                             (Colors.normalEm,
-                             Colors.filenameEm, py3compat.cast_unicode(value.filename), Colors.normalEm,
-                             Colors.linenoEm, lineno, Colors.Normal  ))
+                             Colors.filenameEm, py3compat.cast_unicode(
+                                 value.filename), Colors.normalEm,
+                             Colors.linenoEm, lineno, Colors.Normal))
                 if textline == '':
                     textline = py3compat.cast_unicode(value.text, "utf-8")
 
@@ -813,11 +815,11 @@ class ListTB(TBTools):
         # Lifted from traceback.py
         try:
             return py3compat.cast_unicode(str(value))
-        except:
+        except BaseException:
             return u'<unprintable %s object>' % type(value).__name__
 
 
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 class VerboseTB(TBTools):
     """A port of Ka-Ping Yee's cgitb.py module that outputs color text instead
     of HTML.  Requires inspect and pydoc.  Crazy, man.
@@ -867,7 +869,7 @@ class VerboseTB(TBTools):
         """Format the stack frames of the traceback"""
         frames = []
         for r in records[:last_unique + recursion_repeat + 1]:
-            #print '*** record:',file,lnum,func,lines,index  # dbg
+            # print '*** record:',file,lnum,func,lines,index  # dbg
             frames.append(self.format_record(*r))
 
         if recursion_repeat:
@@ -917,7 +919,8 @@ class VerboseTB(TBTools):
                     # strange entries...
                     pass
 
-        file = py3compat.cast_unicode(file, util_path.fs_encoding)
+        file = py3compat.cast_unicode(
+            file, util_path.sys.getfilesystemencoding())
         link = tpl_link % util_path.compress_user(file)
         args, varargs, varkw, locals_ = inspect.getargvalues(frame)
 
@@ -1031,7 +1034,7 @@ class VerboseTB(TBTools):
                     if name_base in locals_:
                         try:
                             value = repr(eval(name_full, locals_))
-                        except:
+                        except BaseException:
                             value = undefined
                     else:
                         value = undefined
@@ -1040,7 +1043,7 @@ class VerboseTB(TBTools):
                     if name_base in frame.f_globals:
                         try:
                             value = repr(eval(name_full, frame.f_globals))
-                        except:
+                        except BaseException:
                             value = undefined
                     else:
                         value = undefined
@@ -1088,8 +1091,8 @@ class VerboseTB(TBTools):
                     "\ncalls leading up to the error, with the most recent (innermost) call last."
         else:
             # Simplified header
-            head = '%s%s' % (exc, 'Traceback (most recent call last)'. \
-                             rjust(width - len(str(etype))) )
+            head = '%s%s' % (exc, 'Traceback (most recent call last)'.
+                             rjust(width - len(str(etype))))
 
         return head
 
@@ -1099,7 +1102,7 @@ class VerboseTB(TBTools):
         # Get (safely) a string form of the exception info
         try:
             etype_str, evalue_str = map(str, (etype, evalue))
-        except:
+        except BaseException:
             # User exception is improperly defined.
             etype, evalue = str, sys.exc_info()[:2]
             etype_str, evalue_str = map(str, (etype, evalue))
@@ -1158,7 +1161,7 @@ class VerboseTB(TBTools):
             # from the stdlib traceback module. --TK
             error('\nUnicodeDecodeError while processing traceback.\n')
             return None
-        except:
+        except BaseException:
             # FIXME: I've been getting many crash reports from python 2.3
             # users, traceable to inspect.py.  If I can find a small test-case
             # to reproduce this, I should either write a better workaround or
@@ -1303,7 +1306,7 @@ class VerboseTB(TBTools):
             print("\nKeyboardInterrupt")
 
 
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 class FormattedTB(VerboseTB, ListTB):
     """Subclass ListTB but allow calling with a traceback.
 
@@ -1395,8 +1398,8 @@ class FormattedTB(VerboseTB, ListTB):
         If mode is not specified, cycles through the available modes."""
 
         if not mode:
-            new_idx = (self.valid_modes.index(self.mode) + 1 ) % \
-                      len(self.valid_modes)
+            new_idx = (self.valid_modes.index(self.mode) + 1) % \
+                len(self.valid_modes)
             self.mode = self.valid_modes[new_idx]
         elif mode not in self.valid_modes:
             raise ValueError('Unrecognized mode in FormattedTB: <' + mode +
@@ -1423,7 +1426,7 @@ class FormattedTB(VerboseTB, ListTB):
         self.set_mode(self.valid_modes[3])
 
 
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 class AutoFormattedTB(FormattedTB):
     """A traceback printer which can be called on the fly.
 
@@ -1480,7 +1483,7 @@ class AutoFormattedTB(FormattedTB):
                                                 number_of_lines_of_context)
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 # A simple class to preserve Nathan's original functionality.
@@ -1548,12 +1551,12 @@ def text_repr(value):
         return pydoc.text.repr(value)
     except KeyboardInterrupt:
         raise
-    except:
+    except BaseException:
         try:
             return repr(value)
         except KeyboardInterrupt:
             raise
-        except:
+        except BaseException:
             try:
                 # all still in an except block so we catch
                 # getattr raising
@@ -1566,7 +1569,7 @@ def text_repr(value):
                     return '%s instance' % text_repr(klass)
             except KeyboardInterrupt:
                 raise
-            except:
+            except BaseException:
                 return 'UNRECOVERABLE REPR FAILURE'
 
 

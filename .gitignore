@@ -7,6 +7,7 @@ build
 dist
 _build
 docs/man/*.gz
+# Wait why
 docs/source/api/generated
 docs/source/config/options
 docs/source/config/shortcuts/*.csv
@@ -33,3 +34,5 @@ __pycache__
 .python-version
 venv*/
 .idea/
+
+# Vim: set ft=git:

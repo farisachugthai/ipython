@@ -17,7 +17,8 @@ TMP_TEST_DIR = os.path.realpath(tempfile.mkdtemp())
 HOME_TEST_DIR = os.path.join(TMP_TEST_DIR, "home_test_dir")
 XDG_TEST_DIR = os.path.join(HOME_TEST_DIR, "xdg_test_dir")
 XDG_CACHE_DIR = os.path.join(HOME_TEST_DIR, "xdg_cache_dir")
-IP_TEST_DIR = os.path.join(HOME_TEST_DIR,'.ipython')
+IP_TEST_DIR = os.path.join(HOME_TEST_DIR, '.ipython')
+
 
 def setup_module():
     """Setup testenvironment for the module:
@@ -41,6 +42,7 @@ def teardown_module():
     # that non-empty directories are all recursively removed.
     shutil.rmtree(TMP_TEST_DIR)
 
+
 def patch_get_home_dir(dirpath):
     return patch.object(paths, 'get_home_dir', return_value=dirpath)
 
@@ -54,6 +56,7 @@ def test_get_ipython_dir_1():
 
     nt.assert_equal(ipdir, env_ipdir)
 
+
 def test_get_ipython_dir_2():
     """test_get_ipython_dir_2, Testcase to see if we can call get_ipython_dir without Exceptions."""
     with patch_get_home_dir('someplace'), \
@@ -63,10 +66,11 @@ def test_get_ipython_dir_2():
             modified_env({'IPYTHON_DIR': None,
                           'IPYTHONDIR': None,
                           'XDG_CONFIG_HOME': None
-                         }):
+                          }):
         ipdir = paths.get_ipython_dir()
 
     nt.assert_equal(ipdir, os.path.join("someplace", ".ipython"))
+
 
 def test_get_ipython_dir_3():
     """test_get_ipython_dir_3, move XDG if defined, and .ipython doesn't exist."""
@@ -88,6 +92,7 @@ def test_get_ipython_dir_3():
     finally:
         tmphome.cleanup()
 
+
 def test_get_ipython_dir_4():
     """test_get_ipython_dir_4, warn if XDG and home both exist."""
     with patch_get_home_dir(HOME_TEST_DIR), \
@@ -97,7 +102,6 @@ def test_get_ipython_dir_4():
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-
 
         with modified_env({
             'IPYTHON_DIR': None,
@@ -110,6 +114,7 @@ def test_get_ipython_dir_4():
         if sys.platform != 'darwin':
             nt.assert_equal(len(w), 1)
             nt.assert_in('Ignoring', str(w[0]))
+
 
 def test_get_ipython_dir_5():
     """test_get_ipython_dir_5, use .ipython if exists and XDG defined, but doesn't exist."""
@@ -130,6 +135,7 @@ def test_get_ipython_dir_5():
 
         nt.assert_equal(ipdir, IP_TEST_DIR)
 
+
 def test_get_ipython_dir_6():
     """test_get_ipython_dir_6, use home over XDG if defined and neither exist."""
     xdg = os.path.join(HOME_TEST_DIR, 'somexdg')
@@ -149,6 +155,7 @@ def test_get_ipython_dir_6():
     nt.assert_equal(ipdir, os.path.join(HOME_TEST_DIR, '.ipython'))
     nt.assert_equal(len(w), 0)
 
+
 def test_get_ipython_dir_7():
     """test_get_ipython_dir_7, test home directory expansion on IPYTHONDIR"""
     home_dir = os.path.normpath(os.path.expanduser('~'))
@@ -156,6 +163,7 @@ def test_get_ipython_dir_7():
             patch.object(paths, '_writable_dir', return_value=True):
         ipdir = paths.get_ipython_dir()
     nt.assert_equal(ipdir, os.path.join(home_dir, 'somewhere'))
+
 
 @skip_win32
 def test_get_ipython_dir_8():
@@ -189,6 +197,7 @@ def test_get_ipython_cache_dir():
         else:
             nt.assert_equal(paths.get_ipython_cache_dir(),
                             paths.get_ipython_dir())
+
 
 def test_get_ipython_package_dir():
     ipdir = paths.get_ipython_package_dir()

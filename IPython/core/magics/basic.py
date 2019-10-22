@@ -50,7 +50,7 @@ class MagicsDisplay(object):
 
     def _jsonable(self):
         """turn magics dict into jsonable dict of the same structure
-        
+
         replaces object instances with their class names as strings
         """
         magic_dict = {}
@@ -124,7 +124,7 @@ class BasicMagics(Magics):
 
           In [6]: %whereami
           Out[6]: u'/home/testuser'
-          
+
           In [7]: %alias_magic h history "-p -l 30" --line
           Created `%h` as an alias for `%history -l 30`.
         """
@@ -341,21 +341,21 @@ Currently the magic system has the following functions:""",
         try:
             shell.colors = new_scheme
             shell.refresh_style()
-        except:
+        except BaseException:
             color_switch_err('shell')
 
         # Set exception colors
         try:
             shell.InteractiveTB.set_colors(scheme=new_scheme)
             shell.SyntaxTB.set_colors(scheme=new_scheme)
-        except:
+        except BaseException:
             color_switch_err('exception')
 
         # Set info (for 'object?') colors
         if shell.color_info:
             try:
                 shell.inspector.set_active_scheme(new_scheme)
-            except:
+            except BaseException:
                 color_switch_err('object inspector')
         else:
             shell.inspector.set_active_scheme('NoColor')
@@ -377,7 +377,7 @@ Currently the magic system has the following functions:""",
         try:
             shell.InteractiveTB.set_mode(mode=new_mode)
             print('Exception reporting mode:', shell.InteractiveTB.mode)
-        except:
+        except BaseException:
             xmode_switch_err('user')
 
     @line_magic
@@ -492,7 +492,8 @@ Currently the magic system has the following functions:""",
         we have already handled that.
         """
         opts, arg = self.parse_options(parameter_s, '')
-        if arg == '': arg = None
+        if arg == '':
+            arg = None
         try:
             return self.shell.enable_gui(arg)
         except Exception as e:
@@ -609,12 +610,12 @@ class AsyncMagics(BasicMagics):
 
         If the passed parameter does not match any of the above and is a python
         identifier, get said object from user namespace and set it as the
-        runner, and activate autoawait. 
+        runner, and activate autoawait.
 
         If the object is a fully qualified object name, attempt to import it and
         set it as the runner, and activate autoawait.
-        
-        
+
+
         The exact behavior of autoawait is experimental and subject to change
         across version of IPython and Python.
         """

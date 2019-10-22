@@ -3,7 +3,8 @@
 Prefiltering components.
 
 Prefilters transform user input before it is exec'd by Python.  These
-transforms are used to implement additional syntax such as !ls and %magic.
+transforms are used to implement additional syntax such as !ls and `%magic`.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -25,9 +26,9 @@ from IPython.core.splitinput import LineInfo
 
 from traitlets import (List, Integer, Unicode, Bool, Instance, CRegExp)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Global utilities, errors and constants
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class PrefilterError(Exception):
@@ -61,15 +62,15 @@ def is_shadowed(identifier, ip):
     the alias and magic namespaces?  Note that an identifier is different
     than ifun, because it can not contain a '.' character."""
     # This is much safer than calling ofind, which can change state
-    return (identifier in ip.user_ns \
-            or identifier in ip.user_global_ns \
-            or identifier in ip.ns_table['builtin']\
+    return (identifier in ip.user_ns
+            or identifier in ip.user_global_ns
+            or identifier in ip.ns_table['builtin']
             or iskeyword(identifier))
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main Prefilter manager
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class PrefilterManager(Configurable):
@@ -122,9 +123,9 @@ class PrefilterManager(Configurable):
         self.init_handlers()
         self.init_checkers()
 
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # API for managing transformers
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def init_transformers(self):
         """Create the default transformers."""
@@ -158,9 +159,9 @@ class PrefilterManager(Configurable):
         if transformer in self._transformers:
             self._transformers.remove(transformer)
 
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # API for managing checkers
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def init_checkers(self):
         """Create the default checkers."""
@@ -192,9 +193,9 @@ class PrefilterManager(Configurable):
         if checker in self._checkers:
             self._checkers.remove(checker)
 
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # API for managing handlers
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def init_handlers(self):
         """Create the default handlers."""
@@ -233,9 +234,9 @@ class PrefilterManager(Configurable):
         """Get a handler by its escape string."""
         return self._esc_handlers.get(esc_str)
 
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Main prefiltering API
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def prefilter_line_info(self, line_info):
         """Prefilter a line that has been converted to a LineInfo object.
@@ -334,9 +335,9 @@ class PrefilterManager(Configurable):
         return out
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Prefilter transformers
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class PrefilterTransformer(Configurable):
@@ -367,9 +368,9 @@ class PrefilterTransformer(Configurable):
                                                   self.priority, self.enabled)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Prefilter checkers
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class PrefilterChecker(Configurable):
@@ -525,16 +526,16 @@ class AutocallChecker(PrefilterChecker):
             return None
 
         if callable(oinfo['obj']) \
-               and (not self.exclude_regexp.match(line_info.the_rest)) \
-               and self.function_name_regexp.match(line_info.ifun):
+                and (not self.exclude_regexp.match(line_info.the_rest)) \
+                and self.function_name_regexp.match(line_info.ifun):
             return self.prefilter_manager.get_handler_by_name('auto')
         else:
             return None
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Prefilter handlers
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class PrefilterHandler(Configurable):
@@ -595,7 +596,8 @@ class MagicHandler(PrefilterHandler):
         """Execute magic functions."""
         ifun = line_info.ifun
         the_rest = line_info.the_rest
-        #Prepare arguments for get_ipython().run_line_magic(magic_name, magic_args)
+        # Prepare arguments for get_ipython().run_line_magic(magic_name,
+        # magic_args)
         t_arg_s = ifun + " " + the_rest
         t_magic_name, _, t_magic_arg_s = t_arg_s.partition(' ')
         t_magic_name = t_magic_name.lstrip(ESC_MAGIC)
@@ -690,9 +692,9 @@ class EmacsHandler(PrefilterHandler):
         return line_info.line
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Defaults
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 _default_transformers = []
 

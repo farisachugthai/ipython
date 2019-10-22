@@ -15,7 +15,6 @@ def setup(app):
         https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx.add_lexer
 
     """
-    app.add_lexer('ipy', IPython.lib.lexers.IPyLexer)
     metadata = {'parallel_read_safe': True, 'parallel_write_safe': True}
     return metadata
 

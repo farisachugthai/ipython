@@ -2,14 +2,14 @@
 """Magic functions for InteractiveShell.
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2001 Janko Hauser <jhauser@zscout.de> and
 #  Copyright (C) 2001 Fernando Perez <fperez@colorado.edu>
 #  Copyright (C) 2008 The IPython Development Team
 
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 import re
@@ -27,9 +27,9 @@ from IPython.utils.text import dedent
 from traitlets import Bool, Dict, Instance, observe
 from logging import error
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # A dict we'll use for each class that has magics, used as temporary storage to
 # pass information between the @line/cell_magic method decorators and the
@@ -43,9 +43,9 @@ magic_kinds = ('line', 'cell')
 magic_spec = ('line', 'cell', 'line_cell')
 magic_escapes = dict(line=ESC_MAGIC, cell=ESC_MAGIC2)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Utility classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class Bunch:
@@ -82,9 +82,9 @@ def needs_local_scope(func):
     return func
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Class and method decorators for registering magics
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def magics_class(cls):
@@ -150,7 +150,7 @@ def validate_type(magic_kind):
 # types (method and function), so we generate them here once and reuse the
 # templates below.
 _docstring_template = \
-"""Decorate the given {0} as {1} magic.
+    """Decorate the given {0} as {1} magic.
 
 The decorator can be used with or without arguments, as follows.
 
@@ -305,9 +305,9 @@ register_line_magic = _function_magic_marker('line')
 register_cell_magic = _function_magic_marker('cell')
 register_line_cell_magic = _function_magic_marker('line_cell')
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Core Magic classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class MagicsManager(Configurable):
@@ -392,7 +392,7 @@ class MagicsManager(Configurable):
     def register(self, *magic_objects):
         """Register one or more instances of Magics.
 
-        Take one or more classes or instances of classes that subclass the main 
+        Take one or more classes or instances of classes that subclass the main
         `core.Magic` class, and register them with IPython to use the magic
         functions they provide.  The registration process will then ensure that
         any methods that have decorated to provide line and/or cell magics will
@@ -430,7 +430,7 @@ class MagicsManager(Configurable):
 
         This will create an IPython magic (line, cell or both) from a
         standalone function.  The functions should have the following
-        signatures: 
+        signatures:
 
         * For line magics: `def f(line)`
         * For cell magics: `def f(line, cell)`
@@ -544,7 +544,8 @@ class Magics(Configurable):
         # grab.  Only now, that the instance exists, can we create the proper
         # mapping to bound methods.  So we read the info off the original names
         # table and replace each method name by the actual bound method.
-        # But we mustn't clobber the *class* mapping, in case of multiple instances.
+        # But we mustn't clobber the *class* mapping, in case of multiple
+        # instances.
         class_magics = self.magics
         self.magics = {}
         for mtype in magic_kinds:

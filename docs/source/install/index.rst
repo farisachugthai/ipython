@@ -4,14 +4,11 @@
 Installation
 ============
 
-.. toctree::
-   :maxdepth: 3
-   :hidden:
-
+.. toctree:: Installation
+   :maxdepth: 1
 
    install
    kernel_install
-
 
 
 This sections will guide you through :ref:`installing IPython itself <install>`, and
@@ -41,12 +38,12 @@ Install and register an IPython kernel with Jupyter:
 
     $ python -m ipykernel install [--user] [--name <machine-readable-name>] [--display-name <"User Friendly Name">]
 
-for more help see 
+for more help see
 
 .. code-block:: bash
-    
+
     $ python -m ipykernel install  --help
-    
+
 
 
 .. seealso::
@@ -54,5 +51,3 @@ for more help see
    `Installing Jupyter <http://jupyter.readthedocs.io/en/latest/install.html>`__
      The Notebook, nbconvert, and many other former pieces of IPython are now
      part of Project Jupyter.
-
-

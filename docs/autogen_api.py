@@ -1,30 +1,31 @@
 #!/usr/bin/env python
 """Script to auto-generate our API docs.
 
-Is the module to download called apigen? I downloaded that and in python3.7 on 10/05/2019,
-running this script failed because there's no module named rpcrequest. Pip and conda can't
+Is the module to download called apigen? I downloaded that and in
+python3.7 on 10/05/2019, running this script failed because there's no
+module named rpcrequest. Pip and conda can't
 find it either so are we just not supposed to run this file directly?
 
 If so, then I'm getting the feeling that this script isn't used at all.
 
 No it definitely is and I just got the error message again.
 
-"""
+GOT IT. apigen is  ./sphinxext/apigen.py
 
-from apigen import ApiDocWriter
+Jesus Christ that was tough.
+
+"""
+from sphinxext.apigen import ApiDocWriter
 import os
 import sys
 
-pjoin = os.path.join
 
-here = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(pjoin(os.path.abspath(here), 'sphinxext'))
-
-
-source = pjoin(here, 'source')
-
-# *****************************************************************************
-if __name__ == '__main__':
+def main():
+    """Does this module have to be 100% globals?"""
+    pjoin = os.path.join
+    here = os.path.abspath(os.path.dirname(__file__))
+    sys.path.append(pjoin(os.path.abspath(here), 'sphinxext'))
+    source = pjoin(here, 'source')
     package = 'IPython'
     outdir = pjoin(source, 'api', 'generated')
     docwriter = ApiDocWriter(package, rst_extension='.rst')
@@ -87,3 +88,8 @@ if __name__ == '__main__':
                           relative_to=pjoin(source, 'api')
                           )
     print('%d files written' % len(docwriter.written_modules))
+
+
+# *****************************************************************************
+if __name__ == '__main__':
+    sys.exit(main())

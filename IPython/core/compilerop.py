@@ -14,17 +14,17 @@ Authors
 # name is in the stdlib and name collisions with the stdlib tend to produce
 # weird problems (often with third-party tools).
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2010-2011 The IPython Development Team.
 #
 #  Distributed under the terms of the BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib imports
 import __future__
@@ -37,9 +37,9 @@ import operator
 import time
 from contextlib import contextmanager
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Constants
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Roughly equal to PyCF_MASK | PyCF_MASK_OBSOLETE as defined in pythonrun.h,
 # this is used as a bitmask to extract future-related code flags.
@@ -47,9 +47,9 @@ PyCF_MASK = functools.reduce(operator.or_,
                              (getattr(__future__, fname).compiler_flag
                               for fname in __future__.all_feature_names))
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Local utilities
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def code_name(code, number=0):
@@ -64,9 +64,9 @@ def code_name(code, number=0):
     return '<ipython-input-{0}-{1}>'.format(number, hash_digest[:12])
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class CachingCompiler(codeop.Compile):
@@ -139,7 +139,7 @@ class CachingCompiler(codeop.Compile):
 
     @contextmanager
     def extra_flags(self, flags):
-        ## bits that we'll set to 1
+        # bits that we'll set to 1
         turn_on_bits = ~self.flags & flags
 
         self.flags = self.flags | flags

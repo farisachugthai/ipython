@@ -2,39 +2,45 @@
 """Tests for CommandChainDispatcher."""
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import nose.tools as nt
 from IPython.core.error import TryNext
 from IPython.core.hooks import CommandChainDispatcher
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Local utilities
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Define two classes, one which succeeds and one which raises TryNext. Each
 # sets the attribute `called` to True when it is called.
+
+
 class Okay(object):
     def __init__(self, message):
         self.message = message
         self.called = False
+
     def __call__(self):
         self.called = True
         return self.message
+
 
 class Fail(object):
     def __init__(self, message):
         self.message = message
         self.called = False
+
     def __call__(self):
         self.called = True
         raise TryNext(self.message)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def test_command_chain_dispatcher_ff():
     """Test two failing hooks"""
@@ -52,6 +58,7 @@ def test_command_chain_dispatcher_ff():
 
     nt.assert_true(fail1.called)
     nt.assert_true(fail2.called)
+
 
 def test_command_chain_dispatcher_fofo():
     """Test a mixture of failing and succeeding hooks."""
@@ -72,6 +79,7 @@ def test_command_chain_dispatcher_fofo():
     nt.assert_true(okay1.called)
     nt.assert_false(fail2.called)
     nt.assert_false(okay2.called)
+
 
 def test_command_chain_dispatcher_eq_priority():
     okay1 = Okay(u'okay1')

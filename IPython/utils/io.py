@@ -1,6 +1,18 @@
 # encoding: utf-8
-"""
-IO related utilities.
+"""IO related utilities.
+
+Can we all agree though that we should really stop naming
+modules after ones in the std. lib?
+
+Or if we do, then we should do some really hacky shit
+like.:
+
+>>> from io import *
+
+So we can at least allow users to start up in this directory
+and not get confused when they inevitably get an error
+from something blindly crashing.
+
 """
 
 # Copyright (c) IPython Development Team.

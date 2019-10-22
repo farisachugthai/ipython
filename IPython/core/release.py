@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Release data for the IPython project."""
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2008, IPython Development Team.
 #  Copyright (c) 2001, Fernando Perez <fernando.perez@colorado.edu>
 #  Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
@@ -10,7 +10,7 @@
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Name of the package for release purposes.  This is the name which labels
 # the tarballs and RPMs made by distutils, so it's best to lowercase it.
@@ -43,7 +43,7 @@ kernel_protocol_version = "%i.%i" % kernel_protocol_version_info
 description = "IPython: Productive Interactive Computing"
 
 long_description = \
-"""
+    """
 IPython provides a rich toolkit to help you make the most out of using Python
 interactively.  Its main components are:
 

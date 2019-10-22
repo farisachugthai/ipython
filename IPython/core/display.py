@@ -28,9 +28,9 @@ __all__ = [
     'update_display', 'DisplayHandle', 'Video'
 ]
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # utility functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def _safe_exists(path):
@@ -78,9 +78,9 @@ def _display_mimetype(mimetype, objs, raw=False, metadata=None):
     display(*objs, raw=raw, metadata=metadata, include=[mimetype])
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 # use * to indicate transient is keyword-only
@@ -123,7 +123,8 @@ def publish_display_data(data,
 
     # only pass transient if supplied,
     # to avoid errors with older ipykernel.
-    # TODO: We could check for ipykernel version and provide a detailed upgrade message.
+    # TODO: We could check for ipykernel version and provide a detailed
+    # upgrade message.
     if transient:
         kwargs['transient'] = transient
 
@@ -377,10 +378,10 @@ class DisplayHandle(object):
 
     def display(self, obj, **kwargs):
         """Make a new display with my id, updating existing instances.
-        
+
         Parameters
         ----------
-        
+
         obj:
             object to display
         **kwargs:
@@ -390,10 +391,10 @@ class DisplayHandle(object):
 
     def update(self, obj, **kwargs):
         """Update existing displays with my id
-        
+
         Parameters
         ----------
-        
+
         obj:
             object to display
         **kwargs:
@@ -578,9 +579,9 @@ def display_pdf(*objs, **kwargs):
     _display_mimetype('application/pdf', objs, **kwargs)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Smart classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class DisplayObject(object):
@@ -676,7 +677,7 @@ class DisplayObject(object):
                 # decode data, if an encoding was specified
                 if encoding:
                     self.data = self.data.decode(encoding, 'replace')
-            except:
+            except BaseException:
                 self.data = None
 
 
@@ -782,12 +783,12 @@ class SVG(DisplayObject):
 
 
 class ProgressBar(DisplayObject):
-    """Progressbar supports displaying a progressbar like element 
+    """Progressbar supports displaying a progressbar like element
     """
 
     def __init__(self, total):
         """Creates a new progressbar
-        
+
         Parameters
         ----------
         total : int
@@ -850,7 +851,8 @@ class JSON(DisplayObject):
 
     Scalar types (None, number, string) are not allowed, only dict or list containers.
     """
-    # wrap data in a property, which warns about passing already-serialized JSON
+    # wrap data in a property, which warns about passing already-serialized
+    # JSON
     _data = None
 
     def __init__(self,
@@ -878,7 +880,7 @@ class JSON(DisplayObject):
         metadata: dict
             Specify extra metadata to attach to the json display object.
         root : str
-            The name of the root element of the JSON tree 
+            The name of the root element of the JSON tree
         """
         self.metadata = {
             'expanded': expanded,
@@ -1404,7 +1406,7 @@ class Video(DisplayObject):
             data = str(data)
 
         if url is None and isinstance(data, str) and data.startswith(
-            ('http:', 'https:')):
+                ('http:', 'https:')):
             url = data
             data = None
         elif os.path.exists(data):

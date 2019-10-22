@@ -1,5 +1,7 @@
+-e ..
+pygments
 ipykernel
-setuptools>=18.5
+setuptools>=38.5
 sphinx
 sphinx-rtd-theme
 docrepr

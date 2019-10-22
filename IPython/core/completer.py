@@ -71,8 +71,8 @@ Experimental
 
 Starting with IPython 6.0, this module can make use of the Jedi library to
 generate completions both using static analysis of the code, and dynamically
-inspecting multiple namespaces. Jedi is an autocompletion and static analysis 
-for Python. The APIs attached to this new mechanism is unstable and will 
+inspecting multiple namespaces. Jedi is an autocompletion and static analysis
+for Python. The APIs attached to this new mechanism is unstable and will
 raise unless use in an :any:`provisionalcompleter` context manager.
 
 You will find that the following are experimental:
@@ -146,12 +146,14 @@ skip_doctest = True
 
 try:
     import jedi
+except ImportError:
+    JEDI_INSTALLED = False
+else:
     jedi.settings.case_insensitive_completion = False
     import jedi.api.helpers
     import jedi.api.classes
     JEDI_INSTALLED = True
-except ImportError:
-    JEDI_INSTALLED = False
+
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
@@ -186,10 +188,9 @@ warnings.filterwarnings('error', category=ProvisionalCompleterWarning)
 
 @contextmanager
 def provisionalcompleter(action='ignore'):
-    """
+    """Context manager for unstable API features.
 
-
-    This contest manager has to be used in any place where unstable completer
+    This context manager has to be used in any place where unstable completer
     behavior and API may be called.
 
     >>> with provisionalcompleter():
@@ -208,6 +209,12 @@ def provisionalcompleter(action='ignore'):
 
         We'll be happy to get your feedback , feature request and improvement on
         any of the unstable APIs !
+
+    .. warning:: Doesn't this drop any args passed to the function it wraps?
+
+        Or does contextlib.context_manager handle that for us? I'm surprised to see
+        no \*args or \*\*kwargs here.
+
     """
     with warnings.catch_warnings():
         warnings.filterwarnings(action, category=ProvisionalCompleterWarning)
@@ -315,7 +322,8 @@ def completions_sorting_key(word):
         prio1 = -1
 
     if word.startswith('%%'):
-        # If there's another % in there, this is something else, so leave it alone
+        # If there's another % in there, this is something else, so leave it
+        # alone
         if not "%" in word[2:]:
             word = word[2:]
             prio2 = 2
@@ -728,10 +736,10 @@ class Completer(Configurable):
 
         try:
             obj = eval(expr, self.namespace)
-        except:
+        except BaseException:
             try:
                 obj = eval(expr, self.global_namespace)
-            except:
+            except BaseException:
                 return []
 
         if self.limit_to__all__ and hasattr(obj, '__all__'):
@@ -758,7 +766,7 @@ def get__all__entries(obj):
     """returns the strings in the __all__ attribute"""
     try:
         words = getattr(obj, '__all__')
-    except:
+    except BaseException:
         return []
 
     return [w for w in words if isinstance(w, str)]
@@ -1445,7 +1453,8 @@ class IPCompleter(Completer):
             # now. Skip it.
             try_jedi = not completing_string
         except Exception as e:
-            # many of things can go wrong, we are using private API just don't crash.
+            # many of things can go wrong, we are using private API just don't
+            # crash.
             if self.debug:
                 print("Error detecting if completing a non-finished string :",
                       e, '|')
@@ -1621,7 +1630,7 @@ class IPCompleter(Completer):
             for namedArg in set(namedArgs) - usedNamedArgs:
                 if namedArg.startswith(text):
                     argMatches.append(u"%s=" % namedArg)
-        except:
+        except BaseException:
             pass
 
         return argMatches
@@ -1711,7 +1720,8 @@ class IPCompleter(Completer):
         else:
             key_start = completion_start = match.end()
 
-        # grab the leading prefix, to make sure all completions start with `text`
+        # grab the leading prefix, to make sure all completions start with
+        # `text`
         if text_start > key_start:
             leading = ''
         else:
@@ -2135,7 +2145,7 @@ class IPCompleter(Completer):
                     try:
                         matches.extend([(m, matcher.__qualname__)
                                         for m in matcher(text)])
-                    except:
+                    except BaseException:
                         # Show the ugly traceback if the matcher causes an
                         # exception, but do NOT crash the kernel!
                         sys.excepthook(*sys.exc_info())

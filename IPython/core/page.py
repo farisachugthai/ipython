@@ -42,7 +42,7 @@ def display_page(strng, start=0, screen_lines=25):
 
 def as_hook(page_func):
     """Wrap a pager func to strip the `self` arg
-    
+
     so it can be called as a hook.
     """
     return lambda self, *args, **kwargs: page_func(*args, **kwargs)
@@ -121,13 +121,13 @@ def _detect_screen_size(screen_lines_def):
     termios.tcsetattr(sys.stdout, termios.TCSANOW, term_flags)
     # Now we have what we needed: the screen size in rows/columns
     return screen_lines_real
-    #print '***Screen size:',screen_lines_real,'lines x',\
-    #screen_cols,'columns.' # dbg
+    # print '***Screen size:',screen_lines_real,'lines x',\
+    # screen_cols,'columns.' # dbg
 
 
 def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
     """Display a string, piping through a pager after a certain length.
-    
+
     strng can be a mime-bundle dict, supplying multiple representations,
     keyed by mime-type.
 
@@ -179,9 +179,9 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
             print(str_toprint)
             return
 
-    #print 'numlines',numlines,'screenlines',screen_lines  # dbg
+    # print 'numlines',numlines,'screenlines',screen_lines  # dbg
     if numlines <= screen_lines:
-        #print '*** normal print'  # dbg
+        # print '*** normal print'  # dbg
         print(str_toprint)
     else:
         # Try to open pager and default to internal one if that fails.
@@ -192,7 +192,8 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
         pager_cmd += ' ' + get_pager_start(pager_cmd, start)
         if os.name == 'nt':
             if pager_cmd.startswith('type'):
-                # The default WinXP 'type' command is failing on complex strings.
+                # The default WinXP 'type' command is failing on complex
+                # strings.
                 retval = 1
             else:
                 fd, tmpname = tempfile.mkstemp('.txt')
@@ -233,10 +234,10 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
 
 def page(data, start=0, screen_lines=0, pager_cmd=None):
     """Display content in a pager, piping through a pager after a certain length.
-    
+
     data can be a mime-bundle dict, supplying multiple representations,
     keyed by mime-type, or text.
-    
+
     Pager is dispatched via the `show_in_pager` IPython hook.
     If no hook is registered, `pager_page` will be used.
     """
@@ -270,12 +271,12 @@ def page_file(fname, start=0, pager_cmd=None):
         if os.environ['TERM'] in ['emacs', 'dumb']:
             raise EnvironmentError
         system(pager_cmd + ' ' + fname)
-    except:
+    except BaseException:
         try:
             if start > 0:
                 start -= 1
             page(open(fname).read(), start)
-        except:
+        except BaseException:
             print('Unable to show file', repr(fname))
 
 
@@ -292,7 +293,7 @@ def get_pager_cmd(pager_cmd=None):
     if pager_cmd is None:
         try:
             pager_cmd = os.environ['PAGER']
-        except:
+        except BaseException:
             pager_cmd = default_pager_cmd
 
     if pager_cmd == 'less' and '-r' not in os.environ.get('LESS', '').lower():
@@ -348,11 +349,11 @@ def snip_print(str, width=75, print_full=0, header=''):
     """Print a string snipping the midsection to fit in width.
 
     print_full: mode control:
-    
+
       - 0: only snip long strings
       - 1: send to page() directly.
       - 2: snip long strings and ask for full length viewing with page()
-    
+
     Return 1 if snipping was necessary, 0 otherwise."""
 
     if print_full == 1:

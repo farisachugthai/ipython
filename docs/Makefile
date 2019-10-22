@@ -14,9 +14,11 @@ PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SRCDIR)
 
+# Put it first so that "make" without argument is like "make help".
+
 .PHONY: help clean html web pickle htmlhelp latex changes linkcheck api
 
-default: html
+default: help
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -142,3 +144,7 @@ info:
 	@echo "Running Texinfo files through makeinfo..."
 	make -C $(BUILDDIR)/texinfo info
 	@echo "makeinfo finished; the Info files are in $(BUILDDIR)/texinfo."
+
+# Requires tabs. If setting values in your vimrc doesn't work type <C-v><Tab> to insert a tab literally.
+# magic:
+		# $(PYTHON) autogen_magics.py

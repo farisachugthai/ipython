@@ -227,7 +227,8 @@ class OSMagics(Magics):
                     except OSError:
                         continue
 
-                    # for python 3.6+ rewrite to: with os.scandir(pdir) as dirlist:
+                    # for python 3.6+ rewrite to: with os.scandir(pdir) as
+                    # dirlist:
                     dirlist = os.scandir(path=pdir)
                     for ff in dirlist:
                         if self.isexec(ff):
@@ -251,7 +252,8 @@ class OSMagics(Magics):
                     except OSError:
                         continue
 
-                    # for python 3.6+ rewrite to: with os.scandir(pdir) as dirlist:
+                    # for python 3.6+ rewrite to: with os.scandir(pdir) as
+                    # dirlist:
                     dirlist = os.scandir(pdir)
                     for ff in dirlist:
                         fname = ff.name
@@ -535,7 +537,7 @@ class OSMagics(Magics):
         if parameter_s:
             try:
                 args = map(int, parameter_s.split())
-            except:
+            except BaseException:
                 self.arg_err(self.dhist)
                 return
             if len(args) == 1:

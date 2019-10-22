@@ -1,16 +1,16 @@
 """Implementation of code management magic functions.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012 The IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib
 import inspect
@@ -36,9 +36,9 @@ from warnings import warn
 from logging import error
 from IPython.utils.text import get_text_list
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 # Used for exception handling in magic_edit
@@ -198,7 +198,7 @@ class CodeMagics(Magics):
           so that magics are loaded in their transformed version to valid
           Python.  If this option is given, the raw input as typed as the
           command line is used instead.
-          
+
           -f: force overwrite.  If file exists, %save will prompt for overwrite
           unless -f is given.
 
@@ -309,11 +309,11 @@ class CodeMagics(Magics):
         Options:
 
           -r <lines>: Specify lines or ranges of lines to load from the source.
-          Ranges could be specified as x-y (x..y) or in python-style x:y 
-          (x..(y-1)). Both limits x and y can be left blank (meaning the 
+          Ranges could be specified as x-y (x..y) or in python-style x:y
+          (x..(y-1)). Both limits x and y can be left blank (meaning the
           beginning and end of the file, respectively).
 
-          -s <symbols>: Specify function or classes to load from python source. 
+          -s <symbols>: Specify function or classes to load from python source.
 
           -y : Don't ask confirmation for loading source above 200 000 characters.
 
@@ -374,10 +374,10 @@ class CodeMagics(Magics):
         # so in average, more than 5000 lines
         if l > 200000 and 'y' not in opts:
             try:
-                ans = self.shell.ask_yes_no(("The text you're trying to load seems pretty big"\
-                " (%d characters). Continue (y/[N]) ?" % l), default='n' )
+                ans = self.shell.ask_yes_no(("The text you're trying to load seems pretty big"
+                                             " (%d characters). Continue (y/[N]) ?" % l), default='n')
             except StdinNotImplementedError:
-                #assume yes if raw input not implemented
+                # assume yes if raw input not implemented
                 ans = True
 
             if ans is False:
@@ -439,7 +439,7 @@ class CodeMagics(Magics):
                     # Load the parameter given as a variable. If not a string,
                     # process it as an object instead (below)
 
-                    #print '*** args',args,'type',type(args)  # dbg
+                    # print '*** args',args,'type',type(args)  # dbg
                     data = eval(args, shell.user_ns)
                     if not isinstance(data, str):
                         raise DataIsObject
@@ -463,7 +463,7 @@ class CodeMagics(Magics):
                     filename = find_file(data)
                     if filename:
                         if 'fakemodule' in filename.lower() and \
-                            inspect.isclass(data):
+                                inspect.isclass(data):
                             # class created by %edit? Try to find source
                             # by looking for method definitions instead, the
                             # __module__ in those classes is FakeModule.
@@ -475,7 +475,7 @@ class CodeMagics(Magics):
                                     continue
                                 filename = find_file(attr)
                                 if filename and \
-                                  'fakemodule' not in filename.lower():
+                                        'fakemodule' not in filename.lower():
                                     # change the attribute to be the edit
                                     # target instead
                                     data = attr
@@ -517,7 +517,7 @@ class CodeMagics(Magics):
             last_call[0] = shell.displayhook.prompt_count
             if not opts_prev:
                 last_call[1] = args
-        except:
+        except BaseException:
             pass
 
         return filename, lineno, use_temp

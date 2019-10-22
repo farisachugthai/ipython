@@ -1,16 +1,16 @@
 """Implementation of magic functions for IPython's own logging.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012 The IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib
 import os
@@ -21,9 +21,9 @@ from IPython.core.magic import Magics, magics_class, line_magic
 from warnings import warn
 from traitlets import Bool
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 @magics_class
@@ -90,7 +90,7 @@ class LoggingMagics(Magics):
             put timestamps before each input line logged (these are put in
             comments).
 
-          -q 
+          -q
             suppress output of logstate message when logging is invoked
         """
 
@@ -107,7 +107,7 @@ class LoggingMagics(Magics):
         if par:
             try:
                 logfname, logmode = par.split()
-            except:
+            except BaseException:
                 logfname = par
                 logmode = 'backup'
         else:
@@ -125,7 +125,7 @@ class LoggingMagics(Magics):
         try:
             logger.logstart(logfname, loghead, logmode, log_output, timestamp,
                             log_raw_input)
-        except:
+        except BaseException:
             self.shell.logfile = old_logfile
             warn("Couldn't start log: %s" % sys.exc_info()[1])
         else:

@@ -68,7 +68,8 @@ def _pseudo_sync_runner(coro):
     except StopIteration as exc:
         return exc.value
     else:
-        # TODO: do not raise but return an execution result with the right info.
+        # TODO: do not raise but return an execution result with the right
+        # info.
         raise RuntimeError("{coro_name!r} needs a real async loop".format(
             coro_name=coro.__name__))
 

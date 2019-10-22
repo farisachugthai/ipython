@@ -5,16 +5,16 @@ Authors
 -------
 * Bradley Froehle
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2012  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 import unittest
 
 from IPython.testing import decorators as dec
@@ -23,6 +23,7 @@ from IPython.testing import tools as tt
 sqlite_err_maybe = dec.module_not_available('sqlite3')
 SQLITE_NOT_AVAILABLE_ERROR = ('WARNING: IPython History requires SQLite,'
                               ' your history will not be saved\n')
+
 
 class TestFileToRun(tt.TempFileMixin, unittest.TestCase):
     """Test the behavior of the file_to_run parameter."""
@@ -52,7 +53,7 @@ class TestFileToRun(tt.TempFileMixin, unittest.TestCase):
         self.mktmp(src)
 
         out, err = tt.ipexec(self.fname, options=['-i'],
-                           commands=['"__file__" in globals()', 'print(123)', 'exit()'])
+                             commands=['"__file__" in globals()', 'print(123)', 'exit()'])
         if 'False' not in out:
             print("Subprocess stderr:")
             print(err)

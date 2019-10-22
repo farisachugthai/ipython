@@ -170,7 +170,8 @@ exclude_patterns = []
 pygments_style = 'sphinx'
 
 # Set the default role so we can use `foo` instead of ``foo``
-default_role = 'literal'
+
+default_role = 'py:obj'
 
 # Options for HTML output
 # -----------------------

@@ -34,15 +34,15 @@ from traitlets import (
 )
 from warnings import warn
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 @undoc
 class DummyDB(object):
     """Dummy DB that will act as a black hole for history.
-    
+
     Only used in the absence of sqlite"""
 
     def execute(*args, **kwargs):
@@ -161,7 +161,7 @@ class HistoryAccessorBase(LoggingConfigurable):
 
 class HistoryAccessor(HistoryAccessorBase):
     """Access the history database without adding to it.
-    
+
     This is intended for use by standalone history tools. IPython shells use
     HistoryManager, below, which is a subclass of this."""
 
@@ -173,25 +173,25 @@ class HistoryAccessor(HistoryAccessorBase):
     # String holding the path to the history file
     hist_file = Unicode(
         help="""Path to file to use for SQLite history database.
-        
+
         By default, IPython will put the history database in the IPython
         profile directory.  If you would rather share one history among
         profiles, you can set this value in each, so that they are consistent.
-        
+
         Due to an issue with fcntl, SQLite is known to misbehave on some NFS
         mounts.  If you see IPython hanging, try setting this to something on a
         local disk, e.g::
-        
+
             ipython --HistoryManager.hist_file=/tmp/ipython_hist.sqlite
 
         you can also use the specific value `:memory:` (including the colon
         at both end but not the back ticks), to avoid creating an history file.
-        
+
         """).tag(config=True)
 
     enabled = Bool(True,
                    help="""enable the SQLite history
-        
+
         set enabled=False to disable the SQLite history,
         in which case there will be no stored history, no SQLite connection,
         and no background saving thread.  This may be necessary in some
@@ -200,7 +200,7 @@ class HistoryAccessor(HistoryAccessorBase):
 
     connection_options = Dict(
         help="""Options for configuring the SQLite connection
-        
+
         These options are passed as keyword args to sqlite3.connect
         when establishing database connections.
         """).tag(config=True)
@@ -217,12 +217,12 @@ class HistoryAccessor(HistoryAccessorBase):
             connection_types = (DummyDB, sqlite3.Connection)
         if not isinstance(new, connection_types):
             msg = "%s.db must be sqlite3 Connection or DummyDB, not %r" % \
-                    (self.__class__.__name__, new)
+                (self.__class__.__name__, new)
             raise TraitError(msg)
 
     def __init__(self, profile='default', hist_file=u'', **traits):
         """Create a new history accessor.
-        
+
         Parameters
         ----------
         profile : str
@@ -255,10 +255,10 @@ class HistoryAccessor(HistoryAccessorBase):
 
     def _get_hist_file_name(self, profile='default'):
         """Find the history file for the given profile name.
-        
+
         This is overridden by the HistoryManager subclass, to use the shell's
         active profile.
-        
+
         Parameters
         ----------
         profile : str
@@ -298,9 +298,9 @@ class HistoryAccessor(HistoryAccessorBase):
         database lookups."""
         pass
 
-    ## -------------------------------
-    ## Methods for retrieving history:
-    ## -------------------------------
+    # -------------------------------
+    # Methods for retrieving history:
+    # -------------------------------
     def _run_sql(self, sql, params, raw=True, output=False):
         """Prepares and runs an SQL query for the history database.
 
@@ -322,8 +322,8 @@ class HistoryAccessor(HistoryAccessorBase):
         if output:
             sqlfrom = "history LEFT JOIN output_history USING (session, line)"
             toget = "history.%s, output_history.output" % toget
-        cur = self.db.execute("SELECT session, line, %s FROM %s " %\
-                                (toget, sqlfrom) + sql, params)
+        cur = self.db.execute("SELECT session, line, %s FROM %s " %
+                              (toget, sqlfrom) + sql, params)
         if output:  # Regroup into 3-tuples, and parse JSON
             return ((ses, lin, (inp, out)) for ses, lin, inp, out in cur)
         return cur
@@ -341,7 +341,7 @@ class HistoryAccessor(HistoryAccessorBase):
 
         Returns
         -------
-        
+
         session_id : int
            Session ID number
         start : datetime
@@ -359,7 +359,7 @@ class HistoryAccessor(HistoryAccessorBase):
     @catch_corrupt_db
     def get_last_session_id(self):
         """Get the last session ID currently in the database.
-        
+
         Within IPython, this should be the same as the value stored in
         :attr:`HistoryManager.session_number`.
         """
@@ -540,8 +540,7 @@ class HistoryManager(HistoryAccessor):
             config=True)
     db_cache_size = Integer(
         0,
-        help=
-        "Write to database every x commands (higher values save disk access & power).\n"
+        help="Write to database every x commands (higher values save disk access & power).\n"
         "Values of 1 or less effectively disable caching.").tag(config=True)
     # The input and output caches
     db_input_cache = List()
@@ -592,7 +591,7 @@ class HistoryManager(HistoryAccessor):
 
     def _get_hist_file_name(self, profile=None):
         """Get default history file name based on the Shell's profile.
-        
+
         The profile parameter is ignored, but must exist for compatibility with
         the parent class."""
         profile_dir = self.shell.profile_dir.location
@@ -656,7 +655,7 @@ class HistoryManager(HistoryAccessor):
 
         Returns
         -------
-        
+
         session_id : int
            Session ID number
         start : datetime
@@ -695,7 +694,7 @@ class HistoryManager(HistoryAccessor):
 
     def get_range(self, session=0, start=1, stop=None, raw=True, output=False):
         """Retrieve input by session.
-        
+
         Parameters
         ----------
         session : int
@@ -713,7 +712,7 @@ class HistoryManager(HistoryAccessor):
             objects for the current session, or text reprs from previous
             sessions if db_log_output was enabled at the time. Where no output
             is found, None is used.
-            
+
         Returns
         -------
         entries
@@ -728,9 +727,9 @@ class HistoryManager(HistoryAccessor):
         return super(HistoryManager, self).get_range(session, start, stop, raw,
                                                      output)
 
-    ## ----------------------------
-    ## Methods for storing history:
-    ## ----------------------------
+    # ----------------------------
+    # Methods for storing history:
+    # ----------------------------
     def store_inputs(self, line_num, source, source_raw=None):
         """Store source and raw input in history and create input cache
         variables ``_i*``.

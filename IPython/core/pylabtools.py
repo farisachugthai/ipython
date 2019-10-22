@@ -52,9 +52,9 @@ del backend2gui['pdf']
 del backend2gui['ps']
 del backend2gui['module://ipykernel.pylab.backend_inline']
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Matplotlib utilities
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def getfigs(*fig_nums):
@@ -97,10 +97,10 @@ def figsize(sizex, sizey):
 
 def print_figure(fig, fmt='png', bbox_inches='tight', **kwargs):
     """Print a figure to an image, and return the resulting file data
-    
+
     Returned data will be bytes unless ``fmt='svg'``,
     in which case it will be unicode.
-    
+
     Any keyword args are passed to fig.canvas.print_figure,
     such as ``quality`` or ``bbox_inches``.
     """
@@ -173,7 +173,7 @@ def mpl_runner(safe_execfile):
         import matplotlib
         import matplotlib.pyplot as plt
 
-        #print '*** Matplotlib runner ***' # dbg
+        # print '*** Matplotlib runner ***' # dbg
         # turn off rendering until end of script
         is_interactive = matplotlib.rcParams['interactive']
         matplotlib.interactive(False)
@@ -260,9 +260,9 @@ def select_figure_formats(shell, formats, **kwargs):
             Figure, lambda fig: print_figure(fig, 'pdf', **kwargs))
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Code for initializing matplotlib and importing pylab
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def find_gui_and_backend(gui=None, gui_select=None):
@@ -334,11 +334,11 @@ def activate_matplotlib(backend):
 
 def import_pylab(user_ns, import_all=True):
     """Populate the namespace with pylab-related values.
-    
+
     Imports matplotlib, pylab, numpy, and everything from pylab and numpy.
-    
+
     Also imports a few names from IPython (figsize, display, getfigs)
-    
+
     """
 
     # Import numpy as np/pyplot as plt are conventions we're trying to

@@ -5,6 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 
+from unittest import TestCase
 from inspect import signature, Signature, Parameter
 import os
 import re
@@ -19,20 +20,21 @@ from IPython.testing.tools import AssertPrints, AssertNotPrints
 from IPython.utils.path import compress_user
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals and constants
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 inspector = None
+
 
 def setup_module():
     global inspector
     inspector = oinspect.Inspector()
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Local utilities
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # WARNING: since this test checks the line number where a function is
 # defined, if any code is inserted above, the following line will need to be
@@ -40,13 +42,12 @@ def setup_module():
 # definition below.
 THIS_LINE_NUMBER = 41  # Put here the actual number of this line
 
-from unittest import TestCase
 
 class Test(TestCase):
 
     def test_find_source_lines(self):
         self.assertEqual(oinspect.find_source_lines(Test.test_find_source_lines),
-                    THIS_LINE_NUMBER+6)
+                         THIS_LINE_NUMBER + 6)
 
 
 # A couple of utilities to ensure these tests work the same from a source or a
@@ -60,7 +61,9 @@ def match_pyfiles(f1, f2):
 
 
 def test_find_file():
-    match_pyfiles(oinspect.find_file(test_find_file), os.path.abspath(__file__))
+    match_pyfiles(
+        oinspect.find_file(test_find_file),
+        os.path.abspath(__file__))
 
 
 def test_find_file_decorated1():
@@ -74,7 +77,7 @@ def test_find_file_decorated1():
     @noop1
     def f(x):
         "My docstring"
-    
+
     match_pyfiles(oinspect.find_file(f), os.path.abspath(__file__))
     nt.assert_equal(f.__doc__, "My docstring")
 
@@ -90,10 +93,10 @@ def test_find_file_decorated2():
     @noop2
     def f(x):
         "My docstring 2"
-    
+
     match_pyfiles(oinspect.find_file(f), os.path.abspath(__file__))
     nt.assert_equal(f.__doc__, "My docstring 2")
-    
+
 
 def test_find_file_magic():
     run = ip.find_line_magic('run')
@@ -114,9 +117,11 @@ class Call(object):
     def method(self, x, z=2):
         """Some method's docstring"""
 
+
 class HasSignature(object):
     """This is the class docstring."""
-    __signature__ = Signature([Parameter('test', Parameter.POSITIONAL_OR_KEYWORD)])
+    __signature__ = Signature(
+        [Parameter('test', Parameter.POSITIONAL_OR_KEYWORD)])
 
     def __init__(self, *args):
         """This is the init docstring"""
@@ -130,6 +135,7 @@ class SimpleClass(object):
 class Awkward(object):
     def __getattr__(self, name):
         raise Exception(name)
+
 
 class NoBoolCall:
     """
@@ -151,6 +157,7 @@ class SerialLiar(object):
     unittest.mock.call does something similar, but it's not ideal for testing
     as the failure mode is to eat all your RAM. This gives up after 10k levels.
     """
+
     def __init__(self, max_fibbing_twig, lies_told=0):
         if lies_told > 10000:
             raise RuntimeError('Nose too long, honesty is the best policy')
@@ -161,17 +168,21 @@ class SerialLiar(object):
     def __getattr__(self, item):
         return SerialLiar(self.max_fibbing_twig, self.lies_told + 1)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Tests
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def test_info():
     "Check that Inspector.info fills out various fields as expected."
     i = inspector.info(Call, oname='Call')
     nt.assert_equal(i['type_name'], 'type')
-    expted_class = str(type(type))  # <class 'type'> (Python 3) or <type 'type'>
+    # <class 'type'> (Python 3) or <type 'type'>
+    expted_class = str(type(type))
     nt.assert_equal(i['base_class'], expted_class)
-    nt.assert_regex(i['string_form'], "<class 'IPython.core.tests.test_oinspect.Call'( at 0x[0-9a-f]{1,9})?>")
+    nt.assert_regex(
+        i['string_form'],
+        "<class 'IPython.core.tests.test_oinspect.Call'( at 0x[0-9a-f]{1,9})?>")
     fname = __file__
     if fname.endswith(".pyc"):
         fname = fname[:-1]
@@ -198,17 +209,21 @@ def test_info():
     nt.assert_equal(i['init_docstring'], Call.__init__.__doc__)
     nt.assert_equal(i['call_docstring'], Call.__call__.__doc__)
 
+
 def test_class_signature():
     info = inspector.info(HasSignature, 'HasSignature')
     nt.assert_equal(info['init_definition'], "HasSignature(test)")
     nt.assert_equal(info['init_docstring'], HasSignature.__init__.__doc__)
 
+
 def test_info_awkward():
     # Just test that this doesn't throw an error.
     inspector.info(Awkward())
 
+
 def test_bool_raise():
     inspector.info(NoBoolCall())
+
 
 def test_info_serialliar():
     fib_tracker = [0]
@@ -218,8 +233,10 @@ def test_info_serialliar():
     # infinite loops: https://github.com/ipython/ipython/issues/9122
     nt.assert_less(fib_tracker[0], 9000)
 
+
 def support_function_one(x, y=2, *a, **kw):
     """A simple function."""
+
 
 def test_calldef_none():
     # We should ignore __call__ for all of these.
@@ -227,12 +244,15 @@ def test_calldef_none():
         i = inspector.info(obj)
         nt.assert_is(i['call_def'], None)
 
+
 def f_kwarg(pos, *, kwonly):
     pass
+
 
 def test_definition_kwonlyargs():
     i = inspector.info(f_kwarg, oname='f_kwarg')  # analysis:ignore
     nt.assert_equal(i['definition'], "f_kwarg(pos, *, kwonly)")
+
 
 def test_getdoc():
     class A(object):
@@ -241,18 +261,20 @@ def test_getdoc():
 
     class B(object):
         """standard docstring"""
+
         def getdoc(self):
             return "custom docstring"
-    
+
     class C(object):
         """standard docstring"""
+
         def getdoc(self):
             return None
-    
+
     a = A()
     b = B()
     c = C()
-    
+
     nt.assert_equal(oinspect.getdoc(a), "standard docstring")
     nt.assert_equal(oinspect.getdoc(b), "custom docstring")
     nt.assert_equal(oinspect.getdoc(c), "standard docstring")
@@ -264,13 +286,14 @@ def test_empty_property_has_no_source():
 
 
 def test_property_sources():
-    import posixpath 
+    import posixpath
     # A simple adder whose source and signature stays
     # the same across Python distributions
+
     def simple_add(a, b):
         "Adds two numbers"
         return a + b
-    
+
     class A(object):
         @property
         def foo(self):
@@ -279,7 +302,7 @@ def test_property_sources():
         foo = foo.setter(lambda self, v: setattr(self, 'bar', v))
 
         dname = property(posixpath.dirname)
-        adder = property(simple_add) 
+        adder = property(simple_add)
 
     i = inspector.info(A.foo, detail_level=1)
     nt.assert_in('def foo(self):', i['source'])
@@ -287,7 +310,7 @@ def test_property_sources():
 
     i = inspector.info(A.dname, detail_level=1)
     nt.assert_in('def dirname(p)', i['source'])
-    
+
     i = inspector.info(A.adder, detail_level=1)
     nt.assert_in('def simple_add(a, b)', i['source'])
 
@@ -321,6 +344,7 @@ def test_pinfo_nonascii():
     from . import nonascii2
     ip.user_ns['nonascii2'] = nonascii2
     ip._inspect('pinfo', 'nonascii2', detail_level=1)
+
 
 def test_pinfo_type():
     """
@@ -359,11 +383,11 @@ def test_pinfo_docstring_if_detail_and_no_source():
                   def bar(self):
                       """ This is a docstring for Foo.bar """
                       pass
-              ''' 
-    
+              '''
+
     ip.run_cell(obj_def)
     ip.run_cell('foo = Foo()')
-    
+
     with AssertNotPrints("Source:"):
         with AssertPrints('Docstring:'):
             ip._inspect('pinfo', 'foo', detail_level=0)

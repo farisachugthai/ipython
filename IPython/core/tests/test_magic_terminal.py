@@ -3,9 +3,9 @@
 Needs to be run by nose (to make ipython session available).
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import sys
 from io import StringIO
@@ -15,9 +15,10 @@ import nose.tools as nt
 
 from IPython.testing import tools as tt
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test functions begin
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def check_cpaste(code, should_fail=False):
     """Execute code via 'cpaste' and ensure it was executed, unless
@@ -39,12 +40,13 @@ def check_cpaste(code, should_fail=False):
     try:
         context = tt.AssertPrints if should_fail else tt.AssertNotPrints
         with context("Traceback (most recent call last)"):
-                ip.magic('cpaste')
+            ip.magic('cpaste')
 
         if not should_fail:
             assert ip.user_ns['code_ran'], "%r failed" % code
     finally:
         sys.stdin = stdin_save
+
 
 def test_cpaste():
     """Test cpaste magic"""
@@ -53,7 +55,7 @@ def test_cpaste():
         """Marker function: sets a flag when executed.
         """
         ip.user_ns['code_ran'] = True
-        return 'runf' # return string so '+ runf()' doesn't result in success
+        return 'runf'  # return string so '+ runf()' doesn't result in success
 
     tests = {'pass': ["runf()",
                       "In [1]: runf()",
@@ -65,7 +67,7 @@ def test_cpaste():
 
              'fail': ["1 + runf()",
                       "++ runf()",
-             ]}
+                      ]}
 
     ip.user_ns['runf'] = runf
 
@@ -81,17 +83,18 @@ class PasteTestCase(TestCase):
 
     def paste(self, txt, flags='-q'):
         """Paste input text, by default in quiet mode"""
-        ip.hooks.clipboard_get = lambda : txt
-        ip.magic('paste '+flags)
+        ip.hooks.clipboard_get = lambda: txt
+        ip.magic('paste ' + flags)
 
     def setUp(self):
-        # Inject fake clipboard hook but save original so we can restore it later
+        # Inject fake clipboard hook but save original so we can restore it
+        # later
         self.original_clip = ip.hooks.clipboard_get
 
-    def tearDown(self): 
+    def tearDown(self):
         # Restore original hook
         ip.hooks.clipboard_get = self.original_clip
-       
+
     def test_paste(self):
         ip.user_ns.pop('x', None)
         self.paste('x = 1')
@@ -110,20 +113,20 @@ class PasteTestCase(TestCase):
         >>> y = []
         >>> for i in x:
         ...     y.append(i**2)
-        ... 
+        ...
         """)
-        nt.assert_equal(ip.user_ns['x'], [1,2,3])
-        nt.assert_equal(ip.user_ns['y'], [1,4,9])
+        nt.assert_equal(ip.user_ns['x'], [1, 2, 3])
+        nt.assert_equal(ip.user_ns['y'], [1, 4, 9])
 
     def test_paste_py_multi_r(self):
         "Now, test that self.paste -r works"
         self.test_paste_py_multi()
-        nt.assert_equal(ip.user_ns.pop('x'), [1,2,3])
-        nt.assert_equal(ip.user_ns.pop('y'), [1,4,9])
+        nt.assert_equal(ip.user_ns.pop('x'), [1, 2, 3])
+        nt.assert_equal(ip.user_ns.pop('y'), [1, 4, 9])
         nt.assert_false('x' in ip.user_ns)
         ip.magic('paste -r')
-        nt.assert_equal(ip.user_ns['x'], [1,2,3])
-        nt.assert_equal(ip.user_ns['y'], [1,4,9])
+        nt.assert_equal(ip.user_ns['x'], [1, 2, 3])
+        nt.assert_equal(ip.user_ns['y'], [1, 4, 9])
 
     def test_paste_email(self):
         "Test pasting of email-quoted contents"
@@ -146,7 +149,7 @@ class PasteTestCase(TestCase):
         self.paste("""\
         >> >>> def f(x):
         >> ...   return x+1
-        >> ... 
+        >> ...
         >> >>> zz = f(2.5)      """)
         nt.assert_equal(ip.user_ns['zz'], 3.5)
 
@@ -159,13 +162,13 @@ class PasteTestCase(TestCase):
         a = 100
         b = 200"""
         try:
-            self.paste(code,'')
+            self.paste(code, '')
             out = w.getvalue()
         finally:
             ip.write = writer
         nt.assert_equal(ip.user_ns['a'], 100)
         nt.assert_equal(ip.user_ns['b'], 200)
-        assert out == code+"\n## -- End pasted text --\n"
+        assert out == code + "\n## -- End pasted text --\n"
 
     def test_paste_leading_commas(self):
         "Test multiline strings with leading commas"
@@ -177,7 +180,6 @@ a = """
         ip.user_ns.pop('foo', None)
         tm.store_or_execute(s, 'foo')
         nt.assert_in('foo', ip.user_ns)
-
 
     def test_paste_trailing_question(self):
         "Test pasting sources with trailing question marks"

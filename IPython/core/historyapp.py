@@ -141,11 +141,11 @@ class HistoryClear(HistoryTrim):
                 'force': True
             }
         }, force.help),
-             f=({
-                 'HistoryTrim': {
-                     'force': True
-                 }
-             }, force.help)))
+            f=({
+                'HistoryTrim': {
+                    'force': True
+                }
+            }, force.help)))
     aliases = Dict()
 
     def start(self):
@@ -167,8 +167,8 @@ class HistoryApp(Application):
 
     def start(self):
         if self.subapp is None:
-            print("No subcommand specified. Must specify one of: %s" % \
-                                                    (self.subcommands.keys()))
+            print("No subcommand specified. Must specify one of: %s" %
+                  (self.subcommands.keys()))
             print()
             self.print_description()
             self.print_subcommands()

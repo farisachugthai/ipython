@@ -64,10 +64,10 @@ class DisplayHook(Configurable):
     def prompt_count(self):
         return self.shell.execution_count
 
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Methods used in __call__. Override these methods to modify the behavior
     # of the displayhook.
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def check_for_underscore(self):
         """Check if the user has set the '_' variable by hand."""
@@ -149,7 +149,7 @@ class DisplayHook(Configurable):
             MIME type representation of the object.
             md_dict is a :class:`dict` with the same MIME type keys
             of metadata associated with each output.
-            
+
         """
         return self.shell.display_formatter.format(result)
 
@@ -230,9 +230,10 @@ class DisplayHook(Configurable):
                     '__': self.__,
                     '___': self.___
                 },
-                                interactive=False)
+                    interactive=False)
 
-            # hackish access to top-level  namespace to create _1,_2... dynamically
+            # hackish access to top-level  namespace to create _1,_2...
+            # dynamically
             to_main = {}
             if self.do_full_cache:
                 new_result = '_%s' % self.prompt_count
@@ -252,7 +253,7 @@ class DisplayHook(Configurable):
         if self.shell.logger.log_output:
             self.shell.logger.log_write(format_dict['text/plain'], 'output')
         self.shell.history_manager.output_hist_reprs[self.prompt_count] = \
-                                                    format_dict['text/plain']
+            format_dict['text/plain']
 
     def finish_displayhook(self):
         """Finish up all displayhook activities."""
@@ -302,7 +303,7 @@ class DisplayHook(Configurable):
             key = '_' + repr(n)
             try:
                 del self.shell.user_ns[key]
-            except:
+            except BaseException:
                 pass
         # In some embedded circumstances, the user_ns doesn't have the
         # '_oh' key set up.

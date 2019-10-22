@@ -26,22 +26,46 @@ requires utilities which are not available under Windows.
 
 -----------------------------------------------------------------------------
 
+
+It's also probably worth noting that in the dir
+site-packages/ipython-7.8.0-dist-info/ is  file called entry_points.txt.
+
+It only has the following for it's contents:
+
+[console_scripts]
+iptest = IPython.testing.iptestcontroller:main
+iptest3 = IPython.testing.iptestcontroller:main
+ipython = IPython:start_ipython
+ipython3 = IPython:start_ipython
+
+[pygments.lexers]
+ipython = IPython.lib.lexers:IPythonLexer
+ipython3 = IPython.lib.lexers:IPython3Lexer
+ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer
+
+This is so weird to me how this script is set up. Like check this::
+
+    if 'setuptools' in sys.modules:
+        setuptools_extra_args['entry_points'] = {
+            'console_scripts':
+            find_entry_points(),
+            'pygments.lexers': [
+                'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
+                'ipython = IPython.lib.lexers:IPythonLexer',
+                'ipython3 = IPython.lib.lexers:IPython3Lexer',
+            ],
+        }
+
+So if this user doesn't have setuptools installed, then they don't get the
+pygments lexers installed? Wth?
+
+
 """
 from __future__ import print_function
 
-import os
-import sys
-
-from distutils.command.sdist import sdist
-
-from distutils.core import setup
-
-# BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
-# update it when the contents of directories change.
-if os.path.exists('MANIFEST'):
-    os.remove('MANIFEST')
-
-# Our own imports
+from setuptools import find_packages
+import setuptools
+from setupbase import target_update
 from setupbase import (
     setup_args,
     find_package_data,
@@ -55,11 +79,21 @@ from setupbase import (
     install_scripts_for_symlink,
     unsymlink,
 )
-from setupbase import target_update
+import os
+import sys
+
+from distutils.command.sdist import sdist
+
+from distutils.core import setup
+
+# BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
+# update it when the contents of directories change.
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
+
+# Our own imports
 
 # What's up with the setuptools embargo?
-import setuptools
-from setuptools import find_packages
 
 isfile = os.path.isfile
 pjoin = os.path.join

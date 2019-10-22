@@ -27,12 +27,12 @@ arguments::
 
     In[1]: %cool?
         %cool [-o OPTION] arg
-        
+
         A really cool magic command.
-        
+
         positional arguments:
           arg                   An integer positional argument.
-        
+
         optional arguments:
           -o OPTION, --option OPTION
                                 An optional argument.
@@ -43,13 +43,13 @@ Inheritance diagram:
    :parts: 3
 
 '''
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (C) 2010-2011, IPython Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 import argparse
 import re
 

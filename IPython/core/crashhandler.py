@@ -7,17 +7,17 @@ Authors:
 * Brian E. Granger
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2001-2007 Fernando Perez. <fperez@colorado.edu>
 #  Copyright (C) 2008-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 import sys
@@ -29,9 +29,9 @@ from IPython.core.release import author_email
 from IPython.utils.sysinfo import sys_info
 from IPython.utils.py3compat import input
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Code
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Template for the user message.
 _default_message_template = """\
@@ -129,7 +129,7 @@ class CrashHandler(object):
         self.crash_report_fname = "Crash_report_%s.txt" % app.name
         self.app = app
         self.call_pdb = call_pdb
-        #self.call_pdb = True # dbg
+        # self.call_pdb = True # dbg
         self.show_crash_traceback = show_crash_traceback
         self.info = dict(app_name=app.name,
                          contact_name=contact_name,
@@ -149,10 +149,10 @@ class CrashHandler(object):
         color_scheme = 'NoColor'
 
         # Use this ONLY for developer debugging (keep commented out for release)
-        #color_scheme = 'Linux'   # dbg
+        # color_scheme = 'Linux'   # dbg
         try:
             rptdir = self.app.ipython_dir
-        except:
+        except BaseException:
             rptdir = os.getcwd()
         if rptdir is None or not os.path.isdir(rptdir):
             rptdir = os.getcwd()
@@ -179,7 +179,7 @@ class CrashHandler(object):
         # and generate a complete report on disk
         try:
             report = open(report_name, 'w')
-        except:
+        except BaseException:
             print('Could not create crash report on disk.', file=sys.stderr)
             return
 
@@ -208,7 +208,7 @@ class CrashHandler(object):
             rpt_add('Application name: %s\n\n' % self.app_name)
             rpt_add('Current user configuration structure:\n\n')
             rpt_add(config)
-        except:
+        except BaseException:
             pass
         rpt_add(sec_sep + 'Crash traceback:\n\n' + traceback)
 

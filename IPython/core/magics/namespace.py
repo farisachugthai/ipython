@@ -274,7 +274,7 @@ class NamespaceMagics(Magics):
                     show_all=opt('a'),
                     ignore_case=ignore_case,
                     list_types=list_types)
-        except:
+        except BaseException:
             shell.showtraceback()
 
     @skip_doctest
@@ -480,7 +480,7 @@ class NamespaceMagics(Magics):
         typewidth = max(max(map(len, typelist)), len(typelabel)) + colsep
         # table header
         print(varlabel.ljust(varwidth) + typelabel.ljust(typewidth) +
-              ' '+datalabel+'\n' + '-'*(varwidth+typewidth+len(datalabel)+1))
+              ' ' + datalabel + '\n' + '-' * (varwidth + typewidth + len(datalabel) + 1))
         # and the table itself
         kb = 1024
         Mb = 1048576  # kb**2
@@ -514,7 +514,7 @@ class NamespaceMagics(Magics):
                     vstr = str(var)
                 except UnicodeEncodeError:
                     vstr = var.encode(DEFAULT_ENCODING, 'backslashreplace')
-                except:
+                except BaseException:
                     vstr = "<object with id %d (str() failed)>" % id(var)
                 vstr = vstr.replace('\n', '\\n')
                 if len(vstr) < 50:

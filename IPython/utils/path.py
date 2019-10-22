@@ -1,6 +1,7 @@
 # encoding: utf-8
-"""
-Utilities for path handling.
+"""Utilities for path handling.
+
+The lack of :mod:`pathlib` usage is a perfect sign of the age of this module.
 """
 
 # Copyright (c) IPython Development Team.
@@ -18,23 +19,32 @@ from IPython.utils.process import system
 from IPython.utils import py3compat
 from IPython.utils.decorators import undoc
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Code
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-fs_encoding = sys.getfilesystemencoding()
 
 def _writable_dir(path):
     """Whether `path` is a directory, to which the user has write access."""
     return os.path.isdir(path) and os.access(path, os.W_OK)
 
+
 if sys.platform == 'win32':
     def _get_long_path_name(path):
         """Get a long path name (expand ~) on Windows using ctypes.
 
+        Parameters
+        ----------
+        path : str (path-like)
+            Path to perform tilde-expansion on.
+
+        Raises
+        ------
+        :exc:`ImportError`
+            If ctypes isn't installed.
+
         Examples
         --------
-
         >>> get_long_path_name('c:\\docume~1')
         'c:\\\\Documents and Settings'
 
@@ -42,10 +52,11 @@ if sys.platform == 'win32':
         try:
             import ctypes
         except ImportError:
-            raise ImportError('you need to have ctypes installed for this to work')
+            raise ImportError(
+                'you need to have ctypes installed for this to work')
         _GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
         _GetLongPathName.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p,
-            ctypes.c_uint ]
+                                     ctypes.c_uint]
 
         buf = ctypes.create_unicode_buffer(260)
         rv = _GetLongPathName(path, buf, 260)
@@ -59,21 +70,42 @@ else:
         return path
 
 
-
 def get_long_path_name(path):
     """Expand a path into its long form.
 
     On Windows this expands any ~ in the paths. On other platforms, it is
     a null operation.
+
+    Parameters
+    ----------
+    path : str (path-like)
+        Path to perform a tilde "compression" on.
+
+    Returns
+    -------
+    str (path-like)
+        Path with a tilde added.
+
     """
     return _get_long_path_name(path)
 
 
-def unquote_filename(name, win32=(sys.platform=='win32')):
+def unquote_filename(name, win32=(sys.platform == 'win32')):
     """ On Windows, remove leading and trailing quotes from filenames.
 
     This function has been deprecated and should not be used any more:
     unquoting is now taken care of by :func:`IPython.utils.process.arg_split`.
+
+    Parameters
+    ----------
+    path : str (path-like)
+        Path to perform a tilde "compression" on.
+
+    Returns
+    -------
+    str (path-like)
+        Path with a tilde added.
+
     """
     warn("'unquote_filename' is deprecated since IPython 5.0 and should not "
          "be used anymore", DeprecationWarning, stacklevel=2)
@@ -85,24 +117,47 @@ def unquote_filename(name, win32=(sys.platform=='win32')):
 
 def compress_user(path):
     """Reverse of :func:`os.path.expanduser`
+
+    Parameters
+    ----------
+    path : str (path-like)
+        Path to perform a tilde "compression" on.
+
+    Returns
+    -------
+    str (path-like)
+        Path with a tilde added.
+
     """
     home = os.path.expanduser('~')
     if path.startswith(home):
-        path =  "~" + path[len(home):]
+        path = "~" + path[len(home):]
     return path
+
 
 def get_py_filename(name, force_win32=None):
     """Return a valid python filename in the current directory.
 
     If the given name is not a file, it adds '.py' and searches again.
     Raises IOError with an informative message if the file isn't found.
+
+    Parameters
+    ----------
+    path : str (path-like)
+        Path to perform a tilde "compression" on.
+
+    Returns
+    -------
+    str (path-like)
+        Path with a tilde added.
+
     """
 
     name = os.path.expanduser(name)
     if force_win32 is not None:
         warn("The 'force_win32' argument to 'get_py_filename' is deprecated "
              "since IPython 5.0 and should not be used anymore",
-            DeprecationWarning, stacklevel=2)
+             DeprecationWarning, stacklevel=2)
     if not os.path.isfile(name) and not name.endswith('.py'):
         name += '.py'
     if os.path.isfile(name):
@@ -156,13 +211,14 @@ def filefind(filename, path_dirs=None):
         path_dirs = (path_dirs,)
 
     for path in path_dirs:
-        if path == '.': path = os.getcwd()
+        if path == '.':
+            path = os.getcwd()
         testname = expand_path(os.path.join(path, filename))
         if os.path.isfile(testname):
             return os.path.abspath(testname)
 
     raise IOError("File %r does not exist in any of the search paths: %r" %
-                  (filename, path_dirs) )
+                  (filename, path_dirs))
 
 
 class HomeDirError(Exception):
@@ -204,16 +260,17 @@ def get_home_dir(require_writable=False):
                 wreg.HKEY_CURRENT_USER,
                 r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
             )
-            homedir = wreg.QueryValueEx(key,'Personal')[0]
+            homedir = wreg.QueryValueEx(key, 'Personal')[0]
             key.Close()
         except:
             pass
 
     if (not require_writable) or _writable_dir(homedir):
-        return py3compat.cast_unicode(homedir, fs_encoding)
+        return py3compat.cast_unicode(homedir, sys.getfilesystemencoding())
     else:
         raise HomeDirError('%s is not a writable dir, '
-                'set $HOME environment variable to override' % homedir)
+                           'set $HOME environment variable to override' % homedir)
+
 
 def get_xdg_dir():
     """Return the XDG_CONFIG_HOME, if it is defined and exists, else None.
@@ -226,11 +283,10 @@ def get_xdg_dir():
     if os.name == 'posix' and sys.platform != 'darwin':
         # Linux, Unix, AIX, etc.
         # use ~/.config if empty OR not set
-        xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(get_home_dir(), '.config')
+        xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(
+            get_home_dir(), '.config')
         if xdg and _writable_dir(xdg):
-            return py3compat.cast_unicode(xdg, fs_encoding)
-
-    return None
+            return py3compat.cast_unicode(xdg, sys.getfilesystemencoding())
 
 
 def get_xdg_cache_dir():
@@ -244,62 +300,32 @@ def get_xdg_cache_dir():
     if os.name == 'posix' and sys.platform != 'darwin':
         # Linux, Unix, AIX, etc.
         # use ~/.cache if empty OR not set
-        xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(get_home_dir(), '.cache')
+        xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(
+            get_home_dir(), '.cache')
         if xdg and _writable_dir(xdg):
-            return py3compat.cast_unicode(xdg, fs_encoding)
+            return py3compat.cast_unicode(xdg, sys.getfilesystemencoding())
 
-    return None
-
-
-@undoc
-def get_ipython_dir():
-    warn("get_ipython_dir has moved to the IPython.paths module since IPython 4.0.", stacklevel=2)
-    from IPython.paths import get_ipython_dir
-    return get_ipython_dir()
-
-@undoc
-def get_ipython_cache_dir():
-    warn("get_ipython_cache_dir has moved to the IPython.paths module since IPython 4.0.", stacklevel=2)
-    from IPython.paths import get_ipython_cache_dir
-    return get_ipython_cache_dir()
-
-@undoc
-def get_ipython_package_dir():
-    warn("get_ipython_package_dir has moved to the IPython.paths module since IPython 4.0.", stacklevel=2)
-    from IPython.paths import get_ipython_package_dir
-    return get_ipython_package_dir()
-
-@undoc
-def get_ipython_module_path(module_str):
-    warn("get_ipython_module_path has moved to the IPython.paths module since IPython 4.0.", stacklevel=2)
-    from IPython.paths import get_ipython_module_path
-    return get_ipython_module_path(module_str)
-
-@undoc
-def locate_profile(profile='default'):
-    warn("locate_profile has moved to the IPython.paths module since IPython 4.0.", stacklevel=2)
-    from IPython.paths import locate_profile
-    return locate_profile(profile=profile)
 
 def expand_path(s):
     """Expand $VARS and ~names in a string, like a shell
 
-    :Examples:
-
+    Examples
+    --------
        In [2]: os.environ['FOO']='test'
 
        In [3]: expand_path('variable FOO is $FOO')
        Out[3]: 'variable FOO is test'
+
     """
     # This is a pretty subtle hack. When expand user is given a UNC path
     # on Windows (\\server\share$\%username%), os.path.expandvars, removes
     # the $ to get (\\server\share\%username%). I think it considered $
     # alone an empty var. But, we need the $ to remains there (it indicates
     # a hidden share).
-    if os.name=='nt':
+    if os.name == 'nt':
         s = s.replace('$\\', 'IPYTHON_TEMP')
     s = os.path.expandvars(os.path.expanduser(s))
-    if os.name=='nt':
+    if os.name == 'nt':
         s = s.replace('IPYTHON_TEMP', '$\\')
     return s
 
@@ -329,7 +355,7 @@ def shellglob(args):
     return expanded
 
 
-def target_outdated(target,deps):
+def target_outdated(target, deps):
     """Determine whether a target is out of date.
 
     target_outdated(target,deps) -> 1/0
@@ -339,33 +365,40 @@ def target_outdated(target,deps):
 
     If target doesn't exist or is older than any file listed in deps, return
     true, otherwise return false.
+
+    .. warning:: THIS DOESN'T CATCH AN ERROR CORRECTLY LIKE GUIZE
+
+        Original line: except os.error:
+
+    Also wth why return 1 return True like a normal person.
+
     """
     try:
         target_time = os.path.getmtime(target)
-    except os.error:
-        return 1
+    except OSError:
+        return True
     for dep in deps:
         dep_time = os.path.getmtime(dep)
         if dep_time > target_time:
-            #print "For target",target,"Dep failed:",dep # dbg
-            #print "times (dep,tar):",dep_time,target_time # dbg
-            return 1
-    return 0
+            # print "For target",target,"Dep failed:",dep # dbg
+            # print "times (dep,tar):",dep_time,target_time # dbg
+            return True
 
 
-def target_update(target,deps,cmd):
+def target_update(target, deps, cmd):
     """Update a target with a given command given a list of dependencies.
 
     target_update(target,deps,cmd) -> runs cmd if target is outdated.
 
     This is just a wrapper around target_outdated() which calls the given
-    command if target is outdated."""
-
-    if target_outdated(target,deps):
+    command if target is outdated.
+    """
+    if target_outdated(target, deps):
         system(cmd)
 
 
 ENOLINK = 1998
+
 
 def link(src, dst):
     """Hard links ``src`` to ``dst``, returning 0 or errno.
@@ -393,7 +426,6 @@ def link_or_copy(src, dst):
     will be used if the target already exists, then that file will be moved
     into place.
     """
-
     if os.path.isdir(dst):
         dst = os.path.join(dst, os.path.basename(src))
 
@@ -405,7 +437,7 @@ def link_or_copy(src, dst):
             # anyway, we get duplicate files - see http://bugs.python.org/issue21876
             return
 
-        new_dst = dst + "-temp-%04X" %(random.randint(1, 16**4), )
+        new_dst = dst + "-temp-%04X" % (random.randint(1, 16**4), )
         try:
             link_or_copy(src, new_dst)
         except:
@@ -420,8 +452,9 @@ def link_or_copy(src, dst):
         # linking, or 'src' and 'dst' are on different filesystems.
         shutil.copy(src, dst)
 
+
 def ensure_dir_exists(path, mode=0o755):
-    """ensure that a directory exists
+    """Ensure that a directory exists.
 
     If it doesn't exist, try to create it and protect against a race condition
     if another process is doing the same.

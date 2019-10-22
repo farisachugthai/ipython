@@ -12,25 +12,25 @@ Notes
 -----
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2008-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Code
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class IPyAutocall(object):
     """ Instances of this class are always autocalled
-    
+
     This happens regardless of 'autocall' variable state. Use this to
     develop macro-like mechanisms.
     """
@@ -42,9 +42,9 @@ class IPyAutocall(object):
 
     def set_ip(self, ip):
         """ Will be used to set _ip point to current ipython instance b/f call
-        
+
         Override this method if you don't want this to happen.
-        
+
         """
         self._ip = ip
 
@@ -60,7 +60,7 @@ class ExitAutocall(IPyAutocall):
 
 class ZMQExitAutocall(ExitAutocall):
     """Exit IPython. Autocallable, so it needn't be explicitly called.
-    
+
     Parameters
     ----------
     keep_kernel : bool

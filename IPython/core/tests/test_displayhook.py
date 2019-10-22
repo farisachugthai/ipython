@@ -3,30 +3,32 @@ from IPython.testing.tools import AssertPrints, AssertNotPrints
 from IPython.core.displayhook import CapturingDisplayHook
 from IPython.utils.capture import CapturedIO
 
+
 def test_output_displayed():
     """Checking to make sure that output is displayed"""
-  
+
     with AssertPrints('2'):
-       ip.run_cell('1+1', store_history=True)
-      
+        ip.run_cell('1+1', store_history=True)
+
     with AssertPrints('2'):
         ip.run_cell('1+1 # comment with a semicolon;', store_history=True)
 
     with AssertPrints('2'):
         ip.run_cell('1+1\n#commented_out_function();', store_history=True)
 
-      
+
 def test_output_quiet():
     """Checking to make sure that output is quiet"""
-  
+
     with AssertNotPrints('2'):
         ip.run_cell('1+1;', store_history=True)
-      
+
     with AssertNotPrints('2'):
         ip.run_cell('1+1; # comment with a semicolon', store_history=True)
 
     with AssertNotPrints('2'):
         ip.run_cell('1+1;\n#commented_out_function()', store_history=True)
+
 
 def test_underscore_no_overrite_user():
     ip.run_cell('_ = 42', store_history=True)
@@ -67,10 +69,14 @@ def test_interactivehooks_ast_modes():
             ip.run_cell('a = 1+1', store_history=True)
 
         with AssertPrints('9'):
-            ip.run_cell('b = 1+8 # comment with a semicolon;', store_history=False)
+            ip.run_cell(
+                'b = 1+8 # comment with a semicolon;',
+                store_history=False)
 
         with AssertPrints('7'):
-            ip.run_cell('c = 1+6\n#commented_out_function();', store_history=True)
+            ip.run_cell(
+                'c = 1+6\n#commented_out_function();',
+                store_history=True)
 
         ip.run_cell('d = 11', store_history=True)
         with AssertPrints('12'):
@@ -81,6 +87,7 @@ def test_interactivehooks_ast_modes():
 
     finally:
         ip.ast_node_interactivity = saved_mode
+
 
 def test_interactivehooks_ast_modes_semi_suppress():
     """
@@ -95,13 +102,18 @@ def test_interactivehooks_ast_modes_semi_suppress():
             ip.run_cell('x = 1+1;', store_history=True)
 
         with AssertNotPrints('7'):
-            ip.run_cell('y = 1+6; # comment with a semicolon', store_history=True)
+            ip.run_cell(
+                'y = 1+6; # comment with a semicolon',
+                store_history=True)
 
         with AssertNotPrints('9'):
-            ip.run_cell('z = 1+8;\n#commented_out_function()', store_history=True)
+            ip.run_cell(
+                'z = 1+8;\n#commented_out_function()',
+                store_history=True)
 
     finally:
         ip.ast_node_interactivity = saved_mode
+
 
 def test_capture_display_hook_format():
     """Tests that the capture display hook conforms to the CapturedIO output format"""

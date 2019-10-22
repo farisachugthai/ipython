@@ -226,8 +226,8 @@ class MagicAssign(TokenTransformBase):
             assign_ix = _find_assign_op(line)
             if (assign_ix is not None) \
                     and (len(line) >= assign_ix + 2) \
-                    and (line[assign_ix+1].string == '%') \
-                    and (line[assign_ix+2].type == tokenize.NAME):
+                    and (line[assign_ix + 1].string == '%') \
+                    and (line[assign_ix + 2].type == tokenize.NAME):
                 return cls(line[assign_ix + 1].start)
 
     def transform(self, lines: List[str]):
@@ -313,11 +313,12 @@ ESCAPE_DOUBLES = {'!!', '??'}  # %% (cell magic) is handled separately
 def _make_help_call(target, esc, next_input=None):
     """Prepares a pinfo(2)/psearch call from a target name and the escape
     (i.e. ? or ??)"""
-    method  = 'pinfo2' if esc == '??' \
-                else 'psearch' if '*' in target \
-                else 'pinfo'
+    method = 'pinfo2' if esc == '??' \
+        else 'psearch' if '*' in target \
+        else 'pinfo'
     arg = " ".join([method, target])
-    #Prepare arguments for get_ipython().run_line_magic(magic_name, magic_args)
+    # Prepare arguments for get_ipython().run_line_magic(magic_name,
+    # magic_args)
     t_magic_name, _, t_magic_arg_s = arg.partition(' ')
     t_magic_name = t_magic_name.lstrip(ESC_MAGIC)
     if next_input is None:
@@ -325,7 +326,7 @@ def _make_help_call(target, esc, next_input=None):
                                                          t_magic_arg_s)
     else:
         return 'get_ipython().set_next_input(%r);get_ipython().run_line_magic(%r, %r)' % \
-           (next_input, t_magic_name, t_magic_arg_s)
+            (next_input, t_magic_name, t_magic_arg_s)
 
 
 def _tr_help(content):
@@ -510,7 +511,7 @@ def make_tokens_by_line(lines: List[str]):
     NEWLINE, NL = tokenize.NEWLINE, tokenize.NL
     tokens_by_line = [[]]
     if len(lines) > 1 and not lines[0].endswith(
-        ('\n', '\r', '\r\n', '\x0b', '\x0c')):
+            ('\n', '\r', '\r\n', '\x0b', '\x0c')):
         warnings.warn(
             "`make_tokens_by_line` received a list of lines which do not have lineending markers ('\\n', '\\r', '\\r\\n', '\\x0b', '\\x0c'), behavior will be unspecified"
         )

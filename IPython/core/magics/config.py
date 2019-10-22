@@ -1,16 +1,16 @@
 """Implementation of configuration-related magic functions.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012 The IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib
 import re
@@ -20,9 +20,9 @@ from IPython.core.error import UsageError
 from IPython.core.magic import Magics, magics_class, line_magic
 from logging import error
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 reg = re.compile(r'^\w+\.\w+$')
 
@@ -113,7 +113,7 @@ class ConfigMagics(Magics):
             c for c in self.shell.configurables
             if c.__class__.class_traits(config=True)
         ]),
-                               key=lambda x: x.__class__.__name__)
+            key=lambda x: x.__class__.__name__)
         classnames = [c.__class__.__name__ for c in configurables]
 
         line = s.strip()
@@ -143,7 +143,8 @@ class ConfigMagics(Magics):
             ll = line.lower()
             for classname in classnames:
                 if ll == classname.lower():
-                    msg = msg + '\nDid you mean %s (note the case)?' % classname
+                    msg = msg + \
+                        '\nDid you mean %s (note the case)?' % classname
                     break
 
             raise UsageError(msg % line)

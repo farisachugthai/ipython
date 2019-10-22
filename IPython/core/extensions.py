@@ -38,9 +38,9 @@ from IPython.utils.path import ensure_dir_exists, compress_user
 from IPython.utils.decorators import undoc
 from traitlets import Instance
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main class
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class ExtensionManager(Configurable):

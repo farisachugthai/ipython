@@ -2,14 +2,14 @@
 """
 import os.path
 import shutil
+import sys
 import tempfile
 from warnings import warn
 
 import IPython
 from IPython.utils.importstring import import_item
 from IPython.utils.path import (get_home_dir, get_xdg_dir, get_xdg_cache_dir,
-                                compress_user, _writable_dir,
-                                ensure_dir_exists, fs_encoding)
+                                compress_user, _writable_dir, ensure_dir_exists)
 from IPython.utils import py3compat
 
 
@@ -70,7 +70,7 @@ def get_ipython_dir():
                  " using a temp directory.".format(parent))
             ipdir = tempfile.mkdtemp()
 
-    return py3compat.cast_unicode(ipdir, fs_encoding)
+    return py3compat.cast_unicode(ipdir, sys.getfilesystemencoding())
 
 
 def get_ipython_cache_dir():
@@ -84,13 +84,13 @@ def get_ipython_cache_dir():
     elif not _writable_dir(xdgdir):
         return get_ipython_dir()
 
-    return py3compat.cast_unicode(ipdir, fs_encoding)
+    return py3compat.cast_unicode(ipdir, sys.getfilesystemencoding())
 
 
 def get_ipython_package_dir():
     """Get the base directory where IPython itself is installed."""
     ipdir = os.path.dirname(IPython.__file__)
-    return py3compat.cast_unicode(ipdir, fs_encoding)
+    return py3compat.cast_unicode(ipdir, sys.getfilesystemencoding())
 
 
 def get_ipython_module_path(module_str):
@@ -105,7 +105,7 @@ def get_ipython_module_path(module_str):
     mod = import_item(module_str)
     the_path = mod.__file__.replace('.pyc', '.py')
     the_path = the_path.replace('.pyo', '.py')
-    return py3compat.cast_unicode(the_path, fs_encoding)
+    return py3compat.cast_unicode(the_path, sys.getfilesystemencoding())
 
 
 def locate_profile(profile='default'):

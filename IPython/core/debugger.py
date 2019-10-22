@@ -16,7 +16,7 @@ details on the PSF (Python Software Foundation) standard license, see:
 https://docs.python.org/2/license.html
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #
 #       This file is licensed under the PSF license.
 #
@@ -24,8 +24,9 @@ https://docs.python.org/2/license.html
 #       Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
 #
 #
-#*****************************************************************************
+# *****************************************************************************
 
+from pdb import Pdb as OldPdb
 import bdb
 import functools
 import inspect
@@ -42,8 +43,7 @@ from IPython.testing.skipdoctest import skip_doctest
 
 prompt = 'ipdb> '
 
-#We have to check this directly from sys.argv, config struct not yet available
-from pdb import Pdb as OldPdb
+# We have to check this directly from sys.argv, config struct not yet available
 
 # Allow the set_trace code to operate outside of an ipython instance, even if
 # it does so with some limitations.  The rest of this support is implemented in
@@ -162,7 +162,7 @@ class Tracer(object):
             except ImportError:
                 from repr import aRepr  # Py 2
             aRepr.maxstring = 80
-        except:
+        except BaseException:
             # This is only a user-facing convenience, so any error we encounter
             # here can be warned about but can be otherwise ignored.  These
             # printouts will tell us about problems if this API changes
@@ -402,7 +402,7 @@ class Pdb(OldPdb):
             return_value += reprlib.repr(rv) + '\n'
         ret.append(return_value)
 
-        #s = filename + '(' + `lineno` + ')'
+        # s = filename + '(' + `lineno` + ')'
         filename = self.canonic(frame.f_code.co_filename)
         link = tpl_link % py3compat.cast_unicode(filename)
 
@@ -436,8 +436,8 @@ class Pdb(OldPdb):
         for i, line in enumerate(lines):
             show_arrow = (start + 1 + i == lineno)
             linetpl = (frame is self.curframe or show_arrow) \
-                      and tpl_line_em \
-                      or tpl_line
+                and tpl_line_em \
+                or tpl_line
             ret.append(
                 self.__format_line(linetpl,
                                    filename,
@@ -532,7 +532,7 @@ class Pdb(OldPdb):
                         last = first + last
                 else:
                     first = max(1, int(x) - 5)
-            except:
+            except BaseException:
                 print('*** Error in argument:', repr(arg), file=self.stdout)
                 return
         elif self.lineno is None:

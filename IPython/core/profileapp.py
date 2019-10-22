@@ -193,7 +193,8 @@ class ProfileList(Application):
 
 create_flags = {}
 create_flags.update(base_flags)
-# don't include '--init' flag, which implies running profile create in other apps
+# don't include '--init' flag, which implies running profile create in
+# other apps
 create_flags.pop('init')
 create_flags['reset'] = ({
     'ProfileCreate': {

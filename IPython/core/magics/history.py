@@ -1,16 +1,16 @@
 """Implementation of magic functions related to History.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012, IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib
 import os
@@ -25,9 +25,9 @@ from IPython.core.magic_arguments import (argument, magic_arguments,
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils import io
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magics class implementation
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 _unspecified = object()
 
@@ -116,7 +116,7 @@ class HistoryMagics(Magics):
 
         By default, all input history from the current session is displayed.
         Ranges of history can be indicated using the syntax:
-        
+
         ``4``
             Line 4, current session
         ``4-6``
@@ -128,7 +128,7 @@ class HistoryMagics(Magics):
         ``~8/1-~6/5``
             From the first line of 8 sessions ago, to the fifth line of 6
             sessions ago.
-        
+
         Multiple ranges can be entered, separated by spaces
 
         The same syntax is used by %macro, %save, %edit, %rerun

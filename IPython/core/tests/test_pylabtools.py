@@ -5,24 +5,20 @@
 # Distributed under the terms of the Modified BSD License.
 
 
+from IPython.testing import decorators as dec
+from .. import pylabtools as pt
+from IPython.core.display import _PNG, _JPEG
+from IPython.core.interactiveshell import InteractiveShell
+from IPython.core.getipython import get_ipython
+import numpy as np
+from matplotlib import pyplot as plt
+import nose.tools as nt
+from nose import SkipTest
+from matplotlib.figure import Figure
 from io import UnsupportedOperation, BytesIO
 
 import matplotlib
 matplotlib.use('Agg')
-from matplotlib.figure import Figure
-
-from nose import SkipTest
-import nose.tools as nt
-
-from matplotlib import pyplot as plt
-import numpy as np
-
-from IPython.core.getipython import get_ipython
-from IPython.core.interactiveshell import InteractiveShell
-from IPython.core.display import _PNG, _JPEG
-from .. import pylabtools as pt
-
-from IPython.testing import decorators as dec
 
 
 def test_figure_to_svg():
@@ -34,11 +30,12 @@ def test_figure_to_svg():
 
     # simple check for at least svg-looking output
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-    ax.plot([1,2,3])
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
     plt.draw()
     svg = pt.print_figure(fig, 'svg')[:100].lower()
     nt.assert_in(u'doctype svg', svg)
+
 
 def _check_pil_jpeg_bytes():
     """Skip if PIL can't write JPEGs to BytesIO objects"""
@@ -46,23 +43,25 @@ def _check_pil_jpeg_bytes():
     # Pillow fixes this
     from PIL import Image
     buf = BytesIO()
-    img = Image.new("RGB", (4,4))
+    img = Image.new("RGB", (4, 4))
     try:
         img.save(buf, 'jpeg')
     except Exception as e:
         ename = e.__class__.__name__
         raise SkipTest("PIL can't write JPEG to BytesIO: %s: %s" % (ename, e))
 
+
 @dec.skip_without("PIL.Image")
 def test_figure_to_jpeg():
     _check_pil_jpeg_bytes()
     # simple check for at least jpeg-looking output
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-    ax.plot([1,2,3])
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
     plt.draw()
     jpeg = pt.print_figure(fig, 'jpeg', quality=50)[:100].lower()
     assert jpeg.startswith(_JPEG)
+
 
 def test_retina_figure():
     # simple empty-figure test
@@ -71,13 +70,14 @@ def test_retina_figure():
     plt.close('all')
 
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-    ax.plot([1,2,3])
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
     plt.draw()
     png, md = pt.retina_figure(fig)
     assert png.startswith(_PNG)
     nt.assert_in('width', md)
     nt.assert_in('height', md)
+
 
 _fmt_mime_map = {
     'png': 'image/png',
@@ -86,6 +86,7 @@ _fmt_mime_map = {
     'retina': 'image/png',
     'svg': 'image/svg+xml',
 }
+
 
 def test_select_figure_formats_str():
     ip = get_ipython()
@@ -96,6 +97,7 @@ def test_select_figure_formats_str():
                 nt.assert_in(Figure, f)
             else:
                 nt.assert_not_in(Figure, f)
+
 
 def test_select_figure_formats_kwargs():
     ip = get_ipython()
@@ -108,12 +110,13 @@ def test_select_figure_formats_kwargs():
 
     # check that the formatter doesn't raise
     fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-    ax.plot([1,2,3])
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot([1, 2, 3])
     plt.draw()
     formatter.enabled = True
     png = formatter(fig)
     assert png.startswith(_PNG)
+
 
 def test_select_figure_formats_set():
     ip = get_ipython()
@@ -131,6 +134,7 @@ def test_select_figure_formats_set():
             else:
                 nt.assert_not_in(Figure, f)
 
+
 def test_select_figure_formats_bad():
     ip = get_ipython()
     with nt.assert_raises(ValueError):
@@ -140,11 +144,13 @@ def test_select_figure_formats_bad():
     with nt.assert_raises(ValueError):
         pt.select_figure_formats(ip, ['retina', 'pdf', 'bar', 'bad'])
 
+
 def test_import_pylab():
     ns = {}
     pt.import_pylab(ns, import_all=False)
     nt.assert_true('plt' in ns)
     nt.assert_equal(ns['np'], np)
+
 
 class TestPylabSwitch(object):
     class Shell(InteractiveShell):
@@ -153,6 +159,7 @@ class TestPylabSwitch(object):
 
     def setup(self):
         import matplotlib
+
         def act_mpl(backend):
             matplotlib.rcParams['backend'] = backend
 
@@ -166,9 +173,9 @@ class TestPylabSwitch(object):
         self._save_am = pt.activate_matplotlib
         pt.activate_matplotlib = act_mpl
         self._save_ip = pt.import_pylab
-        pt.import_pylab = lambda *a,**kw:None
+        pt.import_pylab = lambda *a, **kw: None
         self._save_cis = pt.configure_inline_support
-        pt.configure_inline_support = lambda *a,**kw:None
+        pt.configure_inline_support = lambda *a, **kw: None
 
     def teardown(self):
         pt.activate_matplotlib = self._save_am
@@ -221,7 +228,7 @@ class TestPylabSwitch(object):
         gui, backend = ip.enable_matplotlib('inline')
         nt.assert_equal(gui, 'inline')
 
-        fmts =  {'png'}
+        fmts = {'png'}
         active_mimes = {_fmt_mime_map[fmt] for fmt in fmts}
         pt.select_figure_formats(ip, fmts)
 

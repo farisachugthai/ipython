@@ -1,21 +1,35 @@
 =================
-IPython reference
+IPython Reference
 =================
+
+.. module:: reference
+    :synopsis: Reference materials for IPython.
+
 
 .. _command_line_options:
 
 Command-line usage
 ==================
 
-You start IPython with the command::
+You start IPython with the command:
 
-    $ ipython [options] files
+.. todo: check that my *off the top of my head* man syntax is right
+
+.. program:: ipython [options] [-c <statement>] [-m <module>]
 
 If invoked with no options, it executes all the files listed in sequence and
-exits. If you add the ``-i`` flag, it drops you into the interpreter while still
-acknowledging any options you may have set in your ``ipython_config.py``. This
-behavior is different from standard Python, which when called as python ``-i``
-will only execute one file and ignore your configuration setup.
+exits.
+
+.. option:: -i, --interactive [<file to execute>]
+
+Execute a file, then enter the interactive interpreter while still
+recognizing and executing any default options  set in  ``ipython_config.py``.
+
+This behavior is different from standard Python, which when called as:
+
+    ``python`` `-i` file
+
+will execute only that one file, and in doing so, will ignore your configuration setup.
 
 Please note that some of the configuration options are not available at the
 command line, simply because they are not practical here. Look into your
@@ -620,11 +634,11 @@ code snippet::
   a = 42
   IPython.embed()
 
-and within the IPython shell, you reassign `a` to `23` to do further testing of 
+and within the IPython shell, you reassign `a` to `23` to do further testing of
 some sort, you can then exit::
 
   >>> IPython.embed()
-  Python 3.6.2 (default, Jul 17 2017, 16:44:45) 
+  Python 3.6.2 (default, Jul 17 2017, 16:44:45)
   Type 'copyright', 'credits' or 'license' for more information
   IPython 6.2.0.dev -- An enhanced Interactive Python. Type '?' for help.
 
@@ -638,9 +652,9 @@ Once you exit and print `a`, the value 23 will be shown::
   In: print(a)
   23
 
-It's important to note that the code run in the embedded IPython shell will 
-*not* change the state of your code and variables, **unless** the shell is 
-contained within the global namespace. In the above example, `a` is changed 
+It's important to note that the code run in the embedded IPython shell will
+*not* change the state of your code and variables, **unless** the shell is
+contained within the global namespace. In the above example, `a` is changed
 because this is true.
 
 To further exemplify this, consider the following example::
@@ -654,7 +668,7 @@ To further exemplify this, consider the following example::
 
 Now if call the function and complete the state changes as we did above, the
 value `42` will be printed. Again, this is because it's not in the global
-namespace:: 
+namespace::
 
   do()
 
@@ -662,7 +676,7 @@ Running a file with the above code can lead to the following session::
 
   >>> do()
   42
-  Python 3.6.2 (default, Jul 17 2017, 16:44:45) 
+  Python 3.6.2 (default, Jul 17 2017, 16:44:45)
   Type 'copyright', 'credits' or 'license' for more information
   IPython 6.2.0.dev -- An enhanced Interactive Python. Type '?' for help.
 

@@ -1,5 +1,5 @@
 """
-Test for async helpers. 
+Test for async helpers.
 
 Should only trigger on python 3.5+ or will have syntax errors.
 """
@@ -11,8 +11,11 @@ from unittest import TestCase
 from IPython.testing.decorators import skip_without
 
 
-iprc = lambda x: ip.run_cell(dedent(x)).raise_error()
-iprc_nr = lambda x: ip.run_cell(dedent(x))
+def iprc(x): return ip.run_cell(dedent(x)).raise_error()
+
+
+def iprc_nr(x): return ip.run_cell(dedent(x))
+
 
 if sys.version_info > (3, 5):
     from IPython.core.async_helpers import _should_be_async
@@ -93,7 +96,6 @@ if sys.version_info > (3, 5):
                 {val}
             """)))
 
-
             test_cases.append(('nested', dedent("""
             if True:
                 while True:
@@ -133,7 +135,6 @@ if sys.version_info > (3, 5):
 
             return test_cases
 
-
         def test_top_level_return_error(self):
             tl_err_test_cases = self._get_top_level_cases()
             tl_err_test_cases.extend(self._get_ry_syntax_errors())
@@ -154,7 +155,8 @@ if sys.version_info > (3, 5):
                 # It should fail with all the values
                 for val in vals:
                     with self.subTest((test_name, val)):
-                        msg = "Syntax error not raised for %s, %s" % (test_name, val)
+                        msg = "Syntax error not raised for %s, %s" % (
+                            test_name, val)
                         with self.assertRaises(SyntaxError, msg=msg):
                             iprc(test_case.format(val=val))
 
@@ -171,10 +173,10 @@ if sys.version_info > (3, 5):
                 def __init__(self):
             """)))
 
-            func_contexts.append(('async-func', True,  dedent("""
+            func_contexts.append(('async-func', True, dedent("""
             async def f():""")))
 
-            func_contexts.append(('async-method', True,  dedent("""
+            func_contexts.append(('async-method', True, dedent("""
             class MyClass:
                 async def f(self):""")))
 
@@ -233,7 +235,8 @@ if sys.version_info > (3, 5):
                                 iprc(cell)
 
         def test_nonlocal(self):
-            # fails if outer scope is not a function scope or if var not defined
+            # fails if outer scope is not a function scope or if var not
+            # defined
             with self.assertRaises(SyntaxError):
                 iprc("nonlocal x")
                 iprc("""
@@ -261,13 +264,12 @@ if sys.version_info > (3, 5):
                     yield x
             """)
 
-
         def test_execute(self):
             iprc("""
             import asyncio
             await asyncio.sleep(0.001)
             """
-            )
+                 )
 
         def test_autoawait(self):
             iprc("%autoawait False")
@@ -276,7 +278,7 @@ if sys.version_info > (3, 5):
             from asyncio import sleep
             await sleep(0.1)
             """
-            )
+                 )
 
         @skip_without('curio')
         def test_autoawait_curio(self):
@@ -305,7 +307,6 @@ if sys.version_info > (3, 5):
             """)
             with nt.assert_raises(RuntimeError):
                 res.raise_error()
-
 
         def tearDown(self):
             ip.loop_runner = "asyncio"

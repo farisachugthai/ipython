@@ -256,7 +256,8 @@ class TestCompleter(unittest.TestCase):
         def test_spaces(self):
             """Test with only spaces as split chars."""
             self.sp.delims = " "
-            t = [("foo", "", "foo"), ("run foo", "", "foo"), ("run foo", "bar", "foo")]
+            t = [("foo", "", "foo"), ("run foo", "", "foo"),
+                 ("run foo", "bar", "foo")]
             check_line_split(self.sp, t)
 
     def test_has_open_quotes1(self):
@@ -430,19 +431,22 @@ class TestCompleter(unittest.TestCase):
         with provisionalcompleter():
             ip.Completer.use_jedi = True
             l = list(
-                _deduplicate_completions("Z.z", ip.Completer.completions("Z.z", 3))
+                _deduplicate_completions(
+                    "Z.z", ip.Completer.completions(
+                        "Z.z", 3))
             )
             ip.Completer.use_jedi = False
 
-        assert len(l) == 1, "Completions (Z.z<tab>) correctly deduplicate: %s " % l
+        assert len(
+            l) == 1, "Completions (Z.z<tab>) correctly deduplicate: %s " % l
         assert l[0].text == "zoo"  # and not `it.accumulate`
 
     def test_greedy_completions(self):
         """
-        Test the capability of the Greedy completer. 
+        Test the capability of the Greedy completer.
 
         Most of the test here does not really show off the greedy completer, for proof
-        each of the text below now pass with Jedi. The greedy completer is capable of more. 
+        each of the text below now pass with Jedi. The greedy completer is capable of more.
 
         See the :any:`test_dict_key_completion_contexts`
 
@@ -450,7 +454,10 @@ class TestCompleter(unittest.TestCase):
         ip = get_ipython()
         ip.ex("a=list(range(5))")
         _, c = ip.complete(".", line="a[0].")
-        nt.assert_false(".real" in c, "Shouldn't have completed on a[0]: %s" % c)
+        nt.assert_false(
+            ".real" in c,
+            "Shouldn't have completed on a[0]: %s" %
+            c)
 
         def _(line, cursor_pos, expect, message, completion):
             with greedy_completion(), provisionalcompleter():
@@ -539,7 +546,7 @@ class TestCompleter(unittest.TestCase):
 
     def test_limit_to__all__False_ok(self):
         """
-        Limit to all is deprecated, once we remove it this test can go away. 
+        Limit to all is deprecated, once we remove it this test can go away.
         """
         ip = get_ipython()
         c = ip.Completer
@@ -585,7 +592,8 @@ class TestCompleter(unittest.TestCase):
     def test_default_arguments_from_docstring(self):
         ip = get_ipython()
         c = ip.Completer
-        kwd = c._default_arguments_from_docstring("min(iterable[, key=func]) -> value")
+        kwd = c._default_arguments_from_docstring(
+            "min(iterable[, key=func]) -> value")
         nt.assert_equal(kwd, ["key"])
         # with cython type etc
         kwd = c._default_arguments_from_docstring(
@@ -658,7 +666,8 @@ class TestCompleter(unittest.TestCase):
         c = ip.Completer
         c.use_jedi = False
 
-        # Before importing matplotlib, %matplotlib magic should be the only option.
+        # Before importing matplotlib, %matplotlib magic should be the only
+        # option.
         text, matches = c.complete("mat")
         nt.assert_equal(matches, ["%matplotlib"])
 
@@ -681,7 +690,8 @@ class TestCompleter(unittest.TestCase):
         ip = get_ipython()
         c = ip.Completer
 
-        # Before importing matplotlib, %matplotlib magic should be the only option.
+        # Before importing matplotlib, %matplotlib magic should be the only
+        # option.
         text, matches = c.complete("%mat")
         nt.assert_equal(matches, ["%matplotlib"])
 
@@ -814,7 +824,11 @@ class TestCompleter(unittest.TestCase):
         assert not any(m.endswith(("]", '"', "'")) for m in matches), matches
 
         # check escaping and whitespace
-        ip.user_ns["d"] = {"a\nb": None, "a'b": None, 'a"b': None, "a word": None}
+        ip.user_ns["d"] = {
+            "a\nb": None,
+            "a'b": None,
+            'a"b': None,
+            "a word": None}
         _, matches = complete(line_buffer="d['a")
         nt.assert_in("a\\nb", matches)
         nt.assert_in("a\\'b", matches)
@@ -955,7 +969,8 @@ class TestCompleter(unittest.TestCase):
 
         ip = get_ipython()
         complete = ip.Completer.complete
-        ip.user_ns["d"] = numpy.array([], dtype=[("hello", "f"), ("world", "f")])
+        ip.user_ns["d"] = numpy.array(
+            [], dtype=[("hello", "f"), ("world", "f")])
         _, matches = complete(line_buffer="d['")
         nt.assert_in("hello", matches)
         nt.assert_in("world", matches)
@@ -1019,7 +1034,8 @@ class TestCompleter(unittest.TestCase):
         NamedInstanceClass("qwick")
         ip.user_ns["named_instance_class"] = NamedInstanceClass
 
-        _, matches = ip.Completer.complete(line_buffer="named_instance_class['qw")
+        _, matches = ip.Completer.complete(
+            line_buffer="named_instance_class['qw")
         nt.assert_in("qwerty", matches)
         nt.assert_in("qwick", matches)
 

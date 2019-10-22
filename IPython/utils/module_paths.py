@@ -1,42 +1,14 @@
-"""Utility functions for finding modules
-
-Utility functions for finding modules on sys.path.
+"""Utility function for finding modules.
 
 `find_module` returns a path to module or None, given certain conditions.
 
+absolute or relative? path object or str?
+
+WHAT CONDITIONS????
+
 """
-#-----------------------------------------------------------------------------
-# Copyright (c) 2011, the IPython Development Team.
-#
-# Distributed under the terms of the Modified BSD License.
-#
-# The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
-
-#-----------------------------------------------------------------------------
-# Imports
-#-----------------------------------------------------------------------------
-
-# Stdlib imports
 import importlib
 import os
-
-# Third-party imports
-
-# Our own imports
-
-
-#-----------------------------------------------------------------------------
-# Globals and constants
-#-----------------------------------------------------------------------------
-
-#-----------------------------------------------------------------------------
-# Local utilities
-#-----------------------------------------------------------------------------
-
-#-----------------------------------------------------------------------------
-# Classes and functions
-#-----------------------------------------------------------------------------
 
 def find_mod(module_name):
     """

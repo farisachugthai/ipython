@@ -1,15 +1,15 @@
 """Logger class for IPython's logging facilities.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2001 Janko Hauser <jhauser@zscout.de> and
 #       Copyright (C) 2001-2006 Fernando Perez <fperez@colorado.edu>
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#*****************************************************************************
+# *****************************************************************************
 
-#****************************************************************************
+# ****************************************************************************
 # Modules and globals
 
 # Python standard modules
@@ -18,7 +18,7 @@ import io
 import os
 import time
 
-#****************************************************************************
+# ****************************************************************************
 # FIXME: This class isn't a mixin anymore, but it still needs attributes from
 # ipython and does input cache management.  Finish cleanup later...
 
@@ -80,9 +80,12 @@ class Logger(object):
                                self.logfname)
 
         # The parameters can override constructor defaults
-        if logfname is not None: self.logfname = logfname
-        if loghead is not None: self.loghead = loghead
-        if logmode is not None: self.logmode = logmode
+        if logfname is not None:
+            self.logfname = logfname
+        if loghead is not None:
+            self.loghead = loghead
+        if logmode is not None:
+            self.logmode = logmode
 
         # Parameters not part of the constructor
         self.timestamp = timestamp
@@ -118,8 +121,7 @@ class Logger(object):
         elif logmode == 'rotate':
             if isfile(self.logfname):
                 if isfile(self.logfname + '.001~'):
-                    old = glob.glob(self.logfname + '.*~')
-                    old.sort()
+                    old = sorted(glob.glob(self.logfname + '.*~'))
                     old.reverse()
                     for f in old:
                         root, ext = os.path.splitext(f)
@@ -195,7 +197,7 @@ which already exists. But you must first start the logging process with
     def log_write(self, data, kind='input'):
         """Write data to the log file, if active"""
 
-        #print 'data: %r' % data # dbg
+        # print 'data: %r' % data # dbg
         if self.log_active and data:
             write = self.logfile.write
             if kind == 'input':

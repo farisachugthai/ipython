@@ -63,7 +63,7 @@ class BuiltinTrap(Configurable):
         bdict = builtin_mod.__dict__
         orig = bdict.get(key, BuiltinUndefined)
         if value is HideBuiltin:
-            if orig is not BuiltinUndefined:  #same as 'key in bdict'
+            if orig is not BuiltinUndefined:  # same as 'key in bdict'
                 self._orig_builtins[key] = orig
                 del bdict[key]
         else:

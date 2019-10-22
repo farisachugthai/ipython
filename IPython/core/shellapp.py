@@ -29,9 +29,9 @@ from traitlets import (
 )
 from IPython.terminal import pt_inputhooks
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Aliases and Flags
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 gui_keys = tuple(
     sorted(pt_inputhooks.backends) + sorted(pt_inputhooks.aliases))
@@ -96,9 +96,9 @@ shell_aliases = dict(
 )
 shell_aliases['cache-size'] = 'InteractiveShell.cache_size'
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class InteractiveShellApp(Configurable):
@@ -135,8 +135,7 @@ class InteractiveShellApp(Configurable):
 
     hide_initial_ns = Bool(
         True,
-        help=
-        """Should variables loaded at startup (by startup files, exec_lines, etc.)
+        help="""Should variables loaded at startup (by startup files, exec_lines, etc.)
         be hidden from tools like %who?""").tag(config=True)
 
     exec_files = List(
@@ -173,8 +172,7 @@ class InteractiveShellApp(Configurable):
         """).tag(config=True)
     pylab_import_all = Bool(
         True,
-        help=
-        """If true, IPython will populate the user namespace with numpy, pylab, etc.
+        help="""If true, IPython will populate the user namespace with numpy, pylab, etc.
         and an ``import *`` is done from numpy and pylab, when using pylab mode.
 
         When False, pylab mode should not import any names into the user namespace.
@@ -222,7 +220,7 @@ class InteractiveShellApp(Configurable):
         enable = False
         shell = self.shell
         if self.pylab:
-            enable = lambda key: shell.enable_pylab(
+            def enable(key): return shell.enable_pylab(
                 key, import_all=self.pylab_import_all)
             key = self.pylab
         elif self.matplotlib:
@@ -276,14 +274,14 @@ class InteractiveShellApp(Configurable):
                 try:
                     self.log.info("Loading IPython extension: %s" % ext)
                     self.shell.extension_manager.load_extension(ext)
-                except:
+                except BaseException:
                     if self.reraise_ipython_extension_failures:
                         raise
                     msg = ("Error in loading extension: {ext}\n"
                            "Check your config files in {location}".format(
                                ext=ext, location=self.profile_dir.location))
                     self.log.warning(msg, exc_info=True)
-        except:
+        except BaseException:
             if self.reraise_ipython_extension_failures:
                 raise
             self.log.warning("Unknown error in loading extensions:",
@@ -318,11 +316,11 @@ class InteractiveShellApp(Configurable):
                 try:
                     self.log.info("Running code in user namespace: %s" % line)
                     self.shell.run_cell(line, store_history=False)
-                except:
+                except BaseException:
                     self.log.warning("Error in executing line in user "
                                      "namespace: %s" % line)
                     self.shell.showtraceback()
-        except:
+        except BaseException:
             self.log.warning(
                 "Unknown error in handling IPythonApp.exec_lines:")
             self.shell.showtraceback()
@@ -372,7 +370,7 @@ class InteractiveShellApp(Configurable):
             self.log.debug("Running PYTHONSTARTUP file %s...", python_startup)
             try:
                 self._exec_file(python_startup)
-            except:
+            except BaseException:
                 self.log.warning(
                     "Unknown error in handling PYTHONSTARTUP file %s:",
                     python_startup)
@@ -387,7 +385,7 @@ class InteractiveShellApp(Configurable):
         try:
             for fname in sorted(startup_files):
                 self._exec_file(fname)
-        except:
+        except BaseException:
             self.log.warning("Unknown error in handling startup files:")
             self.shell.showtraceback()
 
@@ -400,7 +398,7 @@ class InteractiveShellApp(Configurable):
         try:
             for fname in self.exec_files:
                 self._exec_file(fname)
-        except:
+        except BaseException:
             self.log.warning(
                 "Unknown error in handling IPythonApp.exec_files:")
             self.shell.showtraceback()
@@ -413,21 +411,22 @@ class InteractiveShellApp(Configurable):
                 self.log.info("Running code given at command line (c=): %s" %
                               line)
                 self.shell.run_cell(line, store_history=False)
-            except:
+            except BaseException:
                 self.log.warning(
                     "Error in executing line in user namespace: %s" % line)
                 self.shell.showtraceback()
                 if not self.interact:
                     self.exit(1)
 
-        # Like Python itself, ignore the second if the first of these is present
+        # Like Python itself, ignore the second if the first of these is
+        # present
         elif self.file_to_run:
             fname = self.file_to_run
             if os.path.isdir(fname):
                 fname = os.path.join(fname, "__main__.py")
             try:
                 self._exec_file(fname, shell_futures=True)
-            except:
+            except BaseException:
                 self.shell.showtraceback(tb_offset=4)
                 if not self.interact:
                     self.exit(1)

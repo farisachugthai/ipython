@@ -9,16 +9,16 @@ Authors:
 * Fernando Perez
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2008-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import re
 import sys
@@ -26,9 +26,9 @@ import sys
 from IPython.utils import py3compat
 from IPython.utils.encoding import get_stream_enc
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main function
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # RegExp for splitting line contents into pre-char//first word-method//rest.
 # For clarity, each group in on one line.
@@ -74,8 +74,8 @@ def split_user_input(line, pattern=None):
     else:
         pre, esc, ifun, the_rest = match.groups()
 
-    #print 'line:<%s>' % line # dbg
-    #print 'pre <%s> ifun <%s> rest <%s>' % (pre,ifun.strip(),the_rest) # dbg
+    # print 'line:<%s>' % line # dbg
+    # print 'pre <%s> ifun <%s> rest <%s>' % (pre,ifun.strip(),the_rest) # dbg
     return pre, esc or '', ifun.strip(), the_rest.lstrip()
 
 

@@ -16,9 +16,9 @@ Authors
 
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 import shutil
@@ -37,16 +37,17 @@ from IPython.testing import tools as tt
 from IPython.utils.process import getoutput
 from IPython.utils.tempdir import TemporaryDirectory
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 TMP_TEST_DIR = tempfile.mkdtemp()
 HOME_TEST_DIR = os.path.join(TMP_TEST_DIR, "home_test_dir")
-IP_TEST_DIR = os.path.join(HOME_TEST_DIR,'.ipython')
+IP_TEST_DIR = os.path.join(HOME_TEST_DIR, '.ipython')
 
 #
 # Setup/teardown functions/decorators
 #
+
 
 def setup_module():
     """Setup test environment for the module:
@@ -69,9 +70,9 @@ def teardown_module():
     shutil.rmtree(TMP_TEST_DIR)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def win32_without_pywin32():
     if sys.platform == 'win32':
         try:
@@ -79,7 +80,7 @@ def win32_without_pywin32():
         except ImportError:
             return True
     return False
-    
+
 
 class ProfileStartupTest(TestCase):
     def setUp(self):
@@ -87,7 +88,7 @@ class ProfileStartupTest(TestCase):
         self.pd = ProfileDir.create_profile_dir_by_name(IP_TEST_DIR, 'test')
         self.options = ['--ipython-dir', IP_TEST_DIR, '--profile', 'test']
         self.fname = os.path.join(TMP_TEST_DIR, 'test.py')
-        
+
     def tearDown(self):
         # We must remove this profile right away so its presence doesn't
         # confuse other tests.
@@ -114,7 +115,7 @@ class ProfileStartupTest(TestCase):
         self.init('00-start.ipy', '%xmode plain\n', '')
         self.validate('Exception reporting mode: Plain')
 
-    
+
 def test_list_profiles_in():
     # No need to remove these directories and files, as they will get nuked in
     # the module-level teardown.
@@ -123,11 +124,11 @@ def test_list_profiles_in():
         os.mkdir(os.path.join(td, name))
     if dec.unicode_paths:
         os.mkdir(os.path.join(td, u'profile_ünicode'))
-    
+
     with open(os.path.join(td, 'profile_file'), 'w') as f:
         f.write("I am not a profile directory")
     profiles = list_profiles_in(td)
-    
+
     # unicode normalization can turn u'ünicode' into u'u\0308nicode',
     # so only check for *nicode, and that creating a ProfileDir from the
     # name remains valid
@@ -153,9 +154,8 @@ def test_profile_create_ipython_dir():
     """ipython profile create respects --ipython-dir"""
     with TemporaryDirectory() as td:
         getoutput([sys.executable, '-m', 'IPython', 'profile', 'create',
-             'foo', '--ipython-dir=%s' % td])
+                   'foo', '--ipython-dir=%s' % td])
         profile_dir = os.path.join(td, 'profile_foo')
         assert os.path.exists(profile_dir)
         ipython_config = os.path.join(profile_dir, 'ipython_config.py')
         assert os.path.exists(ipython_config)
-        

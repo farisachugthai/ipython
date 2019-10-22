@@ -19,18 +19,20 @@ tests = [
     (',ls', ('', ',', 'ls', '')),
     (';ls', ('', ';', 'ls', '')),
     ('  ;ls', ('  ', ';', 'ls', '')),
-    ('f.g(x)',  ('', '', 'f.g', '(x)')),
+    ('f.g(x)', ('', '', 'f.g', '(x)')),
     ('f.g (x)', ('', '', 'f.g', '(x)')),
     ('?%hist1', ('', '?', '%hist1', '')),
     ('?%%hist2', ('', '?', '%%hist2', '')),
     ('??%hist3', ('', '??', '%hist3', '')),
     ('??%%hist4', ('', '??', '%%hist4', '')),
     ('?x*', ('', '?', 'x*', '')),
-    ]
+]
 tests.append((u"Pérez Fernando", (u'', u'', u'Pérez', u'Fernando')))
+
 
 def test_split_user_input():
     return tt.check_pairs(split_user_input, tests)
+
 
 def test_LineInfo():
     """Simple test for LineInfo construction and str()"""

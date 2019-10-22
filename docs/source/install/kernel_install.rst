@@ -2,15 +2,22 @@
 
 Installing the IPython kernel
 =============================
+.. highlight:: bash
+
+.. todo:: So it says this docs is about kernel installs.
+
+    It mostly seems like a wildly incomplete and out of date explanation of virtual environments?
 
 .. seealso::
 
    :ref:`Installing Jupyter <jupyter:install>`
      The IPython kernel is the Python execution backend for Jupyter.
 
-The Jupyter Notebook and other frontends automatically ensure that the IPython kernel is available.
-However, if you want to use a kernel with a different version of Python, or in a virtualenv or conda environment,
-you'll need to install that manually.
+The Jupyter Notebook and other frontends automatically ensure that the
+IPython kernel is available. However, if you want to use a kernel with a
+different version of Python, or in a virtualenv or conda environment, you'll
+need to install that manually.
+
 
 Kernels for Python 2 and 3
 --------------------------
@@ -28,7 +35,7 @@ Then install with ::
 Or using conda, create a Python 2 environment::
 
     conda create -n ipykernel_py2 python=2 ipykernel
-    source activate ipykernel_py2    # On Windows, remove the word 'source'
+    conda activate ipykernel_py2
     python -m ipykernel install --user
 
 .. note::

@@ -43,7 +43,7 @@ class DisplayFormatter(Configurable):
     active_types = List(Unicode(),
                         help="""List of currently active mime-types to display.
         You can use this to set a white-list for formats to display.
-        
+
         Most users will not need to change this value.
         """).tag(config=True)
 
@@ -124,13 +124,13 @@ class DisplayFormatter(Configurable):
         Returns
         -------
         (format_dict, metadata_dict) : tuple of two dicts
-        
+
             format_dict is a dictionary of key/value pairs, one of each format that was
             generated for the object. The keys are the format types, which
             will usually be MIME type strings and the values and JSON'able
             data structure containing the raw data for the representation in
             that format.
-            
+
             metadata_dict is a dictionary of metadata about each mime-type output.
             Its keys will be a strict subset of the keys in format_dict.
 
@@ -192,7 +192,7 @@ class DisplayFormatter(Configurable):
             md = None
             try:
                 data = formatter(obj)
-            except:
+            except BaseException:
                 # FIXME: log the exception
                 raise
 
@@ -212,9 +212,9 @@ class DisplayFormatter(Configurable):
         return list(self.formatters.keys())
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Formatters for specific format types (text, html, svg, etc.)
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def _safe_repr(obj):
@@ -278,7 +278,7 @@ class FormatterABC(metaclass=abc.ABCMeta):
 
 def _mod_name_key(typ):
     """Return a (__module__, __name__) tuple for a type.
-    
+
     Used as key in Formatter.deferred_printers.
     """
     module = getattr(typ, '__module__', None)
@@ -373,22 +373,22 @@ class BaseFormatter(Configurable):
 
     def _check_return(self, r, obj):
         """Check that a return value is appropriate
-        
+
         Return the value if so, None otherwise, warning if invalid.
         """
         if r is None or isinstance(r, self._return_type) or \
-            (isinstance(r, tuple) and r and isinstance(r[0], self._return_type)):
+                (isinstance(r, tuple) and r and isinstance(r[0], self._return_type)):
             return r
         else:
             warnings.warn(
-                "%s formatter returned invalid type %s (expected %s) for object: %s" % \
+                "%s formatter returned invalid type %s (expected %s) for object: %s" %
                 (self.format_type, type(r), self._return_type, _safe_repr(obj)),
                 FormatterWarning
             )
 
     def lookup(self, obj):
         """Look up the formatter for a given instance.
-        
+
         Parameters
         ----------
         obj  : object instance
@@ -445,7 +445,7 @@ class BaseFormatter(Configurable):
 
     def for_type(self, typ, func=None):
         """Add a format function for a given type.
-        
+
         Parameters
         -----------
         typ : type or '__module__.__name__' string for a type
@@ -456,10 +456,10 @@ class BaseFormatter(Configurable):
             and will return the raw data in this formatter's format.
             Subclasses may use a different call signature for the
             `func` argument.
-            
+
             If `func` is None or not specified, there will be no change,
             only returning the current value.
-        
+
         Returns
         -------
         oldfunc : callable
@@ -499,10 +499,10 @@ class BaseFormatter(Configurable):
             and will return the raw data in this formatter's format.
             Subclasses may use a different call signature for the
             `func` argument.
-            
+
             If `func` is None or unspecified, there will be no change,
             only returning the current value.
-        
+
         Returns
         -------
         oldfunc : callable
@@ -612,9 +612,8 @@ class PlainTextFormatter(BaseFormatter):
 
     max_seq_length = Integer(
         pretty.MAX_SEQ_LENGTH,
-        help=
-        """Truncate large collections (lists, dicts, tuples, sets) to this size.
-        
+        help="""Truncate large collections (lists, dicts, tuples, sets) to this size.
+
         Set to 0 to disable truncation.
         """).tag(config=True)
 
@@ -846,7 +845,7 @@ class JSONFormatter(BaseFormatter):
 
     def _check_return(self, r, obj):
         """Check that a return value is appropriate
-        
+
         Return the value if so, None otherwise, warning if invalid.
         """
         if r is None:
@@ -905,19 +904,19 @@ class PDFFormatter(BaseFormatter):
 
 class IPythonDisplayFormatter(BaseFormatter):
     """An escape-hatch Formatter for objects that know how to display themselves.
-    
+
     To define the callables that compute the representation of your
     objects, define a :meth:`_ipython_display_` method or use the :meth:`for_type`
     or :meth:`for_type_by_name` methods to register functions that handle
     this. Unlike mime-type displays, this method should not return anything,
     instead calling any appropriate display methods itself.
-    
+
     This display formatter has highest priority.
     If it fires, no other display formatter will be called.
 
     Prior to IPython 6.1, `_ipython_display_` was the only way to display custom mime-types
     without registering a new Formatter.
-    
+
     IPython 6.1 introduces `_repr_mimebundle_` for displaying custom mime-types,
     so `_ipython_display_` should only be used for objects that require unusual
     display patterns, such as multiple display calls.
