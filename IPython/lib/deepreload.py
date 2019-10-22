@@ -25,12 +25,12 @@ A reference to the original :func:`python:reload` is stored in this module as
 This code is almost entirely based on knee.py, which is a Python
 re-implementation of hierarchical module import.
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2001 Nathaniel Gray <n8gray@caltech.edu>
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#*****************************************************************************
+# *****************************************************************************
 
 import builtins as builtin_mod
 from contextlib import contextmanager
@@ -112,7 +112,7 @@ def get_parent(globals, level):
 
     try:
         parent = sys.modules[name]
-    except:
+    except BaseException:
         if orig_level < 1:
             warn("Parent module '%.200s' not found while handling absolute "
                  "import" % name)
@@ -203,14 +203,15 @@ def import_submodule(mod, subname, fullname):
 
         try:
             m = imp.load_module(fullname, fp, filename, stuff)
-        except:
+        except BaseException:
             # load_module probably removed name from modules because of
             # the error.  Put back the original module object.
             if oldm:
                 sys.modules[fullname] = oldm
             raise
         finally:
-            if fp: fp.close()
+            if fp:
+                fp.close()
 
         add_submodule(mod, m, fullname, subname)
 
@@ -220,7 +221,7 @@ def import_submodule(mod, subname, fullname):
 def add_submodule(mod, submod, fullname, subname):
     """mod.{subname} = submod"""
     if mod is None:
-        return  #Nothing to do here.
+        return  # Nothing to do here.
 
     if submod is None:
         submod = sys.modules[fullname]
@@ -298,7 +299,7 @@ def deep_reload_hook(m):
     global modules_reloading
     try:
         return modules_reloading[name]
-    except:
+    except BaseException:
         modules_reloading[name] = m
 
     dot = name.rfind('.')
@@ -326,13 +327,14 @@ def deep_reload_hook(m):
 
     try:
         newm = imp.load_module(name, fp, filename, stuff)
-    except:
+    except BaseException:
         # load_module probably removed name from modules because of
         # the error.  Put back the original module object.
         sys.modules[name] = m
         raise
     finally:
-        if fp: fp.close()
+        if fp:
+            fp.close()
 
     modules_reloading.clear()
     return newm

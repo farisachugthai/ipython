@@ -43,8 +43,9 @@ from . import skipdoctest
 # separator) so just skip the doctest there.  The example remains informative.
 doctest_deco = skipdoctest.skip_doctest if sys.platform == 'win32' else dec.null_deco
 
+
 @doctest_deco
-def full_path(startPath,files):
+def full_path(startPath, files):
     """Make full paths for all the listed files, based on startPath.
 
     Only the base part of startPath is kept, since this routine is typically
@@ -77,7 +78,7 @@ def full_path(startPath,files):
 
     files = list_strings(files)
     base = os.path.split(startPath)[0]
-    return [ os.path.join(base,f) for f in files ]
+    return [os.path.join(base, f) for f in files]
 
 
 def parse_test_output(txt):
@@ -103,20 +104,20 @@ def parse_test_output(txt):
     if err_m:
         nerr = int(err_m.group(1))
         nfail = 0
-        return  nerr, nfail
+        return nerr, nfail
 
     fail_m = re.search(r'^FAILED \(failures=(\d+)\)', txt, re.MULTILINE)
     if fail_m:
         nerr = 0
         nfail = int(fail_m.group(1))
-        return  nerr, nfail
+        return nerr, nfail
 
     both_m = re.search(r'^FAILED \(errors=(\d+), failures=(\d+)\)', txt,
                        re.MULTILINE)
     if both_m:
         nerr = int(both_m.group(1))
         nfail = int(both_m.group(2))
-        return  nerr, nfail
+        return nerr, nfail
 
     # If the input didn't match any of these forms, assume no error/failures
     return 0, 0
@@ -129,9 +130,9 @@ parse_test_output.__test__ = False
 def default_argv():
     """Return a valid default argv for creating testing instances of ipython"""
 
-    return ['--quick', # so no config file is loaded
+    return ['--quick',  # so no config file is loaded
             # Other defaults to minimize side effects on stdout
-            '--colors=NoColor', '--no-term-title','--no-banner',
+            '--colors=NoColor', '--no-term-title', '--no-banner',
             '--autocall=0']
 
 
@@ -166,6 +167,7 @@ def get_ipython_cmd(as_string=False):
 
     return ipython_cmd
 
+
 def ipexec(fname, options=None, commands=()):
     """Utility to call 'ipython filename'.
 
@@ -189,7 +191,8 @@ def ipexec(fname, options=None, commands=()):
     -------
     ``(stdout, stderr)`` of ipython subprocess.
     """
-    if options is None: options = []
+    if options is None:
+        options = []
 
     cmdargs = default_argv() + options
 
@@ -203,14 +206,17 @@ def ipexec(fname, options=None, commands=()):
     # FIXME: ignore all warnings in ipexec while we have shims
     # should we keep suppressing warnings here, even after removing shims?
     env['PYTHONWARNINGS'] = 'ignore'
-    # env.pop('PYTHONWARNINGS', None)  # Avoid extraneous warnings appearing on stderr
+    # env.pop('PYTHONWARNINGS', None)  # Avoid extraneous warnings appearing
+    # on stderr
     for k, v in env.items():
         # Debug a bizarre failure we've seen on Windows:
         # TypeError: environment can only contain strings
         if not isinstance(v, str):
             print(k, v)
     p = Popen(full_cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE, env=env)
-    out, err = p.communicate(input=py3compat.encode('\n'.join(commands)) or None)
+    out, err = p.communicate(
+        input=py3compat.encode(
+            '\n'.join(commands)) or None)
     out, err = py3compat.decode(out), py3compat.decode(err)
     # `import readline` causes 'ESC[?1034h' to be output sometimes,
     # so strip that out before doing comparisons
@@ -249,18 +255,24 @@ def ipexec_validate(fname, expected_out, expected_err='',
     import nose.tools as nt
 
     out, err = ipexec(fname, options, commands)
-    #print 'OUT', out  # dbg
-    #print 'ERR', err  # dbg
+    # print 'OUT', out  # dbg
+    # print 'ERR', err  # dbg
     # If there are any errors, we must check those before stdout, as they may be
     # more informative than simply having an empty stdout.
     if err:
         if expected_err:
-            nt.assert_equal("\n".join(err.strip().splitlines()), "\n".join(expected_err.strip().splitlines()))
+            nt.assert_equal(
+                "\n".join(
+                    err.strip().splitlines()), "\n".join(
+                    expected_err.strip().splitlines()))
         else:
             raise ValueError('Running file %r produced error: %r' %
                              (fname, err))
     # If no errors or output on stderr was expected, match stdout
-    nt.assert_equal("\n".join(out.strip().splitlines()), "\n".join(expected_out.strip().splitlines()))
+    nt.assert_equal(
+        "\n".join(
+            out.strip().splitlines()), "\n".join(
+            expected_out.strip().splitlines()))
 
 
 class TempFileMixin(unittest.TestCase):
@@ -272,7 +284,7 @@ class TempFileMixin(unittest.TestCase):
         """Make a valid python temp file."""
         fname = temp_pyfile(src, ext)
         if not hasattr(self, 'tmps'):
-            self.tmps=[]
+            self.tmps = []
         self.tmps.append(fname)
         self.fname = fname
 
@@ -285,7 +297,7 @@ class TempFileMixin(unittest.TestCase):
                 # win32, there's nothing to cleanup.
                 try:
                     os.unlink(fname)
-                except:
+                except BaseException:
                     # On Windows, even though we close the file, we still can't
                     # delete it.  I have no clue why
                     pass
@@ -298,12 +310,14 @@ class TempFileMixin(unittest.TestCase):
 
 
 pair_fail_msg = ("Testing {0}\n\n"
-                "In:\n"
-                "  {1!r}\n"
-                "Expected:\n"
-                "  {2!r}\n"
-                "Got:\n"
-                "  {3!r}\n")
+                 "In:\n"
+                 "  {1!r}\n"
+                 "Expected:\n"
+                 "  {2!r}\n"
+                 "Got:\n"
+                 "  {3!r}\n")
+
+
 def check_pairs(func, pairs):
     """Utility function for the common case of checking a function with a
     sequence of input/output pairs.
@@ -336,6 +350,7 @@ notprinted_msg = """Did not find {0!r} in printed output (on {1}):
 -------
 """
 
+
 class AssertPrints(object):
     """Context manager for testing that code prints certain text.
 
@@ -348,6 +363,7 @@ class AssertPrints(object):
     abcd
     def
     """
+
     def __init__(self, s, channel='stdout', suppress=True):
         self.s = s
         if isinstance(self.s, (str, _re_type)):
@@ -371,12 +387,15 @@ class AssertPrints(object):
             printed = self.buffer.getvalue()
             for s in self.s:
                 if isinstance(s, _re_type):
-                    assert s.search(printed), notprinted_msg.format(s.pattern, self.channel, printed)
+                    assert s.search(printed), notprinted_msg.format(
+                        s.pattern, self.channel, printed)
                 else:
-                    assert s in printed, notprinted_msg.format(s, self.channel, printed)
+                    assert s in printed, notprinted_msg.format(
+                        s, self.channel, printed)
             return False
         finally:
             self.tee.close()
+
 
 printed_msg = """Found {0!r} in printed output (on {1}):
 -------
@@ -384,10 +403,12 @@ printed_msg = """Found {0!r} in printed output (on {1}):
 -------
 """
 
+
 class AssertNotPrints(AssertPrints):
     """Context manager for checking that certain output *isn't* produced.
 
     Counterpart of AssertPrints"""
+
     def __exit__(self, etype, value, traceback):
         try:
             if value is not None:
@@ -399,7 +420,7 @@ class AssertNotPrints(AssertPrints):
             printed = self.buffer.getvalue()
             for s in self.s:
                 if isinstance(s, _re_type):
-                    assert not s.search(printed),printed_msg.format(
+                    assert not s.search(printed), printed_msg.format(
                         s.pattern, self.channel, printed)
                 else:
                     assert s not in printed, printed_msg.format(
@@ -407,6 +428,7 @@ class AssertNotPrints(AssertPrints):
             return False
         finally:
             self.tee.close()
+
 
 @contextmanager
 def mute_warn():
@@ -418,6 +440,7 @@ def mute_warn():
     finally:
         warn.warn = save_warn
 
+
 @contextmanager
 def make_tempfile(name):
     """ Create an empty, named, temporary file for the duration of the context.
@@ -427,6 +450,7 @@ def make_tempfile(name):
         yield
     finally:
         os.unlink(name)
+
 
 def fake_input(inputs):
     """Temporarily replace the input() function to return the given values
@@ -440,6 +464,7 @@ def fake_input(inputs):
     was used, EOFError is raised.
     """
     it = iter(inputs)
+
     def mock_input(prompt=''):
         try:
             return next(it)
@@ -447,6 +472,7 @@ def fake_input(inputs):
             raise EOFError('No more inputs given')
 
     return patch('builtins.input', mock_input)
+
 
 def help_output_test(subcommand=''):
     """test that `ipython [subcommand] -h` works"""
@@ -468,4 +494,3 @@ def help_all_output_test(subcommand=''):
     nt.assert_in("Options", out)
     nt.assert_in("Class", out)
     return out, err
-

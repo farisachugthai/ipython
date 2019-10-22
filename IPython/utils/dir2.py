@@ -16,7 +16,7 @@ def safe_hasattr(obj, attr):
     try:
         getattr(obj, attr)
         return True
-    except:
+    except BaseException:
         return False
 
 

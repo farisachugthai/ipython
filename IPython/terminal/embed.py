@@ -25,7 +25,8 @@ class KillEmbedded(Exception):
 
 # kept for backward compatibility as IPython 6 was released with
 # the typo. See https://github.com/ipython/ipython/pull/10706
-KillEmbeded = KillEmbedded
+# WTF?
+# KillEmbeded = KillEmbedded
 
 
 # This is an additional magic that is exposed in embedded shells.
@@ -311,9 +312,9 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
                 try:
                     module = sys.modules[global_ns['__name__']]
                 except KeyError:
-                    warnings.warn("Failed to get module %s" % \
-                        global_ns.get('__name__', 'unknown module')
-                    )
+                    warnings.warn("Failed to get module %s" %
+                                  global_ns.get('__name__', 'unknown module')
+                                  )
                     module = DummyMod()
                     module.__dict__ = global_ns
             if compile_flags is None:
@@ -411,7 +412,7 @@ def embed(**kwargs):
                 'autoawait': using != 'sync'
             }
         })
-    #save ps1/ps2 if defined
+    # save ps1/ps2 if defined
     ps1 = None
     ps2 = None
     try:
@@ -419,7 +420,7 @@ def embed(**kwargs):
         ps2 = sys.ps2
     except AttributeError:
         pass
-    #save previous instance
+    # save previous instance
     saved_shell_instance = InteractiveShell._instance
     if saved_shell_instance is not None:
         cls = type(saved_shell_instance)
@@ -434,7 +435,7 @@ def embed(**kwargs):
           _call_location_id='%s:%s' %
           (frame.f_code.co_filename, frame.f_lineno))
     InteractiveShellEmbed.clear_instance()
-    #restore previous instance
+    # restore previous instance
     if saved_shell_instance is not None:
         cls = type(saved_shell_instance)
         cls.clear_instance()

@@ -80,7 +80,7 @@ class ScriptMagics(Magics):
 
         If you want to add script magics that aren't on your path,
         specify them in script_paths
-        """, ).tag(config=True)
+        """,).tag(config=True)
 
     @default('script_magics')
     def _script_magics_default(self):
@@ -104,7 +104,8 @@ class ScriptMagics(Magics):
         return defaults
 
     script_paths = Dict(
-        help="""Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
+        help=
+        """Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
 
         Only necessary for items in script_magics where the default path will not
         find the right interpreter.
@@ -229,8 +230,8 @@ class ScriptMagics(Magics):
             except OSError:
                 pass
             except Exception as e:
-                print("Error while terminating subprocess (pid=%i): %s"
-                      % (p.pid, e))
+                print("Error while terminating subprocess (pid=%i): %s" %
+                      (p.pid, e))
             return
         out = py3compat.decode(out)
         err = py3compat.decode(err)
@@ -245,10 +246,7 @@ class ScriptMagics(Magics):
             sys.stderr.write(err)
             sys.stderr.flush()
         if args.raise_error and p.returncode != 0:
-            raise CalledProcessError(p.returncode,
-                                     cell,
-                                     output=out,
-                                     stderr=err)
+            raise CalledProcessError(p.returncode, cell, output=out, stderr=err)
 
     def _run_script(self, p, cell, to_close):
         """callback for running the script in the background"""

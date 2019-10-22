@@ -1,9 +1,9 @@
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2012-  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 
@@ -19,6 +19,7 @@ def test_named_file_in_temporary_directory():
         file.write(b'test')
     assert file.closed
     assert not os.path.exists(name)
+
 
 def test_temporary_working_directory():
     with TemporaryWorkingDirectory() as dir:

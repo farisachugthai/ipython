@@ -27,7 +27,7 @@ def test_tee_simple():
     text = 'Hello'
     tee = Tee(chan, channel='stdout')
     print(text, file=chan)
-    nt.assert_equal(chan.getvalue(), text+"\n")
+    nt.assert_equal(chan.getvalue(), text + "\n")
 
 
 class TeeTestCase(unittest.TestCase):
@@ -36,7 +36,7 @@ class TeeTestCase(unittest.TestCase):
         trap = StringIO()
         chan = StringIO()
         text = 'Hello'
-        
+
         std_ori = getattr(sys, channel)
         setattr(sys, channel, trap)
 
@@ -55,16 +55,18 @@ class TeeTestCase(unittest.TestCase):
         for chan in ['stdout', 'stderr']:
             self.tchan(chan)
 
+
 def test_io_init():
     """Test that io.stdin/out/err exist at startup"""
     for name in ('stdin', 'stdout', 'stderr'):
-        cmd = "from IPython.utils import io;print(io.%s.__class__)"%name
+        cmd = "from IPython.utils import io;print(io.%s.__class__)" % name
         with Popen([sys.executable, '-c', cmd], stdout=PIPE) as p:
             p.wait()
             classname = p.stdout.read().strip().decode('ascii')
         # __class__ is a reference to the class object in Python 3, so we can't
         # just test for string equality.
         assert 'IPython.utils.io.IOStream' in classname, classname
+
 
 class TestIOStream(unittest.TestCase):
 
@@ -85,10 +87,10 @@ class TestIOStream(unittest.TestCase):
 
     def test_capture_output(self):
         """capture_output() context works"""
-        
+
         with capture_output() as io:
             print('hi, stdout')
             print('hi, stderr', file=sys.stderr)
-        
+
         nt.assert_equal(io.stdout, 'hi, stdout\n')
         nt.assert_equal(io.stderr, 'hi, stderr\n')

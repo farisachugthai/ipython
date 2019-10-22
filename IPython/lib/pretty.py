@@ -593,7 +593,7 @@ def _seq_pprinter_factory(start, end):
                 p.text(',')
                 p.breakable()
             p.pretty(x)
-        if len(obj) == 1 and type(obj) is tuple:
+        if len(obj) == 1 and isinstance(obj, tuple):
             # Special case for 1-item tuples.
             p.text(',')
         p.end_group(step, end)
@@ -615,7 +615,8 @@ def _set_pprinter_factory(start, end):
         else:
             step = len(start)
             p.begin_group(step, start)
-            # Like dictionary keys, we will try to sort the items if there aren't too many
+            # Like dictionary keys, we will try to sort the items if there
+            # aren't too many
             if not (p.max_seq_length and len(obj) >= p.max_seq_length):
                 items = _sorted_for_pprint(obj)
             else:
@@ -643,7 +644,8 @@ def _dict_pprinter_factory(start, end):
         p.begin_group(step, start)
         keys = obj.keys()
         # if dict isn't large enough to be truncated, sort keys before displaying
-        # From Python 3.7, dicts preserve order by definition, so we don't sort.
+        # From Python 3.7, dicts preserve order by definition, so we don't
+        # sort.
         if not DICT_IS_ORDERED \
                 and not (p.max_seq_length and len(obj) >= p.max_seq_length):
             keys = _sorted_for_pprint(keys)
@@ -828,7 +830,8 @@ def for_type(typ, func):
     """
     oldfunc = _type_pprinters.get(typ, None)
     if func is not None:
-        # To support easy restoration of old pprinters, we need to ignore Nones.
+        # To support easy restoration of old pprinters, we need to ignore
+        # Nones.
         _type_pprinters[typ] = func
     return oldfunc
 
@@ -841,7 +844,8 @@ def for_type_by_name(type_module, type_name, func):
     key = (type_module, type_name)
     oldfunc = _deferred_type_pprinters.get(key, None)
     if func is not None:
-        # To support easy restoration of old pprinters, we need to ignore Nones.
+        # To support easy restoration of old pprinters, we need to ignore
+        # Nones.
         _deferred_type_pprinters[key] = func
     return oldfunc
 

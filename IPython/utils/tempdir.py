@@ -47,6 +47,7 @@ class TemporaryWorkingDirectory(TemporaryDirectory):
         with TemporaryWorkingDirectory() as tmpdir:
             ...
     """
+
     def __enter__(self):
         self.old_wd = _os.getcwd()
         _os.chdir(self.name)

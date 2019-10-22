@@ -219,7 +219,8 @@ def getsource(obj, oname=''):
 def is_simple_callable(obj):
     """True if obj is a function ()"""
     return (inspect.isfunction(obj) or inspect.ismethod(obj) or
-            isinstance(obj, _builtin_func_type) or isinstance(obj, _builtin_meth_type))
+            isinstance(obj, _builtin_func_type) or
+            isinstance(obj, _builtin_meth_type))
 
 
 def getargspec(obj):
@@ -372,6 +373,7 @@ def find_source_lines(obj):
 
 
 class Inspector(Colorable):
+
     def __init__(self,
                  color_table=InspectColors,
                  code_color_table=PyColorize.ANSICodeColors,
@@ -652,10 +654,7 @@ class Inspector(Colorable):
                         'text/html'] + '\n'
 
         def code_formatter(text):
-            return {
-                'text/plain': self.format(text),
-                'text/html': pylight(text)
-            }
+            return {'text/plain': self.format(text), 'text/html': pylight(text)}
 
         if info['isalias']:
             append_field(_mime, 'Repr', 'string_form')
@@ -704,8 +703,7 @@ class Inspector(Colorable):
             else:
                 append_field(_mime, 'Docstring', 'docstring', formatter)
 
-            append_field(_mime, 'Class docstring', 'class_docstring',
-                         formatter)
+            append_field(_mime, 'Class docstring', 'class_docstring', formatter)
             append_field(_mime, 'Init docstring', 'init_docstring', formatter)
             append_field(_mime, 'Call docstring', 'call_docstring', formatter)
 

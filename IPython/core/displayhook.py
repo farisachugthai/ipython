@@ -11,10 +11,10 @@ import builtins as builtin_mod
 import sys
 import io as _io
 import tokenize
+from warnings import warn
 
 from traitlets.config.configurable import Configurable
 from traitlets import Instance, Float
-from warnings import warn
 
 # TODO: Move the various attributes (cache_size, [others now moved]). Some
 # of these are also attributes of InteractiveShell. They should be on ONE object
@@ -86,7 +86,6 @@ class DisplayHook(Configurable):
     def quiet(self):
         """Should we silence the display hook because of ';'?"""
         # do not print output if input ends in ';'
-
         try:
             cell = self.shell.history_manager.input_hist_parsed[-1]
         except IndexError:
@@ -102,8 +101,6 @@ class DisplayHook(Configurable):
                 continue
             if (token[0] == tokenize.OP) and (token[1] == ';'):
                 return True
-            else:
-                return False
 
     def start_displayhook(self):
         """Start the displayhook, initializing resources."""
@@ -206,7 +203,7 @@ class DisplayHook(Configurable):
         # Avoid recursive reference when displaying _oh/Out
         if result is not self.shell.user_ns['_oh']:
             if len(self.shell.user_ns['_oh']
-                   ) >= self.cache_size and self.do_full_cache:
+                  ) >= self.cache_size and self.do_full_cache:
                 self.cull_cache()
 
             # Don't overwrite '_' and friends if '_' is in __builtin__
@@ -230,7 +227,7 @@ class DisplayHook(Configurable):
                     '__': self.__,
                     '___': self.___
                 },
-                    interactive=False)
+                                interactive=False)
 
             # hackish access to top-level  namespace to create _1,_2...
             # dynamically
@@ -327,7 +324,8 @@ class DisplayHook(Configurable):
             gc.collect()
 
 
-class CapturingDisplayHook(object):
+class CapturingDisplayHook:
+
     def __init__(self, shell, outputs=None):
         self.shell = shell
         if outputs is None:

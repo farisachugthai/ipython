@@ -11,7 +11,6 @@
 # Python identifiers.
 
 latex_symbols = {
-
     "\\euler": "ℯ",
     "\\^a": "ᵃ",
     "\\^b": "ᵇ",
@@ -1297,6 +1296,5 @@ latex_symbols = {
     "\\underbar": "̲",
     "\\underleftrightarrow": "͍",
 }
-
 
 reverse_latex_symbol = {v: k for k, v in latex_symbols.items()}

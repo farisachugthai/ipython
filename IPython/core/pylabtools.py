@@ -244,20 +244,19 @@ def select_figure_formats(shell, formats, **kwargs):
         raise ValueError("supported formats are: %s not %s" % (gs, bs))
 
     if 'png' in formats:
-        png_formatter.for_type(
-            Figure, lambda fig: print_figure(fig, 'png', **kwargs))
+        png_formatter.for_type(Figure,
+                               lambda fig: print_figure(fig, 'png', **kwargs))
     if 'retina' in formats or 'png2x' in formats:
-        png_formatter.for_type(
-            Figure, lambda fig: retina_figure(fig, **kwargs))
+        png_formatter.for_type(Figure, lambda fig: retina_figure(fig, **kwargs))
     if 'jpg' in formats or 'jpeg' in formats:
-        jpg_formatter.for_type(
-            Figure, lambda fig: print_figure(fig, 'jpg', **kwargs))
+        jpg_formatter.for_type(Figure,
+                               lambda fig: print_figure(fig, 'jpg', **kwargs))
     if 'svg' in formats:
-        svg_formatter.for_type(
-            Figure, lambda fig: print_figure(fig, 'svg', **kwargs))
+        svg_formatter.for_type(Figure,
+                               lambda fig: print_figure(fig, 'svg', **kwargs))
     if 'pdf' in formats:
-        pdf_formatter.for_type(
-            Figure, lambda fig: print_figure(fig, 'pdf', **kwargs))
+        pdf_formatter.for_type(Figure,
+                               lambda fig: print_figure(fig, 'pdf', **kwargs))
 
 
 # -----------------------------------------------------------------------------

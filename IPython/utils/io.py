@@ -19,7 +19,6 @@ from something blindly crashing.
 # Distributed under the terms of the Modified BSD License.
 
 
-
 import atexit
 import os
 import sys
@@ -30,13 +29,14 @@ from warnings import warn
 from IPython.utils.decorators import undoc
 from .capture import CapturedIO, capture_output
 
+
 @undoc
 class IOStream:
 
     def __init__(self, stream, fallback=None):
         warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
              DeprecationWarning, stacklevel=2)
-        if not hasattr(stream,'write') or not hasattr(stream,'flush'):
+        if not hasattr(stream, 'write') or not hasattr(stream, 'flush'):
             if fallback is not None:
                 stream = fallback
             else:
@@ -58,20 +58,21 @@ class IOStream:
     def __repr__(self):
         cls = self.__class__
         tpl = '{mod}.{cls}({args})'
-        return tpl.format(mod=cls.__module__, cls=cls.__name__, args=self.stream)
+        return tpl.format(mod=cls.__module__,
+                          cls=cls.__name__, args=self.stream)
 
-    def write(self,data):
+    def write(self, data):
         warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
              DeprecationWarning, stacklevel=2)
         try:
             self._swrite(data)
-        except:
+        except BaseException:
             try:
                 # print handles some unicode issues which may trip a plain
                 # write() call.  Emulate write() by using an empty end
                 # argument.
                 print(data, end='', file=self.stream)
-            except:
+            except BaseException:
                 # if we get here, something is seriously broken.
                 print('ERROR - failed to write data to stream:', self.stream,
                       file=sys.stderr)
@@ -95,6 +96,7 @@ class IOStream:
     def close(self):
         pass
 
+
 # setup stdin/stdout/stderr to sys.stdin/sys.stdout/sys.stderr
 devnull = open(os.devnull, 'w')
 atexit.register(devnull.close)
@@ -106,6 +108,7 @@ with warnings.catch_warnings():
     stdin = IOStream(sys.stdin, fallback=devnull)
     stdout = IOStream(sys.stdout, fallback=devnull)
     stderr = IOStream(sys.stderr, fallback=devnull)
+
 
 class Tee(object):
     """A class to duplicate an output stream to stdout/err.
@@ -179,11 +182,11 @@ def ask_yes_no(prompt, default=None, interrupt=None):
 
     Valid answers are: y/yes/n/no (match is not case sensitive)."""
 
-    answers = {'y':True,'n':False,'yes':True,'no':False}
+    answers = {'y': True, 'n': False, 'yes': True, 'no': False}
     ans = None
     while ans not in answers.keys():
         try:
-            ans = input(prompt+' ').lower()
+            ans = input(prompt + ' ').lower()
             if not ans:  # response was an empty string
                 ans = default
         except KeyboardInterrupt:
@@ -217,44 +220,61 @@ def temp_pyfile(src, ext='.py'):
       It is the caller's responsibility to close the open file and unlink it.
     """
     fname = tempfile.mkstemp(ext)[1]
-    with open(fname,'w') as f:
+    with open(fname, 'w') as f:
         f.write(src)
         f.flush()
     return fname
 
+
 @undoc
 def atomic_writing(*args, **kwargs):
     """DEPRECATED: moved to notebook.services.contents.fileio"""
-    warn("IPython.utils.io.atomic_writing has moved to notebook.services.contents.fileio since IPython 4.0", DeprecationWarning, stacklevel=2)
+    warn(
+        "IPython.utils.io.atomic_writing has moved to notebook.services.contents.fileio since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2)
     from notebook.services.contents.fileio import atomic_writing
     return atomic_writing(*args, **kwargs)
+
 
 @undoc
 def raw_print(*args, **kw):
     """DEPRECATED: Raw print to sys.__stdout__, otherwise identical interface to print()."""
-    warn("IPython.utils.io.raw_print has been deprecated since IPython 7.0", DeprecationWarning, stacklevel=2)
+    warn(
+        "IPython.utils.io.raw_print has been deprecated since IPython 7.0",
+        DeprecationWarning,
+        stacklevel=2)
 
     print(*args, sep=kw.get('sep', ' '), end=kw.get('end', '\n'),
           file=sys.__stdout__)
     sys.__stdout__.flush()
 
+
 @undoc
 def raw_print_err(*args, **kw):
     """DEPRECATED: Raw print to sys.__stderr__, otherwise identical interface to print()."""
-    warn("IPython.utils.io.raw_print_err has been deprecated since IPython 7.0", DeprecationWarning, stacklevel=2)
+    warn(
+        "IPython.utils.io.raw_print_err has been deprecated since IPython 7.0",
+        DeprecationWarning,
+        stacklevel=2)
 
     print(*args, sep=kw.get('sep', ' '), end=kw.get('end', '\n'),
           file=sys.__stderr__)
     sys.__stderr__.flush()
 
-# used by IPykernel <- 4.9. Removed during IPython 7-dev period and re-added 
+
+# used by IPykernel <- 4.9. Removed during IPython 7-dev period and re-added
 # Keep for a version or two then should remove
 rprint = raw_print
 rprinte = raw_print_err
 
+
 @undoc
 def unicode_std_stream(stream='stdout'):
     """DEPRECATED, moved to nbconvert.utils.io"""
-    warn("IPython.utils.io.unicode_std_stream has moved to nbconvert.utils.io since IPython 4.0", DeprecationWarning, stacklevel=2)
+    warn(
+        "IPython.utils.io.unicode_std_stream has moved to nbconvert.utils.io since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2)
     from nbconvert.utils.io import unicode_std_stream
     return unicode_std_stream(stream)

@@ -76,8 +76,7 @@ class ExtensionManager(Configurable):
 
     def __init__(self, shell=None, **kwargs):
         super(ExtensionManager, self).__init__(shell=shell, **kwargs)
-        self.shell.observe(self._on_ipython_dir_changed,
-                           names=('ipython_dir', ))
+        self.shell.observe(self._on_ipython_dir_changed, names=('ipython_dir',))
         self.loaded = set()
 
     @property
@@ -104,11 +103,11 @@ class ExtensionManager(Configurable):
                 with prepended_to_syspath(self.ipython_extension_dir):
                     mod = import_module(module_str)
                     if mod.__file__.startswith(self.ipython_extension_dir):
-                        print((
-                            "Loading extensions from {dir} is deprecated. "
-                            "We recommend managing extensions like any "
-                            "other Python packages, in site-packages.").format(
-                                dir=compress_user(self.ipython_extension_dir)))
+                        print(
+                            ("Loading extensions from {dir} is deprecated. "
+                             "We recommend managing extensions like any "
+                             "other Python packages, in site-packages.").format(
+                                 dir=compress_user(self.ipython_extension_dir)))
             mod = sys.modules[module_str]
             if self._call_load_ipython_extension(mod):
                 self.loaded.add(module_str)

@@ -21,7 +21,6 @@ from shutil import get_terminal_size as _get_terminal_size
 ignore_termtitle = True
 
 
-
 if os.name == 'posix':
     def _term_clear():
         os.system('clear')
@@ -31,7 +30,6 @@ elif sys.platform == 'win32':
 else:
     def _term_clear():
         pass
-
 
 
 def toggle_set_term_title(val):
@@ -53,7 +51,7 @@ def toggle_set_term_title(val):
     ignore_termtitle = not(val)
 
 
-def _set_term_title(*args,**kw):
+def _set_term_title(*args, **kw):
     """Dummy no-op."""
     pass
 
@@ -62,8 +60,9 @@ def _set_term_title_xterm(title):
     """ Change virtual terminal title in xterm-workalikes """
     sys.stdout.write('\033]0;%s\007' % title)
 
+
 if os.name == 'posix':
-    TERM = os.environ.get('TERM','')
+    TERM = os.environ.get('TERM', '')
     if TERM.startswith('xterm'):
         _set_term_title = _set_term_title_xterm
 elif sys.platform == 'win32':
@@ -72,7 +71,7 @@ elif sys.platform == 'win32':
 
         SetConsoleTitleW = ctypes.windll.kernel32.SetConsoleTitleW
         SetConsoleTitleW.argtypes = [ctypes.c_wchar_p]
-    
+
         def _set_term_title(title):
             """Set terminal title using ctypes to access the Win32 APIs."""
             SetConsoleTitleW(title)

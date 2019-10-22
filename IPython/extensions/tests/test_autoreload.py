@@ -1,16 +1,16 @@
 """Tests for autoreload extension.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012 IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 import sys
@@ -31,11 +31,12 @@ from IPython.testing.decorators import skipif
 from IPython.extensions.autoreload import AutoreloadMagics
 from IPython.core.events import EventManager, pre_run_cell
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test fixture
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 noop = lambda *a, **kw: None
+
 
 class FakeShell:
 
@@ -87,7 +88,8 @@ class Fixture(TestCase):
         self.shell = None
 
     def get_module(self):
-        module_name = "tmpmod_" + "".join(random.sample(self.filename_chars,20))
+        module_name = "tmpmod_" + \
+            "".join(random.sample(self.filename_chars, 20))
         if module_name in sys.modules:
             del sys.modules[module_name]
         file_name = os.path.join(self.test_dir, module_name + ".py")
@@ -123,9 +125,10 @@ class Fixture(TestCase):
             f.write(code)
         return mod_name, mod_fn
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test automatic reloading
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def pickle_get_current_class(obj):
     """
@@ -137,6 +140,7 @@ def pickle_get_current_class(obj):
     for subpath in name.split("."):
         obj2 = getattr(obj2, subpath)
     return obj2
+
 
 class TestAutoreload(Fixture):
 
@@ -204,15 +208,15 @@ class TestAutoreload(Fixture):
 
                                     def __init__(self, a=10):
                                         self.a = a
-                                        self.b = 22 
+                                        self.b = 22
                                         # self.toto = 33
 
                                     def square(self):
                                         print('compute square')
                                         return self.a*self.a
                             """
-            )
-        )
+                                                           )
+                                           )
         self.shell.run_code("from %s import MyClass" % mod_name)
         self.shell.run_code("first = MyClass(5)")
         self.shell.run_code("first.square()")
@@ -246,15 +250,27 @@ class TestAutoreload(Fixture):
         self.shell.run_code("second = MyClass(5)")
 
         for object_name in {'first', 'second'}:
-            self.shell.run_code("{object_name}.power(5)".format(object_name=object_name))
+            self.shell.run_code(
+                "{object_name}.power(5)".format(
+                    object_name=object_name))
             with nt.assert_raises(AttributeError):
-                self.shell.run_code("{object_name}.cube()".format(object_name=object_name))
+                self.shell.run_code(
+                    "{object_name}.cube()".format(
+                        object_name=object_name))
             with nt.assert_raises(AttributeError):
-                self.shell.run_code("{object_name}.square()".format(object_name=object_name))
-            self.shell.run_code("{object_name}.b".format(object_name=object_name))
-            self.shell.run_code("{object_name}.a".format(object_name=object_name))
+                self.shell.run_code(
+                    "{object_name}.square()".format(
+                        object_name=object_name))
+            self.shell.run_code(
+                "{object_name}.b".format(
+                    object_name=object_name))
+            self.shell.run_code(
+                "{object_name}.a".format(
+                    object_name=object_name))
             with nt.assert_raises(AttributeError):
-                self.shell.run_code("{object_name}.toto".format(object_name=object_name))
+                self.shell.run_code(
+                    "{object_name}.toto".format(
+                        object_name=object_name))
 
     def _check_smoketest(self, use_aimport=True):
         """
@@ -295,7 +311,9 @@ class Bar:    # old-style class: weakref doesn't work for it on Python < 2.7
             self.shell.magic_aimport(mod_name)
             stream = StringIO()
             self.shell.magic_aimport("", stream=stream)
-            nt.assert_in(("Modules to reload:\n%s" % mod_name), stream.getvalue())
+            nt.assert_in(
+                ("Modules to reload:\n%s" %
+                 mod_name), stream.getvalue())
 
             with nt.assert_raises(ImportError):
                 self.shell.magic_aimport("tmpmod_as318989e89ds")
@@ -345,9 +363,9 @@ a syntax error
 """)
 
         with tt.AssertPrints(('[autoreload of %s failed:' % mod_name), channel='stderr'):
-            self.shell.run_code("pass") # trigger reload
+            self.shell.run_code("pass")  # trigger reload
         with tt.AssertNotPrints(('[autoreload of %s failed:' % mod_name), channel='stderr'):
-            self.shell.run_code("pass") # trigger another reload
+            self.shell.run_code("pass")  # trigger another reload
         check_module_contents()
 
         #
@@ -377,11 +395,11 @@ class Bar:    # old-style class
             nt.assert_equal(mod.x, 10)
             nt.assert_false(hasattr(mod, 'z'))
 
-            nt.assert_equal(old_foo(0), 4) # superreload magic!
+            nt.assert_equal(old_foo(0), 4)  # superreload magic!
             nt.assert_equal(mod.foo(0), 4)
 
             obj = mod.Baz(9)
-            nt.assert_equal(old_obj.bar(1), 11) # superreload magic!
+            nt.assert_equal(old_obj.bar(1), 11)  # superreload magic!
             nt.assert_equal(obj.bar(1), 11)
 
             nt.assert_equal(old_obj.quux, 43)
@@ -394,7 +412,7 @@ class Bar:    # old-style class
             nt.assert_equal(old_obj2.foo(), 2)
             nt.assert_equal(obj2.foo(), 2)
 
-        self.shell.run_code("pass") # trigger reload
+        self.shell.run_code("pass")  # trigger reload
         check_module_contents()
 
         #
@@ -402,7 +420,7 @@ class Bar:    # old-style class
         #
         os.unlink(mod_fn)
 
-        self.shell.run_code("pass") # trigger reload
+        self.shell.run_code("pass")  # trigger reload
         check_module_contents()
 
         #
@@ -424,7 +442,7 @@ class Bar:    # old-style class
 x = -99
 """)
 
-        self.shell.run_code("pass") # trigger reload
+        self.shell.run_code("pass")  # trigger reload
         self.shell.run_code("pass")
         check_module_contents()
 
@@ -436,7 +454,7 @@ x = -99
         else:
             self.shell.magic_autoreload("")
 
-        self.shell.run_code("pass") # trigger reload
+        self.shell.run_code("pass")  # trigger reload
         nt.assert_equal(mod.x, -99)
 
     def test_smoketest_aimport(self):
@@ -444,8 +462,3 @@ x = -99
 
     def test_smoketest_autoreload(self):
         self._check_smoketest(use_aimport=False)
-
-
-
-
-

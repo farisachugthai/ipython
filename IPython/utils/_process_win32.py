@@ -3,16 +3,16 @@
 This file is only meant to be imported by process.py, not by end-users.
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2010-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # stdlib
 import os
@@ -28,9 +28,9 @@ from ._process_common import read_no_interrupt, process_handler, arg_split as py
 from . import py3compat
 from .encoding import DEFAULT_ENCODING
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Function definitions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class AvoidUNCPath(object):
@@ -85,7 +85,7 @@ def _find_cmd(cmd):
         for ext in extensions:
             try:
                 path = SearchPath(PATH, cmd, ext)[0]
-            except:
+            except BaseException:
                 pass
         if path is None:
             raise OSError("command %r not found" % cmd)
@@ -126,7 +126,7 @@ def system(cmd):
     # The controller provides interactivity with both
     # stdin and stdout
     #import _process_win32_controller
-    #_process_win32_controller.system(cmd)
+    # _process_win32_controller.system(cmd)
 
     with AvoidUNCPath() as path:
         if path is not None:
@@ -175,7 +175,8 @@ try:
 
         If strict=False, process_common.arg_split(...strict=False) is used instead.
         """
-        #CommandLineToArgvW returns path to executable if called with empty string.
+        # CommandLineToArgvW returns path to executable if called with empty
+        # string.
         if commandline.strip() == "":
             return []
         if not strict:

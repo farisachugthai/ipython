@@ -25,9 +25,8 @@ from distutils.command.install import install
 from distutils.command.install_scripts import install_scripts
 from distutils.cmd import Command
 
-from setupext import install_data_ext
-
-from setuptools import find_packages
+from ..setupext import install_data_ext
+# #om setuptools import find_packages
 
 # -------------------------------------------------------------------------------
 # Useful globals and utility functions
@@ -50,8 +49,11 @@ def execfile(fname, globs, locs=None):
 
 
 def file_doesnt_endwith(test, endings):
-    """Return true if test is a file and its name does NOT end with any
-    of the strings listed in endings."""
+    """Check a file.
+
+    Return true if test is a file and its name does NOT end with any
+    of the strings listed in endings.
+    """
     if not isfile(test):
         return False
     for e in endings:
@@ -98,9 +100,7 @@ setup_args = dict(name=name,
 
 
 def find_package_data():
-    """
-    Find IPython's package_data.
-    """
+    """Find IPython's package_data."""
     # This is not enough for these things to appear in an sdist.
     # We need to muck with the MANIFEST to get this to work
 
@@ -186,7 +186,7 @@ def target_outdated(target, deps):
     """
     try:
         target_time = os.path.getmtime(target)
-    except os.error:
+    except OSError:
         return 1
     for dep in deps:
         dep_time = os.path.getmtime(dep)
@@ -203,8 +203,8 @@ def target_update(target, deps, cmd):
     target_update(target,deps,cmd) -> runs cmd if target is outdated.
 
     This is just a wrapper around target_outdated() which calls the given
-    command if target is outdated."""
-
+    command if target is outdated.
+    """
     if target_outdated(target, deps):
         os.system(cmd)
 
@@ -215,7 +215,7 @@ def target_update(target, deps, cmd):
 
 
 def find_entry_points():
-    """Defines the command line entry points for IPython
+    """Define the command line entry points for IPython.
 
     This always uses setuptools-style entry points. When setuptools is not in
     use, our own build_scripts_entrypt class below parses these and builds
@@ -241,7 +241,7 @@ if __name__ == '__main__':
 
 
 class build_scripts_entrypt(build_scripts):
-    """Build the command line scripts
+    """Build the command line scripts.
 
     Parse setuptools style entry points and write simple scripts to run the
     target functions.

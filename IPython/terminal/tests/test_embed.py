@@ -1,15 +1,15 @@
 """Test embedding of IPython"""
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2013 The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 import subprocess
@@ -19,9 +19,9 @@ from IPython.utils.tempdir import NamedFileInTemporaryDirectory
 from IPython.testing.decorators import skip_win32
 from IPython.testing import IPYTHON_TESTING_TIMEOUT_SCALE
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Tests
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 _sample_embed = b"""
 import IPython
@@ -70,7 +70,7 @@ def test_ipython_embed():
 def test_nest_embed():
     """test that `IPython.embed()` is nestable"""
     import pexpect
-    ipy_prompt = r']:'  #ansi color codes give problems matching beyond this
+    ipy_prompt = r']:'  # ansi color codes give problems matching beyond this
     env = os.environ.copy()
     env['IPY_TEST_SIMPLE_PROMPT'] = '1'
 
@@ -82,16 +82,16 @@ def test_nest_embed():
     child.sendline("import IPython")
     child.expect(ipy_prompt)
     child.sendline("ip0 = get_ipython()")
-    #enter first nested embed
+    # enter first nested embed
     child.sendline("IPython.embed()")
-    #skip the banner until we get to a prompt
+    # skip the banner until we get to a prompt
     try:
         prompted = -1
         while prompted != 0:
             prompted = child.expect([ipy_prompt, '\r\n'])
     except pexpect.TIMEOUT as e:
         print(e)
-        #child.interact()
+        # child.interact()
     child.sendline("embed1 = get_ipython()")
     child.expect(ipy_prompt)
     child.sendline("print('true' if embed1 is not ip0 else 'false')")
@@ -101,16 +101,16 @@ def test_nest_embed():
         "print('true' if IPython.get_ipython() is embed1 else 'false')")
     assert (child.expect(['true\r\n', 'false\r\n']) == 0)
     child.expect(ipy_prompt)
-    #enter second nested embed
+    # enter second nested embed
     child.sendline("IPython.embed()")
-    #skip the banner until we get to a prompt
+    # skip the banner until we get to a prompt
     try:
         prompted = -1
         while prompted != 0:
             prompted = child.expect([ipy_prompt, '\r\n'])
     except pexpect.TIMEOUT as e:
         print(e)
-        #child.interact()
+        # child.interact()
     child.sendline("embed2 = get_ipython()")
     child.expect(ipy_prompt)
     child.sendline("print('true' if embed2 is not embed1 else 'false')")
@@ -121,7 +121,7 @@ def test_nest_embed():
     assert (child.expect(['true\r\n', 'false\r\n']) == 0)
     child.expect(ipy_prompt)
     child.sendline('exit')
-    #back at first embed
+    # back at first embed
     child.expect(ipy_prompt)
     child.sendline("print('true' if get_ipython() is embed1 else 'false')")
     assert (child.expect(['true\r\n', 'false\r\n']) == 0)
@@ -131,7 +131,7 @@ def test_nest_embed():
     assert (child.expect(['true\r\n', 'false\r\n']) == 0)
     child.expect(ipy_prompt)
     child.sendline('exit')
-    #back at launching scope
+    # back at launching scope
     child.expect(ipy_prompt)
     child.sendline("print('true' if get_ipython() is ip0 else 'false')")
     assert (child.expect(['true\r\n', 'false\r\n']) == 0)

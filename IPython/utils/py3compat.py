@@ -3,6 +3,7 @@
 
 This file is deprecated and will be removed in a future version.
 """
+import builtins as builtin_mod
 import functools
 import os
 import sys
@@ -13,12 +14,15 @@ import platform
 
 from .encoding import DEFAULT_ENCODING
 
+
 def no_code(x, encoding=None):
     return x
+
 
 def decode(s, encoding=None):
     encoding = encoding or DEFAULT_ENCODING
     return s.decode(encoding, "replace")
+
 
 def encode(u, encoding=None):
     encoding = encoding or DEFAULT_ENCODING
@@ -30,16 +34,19 @@ def cast_unicode(s, encoding=None):
         return decode(s, encoding)
     return s
 
+
 def cast_bytes(s, encoding=None):
     if not isinstance(s, bytes):
         return encode(s, encoding)
     return s
+
 
 def buffer_to_bytes(buf):
     """Cast a buffer object to bytes"""
     if not isinstance(buf, bytes):
         buf = bytes(buf)
     return buf
+
 
 def _modify_str_or_docstring(str_change_func):
     @functools.wraps(str_change_func)
@@ -51,7 +58,8 @@ def _modify_str_or_docstring(str_change_func):
             func = func_or_str
             doc = func.__doc__
 
-        # PYTHONOPTIMIZE=2 strips docstrings, so they can disappear unexpectedly
+        # PYTHONOPTIMIZE=2 strips docstrings, so they can disappear
+        # unexpectedly
         if doc is not None:
             doc = str_change_func(doc)
 
@@ -60,6 +68,7 @@ def _modify_str_or_docstring(str_change_func):
             return func
         return doc
     return wrapper
+
 
 def safe_unicode(e):
     """unicode(e) with various fallbacks. Used for exceptions, which may not be
@@ -83,6 +92,8 @@ def safe_unicode(e):
     return u'Unrecoverably corrupt evalue'
 
 # shutil.which from Python 3.4
+
+
 def _shutil_which(cmd, mode=os.F_OK | os.X_OK, path=None):
     """Given a command, mode, and a PATH string, return the path which
     conforms to the given mode on the PATH, or None if there is no such
@@ -146,15 +157,18 @@ def _shutil_which(cmd, mode=os.F_OK | os.X_OK, path=None):
                     return name
     return None
 
+
 PY3 = True
 
 # keep reference to builtin_mod because the kernel overrides that value
 # to forward requests to a frontend.
+
+
 def input(prompt=''):
     return builtin_mod.input(prompt)
 
+
 builtin_mod_name = "builtins"
-import builtins as builtin_mod
 
 str_to_unicode = no_code
 unicode_to_str = no_code
@@ -169,17 +183,26 @@ unicode_type = str
 
 which = shutil.which
 
+
 def isidentifier(s, dotted=False):
     if dotted:
         return all(isidentifier(a) for a in s.split("."))
     return s.isidentifier()
 
+
 xrange = range
+
+
 def iteritems(d): return iter(d.items())
+
+
 def itervalues(d): return iter(d.values())
+
+
 getcwd = os.getcwd
 
 MethodType = types.MethodType
+
 
 def execfile(fname, glob, loc=None, compiler=None):
     loc = loc if (loc is not None) else glob
@@ -187,8 +210,11 @@ def execfile(fname, glob, loc=None, compiler=None):
         compiler = compiler or compile
         exec(compiler(f.read(), fname, 'exec'), glob, loc)
 
+
 # Refactor print statements in doctests.
 _print_statement_re = re.compile(r"\bprint (?P<expr>.*)$", re.MULTILINE)
+
+
 def _print_statement_sub(match):
     expr = match.groups('expr')
     return "print(%s)" % expr
@@ -200,6 +226,7 @@ def u_format(s):
 
     Accepts a string or a function, so it can be used as a decorator."""
     return s.format(u='')
+
 
 def get_closure(f):
     """Get a function's closure attribute"""
@@ -214,6 +241,7 @@ def annotate(**kwargs):
     """Python 3 compatible function annotation for Python 2."""
     if not kwargs:
         raise ValueError('annotations must be provided as keyword arguments')
+
     def dec(f):
         if hasattr(f, '__annotations__'):
             for k, v in kwargs.items():

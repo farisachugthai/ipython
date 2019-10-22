@@ -92,9 +92,11 @@ __all__ = [
 
 deprecated = {
     'pre_run_code_hook':
-    "a callback for the 'pre_execute' or 'pre_run_cell' event",
-    'late_startup_hook': "a callback for the 'shell_initialized' event",
-    'shutdown_hook': "the atexit module",
+        "a callback for the 'pre_execute' or 'pre_run_cell' event",
+    'late_startup_hook':
+        "a callback for the 'shell_initialized' event",
+    'shutdown_hook':
+        "the atexit module",
 }
 
 
@@ -255,8 +257,7 @@ def pre_run_code_hook(self):
 def clipboard_get(self):
     """ Get text from the clipboard.
     """
-    from IPython.lib.clipboard import (osx_clipboard_get,
-                                       tkinter_clipboard_get,
+    from IPython.lib.clipboard import (osx_clipboard_get, tkinter_clipboard_get,
                                        win32_clipboard_get)
     if sys.platform == 'win32':
         chain = [win32_clipboard_get, tkinter_clipboard_get]

@@ -98,9 +98,11 @@ def latex_to_png(s, encode=False, backend=None, wrap=False, color='Black',
                     color = "RGB {}".format(" ".join([str(int(x, 16)) for x in
                                                       textwrap.wrap(color[1:], 2)]))
                 except ValueError:
-                    raise ValueError('Invalid color specification {}.'.format(color))
+                    raise ValueError(
+                        'Invalid color specification {}.'.format(color))
             else:
-                raise ValueError('Invalid color specification {}.'.format(color))
+                raise ValueError(
+                    'Invalid color specification {}.'.format(color))
     else:
         raise ValueError('No such backend {0}'.format(backend))
     bin_data = f(s, wrap, color, scale)
@@ -124,7 +126,7 @@ def latex_to_png_mpl(s, wrap, color='Black', scale=1.0):
     try:
         mt = mathtext.MathTextParser('bitmap')
         f = BytesIO()
-        dpi = 120*scale
+        dpi = 120 * scale
         mt.to_png(f, s, fontsize=12, dpi=dpi, color=color)
         return f.getvalue()
     except (ValueError, RuntimeError, ParseFatalException):
@@ -156,7 +158,7 @@ def latex_to_png_dvipng(s, wrap, color='Black', scale=1.0):
                  "-bg", "transparent", "-o", outfile, dvifile], cwd=workdir,
                 stdout=devnull, stderr=devnull)
 
-            resolution = round(150*scale)
+            resolution = round(150 * scale)
 
         with open(outfile, "rb") as f:
             return f.read()

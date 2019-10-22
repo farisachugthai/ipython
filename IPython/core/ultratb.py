@@ -106,9 +106,8 @@ except AttributeError:  # Python 3
     generate_tokens = tokenize.tokenize
 
 # For purposes of monkeypatching inspect to fix a bug in it.
-from inspect import (getsourcefile, getfile, getmodule,
-                     ismodule, isclass, ismethod, isfunction,
-                     istraceback, isframe, iscode)
+from inspect import (getsourcefile, getfile, getmodule, ismodule, isclass,
+                     ismethod, isfunction, istraceback, isframe, iscode)
 
 # IPython's own modules
 from IPython.core.get_ipython import get_ipython
@@ -743,11 +742,11 @@ class ListTB(TBTools):
                 else:
                     lineno = 'unknown'
                     textline = ''
-                list.append('%s  File %s"%s"%s, line %s%s%s\n' %
-                            (Colors.normalEm,
-                             Colors.filenameEm, py3compat.cast_unicode(
-                                 value.filename), Colors.normalEm,
-                             Colors.linenoEm, lineno, Colors.Normal))
+                list.append(
+                    '%s  File %s"%s"%s, line %s%s%s\n' %
+                    (Colors.normalEm, Colors.filenameEm,
+                     py3compat.cast_unicode(value.filename), Colors.normalEm,
+                     Colors.linenoEm, lineno, Colors.Normal))
                 if textline == '':
                     textline = py3compat.cast_unicode(value.text, "utf-8")
 
@@ -919,8 +918,8 @@ class VerboseTB(TBTools):
                     # strange entries...
                     pass
 
-        file = py3compat.cast_unicode(
-            file, util_path.sys.getfilesystemencoding())
+        file = py3compat.cast_unicode(file,
+                                      util_path.sys.getfilesystemencoding())
         link = tpl_link % util_path.compress_user(file)
         args, varargs, varkw, locals_ = inspect.getargvalues(frame)
 
@@ -1091,8 +1090,8 @@ class VerboseTB(TBTools):
                     "\ncalls leading up to the error, with the most recent (innermost) call last."
         else:
             # Simplified header
-            head = '%s%s' % (exc, 'Traceback (most recent call last)'.
-                             rjust(width - len(str(etype))))
+            head = '%s%s' % (exc, 'Traceback (most recent call last)'.rjust(
+                width - len(str(etype))))
 
         return head
 
@@ -1176,6 +1175,7 @@ class VerboseTB(TBTools):
             return None
 
     def get_parts_of_chained_exception(self, evalue):
+
         def get_chained_exception(exception_value):
             cause = getattr(exception_value, '__cause__', None)
             if cause:
@@ -1226,7 +1226,7 @@ class VerboseTB(TBTools):
             if exception and not id(exception[1]) in chained_exc_ids:
                 chained_exc_ids.add(
                     id(exception[1]
-                       ))  # trace exception to avoid infinite 'cause' loop
+                      ))  # trace exception to avoid infinite 'cause' loop
                 formatted_exceptions += self.prepare_chained_exception_message(
                     evalue.__cause__)
                 etype, evalue, etb = exception

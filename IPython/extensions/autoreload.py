@@ -92,37 +92,39 @@ Some of the known remaining caveats are:
 - C extension modules cannot be reloaded, and so cannot be autoreloaded.
 """
 
+from IPython.core.magic import Magics, magics_class, line_magic
+from imp import reload
+from importlib.util import source_from_cache
+from importlib import import_module
+import gc
+import weakref
+import types
+import traceback
+import sys
+import os
 skip_doctest = True
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2000 Thomas Heller
 #  Copyright (C) 2008 Pauli Virtanen <pav@iki.fi>
 #  Copyright (C) 2012  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #
 # This IPython module is written by Pauli Virtanen, based on the autoreload
 # code by Thomas Heller.
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-import os
-import sys
-import traceback
-import types
-import weakref
-import gc
-from importlib import import_module
-from importlib.util import source_from_cache
-from imp import reload
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Autoreload functionality
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 class ModuleReloader(object):
     enabled = False
@@ -184,7 +186,8 @@ class ModuleReloader(object):
         if not hasattr(module, '__file__') or module.__file__ is None:
             return None, None
 
-        if getattr(module, '__name__', None) in [None, '__mp_main__', '__main__']:
+        if getattr(module, '__name__', None) in [
+                None, '__mp_main__', '__main__']:
             # we cannot reload(__main__) or reload(__mp_main__)
             return None, None
 
@@ -245,14 +248,14 @@ class ModuleReloader(object):
                     superreload(m, reload, self.old_objects)
                     if py_filename in self.failed:
                         del self.failed[py_filename]
-                except:
+                except BaseException:
                     print("[autoreload of %s failed: %s]" % (
-                            modname, traceback.format_exc(10)), file=sys.stderr)
+                        modname, traceback.format_exc(10)), file=sys.stderr)
                     self.failed[py_filename] = pymtime
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # superreload
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 func_attrs = ['__code__', '__defaults__', '__doc__',
@@ -272,7 +275,7 @@ def update_instances(old, new):
     """Use garbage collector to find all instances that refer to the old
     class definition and update their __class__ to point to the new class
     definition"""
-    
+
     refs = gc.get_referrers(old)
 
     for ref in refs:
@@ -299,19 +302,20 @@ def update_class(old, new):
                 pass
             continue
 
-        if update_generic(old_obj, new_obj): continue
+        if update_generic(old_obj, new_obj):
+            continue
 
         try:
             setattr(old, key, getattr(new, key))
         except (AttributeError, TypeError):
-            pass # skip non-writable attributes
+            pass  # skip non-writable attributes
 
     for key in list(new.__dict__.keys()):
         if key not in list(old.__dict__.keys()):
             try:
                 setattr(old, key, getattr(new, key))
             except (AttributeError, TypeError):
-                pass # skip non-writable attributes
+                pass  # skip non-writable attributes
 
     # update all instances of class
     update_instances(old, new)
@@ -338,7 +342,7 @@ UPDATE_RULES = [
 ]
 UPDATE_RULES.extend([(lambda a, b: isinstance2(a, b, types.MethodType),
                       lambda a, b: update_function(a.__func__, b.__func__)),
-])
+                     ])
 
 
 def update_generic(a, b):
@@ -352,6 +356,7 @@ def update_generic(a, b):
 class StrongRef(object):
     def __init__(self, obj):
         self.obj = obj
+
     def __call__(self):
         return self.obj
 
@@ -392,7 +397,7 @@ def superreload(module, reload=reload, old_objects=None):
 
     try:
         module = reload(module)
-    except:
+    except BaseException:
         # restore module dictionary on failed reload
         module.__dict__.update(old_dict)
         raise
@@ -400,12 +405,14 @@ def superreload(module, reload=reload, old_objects=None):
     # iterate over all objects and update functions & classes
     for name, new_obj in list(module.__dict__.items()):
         key = (module.__name__, name)
-        if key not in old_objects: continue
+        if key not in old_objects:
+            continue
 
         new_refs = []
         for old_ref in old_objects[key]:
             old_obj = old_ref()
-            if old_obj is None: continue
+            if old_obj is None:
+                continue
             new_refs.append(old_ref)
             update_generic(old_obj, new_obj)
 
@@ -416,11 +423,10 @@ def superreload(module, reload=reload, old_objects=None):
 
     return module
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # IPython connectivity
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-from IPython.core.magic import Magics, magics_class, line_magic
 
 @magics_class
 class AutoreloadMagics(Magics):
@@ -527,7 +533,7 @@ class AutoreloadMagics(Magics):
         if self._reloader.enabled:
             try:
                 self._reloader.check()
-            except:
+            except BaseException:
                 pass
 
     def post_execute_hook(self):
@@ -535,7 +541,8 @@ class AutoreloadMagics(Magics):
         """
         newly_loaded_modules = set(sys.modules) - self.loaded_modules
         for modname in newly_loaded_modules:
-            _, pymtime = self._reloader.filename_and_mtime(sys.modules[modname])
+            _, pymtime = self._reloader.filename_and_mtime(
+                sys.modules[modname])
             if pymtime is not None:
                 self._reloader.modules_mtimes[modname] = pymtime
 

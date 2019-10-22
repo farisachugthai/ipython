@@ -99,8 +99,8 @@ def catch_corrupt_db(f, self, *a, **kw):
         return f(self, *a, **kw)
     except (DatabaseError, OperationalError) as e:
         self._corrupt_db_counter += 1
-        self.log.error("Failed to open SQLite history %s (%s).",
-                       self.hist_file, e)
+        self.log.error("Failed to open SQLite history %s (%s).", self.hist_file,
+                       e)
         if self.hist_file != ':memory:':
             if self._corrupt_db_counter > self._corrupt_db_limit:
                 self.hist_file = ':memory:'
@@ -171,8 +171,7 @@ class HistoryAccessor(HistoryAccessorBase):
     _corrupt_db_limit = 2
 
     # String holding the path to the history file
-    hist_file = Unicode(
-        help="""Path to file to use for SQLite history database.
+    hist_file = Unicode(help="""Path to file to use for SQLite history database.
 
         By default, IPython will put the history database in the IPython
         profile directory.  If you would rather share one history among
@@ -212,7 +211,7 @@ class HistoryAccessor(HistoryAccessorBase):
     def _db_changed(self, change):
         """validate the db, since it can be an Instance of two different types"""
         new = change['new']
-        connection_types = (DummyDB, )
+        connection_types = (DummyDB,)
         if sqlite3 is not None:
             connection_types = (DummyDB, sqlite3.Connection)
         if not isinstance(new, connection_types):
@@ -274,8 +273,8 @@ class HistoryAccessor(HistoryAccessorBase):
             return
 
         # use detect_types so that timestamps return datetime objects
-        kwargs = dict(detect_types=sqlite3.PARSE_DECLTYPES
-                      | sqlite3.PARSE_COLNAMES)
+        kwargs = dict(detect_types=sqlite3.PARSE_DECLTYPES |
+                      sqlite3.PARSE_COLNAMES)
         kwargs.update(self.connection_options)
         self.db = sqlite3.connect(self.hist_file, **kwargs)
         self.db.execute("""CREATE TABLE IF NOT EXISTS sessions (session integer
@@ -322,8 +321,9 @@ class HistoryAccessor(HistoryAccessorBase):
         if output:
             sqlfrom = "history LEFT JOIN output_history USING (session, line)"
             toget = "history.%s, output_history.output" % toget
-        cur = self.db.execute("SELECT session, line, %s FROM %s " %
-                              (toget, sqlfrom) + sql, params)
+        cur = self.db.execute(
+            "SELECT session, line, %s FROM %s " % (toget, sqlfrom) + sql,
+            params)
         if output:  # Regroup into 3-tuples, and parse JSON
             return ((ses, lin, (inp, out)) for ses, lin, inp, out in cur)
         return cur
@@ -354,7 +354,7 @@ class HistoryAccessor(HistoryAccessorBase):
            A manually set description.
         """
         query = "SELECT * from sessions where session == ?"
-        return self.db.execute(query, (session, )).fetchone()
+        return self.db.execute(query, (session,)).fetchone()
 
     @catch_corrupt_db
     def get_last_session_id(self):
@@ -388,7 +388,7 @@ class HistoryAccessor(HistoryAccessorBase):
         self.writeout_cache()
         if not include_latest:
             n += 1
-        cur = self._run_sql("ORDER BY session DESC, line DESC LIMIT ?", (n, ),
+        cur = self._run_sql("ORDER BY session DESC, line DESC LIMIT ?", (n,),
                             raw=raw,
                             output=output)
         if not include_latest:
@@ -429,12 +429,12 @@ class HistoryAccessor(HistoryAccessorBase):
             tosearch = "history." + tosearch
         self.writeout_cache()
         sqlform = "WHERE %s GLOB ?" % tosearch
-        params = (pattern, )
+        params = (pattern,)
         if unique:
             sqlform += ' GROUP BY {0}'.format(tosearch)
         if n is not None:
             sqlform += " ORDER BY session DESC, line DESC LIMIT ?"
-            params += (n, )
+            params += (n,)
         elif unique:
             sqlform += " ORDER BY session, line"
         cur = self._run_sql(sqlform, params, raw=raw, output=output)
@@ -540,7 +540,8 @@ class HistoryManager(HistoryAccessor):
             config=True)
     db_cache_size = Integer(
         0,
-        help="Write to database every x commands (higher values save disk access & power).\n"
+        help=
+        "Write to database every x commands (higher values save disk access & power).\n"
         "Values of 1 or less effectively disable caching.").tag(config=True)
     # The input and output caches
     db_input_cache = List()
@@ -606,7 +607,7 @@ class HistoryManager(HistoryAccessor):
         with conn:
             cur = conn.execute(
                 """INSERT INTO sessions VALUES (NULL, ?, NULL,
-                            NULL, "") """, (datetime.datetime.now(), ))
+                            NULL, "") """, (datetime.datetime.now(),))
             self.session_number = cur.lastrowid
 
     def end_session(self):
@@ -792,8 +793,7 @@ class HistoryManager(HistoryAccessor):
         line_num : int
           The line number from which to save outputs
         """
-        if (not self.db_log_output) or (
-                line_num not in self.output_hist_reprs):
+        if (not self.db_log_output) or (line_num not in self.output_hist_reprs):
             return
         output = self.output_hist_reprs[line_num]
 
@@ -806,13 +806,13 @@ class HistoryManager(HistoryAccessor):
         with conn:
             for line in self.db_input_cache:
                 conn.execute("INSERT INTO history VALUES (?, ?, ?, ?)",
-                             (self.session_number, ) + line)
+                             (self.session_number,) + line)
 
     def _writeout_output_cache(self, conn):
         with conn:
             for line in self.db_output_cache:
                 conn.execute("INSERT INTO output_history VALUES (?, ?, ?)",
-                             (self.session_number, ) + line)
+                             (self.session_number,) + line)
 
     @needs_sqlite
     def writeout_cache(self, conn=None):
@@ -869,9 +869,8 @@ class HistorySavingThread(threading.Thread):
     def run(self):
         # We need a separate db connection per thread:
         try:
-            self.db = sqlite3.connect(
-                self.history_manager.hist_file,
-                **self.history_manager.connection_options)
+            self.db = sqlite3.connect(self.history_manager.hist_file,
+                                      **self.history_manager.connection_options)
             while True:
                 self.history_manager.save_flag.wait()
                 if self.stop_now:

@@ -35,7 +35,8 @@ Listens on the pipe prompt_toolkit sets up for a notification that it should
 return control to the terminal event loop.
 """
 
-import gtk, gobject
+import gtk
+import gobject
 
 # Enable threading in GTK. (Otherwise, GTK will keep the GIL.)
 gtk.gdk.threads_init()

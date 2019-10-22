@@ -1,16 +1,16 @@
 # encoding: utf-8
 """Tests for IPython.utils.module_paths.py"""
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2008-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 import os
@@ -36,6 +36,7 @@ TMP_TEST_DIR = tempfile.mkdtemp(suffix='with.dot')
 
 old_syspath = sys.path
 
+
 def make_empty_file(fname):
     open(fname, 'w').close()
 
@@ -54,6 +55,7 @@ def setup_module():
     make_empty_file(join(TMP_TEST_DIR, "packpyc.pyc"))
     sys.path = [TMP_TEST_DIR]
 
+
 def teardown_module():
     """Teardown testenvironment for the module:
 
@@ -66,11 +68,12 @@ def teardown_module():
     shutil.rmtree(TMP_TEST_DIR)
     sys.path = old_syspath
 
+
 def test_tempdir():
     """
     Ensure the test are done with a temporary file that have a dot somewhere.
     """
-    nt.assert_in('.',TMP_TEST_DIR)
+    nt.assert_in('.', TMP_TEST_DIR)
 
 
 def test_find_mod_1():
@@ -81,6 +84,7 @@ def test_find_mod_1():
     modpath = join(TMP_TEST_DIR, "xmod", "__init__.py")
     nt.assert_equal(mp.find_mod("xmod"), modpath)
 
+
 def test_find_mod_2():
     """
     Search for a directory's file path.
@@ -90,6 +94,7 @@ def test_find_mod_2():
     modpath = join(TMP_TEST_DIR, "xmod", "__init__.py")
     nt.assert_equal(mp.find_mod("xmod"), modpath)
 
+
 def test_find_mod_3():
     """
     Search for a directory + a filename without its .py extension
@@ -98,6 +103,7 @@ def test_find_mod_3():
     modpath = join(TMP_TEST_DIR, "xmod", "sub.py")
     nt.assert_equal(mp.find_mod("xmod.sub"), modpath)
 
+
 def test_find_mod_4():
     """
     Search for a filename without its .py extension
@@ -105,6 +111,7 @@ def test_find_mod_4():
     """
     modpath = join(TMP_TEST_DIR, "pack.py")
     nt.assert_equal(mp.find_mod("pack"), modpath)
+
 
 def test_find_mod_5():
     """

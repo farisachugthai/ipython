@@ -19,7 +19,7 @@ Authors:
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-
+from logging import error
 import os
 import re
 import sys
@@ -28,7 +28,6 @@ from traitlets.config.configurable import Configurable
 from IPython.core.error import UsageError
 
 from traitlets import List, Instance
-from logging import error
 
 # -----------------------------------------------------------------------------
 # Utilities
@@ -40,13 +39,17 @@ shell_line_split = re.compile(r'^(\s*)()(\S+)(.*$)')
 
 def default_aliases():
     """Return list of shell aliases to auto-define.
+
+    Notes:
+    -------
+    The aliases defined here should be safe to use on a kernel
+    regardless of what frontend it is attached to.  Frontends that use a
+    kernel in-process can define additional aliases that will only work in
+    their case.  For example, things like 'less' or 'clear' that manipulate
+    the terminal should NOT be declared here, as they will only work if the
+    kernel is running inside a true terminal, and not over the network.
+
     """
-    # Note: the aliases defined here should be safe to use on a kernel
-    # regardless of what frontend it is attached to.  Frontends that use a
-    # kernel in-process can define additional aliases that will only work in
-    # their case.  For example, things like 'less' or 'clear' that manipulate
-    # the terminal should NOT be declared here, as they will only work if the
-    # kernel is running inside a true terminal, and not over the network.
 
     if os.name == 'posix':
         default_aliases = [
@@ -132,10 +135,15 @@ class InvalidAliasError(AliasError):
     pass
 
 
-class Alias(object):
+class Alias:
     """Callable object storing the details of one alias.
 
     Instances are registered as magic functions to allow use of aliases.
+
+    Attributes
+    ----------
+    blacklist : ...wait is that a dict?
+        Seriously why is that a dict?
     """
 
     # Prepare blacklist
@@ -210,6 +218,17 @@ class Alias(object):
 
 
 class AliasManager(Configurable):
+    """Alias manager.
+
+    Subclasses the traitlets.config.configurable.
+
+    Attributes
+    ----------
+    default_aliases : list
+        OS dependant aliases.
+    user_aliases : list
+
+    """
 
     default_aliases = List(default_aliases()).tag(config=True)
     user_aliases = List(default_value=[]).tag(config=True)
@@ -258,10 +277,23 @@ class AliasManager(Configurable):
         return aname if isinstance(aname, Alias) else None
 
     def is_alias(self, name):
-        """Return whether or not a given name has been defined as an alias"""
+        """Return whether or not a given name has been defined as an alias."""
         return self.get_alias(name) is not None
 
     def undefine_alias(self, name):
+        """Run :func:`del` on 'name'.
+
+        Parameters
+        ----------
+        name : str
+            Alias to delete
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If 'name' isn't defined.
+
+        """
         if self.is_alias(name):
             del self.linemagics[name]
         else:

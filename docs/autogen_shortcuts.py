@@ -31,6 +31,7 @@ import json
 from os.path import abspath, dirname, join
 import sys
 
+from IPython.core.get_ipython import get_ipython
 from IPython.terminal.shortcuts import create_ipython_shortcuts
 
 
@@ -177,24 +178,33 @@ def main():
     dest = join(here, 'source', 'config', 'shortcuts')
     shell = get_ipython()
 
+    if shell is None:
+        # we need to start a dummy shell
+        from IPython.terminal.embed import InteractiveShellEmbed
+        shell = InteractiveShellEmbed()
+        if hasattr(shell, 'dummy_mode'):
+            shell.dummy_mode = True
+        else:
+            print(shell)
+            print(type(shell))
     # If you run create_ipython_shortcuts(ZMQInteractiveShell()) from the Jupyter console, the first error is for this specifically.
-    if hasattr(shell, 'display_completions'):
+    # if hasattr(shell, 'display_completions'):
         # ALRIGHT. So at least all that random global code is guarded a little.
 
         # how does this line of code work???? we didn't give it an ipython instance???
         # ipy_bindings = create_ipython_shortcuts(_DummyTerminal()).bindings
 
         # Let's break up the steps as much as possible I'm gonna need a while to debug this bs
-        ipython_keybindings = create_ipython_shortcuts(get_ipython())
+    ipython_keybindings = create_ipython_shortcuts(get_ipython())
 
-        ipy_bindings = ipython_keybindings.bindings
+    ipy_bindings = ipython_keybindings.bindings
 
-        needs_refactoring(ipy_bindings)
+    needs_refactoring(ipy_bindings)
 
-    else:
-        error_message = 'Are you running this in Jupyter? Please switch over to IPython to auto-generate the prompt_toolkit keybindings correctly.'
-        sys.exit(error_message)
+    # else:
+    #     error_message = 'Are you running this in Jupyter? Please switch over to IPython to auto-generate the prompt_toolkit keybindings correctly.'
+    #     sys.exit(error_message)
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

@@ -90,7 +90,6 @@ repository <http://github.com/ipython/ipython>`_.
    :maxdepth: 1
    :hidden:
 
-   self
    overview
    whatsnew/index
    install/index
@@ -98,15 +97,19 @@ repository <http://github.com/ipython/ipython>`_.
    config/index
    development/index
    coredev/index
-   api/index
    sphinxext/index
+   api/index
    about/index
 
+
+See Also
+--------
 .. seealso::
 
-   `Jupyter documentation <http://jupyter.readthedocs.io/en/latest/>`__
+   `Jupyter documentation <http://jupyter.readthedocs.io/en/latest/>`_
      The Jupyter documentation provides information about the Notebook code and other Jupyter sub-projects.
-   `ipyparallel documentation <http://ipyparallel.readthedocs.io/en/latest/>`__
+
+   `ipyparallel documentation <http://ipyparallel.readthedocs.io/en/latest/>`_
      Formerly ``IPython.parallel``.
 
 

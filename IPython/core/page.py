@@ -83,8 +83,8 @@ def _detect_screen_size(screen_lines_def):
     test suite), so it's separated out so it can easily be called in a try block.
     """
     TERM = os.environ.get('TERM', None)
-    if not ((TERM == 'xterm' or TERM == 'xterm-color')
-            and sys.platform != 'sunos5'):
+    if not ((TERM == 'xterm' or TERM == 'xterm-color') and
+            sys.platform != 'sunos5'):
         # curses causes problems on many terminals other than xterm, and
         # some termios calls lock up on Sun OS5.
         return screen_lines_def
@@ -249,9 +249,7 @@ def page(data, start=0, screen_lines=0, pager_cmd=None):
     ip = get_ipython()
     if ip:
         try:
-            ip.hooks.show_in_pager(data,
-                                   start=start,
-                                   screen_lines=screen_lines)
+            ip.hooks.show_in_pager(data, start=start, screen_lines=screen_lines)
             return
         except TryNext:
             pass
@@ -369,7 +367,6 @@ def snip_print(str, width=75, print_full=0, header=''):
         print(str[:whalf] + ' <...> ' + str[-whalf:])
         snip = 1
     if snip and print_full == 2:
-        if py3compat.input(header +
-                           ' Snipped. View (y/n)? [N]').lower() == 'y':
+        if py3compat.input(header + ' Snipped. View (y/n)? [N]').lower() == 'y':
             page(str)
     return snip

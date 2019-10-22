@@ -23,6 +23,7 @@ if sys.platform == 'win32':
 else:
     date_format = "%B %-d, %Y"
 
+
 class LSString(str):
     """String derivative with a special access attributes.
 
@@ -52,7 +53,7 @@ class LSString(str):
         try:
             return self.__spstr
         except AttributeError:
-            self.__spstr = self.replace('\n',' ')
+            self.__spstr = self.replace('\n', ' ')
             return self.__spstr
 
     s = spstr = property(get_spstr)
@@ -66,7 +67,8 @@ class LSString(str):
         try:
             return self.__paths
         except AttributeError:
-            self.__paths = [Path(p) for p in self.split('\n') if os.path.exists(p)]
+            self.__paths = [Path(p)
+                            for p in self.split('\n') if os.path.exists(p)]
             return self.__paths
 
     p = paths = property(get_paths)
@@ -129,7 +131,7 @@ class SList(list):
 
     p = paths = property(get_paths)
 
-    def grep(self, pattern, prune = False, field = None):
+    def grep(self, pattern, prune=False, field=None):
         """ Return all strings matching 'pattern' (a regex or callable)
 
         This is case-insensitive. If prune is true, return all items
@@ -156,7 +158,7 @@ class SList(list):
                 return ""
 
         if isinstance(pattern, str):
-            pred = lambda x : re.search(pattern, x, re.IGNORECASE)
+            def pred(x): return re.search(pattern, x, re.IGNORECASE)
         else:
             pred = pattern
         if not prune:
@@ -200,7 +202,7 @@ class SList(list):
 
         return res
 
-    def sort(self,field= None,  nums = False):
+    def sort(self, field=None, nums=False):
         """ sort by specified fields (see fields())
 
         Example::
@@ -213,9 +215,9 @@ class SList(list):
 
         #decorate, sort, undecorate
         if field is not None:
-            dsu = [[SList([line]).fields(field),  line] for line in self]
+            dsu = [[SList([line]).fields(field), line] for line in self]
         else:
-            dsu = [[line,  line] for line in self]
+            dsu = [[line, line] for line in self]
         if nums:
             for i in range(len(dsu)):
                 numstr = "".join([ch for ch in dsu[i][0] if ch.isdigit()])
@@ -224,7 +226,6 @@ class SList(list):
                 except ValueError:
                     n = 0
                 dsu[i][0] = n
-
 
         dsu.sort()
         return SList([t[1] for t in dsu])
@@ -246,7 +247,7 @@ class SList(list):
 # print_slist = result_display.register(SList)(print_slist)
 
 
-def indent(instr,nspaces=4, ntabs=0, flatten=False):
+def indent(instr, nspaces=4, ntabs=0, flatten=False):
     """Indent a string a given number of spaces or tabstops.
 
     indent(str,nspaces=4,ntabs=0) -> indent str by ntabs+nspaces.
@@ -273,13 +274,13 @@ def indent(instr,nspaces=4, ntabs=0, flatten=False):
     """
     if instr is None:
         return
-    ind = '\t'*ntabs+' '*nspaces
+    ind = '\t' * ntabs + ' ' * nspaces
     if flatten:
         pat = re.compile(r'^\s*', re.MULTILINE)
     else:
         pat = re.compile(r'^', re.MULTILINE)
     outstr = re.sub(pat, ind, instr)
-    if outstr.endswith(os.linesep+ind):
+    if outstr.endswith(os.linesep + ind):
         return outstr[:-len(ind)]
     else:
         return outstr
@@ -309,7 +310,7 @@ def list_strings(arg):
         return arg
 
 
-def marquee(txt='',width=78,mark='*'):
+def marquee(txt='', width=78, mark='*'):
     """Return the input string centered in a 'marquee'.
 
     Examples
@@ -327,14 +328,16 @@ def marquee(txt='',width=78,mark='*'):
 
     """
     if not txt:
-        return (mark*width)[:width]
-    nmark = (width-len(txt)-2)//len(mark)//2
-    if nmark < 0: nmark =0
-    marks = mark*nmark
-    return '%s %s %s' % (marks,txt,marks)
+        return (mark * width)[:width]
+    nmark = (width - len(txt) - 2) // len(mark) // 2
+    if nmark < 0:
+        nmark = 0
+    marks = mark * nmark
+    return '%s %s %s' % (marks, txt, marks)
 
 
 ini_spaces_re = re.compile(r'^(\s+)')
+
 
 def num_ini_spaces(strng):
     """Return the number of initial spaces in a string"""
@@ -351,8 +354,8 @@ def format_screen(strng):
 
     This removes some latex-type format codes."""
     # Paragraph continue
-    par_re = re.compile(r'\\$',re.MULTILINE)
-    strng = par_re.sub('',strng)
+    par_re = re.compile(r'\\$', re.MULTILINE)
+    strng = par_re.sub('', strng)
     return strng
 
 
@@ -372,7 +375,7 @@ def dedent(text):
         return textwrap.dedent(text)
 
     # split first line
-    splits = text.split('\n',1)
+    splits = text.split('\n', 1)
     if len(splits) == 1:
         # only one line
         return textwrap.dedent(text)
@@ -396,7 +399,7 @@ def wrap_paragraphs(text, ncols=80):
     """
     paragraph_re = re.compile(r'\n(\s*\n)+', re.MULTILINE)
     text = dedent(text).strip()
-    paragraphs = paragraph_re.split(text)[::2] # every other entry is space
+    paragraphs = paragraph_re.split(text)[::2]  # every other entry is space
     out_ps = []
     indent_re = re.compile(r'\n\s+', re.MULTILINE)
     for p in paragraphs:
@@ -411,15 +414,16 @@ def wrap_paragraphs(text, ncols=80):
 
 def long_substr(data):
     """Return the longest common substring in a list of strings.
-    
+
     Credit: http://stackoverflow.com/questions/2892931/longest-common-substring-from-more-than-two-strings-python
     """
     substr = ''
     if len(data) > 1 and len(data[0]) > 0:
         for i in range(len(data[0])):
-            for j in range(len(data[0])-i+1):
-                if j > len(substr) and all(data[0][i:i+j] in x for x in data):
-                    substr = data[0][i:i+j]
+            for j in range(len(data[0]) - i + 1):
+                if j > len(substr) and all(
+                        data[0][i:i + j] in x for x in data):
+                    substr = data[0][i:i + j]
     elif len(data) == 1:
         substr = data[0]
     return substr
@@ -453,7 +457,7 @@ def strip_email_quotes(text):
 
     So if any line has no quote marks ('>') , then none are stripped from any
     of them ::
-    
+
         In [5]: strip_email_quotes('> > text\\n> > more\\nlast different')
         Out[5]: '> > text\\n> > more\\nlast different'
     """
@@ -469,13 +473,14 @@ def strip_email_quotes(text):
         prefix = long_substr(list(matches))
         if prefix:
             strip = len(prefix)
-            text = '\n'.join([ ln[strip:] for ln in lines])
+            text = '\n'.join([ln[strip:] for ln in lines])
     return text
+
 
 def strip_ansi(source):
     """
     Remove ansi escape codes from text.
-    
+
     Parameters
     ----------
     source : str
@@ -486,11 +491,11 @@ def strip_ansi(source):
 
 class EvalFormatter(Formatter):
     """A String Formatter that allows evaluation of simple expressions.
-    
+
     Note that this version interprets a : as specifying a format string (as per
     standard string formatting), so if slicing is required, you must explicitly
     create a slice.
-    
+
     This is to be used in templating cases, such as the parallel batch
     script templates, where simple arithmetic on arguments is useful.
 
@@ -505,23 +510,25 @@ class EvalFormatter(Formatter):
         In [3]: f.format("{greeting[slice(2,4)]}", greeting="Hello")
         Out[3]: 'll'
     """
+
     def get_field(self, name, args, kwargs):
         v = eval(name, kwargs)
         return v, name
 
-#XXX: As of Python 3.4, the format string parsing no longer splits on a colon
+# XXX: As of Python 3.4, the format string parsing no longer splits on a colon
 # inside [], so EvalFormatter can handle slicing. Once we only support 3.4 and
 # above, it should be possible to remove FullEvalFormatter.
 
+
 class FullEvalFormatter(Formatter):
     """A String Formatter that allows evaluation of simple expressions.
-    
+
     Any time a format key is not found in the kwargs,
     it will be tried as an expression in the kwargs namespace.
-    
+
     Note that this version allows slicing using [1:2], so you cannot specify
     a format string. Use :class:`EvalFormatter` to permit format strings.
-    
+
     Examples
     --------
     ::
@@ -538,6 +545,7 @@ class FullEvalFormatter(Formatter):
     """
     # copied from Formatter._vformat with minor changes to allow eval
     # and replace the format_spec code with slicing
+
     def vformat(self, format_string, args, kwargs):
         result = []
         for literal_text, field_name, format_spec, conversion in \
@@ -588,16 +596,19 @@ class DollarFormatter(FullEvalFormatter):
         In [4]: f.format('$a or {b}', a=1, b=2)
         Out[4]: '1 or 2'
     """
-    _dollar_pattern_ignore_single_quote = re.compile(r"(.*?)\$(\$?[\w\.]+)(?=([^']*'[^']*')*[^']*$)")
+    _dollar_pattern_ignore_single_quote = re.compile(
+        r"(.*?)\$(\$?[\w\.]+)(?=([^']*'[^']*')*[^']*$)")
+
     def parse(self, fmt_string):
         for literal_txt, field_name, format_spec, conversion \
-                    in Formatter.parse(self, fmt_string):
-            
+                in Formatter.parse(self, fmt_string):
+
             # Find $foo patterns in the literal text.
             continue_from = 0
             txt = ""
-            for m in self._dollar_pattern_ignore_single_quote.finditer(literal_txt):
-                new_txt, new_field = m.group(1,2)
+            for m in self._dollar_pattern_ignore_single_quote.finditer(
+                    literal_txt):
+                new_txt, new_field = m.group(1, 2)
                 # $$foo --> $foo
                 if new_field.startswith("$"):
                     txt += new_txt + new_field
@@ -605,13 +616,14 @@ class DollarFormatter(FullEvalFormatter):
                     yield (txt + new_txt, new_field, "", None)
                     txt = ""
                 continue_from = m.end()
-            
+
             # Re-yield the {foo} style pattern
             yield (txt + literal_txt[continue_from:], field_name, format_spec, conversion)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Utils to columnize a list of string
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def _col_chunks(l, max_rows, row_first=False):
     """Yield successive max_rows-sized column chunks from l."""
@@ -643,11 +655,11 @@ def _get_or_default(mylist, i, default=None):
     """return list item number, or default if don't exist"""
     if i >= len(mylist):
         return default
-    else :
+    else:
         return mylist[i]
 
 
-def compute_item_matrix(items, row_first=False, empty=None, *args, **kwargs) :
+def compute_item_matrix(items, row_first=False, empty=None, *args, **kwargs):
     """Returns a nested list, and info to columnize items
 
     Parameters
@@ -702,12 +714,15 @@ def compute_item_matrix(items, row_first=False, empty=None, *args, **kwargs) :
     info = _find_optimal(list(map(len, items)), row_first, *args, **kwargs)
     nrow, ncol = info['max_rows'], info['num_columns']
     if row_first:
-        return ([[_get_or_default(items, r * ncol + c, default=empty) for c in range(ncol)] for r in range(nrow)], info)
+        return ([[_get_or_default(items, r * ncol + c, default=empty)
+                  for c in range(ncol)] for r in range(nrow)], info)
     else:
-        return ([[_get_or_default(items, c * nrow + r, default=empty) for c in range(ncol)] for r in range(nrow)], info)
+        return ([[_get_or_default(items, c * nrow + r, default=empty)
+                  for c in range(ncol)] for r in range(nrow)], info)
 
 
-def columnize(items, row_first=False, separator='  ', displaywidth=80, spread=False):
+def columnize(items, row_first=False, separator='  ',
+              displaywidth=80, spread=False):
     """ Transform a list of strings into a single string with columns.
 
     Parameters
@@ -731,12 +746,14 @@ def columnize(items, row_first=False, separator='  ', displaywidth=80, spread=Fa
     """
     if not items:
         return '\n'
-    matrix, info = compute_item_matrix(items, row_first=row_first, separator_size=len(separator), displaywidth=displaywidth)
+    matrix, info = compute_item_matrix(items, row_first=row_first, separator_size=len(
+        separator), displaywidth=displaywidth)
     if spread:
         separator = separator.ljust(int(info['optimal_separator_width']))
     fmatrix = [filter(None, x) for x in matrix]
-    sjoin = lambda x : separator.join([ y.ljust(w, ' ') for y, w in zip(x, info['column_widths'])])
-    return '\n'.join(map(sjoin, fmatrix))+'\n'
+    def sjoin(x): return separator.join(
+        [y.ljust(w, ' ') for y, w in zip(x, info['column_widths'])])
+    return '\n'.join(map(sjoin, fmatrix)) + '\n'
 
 
 def get_text_list(list_, last_sep=' and ', sep=", ", wrap_item_with=""):

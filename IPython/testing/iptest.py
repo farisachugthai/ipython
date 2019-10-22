@@ -43,20 +43,64 @@ pjoin = path.join
 
 
 # Enable printing all warnings raise by IPython's modules
-warnings.filterwarnings('ignore', message='.*Matplotlib is building the font cache.*', category=UserWarning, module='.*')
-warnings.filterwarnings('error', message='.*', category=ResourceWarning, module='.*')
-warnings.filterwarnings('error', message=".*{'config': True}.*", category=DeprecationWarning, module='IPy.*')
-warnings.filterwarnings('default', message='.*', category=Warning, module='IPy.*')
+warnings.filterwarnings(
+    'ignore',
+    message='.*Matplotlib is building the font cache.*',
+    category=UserWarning,
+    module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*',
+    category=ResourceWarning,
+    module='.*')
+warnings.filterwarnings(
+    'error',
+    message=".*{'config': True}.*",
+    category=DeprecationWarning,
+    module='IPy.*')
+warnings.filterwarnings(
+    'default',
+    message='.*',
+    category=Warning,
+    module='IPy.*')
 
-warnings.filterwarnings('error', message='.*apply_wrapper.*', category=DeprecationWarning, module='.*')
-warnings.filterwarnings('error', message='.*make_label_dec', category=DeprecationWarning, module='.*')
-warnings.filterwarnings('error', message='.*decorated_dummy.*', category=DeprecationWarning, module='.*')
-warnings.filterwarnings('error', message='.*skip_file_no_x11.*', category=DeprecationWarning, module='.*')
-warnings.filterwarnings('error', message='.*onlyif_any_cmd_exists.*', category=DeprecationWarning, module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*apply_wrapper.*',
+    category=DeprecationWarning,
+    module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*make_label_dec',
+    category=DeprecationWarning,
+    module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*decorated_dummy.*',
+    category=DeprecationWarning,
+    module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*skip_file_no_x11.*',
+    category=DeprecationWarning,
+    module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*onlyif_any_cmd_exists.*',
+    category=DeprecationWarning,
+    module='.*')
 
-warnings.filterwarnings('error', message='.*disable_gui.*', category=DeprecationWarning, module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*disable_gui.*',
+    category=DeprecationWarning,
+    module='.*')
 
-warnings.filterwarnings('error', message='.*ExceptionColors global is deprecated.*', category=DeprecationWarning, module='.*')
+warnings.filterwarnings(
+    'error',
+    message='.*ExceptionColors global is deprecated.*',
+    category=DeprecationWarning,
+    module='.*')
 
 # Jedi older versions
 warnings.filterwarnings(
@@ -77,7 +121,6 @@ else:
         'Completer.complete was pending deprecation and should be changed to Deprecated', FutureWarning)
 
 
-
 # ------------------------------------------------------------------------------
 # Monkeypatch Xunit to count known failures as skipped.
 # ------------------------------------------------------------------------------
@@ -95,11 +138,14 @@ def monkeypatch_xunit():
     Xunit.orig_addError = Xunit.addError
     Xunit.addError = addError
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Check which dependencies are installed and greater than minimum version.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+
 def extract_version(mod):
     return mod.__version__
+
 
 def test_for(item, min_version=None, callback=extract_version):
     """Test to see if item is importable, and optionally check against a minimum
@@ -133,19 +179,21 @@ def test_for(item, min_version=None, callback=extract_version):
         else:
             return True
 
+
 # Global dict where we can store information on what we have and what we don't
 # have available at test run time
 have = {'matplotlib': test_for('matplotlib'),
         'pygments': test_for('pygments'),
         'sqlite3': test_for('sqlite3')}
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test suite definitions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 test_group_names = ['core',
                     'extensions', 'lib', 'terminal', 'testing', 'utils',
-                   ]
+                    ]
+
 
 class TestSection(object):
     def __init__(self, name, includes):
@@ -154,21 +202,23 @@ class TestSection(object):
         self.excludes = []
         self.dependencies = []
         self.enabled = True
-    
+
     def exclude(self, module):
         if not module.startswith('IPython'):
             module = self.includes[0] + "." + module
         self.excludes.append(module.replace('.', os.sep))
-    
+
     def requires(self, *packages):
         self.dependencies.extend(packages)
-    
+
     @property
     def will_run(self):
         return self.enabled and all(have[p] for p in self.dependencies)
 
+
 # Name -> (include, exclude, dependencies_met)
-test_sections = {n:TestSection(n, ['IPython.%s' % n]) for n in test_group_names}
+test_sections = {n: TestSection(n, ['IPython.%s' % n])
+                 for n in test_group_names}
 
 
 # Exclusions and dependencies
@@ -218,13 +268,13 @@ sec.exclude('rmagic')
 sec.exclude('autoreload')
 sec.exclude('tests.test_autoreload')
 test_sections['autoreload'] = TestSection('autoreload',
-        ['IPython.extensions.autoreload', 'IPython.extensions.tests.test_autoreload'])
+                                          ['IPython.extensions.autoreload', 'IPython.extensions.tests.test_autoreload'])
 test_group_names.append('autoreload')
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Functions and classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 def check_exclusions_exist():
     from IPython.paths import get_ipython_package_dir
@@ -242,7 +292,7 @@ class ExclusionPlugin(Plugin):
     """
     name = 'exclusions'
     score = 3000  # Should come before any other plugins
-    
+
     def __init__(self, exclude_patterns=None):
         """
         Parameters
@@ -257,12 +307,12 @@ class ExclusionPlugin(Plugin):
 
     def options(self, parser, env=os.environ):
         Plugin.options(self, parser, env)
-    
+
     def configure(self, options, config):
         Plugin.configure(self, options, config)
         # Override nose trying to disable plugin.
         self.enabled = True
-        
+
     def wantFile(self, filename):
         """Return whether the given filename should be scanned for tests.
         """
@@ -281,6 +331,7 @@ class ExclusionPlugin(Plugin):
 class StreamCapturer(Thread):
     daemon = True  # Don't hang if main thread crashes
     started = False
+
     def __init__(self, echo=False):
         super(StreamCapturer, self).__init__()
         self.echo = echo
@@ -326,8 +377,10 @@ class StreamCapturer(Thread):
         os.write(self.writefd, b'\0')  # Ensure we're not locked in a read()
         self.join()
 
+
 class SubprocessStreamCapturePlugin(Plugin):
-    name='subprocstreams'
+    name = 'subprocstreams'
+
     def __init__(self):
         Plugin.__init__(self)
         self.stream_capturer = StreamCapturer()
@@ -344,17 +397,17 @@ class SubprocessStreamCapturePlugin(Plugin):
             return os.open(os.devnull, os.O_WRONLY)
         else:
             return sys.__stdout__.fileno()
-    
+
     def configure(self, options, config):
         Plugin.configure(self, options, config)
         # Override nose trying to disable plugin.
         if self.destination == 'capture':
             self.enabled = True
-    
+
     def startTest(self, test):
         # Reset log capture
         self.stream_capturer.reset_buffer()
-    
+
     def formatFailure(self, test, err):
         # Show output
         ec, ev, tb = err
@@ -362,14 +415,14 @@ class SubprocessStreamCapturePlugin(Plugin):
         if captured.strip():
             ev = safe_str(ev)
             out = [ev, '>> begin captured subprocess output <<',
-                    captured,
-                    '>> end captured subprocess output <<']
+                   captured,
+                   '>> end captured subprocess output <<']
             return ec, '\n'.join(out), tb
 
         return err
-    
+
     formatError = formatFailure
-    
+
     def finalize(self, result):
         self.stream_capturer.halt()
 
@@ -390,7 +443,7 @@ def run_iptest():
         if arg1.endswith('.py'):
             arg1 = arg1[:-3]
         sys.argv[1] = arg1.replace('/', '.')
-    
+
     arg1 = sys.argv[1]
     if arg1 in test_sections:
         section = test_sections[arg1]
@@ -400,17 +453,16 @@ def run_iptest():
         sys.argv[1:2] = section.includes
     else:
         section = TestSection(arg1, includes=[arg1])
-        
 
-    argv = sys.argv + [ '--detailed-errors',  # extra info in tracebacks
-                        # We add --exe because of setuptools' imbecility (it
-                        # blindly does chmod +x on ALL files).  Nose does the
-                        # right thing and it tries to avoid executables,
-                        # setuptools unfortunately forces our hand here.  This
-                        # has been discussed on the distutils list and the
-                        # setuptools devs refuse to fix this problem!
-                        '--exe',
-                        ]
+    argv = sys.argv + ['--detailed-errors',  # extra info in tracebacks
+                       # We add --exe because of setuptools' imbecility (it
+                       # blindly does chmod +x on ALL files).  Nose does the
+                       # right thing and it tries to avoid executables,
+                       # setuptools unfortunately forces our hand here.  This
+                       # has been discussed on the distutils list and the
+                       # setuptools devs refuse to fix this problem!
+                       '--exe',
+                       ]
     if '-a' not in argv and '-A' not in argv:
         argv = argv + ['-a', '!crash']
 
@@ -425,9 +477,9 @@ def run_iptest():
         # for nose >= 0.11, though unfortunately nose 0.10 doesn't support it.
         argv.append('--traverse-namespace')
 
-    plugins = [ ExclusionPlugin(section.excludes), KnownFailure(),
-               SubprocessStreamCapturePlugin() ]
-    
+    plugins = [ExclusionPlugin(section.excludes), KnownFailure(),
+               SubprocessStreamCapturePlugin()]
+
     # we still have some vestigial doctests in core
     if (section.name.startswith(('core', 'IPython.core', 'IPython.utils'))):
         plugins.append(IPythonDoctest())
@@ -437,11 +489,10 @@ def run_iptest():
             '--ipdoctest-extension=txt',
         ])
 
-    
     # Use working directory set by parent process (see iptestcontroller)
     if 'IPTEST_WORKING_DIR' in os.environ:
         os.chdir(os.environ['IPTEST_WORKING_DIR'])
-    
+
     # We need a global ipython running in this process, but the special
     # in-process group spawns its own IPython kernels, so for *that* group we
     # must avoid also opening the global one (otherwise there's a conflict of
@@ -455,6 +506,7 @@ def run_iptest():
 
     # Now nose can run
     TestProgram(argv=argv, addplugins=plugins)
+
 
 if __name__ == '__main__':
     run_iptest()

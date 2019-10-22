@@ -62,10 +62,8 @@ def is_shadowed(identifier, ip):
     the alias and magic namespaces?  Note that an identifier is different
     than ifun, because it can not contain a '.' character."""
     # This is much safer than calling ofind, which can change state
-    return (identifier in ip.user_ns
-            or identifier in ip.user_global_ns
-            or identifier in ip.ns_table['builtin']
-            or iskeyword(identifier))
+    return (identifier in ip.user_ns or identifier in ip.user_global_ns or
+            identifier in ip.ns_table['builtin'] or iskeyword(identifier))
 
 
 # -----------------------------------------------------------------------------
@@ -285,8 +283,8 @@ class PrefilterManager(Configurable):
             return ''
 
         # At this point, we invoke our transformers.
-        if not continue_prompt or (continue_prompt
-                                   and self.multi_line_specials):
+        if not continue_prompt or (continue_prompt and
+                                   self.multi_line_specials):
             line = self.transform_line(line, continue_prompt)
 
         # Now we compute line_info for the checkers and handlers
@@ -505,24 +503,23 @@ class AutocallChecker(PrefilterChecker):
         help="RegExp to identify potential function names.").tag(config=True)
     exclude_regexp = CRegExp(
         re_exclude_auto,
-        help="RegExp to exclude strings with this start from autocalling."
-    ).tag(config=True)
+        help="RegExp to exclude strings with this start from autocalling.").tag(
+            config=True)
 
     def check(self, line_info):
         "Check if the initial word/function is callable and autocall is on."
         if not self.shell.autocall:
             return None
 
-        oinfo = line_info.ofind(
-            self.shell)  # This can mutate state via getattr
+        oinfo = line_info.ofind(self.shell)  # This can mutate state via getattr
         if not oinfo['found']:
             return None
 
         ignored_funs = ['b', 'f', 'r', 'u', 'br', 'rb', 'fr', 'rf']
         ifun = line_info.ifun
         line = line_info.line
-        if ifun.lower() in ignored_funs and (line.startswith(ifun + "'")
-                                             or line.startswith(ifun + '"')):
+        if ifun.lower() in ignored_funs and (line.startswith(ifun + "'") or
+                                             line.startswith(ifun + '"')):
             return None
 
         if callable(oinfo['obj']) \
@@ -567,8 +564,8 @@ class PrefilterHandler(Configurable):
         line = line_info.line
         continue_prompt = line_info.continue_prompt
 
-        if (continue_prompt and self.shell.autoindent and line.isspace()
-                and 0 < abs(len(line) - self.shell.indent_current_nsp) <= 2):
+        if (continue_prompt and self.shell.autoindent and line.isspace() and
+                0 < abs(len(line) - self.shell.indent_current_nsp) <= 2):
             line = ''
 
         return line

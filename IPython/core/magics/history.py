@@ -34,6 +34,7 @@ _unspecified = object()
 
 @magics_class
 class HistoryMagics(Magics):
+
     @magic_arguments()
     @argument('-n',
               dest='print_nums',
@@ -164,8 +165,7 @@ class HistoryMagics(Magics):
         else:
             if os.path.exists(outfname):
                 try:
-                    ans = io.ask_yes_no("File %r exists. Overwrite?" %
-                                        outfname)
+                    ans = io.ask_yes_no("File %r exists. Overwrite?" % outfname)
                 except StdinNotImplementedError:
                     ans = True
                 if not ans:
@@ -199,8 +199,8 @@ class HistoryMagics(Magics):
             hist = history_manager.get_tail(n, raw=raw, output=get_output)
         else:
             if args.range:  # Get history by ranges
-                hist = history_manager.get_range_by_str(
-                    " ".join(args.range), raw, get_output)
+                hist = history_manager.get_range_by_str(" ".join(args.range),
+                                                        raw, get_output)
             else:  # Just get history for the current session
                 hist = history_manager.get_range(raw=raw, output=get_output)
 

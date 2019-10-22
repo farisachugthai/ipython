@@ -45,7 +45,7 @@ class TestContextAwareCompletion(unittest.TestCase):
             'func2')
 
 
-# Decorator for interaction loop tests -----------------------------------------
+# Decorator for interaction loop tests -----------------------------------
 
 
 class mock_input_helper(object):
@@ -73,7 +73,7 @@ class mock_input_helper(object):
         except StopIteration:
             self.ip.keep_running = False
             return u''
-        except:
+        except BaseException:
             self.exception = sys.exc_info()
             self.ip.keep_running = False
             return u''
@@ -102,7 +102,7 @@ def mock_input(testfunc):
     return test_method
 
 
-# Test classes -----------------------------------------------------------------
+# Test classes -----------------------------------------------------------
 
 
 class InteractiveShellTestCase(unittest.TestCase):

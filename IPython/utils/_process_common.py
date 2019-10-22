@@ -4,16 +4,16 @@ This file is only meant to be imported by the platform-specific implementations
 of subprocess utilities, and it contains tools that are common to all of them.
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2010-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 import subprocess
 import shlex
 import sys
@@ -21,9 +21,10 @@ import os
 
 from IPython.utils import py3compat
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Function definitions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def read_no_interrupt(p):
     """Read from a pipe ignoring EINTR errors.
@@ -150,6 +151,7 @@ def getoutputerror(cmd):
     """
     return get_output_error_code(cmd)[:2]
 
+
 def get_output_error_code(cmd):
     """Return (standard output, standard error, return code) of executing cmd
     in a shell.
@@ -174,6 +176,7 @@ def get_output_error_code(cmd):
     out, err = out_err
     return py3compat.decode(out), py3compat.decode(err), p.returncode
 
+
 def arg_split(s, posix=False, strict=True):
     """Split a command line's arguments in a shell-like manner.
 
@@ -195,7 +198,7 @@ def arg_split(s, posix=False, strict=True):
     # and it shouldn't raise an exception.
     # It may be a bad idea to parse things that are not command-line args
     # through this function, but we do, so let's be safe about it.
-    lex.commenters='' #fix for GH-1269
+    lex.commenters = ''  # fix for GH-1269
     tokens = []
     while True:
         try:

@@ -8,9 +8,9 @@
 import sys
 from io import StringIO
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class RichOutput(object):
@@ -107,7 +107,7 @@ class CapturedIO(object):
             for o in c.outputs:
                 display(o)
         """
-        return [ RichOutput(**kargs) for kargs in self._outputs ]
+        return [RichOutput(**kargs) for kargs in self._outputs]
 
     def show(self):
         """write my output to sys.stdout/err as appropriate"""

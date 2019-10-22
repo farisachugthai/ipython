@@ -309,9 +309,10 @@ class NamespaceMagics(Magics):
         user_ns = self.shell.user_ns
         user_ns_hidden = self.shell.user_ns_hidden
         nonmatching = object()  # This can never be in user_ns
-        out = [i for i in user_ns
-               if not i.startswith('_')
-               and (user_ns[i] is not user_ns_hidden.get(i, nonmatching))]
+        out = [
+            i for i in user_ns if not i.startswith('_') and
+            (user_ns[i] is not user_ns_hidden.get(i, nonmatching))
+        ]
 
         typelist = parameter_s.split()
         if typelist:
@@ -479,8 +480,10 @@ class NamespaceMagics(Magics):
         varwidth = max(max(map(len, varnames)), len(varlabel)) + colsep
         typewidth = max(max(map(len, typelist)), len(typelabel)) + colsep
         # table header
-        print(varlabel.ljust(varwidth) + typelabel.ljust(typewidth) +
-              ' ' + datalabel + '\n' + '-' * (varwidth + typewidth + len(datalabel) + 1))
+        print(
+            varlabel.ljust(varwidth) + typelabel.ljust(typewidth) + ' ' +
+            datalabel + '\n' + '-' *
+            (varwidth + typewidth + len(datalabel) + 1))
         # and the table itself
         kb = 1024
         Mb = 1048576  # kb**2
@@ -493,8 +496,7 @@ class NamespaceMagics(Magics):
             if vtype in seq_types:
                 print("n=" + str(len(var)))
             elif vtype == ndarray_type:
-                vshape = str(var.shape).replace(',', '').replace(' ',
-                                                                 'x')[1:-1]
+                vshape = str(var.shape).replace(',', '').replace(' ', 'x')[1:-1]
                 if vtype == ndarray_type:
                     # numpy
                     vsize = var.size
@@ -506,9 +508,9 @@ class NamespaceMagics(Magics):
                 else:
                     print(aformat % (vshape, vsize, vdtype, vbytes), end=' ')
                     if vbytes < Mb:
-                        print('(%s kb)' % (vbytes / kb, ))
+                        print('(%s kb)' % (vbytes / kb,))
                     else:
-                        print('(%s Mb)' % (vbytes / Mb, ))
+                        print('(%s Mb)' % (vbytes / Mb,))
             else:
                 try:
                     vstr = str(var)

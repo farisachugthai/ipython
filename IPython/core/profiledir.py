@@ -50,7 +50,8 @@ class ProfileDir(LoggingConfigurable):
 
     location = Unicode(
         u'',
-        help="""Set the profile location directly. This overrides the logic used by the
+        help=
+        """Set the profile location directly. This overrides the logic used by the
         `profile` option.""",
     ).tag(config=True)
 
@@ -184,9 +185,7 @@ class ProfileDir(LoggingConfigurable):
         return cls(location=profile_dir, config=config)
 
     @classmethod
-    def find_profile_dir_by_name(cls,
-                                 ipython_dir,
-                                 name=u'default',
+    def find_profile_dir_by_name(cls, ipython_dir, name=u'default',
                                  config=None):
         """Find an existing profile dir by profile name, return its ProfileDir.
 

@@ -98,8 +98,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     simple_prompt = Bool(
         _use_simple_prompt,
-        help=
-        """Use `raw_input` for the REPL, without completion and prompt colors.
+        help="""Use `raw_input` for the REPL, without completion and prompt colors.
 
             Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
             IPython own testing machinery, and emacs inferior-shell integration through elpy.
@@ -127,8 +126,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     mouse_support = Bool(
         False,
-        help=
-        "Enable mouse support in the prompt\n(Note: prevents selecting text with the mouse)"
+        help="Enable mouse support in the prompt\n(Note: prevents selecting text with the mouse)"
     ).tag(config=True)
 
     # We don't load the list of styles for the help string, because loading
@@ -207,16 +205,14 @@ class TerminalInteractiveShell(InteractiveShell):
 
     term_title_format = Unicode(
         "IPython: {cwd}",
-        help=
-        "Customize the terminal title format.  This is a python format string. "
+        help="Customize the terminal title format.  This is a python format string. "
         + "Available substitutions are: {cwd}.").tag(config=True)
 
     display_completions = Enum(
         ('column', 'multicolumn', 'readlinelike'),
-        help=
-        ("Options for displaying tab completions, 'column', 'multicolumn', and "
-         "'readlinelike'. These options are for `prompt_toolkit`, see "
-         "`prompt_toolkit` documentation for more information."),
+        help=("Options for displaying tab completions, 'column', 'multicolumn', and "
+              "'readlinelike'. These options are for `prompt_toolkit`, see "
+              "`prompt_toolkit` documentation for more information."),
         default_value='multicolumn').tag(config=True)
 
     highlight_matching_brackets = Bool(
@@ -226,8 +222,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     extra_open_editor_shortcuts = Bool(
         False,
-        help=
-        "Enable vi (v) or Emacs (C-X C-E) shortcuts to open an external editor. "
+        help="Enable vi (v) or Emacs (C-X C-E) shortcuts to open an external editor. "
         "This is in addition to the F2 binding, which is always enabled.").tag(
             config=True)
 
@@ -450,7 +445,7 @@ class TerminalInteractiveShell(InteractiveShell):
         with patch_stdout(raw=True):
             text = self.pt_app.prompt(
                 default=default,
-                #                pre_run=self.pre_prompt,# reset_current_buffer=True,
+                # pre_run=self.pre_prompt,# reset_current_buffer=True,
                 **self._extra_prompt_options())
         return text
 
@@ -527,7 +522,7 @@ class TerminalInteractiveShell(InteractiveShell):
                 code = self.prompt_for_code()
             except EOFError:
                 if (not self.confirm_exit) \
-                        or self.ask_yes_no('Do you really want to exit ([y]/n)?','y','n'):
+                        or self.ask_yes_no('Do you really want to exit ([y]/n)?', 'y', 'n'):
                     self.ask_exit()
 
             else:

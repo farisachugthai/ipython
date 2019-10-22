@@ -76,8 +76,7 @@ class Logger(object):
         Raises RuntimeError if the log has already been started"""
 
         if self.logfile is not None:
-            raise RuntimeError('Log file is already active: %s' %
-                               self.logfname)
+            raise RuntimeError('Log file is already active: %s' % self.logfname)
 
         # The parameters can override constructor defaults
         if logfname is not None:

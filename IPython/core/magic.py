@@ -142,8 +142,8 @@ def validate_type(magic_kind):
     in the global `magic_spec`), raise ValueError otherwise.
     """
     if magic_kind not in magic_spec:
-        raise ValueError(
-            'magic_kind must be one of %s, %s given' % magic_kinds, magic_kind)
+        raise ValueError('magic_kind must be one of %s, %s given' % magic_kinds,
+                         magic_kind)
 
 
 # The docstrings for the decorator below will be fairly similar for the two
@@ -585,8 +585,7 @@ class Magics(Configurable):
 
         # Now build the string for output:
         #strng = cmd_name_re.sub(r'\n\\texttt{\\textsl{\\large \1}}:',strng)
-        strng = cmd_name_re.sub(r'\n\\bigskip\n\\texttt{\\textbf{ \1}}:',
-                                strng)
+        strng = cmd_name_re.sub(r'\n\\bigskip\n\\texttt{\\textbf{ \1}}:', strng)
         strng = cmd_re.sub(r'\\texttt{\g<cmd>}', strng)
         strng = par_re.sub(r'\\\\', strng)
         strng = escape_re.sub(r'\\\1', strng)

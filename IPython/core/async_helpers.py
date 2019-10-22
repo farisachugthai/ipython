@@ -17,6 +17,7 @@ from textwrap import dedent, indent
 
 
 class _AsyncIORunner:
+
     def __call__(self, coro):
         """
         Handler for asyncio autoawait
@@ -106,7 +107,7 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
         func_types = (ast.FunctionDef, ast.AsyncFunctionDef)
         invalid_types_by_depth = {
             0: (ast.Return, ast.Yield, ast.YieldFrom),
-            1: (ast.Nonlocal, )
+            1: (ast.Nonlocal,)
         }
 
         should_traverse = self.depth < max(invalid_types_by_depth.keys())

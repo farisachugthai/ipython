@@ -108,7 +108,8 @@ class PylabMagics(Magics):
         '--no-import-all',
         action='store_true',
         default=None,
-        help="""Prevent IPython from performing ``import *`` into the interactive namespace.
+        help=
+        """Prevent IPython from performing ``import *`` into the interactive namespace.
 
         You can govern the default behavior of this flag with the
         InteractiveShellApp.pylab_import_all configurable.
@@ -155,8 +156,8 @@ class PylabMagics(Magics):
             # invert no-import flag
             import_all = not args.no_import_all
 
-        gui, backend, clobbered = self.shell.enable_pylab(
-            args.gui, import_all=import_all)
+        gui, backend, clobbered = self.shell.enable_pylab(args.gui,
+                                                          import_all=import_all)
         self._show_matplotlib_backend(args.gui, backend)
         print("Populating the interactive namespace from numpy and matplotlib")
         if clobbered:

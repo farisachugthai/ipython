@@ -18,6 +18,7 @@ from IPython.utils.ipstruct import Struct
 
 
 class MagicsDisplay(object):
+
     def __init__(self, magics_manager, ignore=None):
         self.ignore = ignore if ignore else []
         self.magics_manager = magics_manager
@@ -156,8 +157,8 @@ class BasicMagics(Magics):
         # that are available.
         if not args.line and not args.cell:
             if not m_line and not m_cell:
-                raise UsageError(
-                    'No line or cell magic with name `%s` found.' % target)
+                raise UsageError('No line or cell magic with name `%s` found.' %
+                                 target)
             args.line = bool(m_line)
             args.cell = bool(m_cell)
 
@@ -585,6 +586,7 @@ Currently the magic system has the following functions:""",
 
 @magics_class
 class AsyncMagics(BasicMagics):
+
     @line_magic
     def autoawait(self, parameter_s):
         """

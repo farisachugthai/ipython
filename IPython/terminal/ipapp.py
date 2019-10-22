@@ -33,9 +33,9 @@ from .interactiveshell import TerminalInteractiveShell
 from IPython.paths import get_ipython_dir
 from traitlets import (Bool, List, default, observe, Type)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals, utilities and helpers
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 _examples = """
 ipython --matplotlib       # enable matplotlib integration
@@ -51,9 +51,9 @@ ipython locate             # print the path to the IPython directory
 ipython locate profile foo # print the path to the directory for profile `foo`
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Crash handler for this application
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class IPAppCrashHandler(CrashHandler):
@@ -81,15 +81,15 @@ class IPAppCrashHandler(CrashHandler):
             rpt_add(
                 '\n*** Last line of input (may not be in above history):\n')
             rpt_add(self.app.shell._last_input_line + '\n')
-        except:
+        except BaseException:
             pass
 
         return ''.join(report)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Aliases and Flags
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 flags = dict(base_flags)
 flags.update(shell_flags)
 frontend_flags = {}
@@ -154,9 +154,9 @@ flags.update(frontend_flags)
 aliases = dict(base_aliases)
 aliases.update(shell_aliases)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class LocateIPythonApp(BaseIPythonApplication):
@@ -184,10 +184,10 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     classes = List()
 
     interactive_shell_class = Type(
-        klass=object,  # use default_value otherwise which only allow subclasses.
+        klass=object,
+        # use default_value otherwise which only allow subclasses.
         default_value=TerminalInteractiveShell,
-        help=
-        "Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends"
+        help="Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends"
     ).tag(config=True)
 
     @default('classes')
@@ -211,30 +211,24 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         ]
 
     deprecated_subcommands = dict(
-        qtconsole=
-        ('qtconsole.qtconsoleapp.JupyterQtConsoleApp',
-         """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter Qt Console."""
-         ),
-        notebook=
-        ('notebook.notebookapp.NotebookApp',
-         """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter HTML Notebook Server."""
-         ),
-        console=
-        ('jupyter_console.app.ZMQTerminalIPythonApp',
-         """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter terminal-based Console."""
-         ),
-        nbconvert=
-        ('nbconvert.nbconvertapp.NbConvertApp',
-         "DEPRECATED, Will be removed in IPython 6.0 : Convert notebooks to/from other formats."
-         ),
-        trust=
-        ('nbformat.sign.TrustNotebookApp',
-         "DEPRECATED, Will be removed in IPython 6.0 : Sign notebooks to trust their potentially unsafe contents at load."
-         ),
-        kernelspec=
-        ('jupyter_client.kernelspecapp.KernelSpecApp',
-         "DEPRECATED, Will be removed in IPython 6.0 : Manage Jupyter kernel specifications."
-         ),
+        qtconsole=('qtconsole.qtconsoleapp.JupyterQtConsoleApp',
+                   """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter Qt Console."""
+                   ),
+        notebook=('notebook.notebookapp.NotebookApp',
+                  """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter HTML Notebook Server."""
+                  ),
+        console=('jupyter_console.app.ZMQTerminalIPythonApp',
+                 """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter terminal-based Console."""
+                 ),
+        nbconvert=('nbconvert.nbconvertapp.NbConvertApp',
+                   "DEPRECATED, Will be removed in IPython 6.0 : Convert notebooks to/from other formats."
+                   ),
+        trust=('nbformat.sign.TrustNotebookApp',
+               "DEPRECATED, Will be removed in IPython 6.0 : Sign notebooks to trust their potentially unsafe contents at load."
+               ),
+        kernelspec=('jupyter_client.kernelspecapp.KernelSpecApp',
+                    "DEPRECATED, Will be removed in IPython 6.0 : Manage Jupyter kernel specifications."
+                    ),
     )
     subcommands = dict(
         profile=("IPython.core.profileapp.ProfileApp",
@@ -348,7 +342,8 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         if self.display_banner and self.interact:
             self.shell.show_banner()
         # Make sure there is a space below the banner.
-        if self.log_level <= logging.INFO: print()
+        if self.log_level <= logging.INFO:
+            print()
 
     def _pylab_changed(self, name, old, new):
         """Replace --pylab='inline' with --pylab='auto'"""

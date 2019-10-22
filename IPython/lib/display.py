@@ -90,9 +90,9 @@ class Audio(DisplayObject):
 
     See Also
     --------
-    
+
     See also the ``Audio`` widgets form the ``ipywidget`` package for more flexibility and options.
-    
+
     """
     _read_flags = 'rb'
 
@@ -314,7 +314,7 @@ class YouTubeVideo(IFrame):
 
     Other parameters can be provided as documented at
     https://developers.google.com/youtube/player_parameters#Parameters
-    
+
     When converting the notebook using nbconvert, a jpeg representation of the video
     will be inserted in the document.
     """
@@ -409,8 +409,8 @@ class FileLink(object):
     def _format_path(self):
         fp = ''.join([self.url_prefix, html_escape(self.path)])
         return ''.join([self.result_html_prefix,
-                        self.html_link_str % \
-                            (fp, html_escape(self.path, quote=False)),
+                        self.html_link_str %
+                        (fp, html_escape(self.path, quote=False)),
                         self.result_html_suffix])
 
     def _repr_html_(self):
@@ -503,9 +503,9 @@ class FileLinks(FileLink):
         self.result_html_suffix = result_html_suffix
 
         self.notebook_display_formatter = \
-             notebook_display_formatter or self._get_notebook_display_formatter()
+            notebook_display_formatter or self._get_notebook_display_formatter()
         self.terminal_display_formatter = \
-             terminal_display_formatter or self._get_terminal_display_formatter()
+            terminal_display_formatter or self._get_terminal_display_formatter()
 
         self.recursive = recursive
 
@@ -571,9 +571,9 @@ class FileLinks(FileLink):
         """ generate function to use for notebook formatting
         """
         dirname_output_format = \
-         self.result_html_prefix + "%s/" + self.result_html_suffix
+            self.result_html_prefix + "%s/" + self.result_html_suffix
         fname_output_format = \
-         self.result_html_prefix + spacer + self.html_link_str + self.result_html_suffix
+            self.result_html_prefix + spacer + self.html_link_str + self.result_html_suffix
         fp_format = self.url_prefix + '%s/%s'
         if sep == "\\":
             # Working on a platform where the path separator is "\", so

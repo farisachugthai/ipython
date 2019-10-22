@@ -8,7 +8,7 @@ This file is only meant to be imported by process.py, not by end-users.
 
 This file is largely untested. To become a full drop-in process
 interface for IronPython will probably require you to help fill
-in the details. 
+in the details.
 """
 
 # Import cli libraries:
@@ -22,6 +22,7 @@ import os
 from IPython.utils import py3compat
 from ._process_common import arg_split
 
+
 def _find_cmd(cmd):
     """Find the full path to a command using which."""
     paths = System.Environment.GetEnvironmentVariable("PATH").Split(os.pathsep)
@@ -30,6 +31,7 @@ def _find_cmd(cmd):
         if System.IO.File.Exists(filename):
             return py3compat.decode(filename)
     raise OSError("command %r not found" % cmd)
+
 
 def system(cmd):
     """
@@ -43,6 +45,7 @@ def system(cmd):
     psi.UseShellExecute = False
     # Start up process:
     reg = System.Diagnostics.Process.Start(psi)
+
 
 def getoutput(cmd):
     """
@@ -58,9 +61,10 @@ def getoutput(cmd):
     reg = System.Diagnostics.Process.Start(psi)
     myOutput = reg.StandardOutput
     output = myOutput.ReadToEnd()
-    myError = reg.StandardError
+    myError = reg.Exception
     error = myError.ReadToEnd()
     return output
+
 
 def check_pid(pid):
     """
@@ -75,4 +79,4 @@ def check_pid(pid):
         return True
     except System.ArgumentException:
         # process with given pid isn't running
-        return False 
+        return False

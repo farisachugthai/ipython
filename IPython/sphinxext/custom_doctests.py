@@ -117,7 +117,7 @@ def float_doctest(sphinx_shell, args, input_lines, found, submitted):
     try:
         submitted = str_to_array(submitted)
         found = str_to_array(found)
-    except:
+    except BaseException:
         # For example, if the array is huge and there are ellipsis in it.
         error = True
     else:

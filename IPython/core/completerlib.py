@@ -293,8 +293,7 @@ def magic_run_completer(self, event):
         ]
     else:
         dirs = [
-            f.replace('\\', '/') + "/" for f in lglob(relpath + '*')
-            if isdir(f)
+            f.replace('\\', '/') + "/" for f in lglob(relpath + '*') if isdir(f)
         ]
         pys = [
             f.replace('\\', '/')
@@ -340,7 +339,8 @@ def cd_completer(self, event):
 
     found = []
     for d in [
-            f.replace('\\', '/') + '/' for f in glob.glob(relpath + '*')
+            f.replace('\\', '/') + '/'
+            for f in glob.glob(relpath + '*')
             if os.path.isdir(f)
     ]:
         if ' ' in d:

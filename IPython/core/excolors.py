@@ -177,6 +177,7 @@ def exception_colors():
 
 
 class Deprec(object):
+
     def __init__(self, wrapped_obj):
         self.wrapped = wrapped_obj
 

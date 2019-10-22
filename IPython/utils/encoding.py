@@ -56,7 +56,8 @@ def getdefaultencoding(prefer_stream=True):
     if not enc or enc == 'ascii':
         try:
             # There are reports of getpreferredencoding raising errors
-            # in some cases, which may well be fixed, but let's be conservative here.
+            # in some cases, which may well be fixed, but let's be conservative
+            # here.
             enc = locale.getpreferredencoding()
         except Exception:
             pass

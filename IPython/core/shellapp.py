@@ -33,8 +33,7 @@ from IPython.terminal import pt_inputhooks
 # Aliases and Flags
 # -----------------------------------------------------------------------------
 
-gui_keys = tuple(
-    sorted(pt_inputhooks.backends) + sorted(pt_inputhooks.aliases))
+gui_keys = tuple(sorted(pt_inputhooks.backends) + sorted(pt_inputhooks.aliases))
 
 backend_keys = sorted(pylabtools.backends.keys())
 backend_keys.insert(0, 'auto')
@@ -135,7 +134,8 @@ class InteractiveShellApp(Configurable):
 
     hide_initial_ns = Bool(
         True,
-        help="""Should variables loaded at startup (by startup files, exec_lines, etc.)
+        help=
+        """Should variables loaded at startup (by startup files, exec_lines, etc.)
         be hidden from tools like %who?""").tag(config=True)
 
     exec_files = List(
@@ -152,8 +152,8 @@ class InteractiveShellApp(Configurable):
         help="""lines of code to run at IPython startup.""").tag(config=True)
     code_to_run = Unicode(
         '', help="Execute the given command string.").tag(config=True)
-    module_to_run = Unicode(
-        '', help="Run the module as a script.").tag(config=True)
+    module_to_run = Unicode('',
+                            help="Run the module as a script.").tag(config=True)
     gui = CaselessStrEnum(
         gui_keys,
         allow_none=True,
@@ -172,7 +172,8 @@ class InteractiveShellApp(Configurable):
         """).tag(config=True)
     pylab_import_all = Bool(
         True,
-        help="""If true, IPython will populate the user namespace with numpy, pylab, etc.
+        help=
+        """If true, IPython will populate the user namespace with numpy, pylab, etc.
         and an ``import *`` is done from numpy and pylab, when using pylab mode.
 
         When False, pylab mode should not import any names into the user namespace.
@@ -220,8 +221,10 @@ class InteractiveShellApp(Configurable):
         enable = False
         shell = self.shell
         if self.pylab:
-            def enable(key): return shell.enable_pylab(
-                key, import_all=self.pylab_import_all)
+
+            def enable(key):
+                return shell.enable_pylab(key, import_all=self.pylab_import_all)
+
             key = self.pylab
         elif self.matplotlib:
             enable = shell.enable_matplotlib
@@ -321,8 +324,7 @@ class InteractiveShellApp(Configurable):
                                      "namespace: %s" % line)
                     self.shell.showtraceback()
         except BaseException:
-            self.log.warning(
-                "Unknown error in handling IPythonApp.exec_lines:")
+            self.log.warning("Unknown error in handling IPythonApp.exec_lines:")
             self.shell.showtraceback()
 
     def _exec_file(self, fname, shell_futures=False):
@@ -343,8 +345,8 @@ class InteractiveShellApp(Configurable):
                 # behavior.
                 with preserve_keys(self.shell.user_ns, '__file__'):
                     self.shell.user_ns['__file__'] = fname
-                    if full_filename.endswith(
-                            '.ipy') or full_filename.endswith('.ipynb'):
+                    if full_filename.endswith('.ipy') or full_filename.endswith(
+                            '.ipynb'):
                         self.shell.safe_execfile_ipy(
                             full_filename, shell_futures=shell_futures)
                     else:
@@ -399,8 +401,7 @@ class InteractiveShellApp(Configurable):
             for fname in self.exec_files:
                 self._exec_file(fname)
         except BaseException:
-            self.log.warning(
-                "Unknown error in handling IPythonApp.exec_files:")
+            self.log.warning("Unknown error in handling IPythonApp.exec_files:")
             self.shell.showtraceback()
 
     def _run_cmd_line_code(self):

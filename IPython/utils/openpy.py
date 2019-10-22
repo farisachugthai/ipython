@@ -13,6 +13,7 @@ from tokenize import open, detect_encoding
 cookie_re = re.compile(r"coding[:=]\s*([-\w.]+)", re.UNICODE)
 cookie_comment_re = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)", re.UNICODE)
 
+
 def source_to_unicode(txt, errors='replace', skip_encoding_cookie=True):
     """Converts a bytes string with python source code to unicode.
 
@@ -39,6 +40,7 @@ def source_to_unicode(txt, errors='replace', skip_encoding_cookie=True):
         else:
             return text.read()
 
+
 def strip_encoding_cookie(filelike):
     """Generator to pull lines from a text-mode file, skipping the encoding
     cookie if it is found in the first two lines.
@@ -53,13 +55,14 @@ def strip_encoding_cookie(filelike):
             yield second
     except StopIteration:
         return
-    
+
     for line in it:
         yield line
 
+
 def read_py_file(filename, skip_encoding_cookie=True):
     """Read a Python file, using the encoding declared inside the file.
-    
+
     Parameters
     ----------
     filename : str
@@ -68,7 +71,7 @@ def read_py_file(filename, skip_encoding_cookie=True):
       If True (the default), and the encoding declaration is found in the first
       two lines, that line will be excluded from the output - compiling a
       unicode string with an encoding declaration is a SyntaxError in Python 2.
-    
+
     Returns
     -------
     A unicode string containing the contents of the file.
@@ -79,9 +82,10 @@ def read_py_file(filename, skip_encoding_cookie=True):
         else:
             return f.read()
 
+
 def read_py_url(url, errors='replace', skip_encoding_cookie=True):
     """Read a Python file from a URL, using the encoding declared inside the file.
-    
+
     Parameters
     ----------
     url : str
@@ -93,13 +97,13 @@ def read_py_url(url, errors='replace', skip_encoding_cookie=True):
       If True (the default), and the encoding declaration is found in the first
       two lines, that line will be excluded from the output - compiling a
       unicode string with an encoding declaration is a SyntaxError in Python 2.
-    
+
     Returns
     -------
     A unicode string containing the contents of the file.
     """
     # Deferred import for faster start
-    from urllib.request import urlopen 
+    from urllib.request import urlopen
     response = urlopen(url)
     buffer = io.BytesIO(response.read())
     return source_to_unicode(buffer, errors, skip_encoding_cookie)

@@ -13,19 +13,21 @@ from .importstring import import_item
 class ShimWarning(Warning):
     """A warning to show when a module has moved, and a shim is in its place."""
 
+
 class ShimImporter(object):
     """Import hook for a shim.
-    
+
     This ensures that submodule imports return the real target module,
     not a clone that will confuse `is` and `isinstance` checks.
     """
+
     def __init__(self, src, mirror):
         self.src = src
         self.mirror = mirror
-    
+
     def _mirror_name(self, fullname):
         """get the name of the mirrored module"""
-        
+
         return self.mirror + fullname[len(self.src):]
 
     def find_module(self, fullname, path=None):
@@ -63,19 +65,19 @@ class ShimModule(types.ModuleType):
             sys.meta_path.append(
                 ShimImporter(src=src, mirror=self._mirror)
             )
-    
+
     @property
     def __path__(self):
         return []
-    
+
     @property
     def __spec__(self):
         """Don't produce __spec__ until requested"""
         return import_module(self._mirror).__spec__
-    
+
     def __dir__(self):
         return dir(import_module(self._mirror))
-    
+
     @property
     def __all__(self):
         """Ensure __all__ is always defined"""

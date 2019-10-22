@@ -33,9 +33,9 @@ class StreamProxy(io.IOStream):
 
     def __init__(self, name):
         warnings.warn("StreamProxy is deprecated and unused as of IPython 5", DeprecationWarning,
-            stacklevel=2,
-        )
-        self.name=name
+                      stacklevel=2,
+                      )
+        self.name = name
 
     @property
     def stream(self):
@@ -59,7 +59,13 @@ def xsys(self, cmd):
     """
     # We use getoutput, but we need to strip it because pexpect captures
     # the trailing newline differently from commands.getoutput
-    print(self.getoutput(cmd, split=False, depth=1).rstrip(), end='', file=sys.stdout)
+    print(
+        self.getoutput(
+            cmd,
+            split=False,
+            depth=1).rstrip(),
+        end='',
+        file=sys.stdout)
     sys.stdout.flush()
 
 
@@ -128,9 +134,9 @@ def start_ipython():
     # Override paging, so we don't require user interaction during the tests.
     def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
         if isinstance(strng, dict):
-           strng = strng.get('text/plain', '')
+            strng = strng.get('text/plain', '')
         print(strng)
-    
+
     page.orig_page = page.pager_page
     page.pager_page = nopage
 

@@ -3,12 +3,12 @@
 GLUT Inputhook support functions
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2008-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # GLUT is quite an old library and it is difficult to ensure proper
 # integration within IPython since original GLUT does not allow to handle
@@ -26,9 +26,9 @@ GLUT Inputhook support functions
 # them later without modifying the code. This should probably be made available
 # via IPython options system.
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 import os
 import sys
 import time
@@ -37,9 +37,9 @@ import OpenGL.GLUT as glut
 import OpenGL.platform as platform
 from timeit import default_timer as clock
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Constants
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Frame per second : 60
 # Should probably be an IPython option
@@ -72,9 +72,9 @@ else:
         '''Your glut implementation does not allow interactive sessions. '''
         '''Consider installing freeglut.''')
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Platform-dependent imports and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 if os.name == 'posix':
     import select
@@ -93,9 +93,9 @@ elif sys.platform == 'win32':
         return msvcrt.kbhit()
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Callback functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def glut_display():
@@ -121,9 +121,9 @@ def glut_int_handler(signum, frame):
     # Need to reprint the prompt at this stage
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Code
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def inputhook_glut():
     """Run the pyglet event loop by processing pending events only.
 

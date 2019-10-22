@@ -1,30 +1,32 @@
 """Testing support (tools to test IPython itself).
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2009-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 import os
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # User-level entry point for testing
+
+
 def test(**kwargs):
     """Run the entire IPython test suite.
 
     Any of the options for run_iptestall() may be passed as keyword arguments.
 
     For example::
-    
+
         IPython.test(testgroups=['lib', 'config', 'utils'], fast=2)
-    
+
     will run those three sections of the test suite, using two processes.
     """
 
@@ -36,13 +38,14 @@ def test(**kwargs):
         setattr(options, name, val)
     run_iptestall(options)
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Constants
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 # We scale all timeouts via this factor, slow machines can increase it
 IPYTHON_TESTING_TIMEOUT_SCALE = float(os.getenv(
-                                    'IPYTHON_TESTING_TIMEOUT_SCALE', 1))
+    'IPYTHON_TESTING_TIMEOUT_SCALE', 1))
 
 # So nose doesn't try to run this as a test itself and we end up with an
 # infinite test loop

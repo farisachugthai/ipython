@@ -170,13 +170,13 @@ The following is a very simple example of a valid demo file.
     ################### END EXAMPLE DEMO <ex_demo.py> ############################
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #     Copyright (C) 2005-2006 Fernando Perez. <Fernando.Perez@colorado.edu>
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 #
-#*****************************************************************************
+# *****************************************************************************
 
 import os
 import re
@@ -325,7 +325,7 @@ class Demo(object):
         # Clean the sources from all markup so it doesn't get displayed when
         # running the demo
         src_blocks = []
-        auto_strip = lambda s: self.re_auto.sub('', s)
+        def auto_strip(s): return self.re_auto.sub('', s)
         for i, b in enumerate(src_b):
             if self._auto[i]:
                 src_blocks.append(auto_strip(b))
@@ -503,7 +503,7 @@ class Demo(object):
             finally:
                 sys.argv = save_argv
 
-        except:
+        except BaseException:
             if self.inside_ipython:
                 self.ip_showtb(filename=self.fname)
         else:

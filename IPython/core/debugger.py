@@ -146,7 +146,7 @@ class Tracer(object):
         else:
             # In ipython, we use its custom exception handler mechanism
             def_colors = ip.colors
-            ip.set_custom_exc((bdb.BdbQuit, ), BdbQuit_IPython_excepthook)
+            ip.set_custom_exc((bdb.BdbQuit,), BdbQuit_IPython_excepthook)
 
         if colors is None:
             colors = def_colors

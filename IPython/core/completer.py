@@ -609,7 +609,8 @@ class Completer(Configurable):
 
     jedi_compute_type_timeout = Int(
         default_value=400,
-        help="""Experimental: restrict time (in milliseconds) during which Jedi can compute types.
+        help=
+        """Experimental: restrict time (in milliseconds) during which Jedi can compute types.
         Set to 0 to stop computing types. Non-zero value lower than 100ms may hurt
         performance by preventing jedi to build its cache.
         """).tag(config=True)
@@ -699,8 +700,10 @@ class Completer(Configurable):
         snake_case_re = re.compile(r"[^_]+(_[^_]+)+?\Z")
         for lst in [self.namespace.keys(), self.global_namespace.keys()]:
             shortened = {
-                "_".join([sub[0] for sub in word.split('_')]): word
-                for word in lst if snake_case_re.match(word)
+                "_".join([sub[0]
+                          for sub in word.split('_')]): word
+                for word in lst
+                if snake_case_re.match(word)
             }
             for word in shortened.keys():
                 if word[:n] == text and word != "__builtins__":
@@ -819,8 +822,7 @@ def match_dict_keys(keys: List[str], prefix: str, delims: str):
         # reformat remainder of key to begin with prefix
         rem = key[len(prefix_str):]
         # force repr wrapped in '
-        rem_repr = repr(rem + '"') if isinstance(rem, str) else repr(rem +
-                                                                     b'"')
+        rem_repr = repr(rem + '"') if isinstance(rem, str) else repr(rem + b'"')
         if rem_repr.startswith('u') and prefix[0] not in 'uU':
             # Found key is unicode, but prefix is Py2 string.
             # Therefore attempt to interpret key as string.
@@ -912,8 +914,8 @@ def position_to_cursor(text: str, offset: int) -> Tuple[int, int]:
 def _safe_isinstance(obj, module, class_name):
     """Checks if obj is an instance of module.class_name if loaded
     """
-    return (module in sys.modules
-            and isinstance(obj, getattr(import_module(module), class_name)))
+    return (module in sys.modules and
+            isinstance(obj, getattr(import_module(module), class_name)))
 
 
 def back_unicode_name_matches(text):
@@ -1316,8 +1318,8 @@ class IPCompleter(Completer):
                 Filter magics, in particular remove magics that match
                 a name present in global namespace.
                 """
-                return (magic.startswith(bare_text)
-                        and magic not in global_matches)
+                return (magic.startswith(bare_text) and
+                        magic not in global_matches)
         else:
 
             def matches(magic):
@@ -1339,7 +1341,7 @@ class IPCompleter(Completer):
                 c for c in self.shell.configurables
                 if c.__class__.class_traits(config=True)
             ]),
-                key=lambda x: x.__class__.__name__)
+                             key=lambda x: x.__class__.__name__)
             classnames = [c.__class__.__name__ for c in classes]
 
             # return all classnames if config or %config is given
@@ -1363,7 +1365,8 @@ class IPCompleter(Completer):
                 # strip leading '--' from cl-args:
                 help = re.sub(re.compile(r'^--', re.MULTILINE), '', help)
                 return [
-                    attr.split('=')[0] for attr in help.strip().splitlines()
+                    attr.split('=')[0]
+                    for attr in help.strip().splitlines()
                     if attr.startswith(texts[1])
                 ]
         return []
@@ -1409,19 +1412,27 @@ class IPCompleter(Completer):
         if self.global_namespace is not None:
             namespaces.append(self.global_namespace)
 
-        def completion_filter(x): return x
+        def completion_filter(x):
+            return x
+
         offset = cursor_to_position(text, cursor_line, cursor_column)
         # filter output if we are completing for object members
         if offset:
             pre = text[offset - 1]
             if pre == '.':
                 if self.omit__names == 2:
-                    def completion_filter(c): return not c.name.startswith('_')
+
+                    def completion_filter(c):
+                        return not c.name.startswith('_')
                 elif self.omit__names == 1:
-                    def completion_filter(c): return not (c.name.startswith(
-                        '__') and c.name.endswith('__'))
+
+                    def completion_filter(c):
+                        return not (c.name.startswith('__') and
+                                    c.name.endswith('__'))
                 elif self.omit__names == 0:
-                    def completion_filter(x): return x
+
+                    def completion_filter(x):
+                        return x
                 else:
                     raise ValueError(
                         "Don't understand self.omit__names == {}".format(
@@ -1442,8 +1453,7 @@ class IPCompleter(Completer):
                 # jedi >= 0.11
                 from parso.tree import ErrorLeaf
 
-            next_to_last_tree = interpreter._get_module(
-            ).tree_node.children[-2]
+            next_to_last_tree = interpreter._get_module().tree_node.children[-2]
             completing_string = False
             if isinstance(next_to_last_tree, ErrorLeaf):
                 completing_string = next_to_last_tree.value.lstrip()[0] in {
@@ -1535,8 +1545,8 @@ class IPCompleter(Completer):
                 ret += self._default_arguments_from_docstring(
                     getattr(obj, '__doc__', ''))
                 # for classes, check for __init__,__new__
-                call_obj = (getattr(obj, '__init__', None)
-                            or getattr(obj, '__new__', None))
+                call_obj = (getattr(obj, '__init__', None) or
+                            getattr(obj, '__new__', None))
             # for all others, check if they are __call__able
             elif hasattr(obj, '__call__'):
                 call_obj = obj.__call__
@@ -1548,8 +1558,7 @@ class IPCompleter(Completer):
 
         try:
             sig = inspect.signature(call_obj)
-            ret.extend(k for k, v in sig.parameters.items()
-                       if v.kind in _keeps)
+            ret.extend(k for k, v in sig.parameters.items() if v.kind in _keeps)
         except ValueError:
             pass
 
@@ -1677,13 +1686,13 @@ class IPCompleter(Completer):
             '''
             regexps = self.__dict_key_regexps = {
                 False:
-                re.compile(dict_key_re_fmt % r'''
+                    re.compile(dict_key_re_fmt % r'''
                                   # identifiers separated by .
                                   (?!\d)\w+
                                   (?:\.(?!\d)\w+)*
                                   '''),
                 True:
-                re.compile(dict_key_re_fmt % '''
+                    re.compile(dict_key_re_fmt % '''
                                  .+
                                  ''')
             }
@@ -1894,9 +1903,10 @@ class IPCompleter(Completer):
 
         seen = set()
         try:
-            for c in self._completions(
-                    text, offset,
-                    _timeout=self.jedi_compute_type_timeout / 1000):
+            for c in self._completions(text,
+                                       offset,
+                                       _timeout=self.jedi_compute_type_timeout /
+                                       1000):
                 if c and (c in seen):
                     continue
                 yield c
@@ -2093,7 +2103,7 @@ class IPCompleter(Completer):
             latex_text, latex_matches = self.latex_matches(base_text)
             if latex_matches:
                 return latex_text, latex_matches, ['latex_matches'
-                                                   ] * len(latex_matches), ()
+                                                  ] * len(latex_matches), ()
             name_text = ''
             name_matches = []
             # need to add self.fwd_unicode_match() function here when done
@@ -2130,8 +2140,7 @@ class IPCompleter(Completer):
         if self.use_jedi:
             if not full_text:
                 full_text = line_buffer
-            completions = self._jedi_matches(cursor_pos, cursor_line,
-                                             full_text)
+            completions = self._jedi_matches(cursor_pos, cursor_line, full_text)
         if custom_res is not None:
             # did custom completers produce something?
             matches = [(m, 'custom') for m in custom_res]
@@ -2143,16 +2152,16 @@ class IPCompleter(Completer):
                 matches = []
                 for matcher in self.matchers:
                     try:
-                        matches.extend([(m, matcher.__qualname__)
-                                        for m in matcher(text)])
+                        matches.extend([
+                            (m, matcher.__qualname__) for m in matcher(text)
+                        ])
                     except BaseException:
                         # Show the ugly traceback if the matcher causes an
                         # exception, but do NOT crash the kernel!
                         sys.excepthook(*sys.exc_info())
             else:
                 for matcher in self.matchers:
-                    matches = [(m, matcher.__qualname__)
-                               for m in matcher(text)]
+                    matches = [(m, matcher.__qualname__) for m in matcher(text)]
                     if matches:
                         break
         seen = set()
@@ -2164,7 +2173,8 @@ class IPCompleter(Completer):
                 seen.add(t)
 
         _filtered_matches = sorted(
-            set(filtered_matches), key=lambda x: completions_sorting_key(x[0]))[:MATCHES_LIMIT]
+            set(filtered_matches),
+            key=lambda x: completions_sorting_key(x[0]))[:MATCHES_LIMIT]
 
         _matches = [m[0] for m in _filtered_matches]
         origins = [m[1] for m in _filtered_matches]

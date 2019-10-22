@@ -1,17 +1,17 @@
 """Tests for IPython.lib.display.
 
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) 2012, the IPython Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 from tempfile import NamedTemporaryFile, mkdtemp
 from os.path import split, join as pjoin, dirname
 import sys
@@ -37,13 +37,13 @@ from IPython.lib import display
 
 from IPython.testing.decorators import skipif_not_numpy
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#--------------------------
+# --------------------------
 # FileLink tests
-#--------------------------
+# --------------------------
 
 
 def test_instantiation_FileLink():
@@ -87,9 +87,9 @@ def test_error_on_directory_to_FileLink():
     nt.assert_raises(ValueError, display.FileLink, td)
 
 
-#--------------------------
+# --------------------------
 # FileLinks tests
-#--------------------------
+# --------------------------
 
 
 def test_instantiation_FileLinks():
@@ -113,15 +113,14 @@ def test_existing_path_FileLinks():
     tf2 = NamedTemporaryFile(dir=td)
     fl = display.FileLinks(td)
     actual = fl._repr_html_()
-    actual = actual.split('\n')
-    actual.sort()
+    actual = sorted(actual.split('\n'))
     # the links should always have forward slashes, even on windows, so replace
     # backslashes with forward slashes here
     expected = ["%s/<br>" % td,
-                "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %\
-                 (tf2.name.replace("\\","/"),split(tf2.name)[1]),
-                "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %\
-                 (tf1.name.replace("\\","/"),split(tf1.name)[1])]
+                "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
+                (tf2.name.replace("\\", "/"), split(tf2.name)[1]),
+                "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
+                (tf1.name.replace("\\", "/"), split(tf1.name)[1])]
     expected.sort()
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
@@ -139,8 +138,7 @@ def test_existing_path_FileLinks_alt_formatter():
 
     fl = display.FileLinks(td, notebook_display_formatter=fake_formatter)
     actual = fl._repr_html_()
-    actual = actual.split('\n')
-    actual.sort()
+    actual = sorted(actual.split('\n'))
     expected = ["hello", "world"]
     expected.sort()
     # We compare the sorted list of links here as that's more reliable
@@ -154,8 +152,7 @@ def test_existing_path_FileLinks_repr():
     tf2 = NamedTemporaryFile(dir=td)
     fl = display.FileLinks(td)
     actual = repr(fl)
-    actual = actual.split('\n')
-    actual.sort()
+    actual = sorted(actual.split('\n'))
     expected = [
         '%s/' % td,
         '  %s' % split(tf1.name)[1],
@@ -178,8 +175,7 @@ def test_existing_path_FileLinks_repr_alt_formatter():
 
     fl = display.FileLinks(td, terminal_display_formatter=fake_formatter)
     actual = repr(fl)
-    actual = actual.split('\n')
-    actual.sort()
+    actual = sorted(actual.split('\n'))
     expected = ["hello", "world"]
     expected.sort()
     # We compare the sorted list of links here as that's more reliable
@@ -192,6 +188,7 @@ def test_error_on_file_to_FileLinks():
     td = mkdtemp()
     tf1 = NamedTemporaryFile(dir=td)
     nt.assert_raises(ValueError, display.FileLinks, tf1.name)
+
 
 def test_recursive_FileLinks():
     """FileLinks: Does not recurse when recursive=False
@@ -208,6 +205,7 @@ def test_recursive_FileLinks():
     actual = str(fl)
     actual = actual.split('\n')
     nt.assert_equal(len(actual), 2, actual)
+
 
 def test_audio_from_file():
     path = pjoin(dirname(__file__), 'test.wav')
@@ -259,12 +257,15 @@ class TestAudioDataWithNumpy(TestCase):
             ValueError,
             lambda: display.Audio([-1.001], rate=44100, normalize=False))
 
+
 def simulate_numpy_not_installed():
     try:
         import numpy
-        return mock.patch('numpy.array', mock.MagicMock(side_effect=ImportError))
+        return mock.patch('numpy.array', mock.MagicMock(
+            side_effect=ImportError))
     except ModuleNotFoundError:
         return lambda x: x
+
 
 @simulate_numpy_not_installed()
 class TestAudioDataWithoutNumpy(TestAudioDataWithNumpy):
@@ -281,11 +282,13 @@ class TestAudioDataWithoutNumpy(TestAudioDataWithNumpy):
 def get_test_tone(scale=1):
     return numpy.sin(2 * numpy.pi * 440 * numpy.linspace(0, 1, 44100)) * scale
 
+
 def read_wav(data):
     with wave.open(BytesIO(data)) as wave_file:
         wave_data = wave_file.readframes(wave_file.getnframes())
         num_samples = wave_file.getnframes() * wave_file.getnchannels()
         return struct.unpack('<%sh' % num_samples, wave_data)
+
 
 def test_code_from_file():
     c = display.Code(filename=__file__)

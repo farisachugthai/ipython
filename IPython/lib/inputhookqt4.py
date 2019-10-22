@@ -216,7 +216,7 @@ def create_inputhook_qt4(mgr, app=None):
             else:
                 print("\nKeyboardInterrupt - Ctrl-C again for new prompt")
 
-        except:  # NO exceptions are allowed to escape from a ctypes callback
+        except BaseException:  # NO exceptions are allowed to escape from a ctypes callback
             ignore_CTRL_C()
             from traceback import print_exc
             print_exc()

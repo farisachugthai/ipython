@@ -4,7 +4,6 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import ast
 import bdb
 import builtins as builtin_mod
@@ -56,7 +55,9 @@ else:
     # mock the new API, ignore second argument
     # see https://github.com/ipython/ipython/issues/11590
     from ast import Module as OriginalModule
-    def Module(nodelist, type_ignores): return OriginalModule(nodelist)
+
+    def Module(nodelist, type_ignores):
+        return OriginalModule(nodelist)
 
 
 # -----------------------------------------------------------------------------
@@ -78,8 +79,8 @@ class TimeitResult(object):
 
     """
 
-    def __init__(self, loops, repeat, best, worst,
-                 all_runs, compile_time, precision):
+    def __init__(self, loops, repeat, best, worst, all_runs, compile_time,
+                 precision):
         self.loops = loops
         self.repeat = repeat
         self.best = best
@@ -96,8 +97,8 @@ class TimeitResult(object):
     @property
     def stdev(self):
         mean = self.average
-        return (
-            math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)) ** 0.5
+        return (math.fsum([(x - mean)**2 for x in self.timings]) /
+                len(self.timings))**0.5
 
     def __str__(self):
         pm = '+-'
@@ -109,15 +110,13 @@ class TimeitResult(object):
                 pass
         return (
             u"{mean} {pm} {std} per loop (mean {pm} std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} each)"
-            .format(
-                pm=pm,
-                runs=self.repeat,
-                loops=self.loops,
-                loop_plural="" if self.loops == 1 else "s",
-                run_plural="" if self.repeat == 1 else "s",
-                mean=_format_time(self.average, self._precision),
-                std=_format_time(self.stdev, self._precision))
-        )
+            .format(pm=pm,
+                    runs=self.repeat,
+                    loops=self.loops,
+                    loop_plural="" if self.loops == 1 else "s",
+                    run_plural="" if self.repeat == 1 else "s",
+                    mean=_format_time(self.average, self._precision),
+                    std=_format_time(self.stdev, self._precision)))
 
     def _repr_pretty_(self, p, cycle):
         unic = self.__str__()
@@ -156,6 +155,7 @@ class Timer(timeit.Timer):
     which is an undocumented implementation detail of CPython,
     not shared by PyPy.
     """
+
     # Timer.timeit copied from CPython 3.4.2
 
     def timeit(self, number=timeit.default_number):
@@ -314,8 +314,10 @@ python-profiler package from non-free.""")
             the magic line is always left unmodified.
 
         """
-        opts, arg_str = self.parse_options(parameter_s, 'D:l:rs:T:q',
-                                           list_all=True, posix=False)
+        opts, arg_str = self.parse_options(parameter_s,
+                                           'D:l:rs:T:q',
+                                           list_all=True,
+                                           posix=False)
         if cell is not None:
             arg_str += '\n' + cell
         arg_str = self.shell.transform_cell(arg_str)
@@ -430,17 +432,18 @@ python-profiler package from non-free.""")
 
     @skip_doctest
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('--breakpoint', '-b', metavar='FILE:LINE',
+    @magic_arguments.argument('--breakpoint',
+                              '-b',
+                              metavar='FILE:LINE',
                               help="""
         Set break point at LINE in FILE.
-        """
-                              )
-    @magic_arguments.argument('statement', nargs='*',
+        """)
+    @magic_arguments.argument('statement',
+                              nargs='*',
                               help="""
         Code to run in debugger.
         You can omit this in cell magic mode.
-        """
-                              )
+        """)
     @no_var_expand
     @line_cell_magic
     def debug(self, line='', cell=None):
@@ -523,8 +526,7 @@ python-profiler package from non-free.""")
 
     @skip_doctest
     @line_magic
-    def run(self, parameter_s='', runner=None,
-            file_finder=get_py_filename):
+    def run(self, parameter_s='', runner=None, file_finder=get_py_filename):
         """Run the named file inside IPython as a program.
 
         Usage::
@@ -689,7 +691,8 @@ python-profiler package from non-free.""")
         # get arguments and set sys.argv for program to be run.
         opts, arg_lst = self.parse_options(parameter_s,
                                            'nidtN:b:pD:l:rs:T:em:G',
-                                           mode='list', list_all=1)
+                                           mode='list',
+                                           list_all=1)
         if "m" in opts:
             modulename = opts["m"][0]
             modpath = find_mod(modulename)
@@ -712,7 +715,8 @@ python-profiler package from non-free.""")
                 msg = e.message
             if os.name == 'nt' and re.match(r"^'.*'$", fpath):
                 warn(
-                    'For Windows, use double quotes to wrap a filename: %run "mypath\\myfile.py"')
+                    'For Windows, use double quotes to wrap a filename: %run "mypath\\myfile.py"'
+                )
             error(msg)
             return
 
@@ -803,10 +807,11 @@ python-profiler package from non-free.""")
                 if 'd' in opts:
                     bp_file, bp_line = parse_breakpoint(
                         opts.get('b', ['1'])[0], filename)
-                    self._run_with_debugger(
-                        code, code_ns, filename, bp_line, bp_file)
+                    self._run_with_debugger(code, code_ns, filename, bp_line,
+                                            bp_file)
                 else:
                     if 'm' in opts:
+
                         def run():
                             self.shell.safe_run_module(modulename, prog_ns)
                     else:
@@ -816,7 +821,9 @@ python-profiler package from non-free.""")
                             runner = self.shell.safe_execfile
 
                         def run():
-                            runner(filename, prog_ns, prog_ns,
+                            runner(filename,
+                                   prog_ns,
+                                   prog_ns,
                                    exit_ignore=exit_ignore)
 
                     if 't' in opts:
@@ -868,8 +875,12 @@ python-profiler package from non-free.""")
 
         return stats
 
-    def _run_with_debugger(self, code, code_ns, filename=None,
-                           bp_line=None, bp_file=None):
+    def _run_with_debugger(self,
+                           code,
+                           code_ns,
+                           filename=None,
+                           bp_line=None,
+                           bp_file=None):
         """
         Run `code` in debugger with a break point.
 
@@ -895,7 +906,8 @@ python-profiler package from non-free.""")
         """
         deb = self.shell.InteractiveTB.pdb
         if not deb:
-            self.shell.InteractiveTB.pdb = self.shell.InteractiveTB.debugger_cls()
+            self.shell.InteractiveTB.pdb = self.shell.InteractiveTB.debugger_cls(
+            )
             deb = self.shell.InteractiveTB.pdb
 
         # deb.checkline() fails if deb.curframe exists but is None; it can
@@ -935,9 +947,8 @@ python-profiler package from non-free.""")
             deb.mainpyfile = deb.canonic(filename)
 
         # Start file run
-        print(
-            "NOTE: Enter 'c' at the %s prompt to continue execution." %
-            deb.prompt)
+        print("NOTE: Enter 'c' at the %s prompt to continue execution." %
+              deb.prompt)
         try:
             if filename:
                 # save filename so it can be used by methods on the deb object
@@ -1081,8 +1092,10 @@ python-profiler package from non-free.""")
         does not matter as long as results from timeit.py are not mixed with
         those from %timeit."""
 
-        opts, stmt = self.parse_options(line, 'n:r:tcp:qo',
-                                        posix=False, strict=False)
+        opts, stmt = self.parse_options(line,
+                                        'n:r:tcp:qo',
+                                        posix=False,
+                                        strict=False)
         if stmt == "" and cell is None:
             return
 
@@ -1133,8 +1146,8 @@ python-profiler package from non-free.""")
                                         '    _t1 = _timer()\n'
                                         '    return _t1 - _t0\n')
 
-        timeit_ast = TimeitTemplateFiller(
-            ast_setup, ast_stmt).visit(timeit_ast_template)
+        timeit_ast = TimeitTemplateFiller(ast_setup,
+                                          ast_stmt).visit(timeit_ast_template)
         timeit_ast = ast.fix_missing_locations(timeit_ast)
 
         # Track compilation time so it can be reported if too long
@@ -1165,7 +1178,7 @@ python-profiler package from non-free.""")
         if number == 0:
             # determine number so that 0.2 <= total time < 2.0
             for index in range(0, 10):
-                number = 10 ** index
+                number = 10**index
                 time_number = timer.timeit(number)
                 if time_number >= 0.2:
                     break
@@ -1173,8 +1186,8 @@ python-profiler package from non-free.""")
         all_runs = timer.repeat(repeat, number)
         best = min(all_runs) / number
         worst = max(all_runs) / number
-        timeit_result = TimeitResult(
-            number, repeat, best, worst, all_runs, tc, precision)
+        timeit_result = TimeitResult(number, repeat, best, worst, all_runs, tc,
+                                     precision)
 
         # Restore global vars from conflict_globs
         if conflict_globs:
@@ -1293,8 +1306,8 @@ python-profiler package from non-free.""")
             mode = 'exec'
             source = '<timed exec>'
             # multi-line %%time case
-            if len(expr_ast.body) > 1 and isinstance(
-                    expr_ast.body[-1], ast.Expr):
+            if len(expr_ast.body) > 1 and isinstance(expr_ast.body[-1],
+                                                     ast.Expr):
                 expr_val = expr_ast.body[-1]
                 expr_ast = expr_ast.body[:-1]
                 expr_ast = Module(expr_ast, [])
@@ -1341,7 +1354,8 @@ python-profiler package from non-free.""")
         # print
         if sys.platform != 'win32':
             print("CPU times: user %s, sys: %s, total: %s" %
-                  (_format_time(cpu_user), _format_time(cpu_sys), _format_time(cpu_tot)))
+                  (_format_time(cpu_user), _format_time(cpu_sys),
+                   _format_time(cpu_tot)))
         print("Wall time: %s" % _format_time(wall_time))
         if tc > tc_min:
             print("Compiler : %s" % _format_time(tc))
@@ -1413,7 +1427,7 @@ python-profiler package from non-free.""")
 
         """
         opts, args = self.parse_options(parameter_s, 'rq', mode='list')
-        if not args:   # List existing macros
+        if not args:  # List existing macros
             return sorted(k for k, v in self.shell.user_ns.items()
                           if isinstance(v, Macro))
         if len(args) == 1:
@@ -1431,14 +1445,18 @@ python-profiler package from non-free.""")
         self.shell.define_macro(name, macro)
         if not ('q' in opts):
             print(
-                'Macro `%s` created. To execute, type its name (without quotes).' %
-                name)
+                'Macro `%s` created. To execute, type its name (without quotes).'
+                % name)
             print('=== Macro contents: ===')
             print(macro, end=' ')
 
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('output', type=str, default='', nargs='?',
-                              help="""The name of the variable in which to store output.
+    @magic_arguments.argument(
+        'output',
+        type=str,
+        default='',
+        nargs='?',
+        help="""The name of the variable in which to store output.
         This is a utils.io.CapturedIO object with stdout/err attributes
         for the text of the captured output.
 
@@ -1447,17 +1465,16 @@ python-profiler package from non-free.""")
         output.
 
         If unspecified, captured output is discarded.
-        """
-                              )
-    @magic_arguments.argument('--no-stderr', action="store_true",
-                              help="""Don't capture stderr."""
-                              )
-    @magic_arguments.argument('--no-stdout', action="store_true",
-                              help="""Don't capture stdout."""
-                              )
-    @magic_arguments.argument('--no-display', action="store_true",
-                              help="""Don't capture IPython's rich display."""
-                              )
+        """)
+    @magic_arguments.argument('--no-stderr',
+                              action="store_true",
+                              help="""Don't capture stderr.""")
+    @magic_arguments.argument('--no-stdout',
+                              action="store_true",
+                              help="""Don't capture stdout.""")
+    @magic_arguments.argument('--no-display',
+                              action="store_true",
+                              help="""Don't capture IPython's rich display.""")
     @cell_magic
     def capture(self, line, cell):
         """run the cell, capturing stdout, stderr, and IPython's rich display() calls."""

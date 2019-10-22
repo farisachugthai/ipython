@@ -16,6 +16,7 @@ def test_base():
     nt.assert_equal(res.count('x'), 1)
     nt.assert_equal(res.count('__class__'), 1)
 
+
 def test_SubClass():
 
     class SubClass(Base):
@@ -28,7 +29,8 @@ def test_SubClass():
 
 
 def test_SubClass_with_trait_names_attr():
-    # usecase: trait_names is used in a class describing psychological classification
+    # usecase: trait_names is used in a class describing psychological
+    # classification
 
     class SubClass(Base):
         y = 2

@@ -217,8 +217,8 @@ class BaseIPythonApplication(Application):
 
     overwrite = Bool(
         False,
-        help="""Whether to overwrite existing config files when copying"""
-    ).tag(config=True)
+        help="""Whether to overwrite existing config files when copying""").tag(
+            config=True)
     auto_create = Bool(
         False,
         help="""Whether to create profile dir if it doesn't exist""").tag(
@@ -240,7 +240,8 @@ class BaseIPythonApplication(Application):
 
     verbose_crash = Bool(
         False,
-        help="""Create a massive crash report when IPython encounters what may be an
+        help=
+        """Create a massive crash report when IPython encounters what may be an
         internal error.  The default is to append a short message to the
         usual traceback""").tag(config=True)
 
@@ -390,8 +391,9 @@ class BaseIPythonApplication(Application):
         if 'ProfileDir.location' not in self.config:
             # location not specified, find by profile name
             try:
-                p = ProfileDir.find_profile_dir_by_name(
-                    self.ipython_dir, self.profile, self.config)
+                p = ProfileDir.find_profile_dir_by_name(self.ipython_dir,
+                                                        self.profile,
+                                                        self.config)
             except ProfileDirError:
                 # not found, maybe create it (always create default profile)
                 if self.auto_create or self.profile == 'default':
@@ -418,19 +420,16 @@ class BaseIPythonApplication(Application):
                 # not found, maybe create it
                 if self.auto_create:
                     try:
-                        p = ProfileDir.create_profile_dir(
-                            location, self.config)
+                        p = ProfileDir.create_profile_dir(location, self.config)
                     except ProfileDirError:
                         self.log.fatal(
-                            "Could not create profile directory: %r" %
-                            location)
+                            "Could not create profile directory: %r" % location)
                         self.exit(1)
                     else:
                         self.log.debug("Creating new profile dir: %r" %
                                        location)
                 else:
-                    self.log.fatal("Profile directory %r not found." %
-                                   location)
+                    self.log.fatal("Profile directory %r not found." % location)
                     self.exit(1)
             else:
                 self.log.info("Using existing profile dir: %r" % location)

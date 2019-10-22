@@ -317,9 +317,7 @@ def display(*objs,
         if raw:
             publish_display_data(data=obj, metadata=metadata, **kwargs)
         else:
-            format_dict, md_dict = format(obj,
-                                          include=include,
-                                          exclude=exclude)
+            format_dict, md_dict = format(obj, include=include, exclude=exclude)
             if not format_dict:
                 # nothing to display (e.g. _ipython_display_ took over)
                 continue
@@ -373,8 +371,7 @@ class DisplayHandle(object):
         self.display_id = display_id
 
     def __repr__(self):
-        return "<%s display_id=%s>" % (self.__class__.__name__,
-                                       self.display_id)
+        return "<%s display_id=%s>" % (self.__class__.__name__, self.display_id)
 
     def display(self, obj, **kwargs):
         """Make a new display with my id, updating existing instances.
@@ -691,12 +688,15 @@ class TextDisplayObject(DisplayObject):
 
 
 class Pretty(TextDisplayObject):
+
     def _repr_pretty_(self, pp, cycle):
         return pp.text(self.data)
 
 
 class HTML(TextDisplayObject):
+
     def __init__(self, data=None, url=None, filename=None, metadata=None):
+
         def warn():
             if not data:
                 return False
@@ -730,11 +730,13 @@ class HTML(TextDisplayObject):
 
 
 class Markdown(TextDisplayObject):
+
     def _repr_markdown_(self):
         return self._data_and_metadata()
 
 
 class Math(TextDisplayObject):
+
     def _repr_latex_(self):
         s = r"$\displaystyle %s$" % self.data.strip('$')
         if self.metadata:
@@ -744,6 +746,7 @@ class Math(TextDisplayObject):
 
 
 class Latex(TextDisplayObject):
+
     def _repr_latex_(self):
         return self._data_and_metadata()
 
@@ -1009,6 +1012,7 @@ class GeoJSON(JSON):
 
 
 class Javascript(TextDisplayObject):
+
     def __init__(self, data=None, url=None, filename=None, lib=None, css=None):
         """Create a Javascript display object given raw data.
 
@@ -1198,8 +1202,8 @@ class Image(DisplayObject):
         elif data is None:
             raise ValueError(
                 "No image data found. Expecting filename, url, or data.")
-        elif isinstance(data, str) and (data.startswith('http')
-                                        or _safe_exists(data)):
+        elif isinstance(data, str) and (data.startswith('http') or
+                                        _safe_exists(data)):
             ext = self._find_ext(data)
         else:
             ext = None
@@ -1348,6 +1352,7 @@ class Image(DisplayObject):
 
 
 class Video(DisplayObject):
+
     def __init__(self,
                  data=None,
                  url=None,
@@ -1406,7 +1411,7 @@ class Video(DisplayObject):
             data = str(data)
 
         if url is None and isinstance(data, str) and data.startswith(
-                ('http:', 'https:')):
+            ('http:', 'https:')):
             url = data
             data = None
         elif os.path.exists(data):

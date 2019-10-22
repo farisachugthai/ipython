@@ -182,6 +182,6 @@ def test_latex_to_png_invalid_hex_colors():
     """
     latex_string = "$x^2$"
     nt.assert_raises(ValueError, lambda: latextools.latex_to_png(latex_string,
-                                        backend='dvipng', color="#f00bar"))
+                                                                 backend='dvipng', color="#f00bar"))
     nt.assert_raises(ValueError, lambda: latextools.latex_to_png(latex_string,
-                                        backend='dvipng', color="#f00"))
+                                                                 backend='dvipng', color="#f00"))

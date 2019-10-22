@@ -29,6 +29,7 @@ reg = re.compile(r'^\w+\.\w+$')
 
 @magics_class
 class ConfigMagics(Magics):
+
     def __init__(self, shell):
         super(ConfigMagics, self).__init__(shell)
         self.configurables = []
@@ -113,7 +114,7 @@ class ConfigMagics(Magics):
             c for c in self.shell.configurables
             if c.__class__.class_traits(config=True)
         ]),
-            key=lambda x: x.__class__.__name__)
+                               key=lambda x: x.__class__.__name__)
         classnames = [c.__class__.__name__ for c in configurables]
 
         line = s.strip()

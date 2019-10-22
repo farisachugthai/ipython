@@ -3,8 +3,8 @@
 
 Decorators that merely return a modified version of the original function
 object are straightforward.  Decorators that return a new function object need
-to use nose.tools.make_decorator(original_function)(decorator) in returning the
-decorator, in order to preserve metadata such as function name, setup and
+to use :func:`nose.tools.make_decorator(original_function)(decorator)`
+in returning the decorator, in order to preserve metadata such as function name, setup and
 teardown functions and so on - see nose.tools for more information.
 
 This module provides a set of useful decorators meant to be ready to use in
@@ -21,8 +21,12 @@ Lightweight testing that remains unittest-compatible.
   recognize it as such.  This will make it easier to migrate away from Nose if
   we ever need/want to while maintaining very lightweight tests.
 
-NOTE: This file contains IPython-specific decorators. Using the machinery in
-IPython.external.decorators, we import either numpy.testing.decorators if numpy is
+Notes
+-----
+
+This file contains IPython-specific decorators. Using the machinery in
+:mod:`IPython.external.decorators`, we import either
+:mod:`numpy.testing.decorators` if :mod:`numpy` is
 available, OR use equivalent code in IPython.external._decorators, which
 we've copied verbatim from numpy.
 
@@ -69,78 +73,6 @@ def as_unittest(func):
 # Utility functions
 
 
-def make_label_dec(label, ds=None):
-    """Factory function to create a decorator that applies one or more labels.
-
-    Parameters
-    ----------
-      label : string or sequence
-      One or more labels that will be applied by the decorator to the functions
-    it decorates.  Labels are attributes of the decorated function with their
-    value set to True.
-
-      ds : string
-      An optional docstring for the resulting decorator.  If not given, a
-      default docstring is auto-generated.
-
-    Returns
-    -------
-      A decorator.
-
-    Examples
-    --------
-
-    A simple labeling decorator:
-
-    >>> slow = make_label_dec('slow')
-    >>> slow.__doc__
-    "Labels a test as 'slow'."
-
-    And one that uses multiple labels and a custom docstring:
-
-    >>> rare = make_label_dec(['slow','hard'],
-    ... "Mix labels 'slow' and 'hard' for rare tests.")
-    >>> rare.__doc__
-    "Mix labels 'slow' and 'hard' for rare tests."
-
-    Now, let's test using this one:
-    >>> @rare
-    ... def f(): pass
-    ...
-    >>>
-    >>> f.slow
-    True
-    >>> f.hard
-    True
-    """
-
-    warnings.warn("The function `make_label_dec` is deprecated since IPython 4.0",
-                  DeprecationWarning, stacklevel=2)
-    if isinstance(label, str):
-        labels = [label]
-    else:
-        labels = label
-
-    # Validate that the given label(s) are OK for use in setattr() by doing a
-    # dry run on a dummy function.
-    def tmp(): return None
-    for label in labels:
-        setattr(tmp, label, True)
-
-    # This is the actual decorator we'll return
-    def decor(f):
-        for label in labels:
-            setattr(f, label, True)
-        return f
-
-    # Apply the user's docstring, or autogenerate a basic one
-    if ds is None:
-        ds = "Labels a test as %r." % label
-    decor.__doc__ = ds
-
-    return decor
-
-
 # Inspired by numpy's skipif, but uses the full apply_wrapper utility to
 # preserve function metadata better and allows the skip condition to be a
 # callable.
@@ -185,7 +117,8 @@ def skipif(skip_condition, msg=None):
         if callable(skip_condition):
             skip_val = skip_condition
         else:
-            def skip_val(): return skip_condition
+            def skip_val():
+                return skip_condition
 
         def get_msg(func, msg=None):
             """Skip message with information about function being skipped."""
@@ -222,8 +155,8 @@ def skipif(skip_condition, msg=None):
 
     return skip_decorator
 
-# A version with the condition set to true, common case just to attach a message
-# to a skip decorator
+# A version with the condition set to true, common case just to attach a
+# message to a skip decorator
 
 
 def skip(msg=None):
@@ -250,9 +183,11 @@ def onlyif(condition, msg):
     """The reverse from skipif, see skipif for details."""
 
     if callable(condition):
-        def skip_condition(): return not condition()
+        def skip_condition():
+            return not condition()
     else:
-        def skip_condition(): return not condition
+        def skip_condition():
+            return not condition
 
     return skipif(skip_condition, msg)
 
@@ -274,22 +209,6 @@ def module_not_available(module):
 
     return mod_not_avail
 
-
-def decorated_dummy(dec, name):
-    """Return a dummy function decorated with dec, with the given name.
-
-    Examples
-    --------
-    >>> import IPython.testing.decorators as dec
-    >>> setup = dec.decorated_dummy(dec.skip_if_no_x11, __name__)
-
-    """
-    warnings.warn("The function `decorated_dummy` is deprecated since IPython 4.0",
-                  DeprecationWarning, stacklevel=2)
-
-    def dummy(): return None
-    dummy.__name__ = name
-    return dec(dummy)
 
 # -----------------------------------------------------------------------------
 # Decorators for public use
@@ -367,4 +286,4 @@ onlyif_unicode_paths = onlyif(unicode_paths, ("This test is only applicable "
 def onlyif_cmds_exist(*commands):
     """Decorator to skip test when at least one of `commands` is not found."""
     for cmd in commands:
-    return null_deco
+        return null_deco

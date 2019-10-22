@@ -22,13 +22,13 @@ This includes:
         to Pygments.
 
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) 2013, the IPython Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Standard library
 import re
@@ -180,9 +180,9 @@ class IPythonPartialTracebackLexer(RegexLexer):
             # These two regexps define how IPythonConsoleLexer finds a
             # traceback.
             #
-            ## Non-syntax traceback
+            # Non-syntax traceback
             (r'^(\^C)?(-+\n)', bygroups(Error, Generic.Traceback)),
-            ## Syntax traceback
+            # Syntax traceback
             (r'^(  File)(.*)(, line )(\d+\n)',
              bygroups(Generic.Traceback, Name.Namespace, Generic.Traceback,
                       Literal.Number.Integer)),

@@ -80,8 +80,7 @@ class PackagingMagics(Magics):
         """
         self.shell.system(' '.join([sys.executable, '-m', 'pip', line]))
         print(
-            "Note: you may need to restart the kernel to use updated packages."
-        )
+            "Note: you may need to restart the kernel to use updated packages.")
 
     @line_magic
     def conda(self, line):

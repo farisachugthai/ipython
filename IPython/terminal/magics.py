@@ -18,7 +18,7 @@ def get_pasted_lines(sentinel, l_input=py3compat.input, quiet=False):
     """ Yield pasted lines until the user enters the given sentinel value.
     """
     if not quiet:
-        print("Pasting code; enter '%s' alone on the line to stop or use Ctrl-D." \
+        print("Pasting code; enter '%s' alone on the line to stop or use Ctrl-D."
               % sentinel)
         prompt = ":"
     else:

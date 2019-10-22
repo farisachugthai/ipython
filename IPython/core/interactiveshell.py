@@ -86,8 +86,7 @@ from IPython.utils.tempdir import TemporaryDirectory
 # In addition to the fact that we having a magic module called logging,
 # have a traitlets class called Enum and Any?
 from traitlets import (Integer, Bool, CaselessStrEnum, Enum, List, Dict,
-                       Unicode, Instance, Type, observe, default, validate,
-                       Any)
+                       Unicode, Instance, Type, observe, default, validate, Any)
 import IPython.core.hooks
 
 # NoOpContext is deprecated, but ipykernel imports it from here.
@@ -122,14 +121,17 @@ else:
     # mock the new API, ignore second argument
     # see https://github.com/ipython/ipython/issues/11590
     from ast import Module as OriginalModule
-    def Module(nodelist, type_ignores): return OriginalModule(nodelist)
+
+    def Module(nodelist, type_ignores):
+        return OriginalModule(nodelist)
+
 
 if sys.version_info > (3, 6):
     _assign_nodes = (ast.AugAssign, ast.AnnAssign, ast.Assign)
     _single_targets_nodes = (ast.AugAssign, ast.AnnAssign)
 else:
     _assign_nodes = (ast.AugAssign, ast.Assign)
-    _single_targets_nodes = (ast.AugAssign, )
+    _single_targets_nodes = (ast.AugAssign,)
 
 # -----------------------------------------------------------------------------
 # Await Helpers
@@ -332,8 +334,7 @@ class ExecutionResult(object):
 
     @property
     def success(self):
-        return (self.error_before_exec is None) and (self.error_in_exec is
-                                                     None)
+        return (self.error_before_exec is None) and (self.error_in_exec is None)
 
     def raise_error(self):
         """Reraises error if `success` is `False`, otherwise does nothing"""
@@ -391,7 +392,8 @@ class InteractiveShell(SingletonConfigurable):
     loop_runner = Any(
         default_value="IPython.core.interactiveshell._asyncio_runner",
         allow_none=True,
-        help="""Select the loop runner that will be used to execute top-level asynchronous code"""
+        help=
+        """Select the loop runner that will be used to execute top-level asynchronous code"""
     ).tag(config=True)
 
     @default('loop_runner')
@@ -420,8 +422,8 @@ class InteractiveShell(SingletonConfigurable):
 
     banner1 = Unicode(
         default_banner,
-        help="""The part of the banner to be printed before the profile"""
-    ).tag(config=True)
+        help="""The part of the banner to be printed before the profile""").tag(
+            config=True)
     banner2 = Unicode(
         '',
         help="""The part of the banner to be printed after the profile""").tag(
@@ -445,8 +447,8 @@ class InteractiveShell(SingletonConfigurable):
     colors = CaselessStrEnum(
         ('Neutral', 'NoColor', 'LightBG', 'Linux'),
         default_value='Neutral',
-        help="Set the color scheme (NoColor, Neutral, Linux, or LightBG)."
-    ).tag(config=True)
+        help="Set the color scheme (NoColor, Neutral, Linux, or LightBG).").tag(
+            config=True)
     debug = Bool(False).tag(config=True)
     disable_failing_post_execute = Bool(
         False,
@@ -586,8 +588,7 @@ class InteractiveShell(SingletonConfigurable):
             config=True)
 
     # Subcomponents of InteractiveShell
-    alias_manager = Instance('IPython.core.alias.AliasManager',
-                             allow_none=True)
+    alias_manager = Instance('IPython.core.alias.AliasManager', allow_none=True)
     prefilter_manager = Instance('IPython.core.prefilter.PrefilterManager',
                                  allow_none=True)
     builtin_trap = Instance('IPython.core.builtin_trap.BuiltinTrap',
@@ -1064,7 +1065,7 @@ class InteractiveShell(SingletonConfigurable):
             alternative = IPython.core.hooks.deprecated[name]
             warn("Hook {} is deprecated. Use {} instead.".format(
                 name, alternative),
-                stacklevel=2)
+                 stacklevel=2)
 
         if not dp:
             dp = IPython.core.hooks.CommandChainDispatcher()
@@ -1335,7 +1336,8 @@ class InteractiveShell(SingletonConfigurable):
         if user_module is None:
             user_module = types.ModuleType(
                 "__main__",
-                doc="Automatically created module for IPython interactive environment"
+                doc=
+                "Automatically created module for IPython interactive environment"
             )
 
         # We must ensure that __builtin__ (without the final 's') is always
@@ -2318,8 +2320,7 @@ class InteractiveShell(SingletonConfigurable):
 
     # Defined here so that it's included in the documentation
     @functools.wraps(magic.MagicsManager.register_function)
-    def register_magic_function(self, func, magic_kind='line',
-                                magic_name=None):
+    def register_magic_function(self, func, magic_kind='line', magic_name=None):
         self.magics_manager.register_function(func,
                                               magic_kind=magic_kind,
                                               magic_name=magic_name)
@@ -2558,7 +2559,7 @@ class InteractiveShell(SingletonConfigurable):
                 # Where was executable=executable defined previously?
                 ec = subprocess.call(cmd, shell=True
                                      # , executable=executable
-                                     )
+                                    )
             except KeyboardInterrupt:
                 # intercept control-C; a long traceback is not useful here
                 print('\n' + self.get_exception_only(), file=sys.stderr)
@@ -2790,7 +2791,7 @@ class InteractiveShell(SingletonConfigurable):
 
         with prepended_to_syspath(dname), self.builtin_trap:
             try:
-                glob, loc = (where + (None, ))[:2]
+                glob, loc = (where + (None,))[:2]
                 py3compat.execfile(fname, glob, loc,
                                    self.compile if shell_futures else None)
             except SystemExit as status:
@@ -2966,8 +2967,7 @@ class InteractiveShell(SingletonConfigurable):
         try:
             return runner(coro)
         except BaseException as e:
-            info = ExecutionInfo(raw_cell, store_history, silent,
-                                 shell_futures)
+            info = ExecutionInfo(raw_cell, store_history, silent, shell_futures)
             result = ExecutionResult(info)
             result.error_in_exec = e
             self.showtraceback(running_compiled_code=True)
@@ -3336,8 +3336,8 @@ class InteractiveShell(SingletonConfigurable):
                 if sys.version_info > (3, 8):
 
                     def compare(code):
-                        is_async = (inspect.CO_COROUTINE
-                                    & code.co_flags == inspect.CO_COROUTINE)
+                        is_async = (inspect.CO_COROUTINE &
+                                    code.co_flags == inspect.CO_COROUTINE)
                         return is_async
                 else:
 
@@ -3359,7 +3359,7 @@ class InteractiveShell(SingletonConfigurable):
                         mod = ast.Interactive([node])
                     with compiler.extra_flags(
                             getattr(ast, 'PyCF_ALLOW_TOP_LEVEL_AWAIT', 0x0
-                                    ) if self.autoawait else 0x0):
+                                   ) if self.autoawait else 0x0):
                         code = compiler(mod, cell_name, mode)
                         asy = compare(code)
                     if (await self.run_code(code, result, async_=asy)):
@@ -3433,8 +3433,7 @@ class InteractiveShell(SingletonConfigurable):
             try:
                 self.hooks.pre_run_code_hook()
                 if async_ and sys.version_info < (3, 8):
-                    last_expr = (await
-                                 self._async_exec(code_obj, self.user_ns))
+                    last_expr = (await self._async_exec(code_obj, self.user_ns))
                     code = compile('last_expr', 'fake', "single")
                     exec(code, {'last_expr': last_expr})
                 elif async_:
@@ -3770,8 +3769,7 @@ class InteractiveShell(SingletonConfigurable):
         elif isinstance(codeobj, Macro):
             return codeobj.value
 
-        raise TypeError("%s is neither a string nor a macro." % target,
-                        codeobj)
+        raise TypeError("%s is neither a string nor a macro." % target, codeobj)
 
     # -------------------------------------------------------------------------
     # Things related to IPython exiting

@@ -16,10 +16,10 @@ from importlib import import_module
 from IPython.utils.version import check_version
 
 # Available APIs.
-QT_API_PYQT = 'pyqt' # Force version 2
+QT_API_PYQT = 'pyqt'  # Force version 2
 QT_API_PYQT5 = 'pyqt5'
-QT_API_PYQTv1 = 'pyqtv1' # Force version 2
-QT_API_PYQT_DEFAULT = 'pyqtdefault' # use system default for version 1 vs. 2
+QT_API_PYQTv1 = 'pyqtv1'  # Force version 2
+QT_API_PYQT_DEFAULT = 'pyqtdefault'  # use system default for version 1 vs. 2
 QT_API_PYSIDE = 'pyside'
 QT_API_PYSIDE2 = 'pyside2'
 
@@ -29,7 +29,7 @@ api_to_module = {QT_API_PYSIDE2: 'PySide2',
                  QT_API_PYQTv1: 'PyQt4',
                  QT_API_PYQT5: 'PyQt5',
                  QT_API_PYQT_DEFAULT: 'PyQt4',
-                }
+                 }
 
 
 class ImportDenier(object):
@@ -55,6 +55,7 @@ class ImportDenier(object):
     Importing %s disabled by IPython, which has
     already imported an Incompatible QT Binding: %s
     """ % (fullname, loaded_api()))
+
 
 ID = ImportDenier()
 sys.meta_path.insert(0, ID)
@@ -242,6 +243,7 @@ def import_pyside():
     from PySide import QtGui, QtCore, QtSvg
     return QtCore, QtGui, QtSvg, QT_API_PYSIDE
 
+
 def import_pyside2():
     """
     Import PySide2
@@ -286,13 +288,13 @@ def load_qt(api_options):
     an incompatible library has already been installed)
     """
     loaders = {
-               QT_API_PYSIDE2: import_pyside2,
-               QT_API_PYSIDE: import_pyside,
-               QT_API_PYQT: import_pyqt4,
-               QT_API_PYQT5: import_pyqt5,
-               QT_API_PYQTv1: partial(import_pyqt4, version=1),
-               QT_API_PYQT_DEFAULT: partial(import_pyqt4, version=None)
-              }
+        QT_API_PYSIDE2: import_pyside2,
+        QT_API_PYSIDE: import_pyside,
+        QT_API_PYQT: import_pyqt4,
+        QT_API_PYQT5: import_pyqt5,
+        QT_API_PYQTv1: partial(import_pyqt4, version=1),
+        QT_API_PYQT_DEFAULT: partial(import_pyqt4, version=None)
+    }
 
     for api in api_options:
 
@@ -304,7 +306,7 @@ def load_qt(api_options):
         if not can_import(api):
             continue
 
-        #cannot safely recover from an ImportError during this
+        # cannot safely recover from an ImportError during this
         result = loaders[api]()
         api = result[-1]  # changed if api = QT_API_PYQT_DEFAULT
         commit_api(api)

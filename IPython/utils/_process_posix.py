@@ -3,16 +3,16 @@
 This file is only meant to be imported by process.py, not by end-users.
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2010-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Stdlib
 import errno
@@ -27,9 +27,10 @@ from ._process_common import getoutput, arg_split
 from IPython.utils import py3compat
 from IPython.utils.encoding import DEFAULT_ENCODING
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Function definitions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def _find_cmd(cmd):
     """Find the full path to a command using which."""
@@ -59,14 +60,15 @@ class ProcessHandler(object):
 
     @property
     def sh(self):
-        if self._sh is None:        
+        if self._sh is None:
             self._sh = pexpect.which('sh')
             if self._sh is None:
                 raise OSError('"sh" shell not found')
-        
+
         return self._sh
 
-    def __init__(self, logfile=None, read_timeout=None, terminate_timeout=None):
+    def __init__(self, logfile=None, read_timeout=None,
+                 terminate_timeout=None):
         """Arguments are used for pexpect calls."""
         self.read_timeout = (ProcessHandler.read_timeout if read_timeout is
                              None else read_timeout)
@@ -131,7 +133,7 @@ class ProcessHandler(object):
         """
         # Get likely encoding for the output.
         enc = DEFAULT_ENCODING
-        
+
         # Patterns to match on the output, for pexpect.  We read input and
         # allow either a short timeout or EOF
         patterns = [pexpect.TIMEOUT, pexpect.EOF]
@@ -151,9 +153,11 @@ class ProcessHandler(object):
             # the text itself.
             #child = pexpect.spawn(pcmd, searchwindowsize=1)
             if hasattr(pexpect, 'spawnb'):
-                child = pexpect.spawnb(self.sh, args=['-c', cmd]) # Pexpect-U
+                child = pexpect.spawnb(self.sh, args=['-c', cmd])  # Pexpect-U
             else:
-                child = pexpect.spawn(self.sh, args=['-c', cmd])  # Vanilla Pexpect
+                child = pexpect.spawn(
+                    self.sh, args=[
+                        '-c', cmd])  # Vanilla Pexpect
             flush = sys.stdout.flush
             while True:
                 # res is the index of the pattern that caused the match, so we
@@ -161,7 +165,7 @@ class ProcessHandler(object):
                 res_idx = child.expect_list(patterns, self.read_timeout)
                 print(child.before[out_size:].decode(enc, 'replace'), end='')
                 flush()
-                if res_idx==EOF_index:
+                if res_idx == EOF_index:
                     break
                 # Update the pointer to what we've already printed
                 out_size = len(child.before)
@@ -192,7 +196,8 @@ class ProcessHandler(object):
         # on Linux, sh returns 128+n for signals terminating child processes on Linux
         # on BSD (OS X), the signal code is set instead
         if child.exitstatus is None:
-            # on WIFSIGNALED, pexpect sets signalstatus, leaving exitstatus=None
+            # on WIFSIGNALED, pexpect sets signalstatus, leaving
+            # exitstatus=None
             if child.signalstatus is None:
                 # this condition may never occur,
                 # but let's be certain we always return an integer.
@@ -210,6 +215,7 @@ class ProcessHandler(object):
 # (ls is a good example) that makes them hard.
 system = ProcessHandler().system
 
+
 def check_pid(pid):
     try:
         os.kill(pid, 0)
@@ -217,7 +223,8 @@ def check_pid(pid):
         if err.errno == errno.ESRCH:
             return False
         elif err.errno == errno.EPERM:
-            # Don't have permission to signal the process - probably means it exists
+            # Don't have permission to signal the process - probably means it
+            # exists
             return True
         raise
     else:

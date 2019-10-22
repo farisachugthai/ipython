@@ -178,8 +178,7 @@ class ProfileList(Application):
         profiles = list_profiles_in(os.getcwd())
         if profiles:
             print()
-            print("Available profiles in current directory (%s):" %
-                  os.getcwd())
+            print("Available profiles in current directory (%s):" % os.getcwd())
             self._print_profiles(profiles)
 
         print()
@@ -206,7 +205,7 @@ create_flags['parallel'] = ({
         'parallel': True
     }
 }, "Include the config files for parallel "
-    "computing apps (ipengine, ipcontroller, etc.)")
+                            "computing apps (ipengine, ipcontroller, etc.)")
 
 
 class ProfileCreate(BaseIPythonApplication):
@@ -269,7 +268,7 @@ class ProfileCreate(BaseIPythonApplication):
         # use local imports, since these classes may import from here
         from IPython.terminal.ipapp import TerminalIPythonApp
         apps = [TerminalIPythonApp]
-        for app_path in ('ipykernel.kernelapp.IPKernelApp', ):
+        for app_path in ('ipykernel.kernelapp.IPKernelApp',):
             app = self._import_app(app_path)
             if app is not None:
                 apps.append(app)

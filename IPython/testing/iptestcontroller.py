@@ -28,6 +28,7 @@ from IPython.utils.py3compat import decode
 from IPython.utils.sysinfo import get_sys_info
 from IPython.utils.tempdir import TemporaryDirectory
 
+
 class TestController:
     """Run tests in a subprocess
     """
@@ -51,7 +52,7 @@ class TestController:
 
     def setUp(self):
         """Create temporary directories etc.
-        
+
         This is only called when we know the test group will be run. Things
         created here may be cleaned up by self.cleanup().
         """
@@ -69,7 +70,7 @@ class TestController:
         stdout = c.writefd if capture_output else None
         stderr = subprocess.STDOUT if capture_output else None
         self.process = subprocess.Popen(self.cmd, stdout=stdout,
-                stderr=stderr, env=env)
+                                        stderr=stderr, env=env)
 
     def wait(self):
         self.process.wait()
@@ -86,7 +87,7 @@ class TestController:
         try:
             print('Cleaning up stale PID: %d' % subp.pid)
             subp.kill()
-        except: # (OSError, WindowsError) ?
+        except BaseException:  # (OSError, WindowsError) ?
             # This is just a best effort, if we fail or the process was
             # really gone, ignore it.
             pass
@@ -186,8 +187,8 @@ class PyTestController(TestController):
                        "data_file = {data_file}\n"
                        "source =\n"
                        "  {source}\n"
-                      ).format(data_file=os.path.abspath('.coverage.'+self.section),
-                               source="\n  ".join(sources))
+                       ).format(data_file=os.path.abspath('.coverage.' + self.section),
+                                source="\n  ".join(sources))
         config_file = os.path.join(self.workingdir.name, '.coveragerc')
         with open(config_file, 'w') as f:
             f.write(coverage_rc)
@@ -213,13 +214,14 @@ def prepare_controllers(options):
     not_run = [c for c in controllers if not c.will_run]
     return to_run, not_run
 
+
 def do_run(controller, buffer_output=True):
     """Setup and run a test controller.
-    
+
     If buffer_output is True, no output is displayed, to avoid it appearing
     interleaved. In this case, the caller is responsible for displaying test
     output on failure.
-    
+
     Returns
     -------
     controller : TestController
@@ -245,22 +247,28 @@ def do_run(controller, buffer_output=True):
     finally:
         controller.cleanup()
 
+
 def report():
     """Return a string with a summary report of test-related variables."""
     inf = get_sys_info()
     out = []
+
     def _add(name, value):
         out.append((name, value))
 
     _add('IPython version', inf['ipython_version'])
-    _add('IPython commit', "{} ({})".format(inf['commit_hash'], inf['commit_source']))
+    _add(
+        'IPython commit',
+        "{} ({})".format(
+            inf['commit_hash'],
+            inf['commit_source']))
     _add('IPython package', compress_user(inf['ipython_path']))
-    _add('Python version', inf['sys_version'].replace('\n',''))
+    _add('Python version', inf['sys_version'].replace('\n', ''))
     _add('sys.executable', compress_user(inf['sys_executable']))
     _add('Platform', inf['platform'])
 
-    width = max(len(n) for (n,v) in out)
-    out = ["{:<{width}}: {}\n".format(n, v, width=width) for (n,v) in out]
+    width = max(len(n) for (n, v) in out)
+    out = ["{:<{width}}: {}\n".format(n, v, width=width) for (n, v) in out]
 
     avail = []
     not_avail = []
@@ -274,14 +282,15 @@ def report():
     if avail:
         out.append('\nTools and libraries available at test time:\n')
         avail.sort()
-        out.append('   ' + ' '.join(avail)+'\n')
+        out.append('   ' + ' '.join(avail) + '\n')
 
     if not_avail:
         out.append('\nTools and libraries NOT available at test time:\n')
         not_avail.sort()
-        out.append('   ' + ' '.join(not_avail)+'\n')
+        out.append('   ' + ' '.join(not_avail) + '\n')
 
     return ''.join(out)
+
 
 def run_iptestall(options):
     """Run the entire IPython test suite by calling nose and trial.
@@ -369,7 +378,7 @@ def run_iptestall(options):
     nrunners = len(to_run)
     nfail = len(failed)
     # summarize results
-    print('_'*70)
+    print('_' * 70)
     print('Test suite completed for system with the following information:')
     print(report())
     took = "Took %.3fs." % t_tests
@@ -381,7 +390,7 @@ def run_iptestall(options):
         # see the actual errors and individual summary
         failed_sections = [c.section for c in failed]
         print('ERROR - {} out of {} test groups failed ({}).'.format(nfail,
-                                  nrunners, ', '.join(failed_sections)), took)
+                                                                     nrunners, ', '.join(failed_sections)), took)
         print()
         print('You may wish to rerun these, with:')
         print('  iptest', *failed_sections)
@@ -397,11 +406,14 @@ def run_iptestall(options):
         if options.coverage == 'html':
             html_dir = 'ipy_htmlcov'
             shutil.rmtree(html_dir, ignore_errors=True)
-            print("Writing HTML coverage report to %s/ ... " % html_dir, end="")
+            print(
+                "Writing HTML coverage report to %s/ ... " %
+                html_dir, end="")
             sys.stdout.flush()
 
             # Custom HTML reporter to clean up module names.
             from coverage.html import HtmlReporter
+
             class CustomHtmlReporter(HtmlReporter):
                 def find_code_units(self, morfs):
                     super(CustomHtmlReporter, self).find_code_units(morfs)
@@ -416,7 +428,7 @@ def run_iptestall(options):
             cov.get_data()
             cov.config.from_args(omit='*{0}tests{0}*'.format(os.sep), html_dir=html_dir,
                                  html_title='IPython test coverage',
-                                )
+                                 )
             reporter = CustomHtmlReporter(cov, cov.config)
             reporter.report(None)
             print('done.')
@@ -426,7 +438,8 @@ def run_iptestall(options):
             try:
                 cov.xml_report(outfile='ipy_coverage.xml')
             except CoverageException as e:
-                print('Generating coverage report failed. Are you running javascript tests only?')
+                print(
+                    'Generating coverage report failed. Are you running javascript tests only?')
                 import traceback
                 traceback.print_exc()
 
@@ -434,23 +447,25 @@ def run_iptestall(options):
         # Ensure that our exit code indicates failure
         sys.exit(1)
 
+
 argparser = argparse.ArgumentParser(description='Run IPython test suite')
 argparser.add_argument('testgroups', nargs='*',
-                    help='Run specified groups of tests. If omitted, run '
-                    'all tests.')
+                       help='Run specified groups of tests. If omitted, run '
+                       'all tests.')
 argparser.add_argument('--all', action='store_true',
-                    help='Include slow tests not run by default.')
+                       help='Include slow tests not run by default.')
 argparser.add_argument('-j', '--fast', nargs='?', const=None, default=1, type=int,
-                    help='Run test sections in parallel. This starts as many '
-                    'processes as you have cores, or you can specify a number.')
+                       help='Run test sections in parallel. This starts as many '
+                       'processes as you have cores, or you can specify a number.')
 argparser.add_argument('--xunit', action='store_true',
-                    help='Produce Xunit XML results')
+                       help='Produce Xunit XML results')
 argparser.add_argument('--coverage', nargs='?', const=True, default=False,
-                    help="Measure test coverage. Specify 'html' or "
-                    "'xml' to get reports.")
+                       help="Measure test coverage. Specify 'html' or "
+                       "'xml' to get reports.")
 argparser.add_argument('--subproc-streams', default='capture',
-                    help="What to do with stdout/stderr from subprocesses. "
-                    "'capture' (default), 'show' and 'discard' are the options.")
+                       help="What to do with stdout/stderr from subprocesses. "
+                       "'capture' (default), 'show' and 'discard' are the options.")
+
 
 def default_options():
     """Get an argparse Namespace object with the default arguments, to pass to
@@ -459,6 +474,7 @@ def default_options():
     options = argparser.parse_args([])
     options.extra_args = []
     return options
+
 
 def main():
     # iptest doesn't work correctly if the working directory is the
@@ -479,7 +495,7 @@ def main():
         extra_args = []
     else:
         to_parse = sys.argv[1:ix]
-        extra_args = sys.argv[ix+1:]
+        extra_args = sys.argv[ix + 1:]
 
     options = argparser.parse_args(to_parse)
     options.extra_args = extra_args

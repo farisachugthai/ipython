@@ -6,6 +6,7 @@ import nose.tools as nt
 
 from IPython.utils.tokenutil import token_at_cursor, line_at_cursor
 
+
 def expect_token(expected, cell, cursor_pos):
     token = token_at_cursor(cell, cursor_pos)
     offset = 0
@@ -13,18 +14,20 @@ def expect_token(expected, cell, cursor_pos):
         if offset + len(line) >= cursor_pos:
             break
         else:
-            offset += len(line)+1
+            offset += len(line) + 1
     column = cursor_pos - offset
     line_with_cursor = '%s|%s' % (line[:column], line[column:])
     nt.assert_equal(token, expected,
-        "Expected %r, got %r in: %r (pos %i)" % (
-        expected, token, line_with_cursor, cursor_pos)
-    )
+                    "Expected %r, got %r in: %r (pos %i)" % (
+                        expected, token, line_with_cursor, cursor_pos)
+                    )
 
-def test_simple(): 
+
+def test_simple():
     cell = "foo"
     for i in range(len(cell)):
         expect_token("foo", cell, i)
+
 
 def test_function():
     cell = "foo(a=5, b='10')"
@@ -39,6 +42,7 @@ def test_function():
     for i in range(cell.find(','), cell.find('b=')):
         expect_token("foo", cell, i)
 
+
 def test_multiline():
     cell = '\n'.join([
         'a = 5',
@@ -52,6 +56,7 @@ def test_multiline():
     start = cell.index(expected) + 1
     for i in range(start, start + len(expected)):
         expect_token(expected, cell, i)
+
 
 def test_multiline_token():
     cell = '\n'.join([
@@ -72,6 +77,7 @@ def test_multiline_token():
     for i in range(start, start + len(expected)):
         expect_token(expected, cell, i)
 
+
 def test_nested_call():
     cell = "foo(bar(a=5), b=10)"
     expected = 'foo'
@@ -84,8 +90,9 @@ def test_nested_call():
         expect_token(expected, cell, i)
     expected = 'foo'
     start = cell.index(')') + 1
-    for i in range(start, len(cell)-1):
+    for i in range(start, len(cell) - 1):
         expect_token(expected, cell, i)
+
 
 def test_attrs():
     cell = "a = obj.attr.subattr"
@@ -101,6 +108,7 @@ def test_attrs():
     expected = 'obj.attr.subattr'
     for i in range(idx, len(cell)):
         expect_token(expected, cell, i)
+
 
 def test_line_at_cursor():
     cell = ""
@@ -119,6 +127,7 @@ def test_line_at_cursor():
     (line, offset) = line_at_cursor(cell, cursor_pos=7)
     nt.assert_equal(line, "pri")
     nt.assert_equal(offset, 4)
+
 
 def test_multiline_statement():
     cell = """a = (1,

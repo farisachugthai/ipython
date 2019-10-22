@@ -13,6 +13,10 @@ sphinx-rtd-theme = "*"
 docrepr = "*"
 matplotlib = "*"
 Sphinx = "*"
+pytest = "*"
+ipython-doctest-plugin = {editable = true,path = "./IPython/testing/plugin"}
+nose = "*"
+testpath = "*"
 
 [requires]
 python_version = "3.7"
