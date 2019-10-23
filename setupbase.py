@@ -25,9 +25,6 @@ from distutils.command.install import install
 from distutils.command.install_scripts import install_scripts
 from distutils.cmd import Command
 
-from ..setupext import install_data_ext
-# #om setuptools import find_packages
-
 # -------------------------------------------------------------------------------
 # Useful globals and utility functions
 # -------------------------------------------------------------------------------
@@ -35,14 +32,6 @@ from ..setupext import install_data_ext
 # A few handy globals
 isfile = os.path.isfile
 pjoin = os.path.join
-repo_root = os.path.dirname(os.path.abspath(__file__))
-
-
-def execfile(fname, globs, locs=None):
-    locs = locs or globs
-    with open(fname) as f:
-        exec(compile(f.read(), fname, "exec"), globs, locs)
-
 
 # A little utility we'll need below, since glob() does NOT allow you to do
 # exclusion on multiple endings!
@@ -66,30 +55,6 @@ def file_doesnt_endwith(test, endings):
 # Basic project information
 # ---------------------------------------------------------------------------
 
-# release.py contains version, authors, license, url, keywords, etc.
-execfile(pjoin(repo_root, 'IPython', 'core', 'release.py'), globals())
-
-# Create a dict with the basic information
-# This dict is eventually passed to setup after additional keys are added.
-setup_args = dict(name=name,
-                  version=version,
-                  description=description,
-                  long_description=long_description,
-                  author=author,
-                  author_email=author_email,
-                  url=url,
-                  license=license,
-                  platforms=platforms,
-                  keywords=keywords,
-                  classifiers=classifiers,
-                  cmdclass={'install_data': install_data_ext},
-                  project_urls={
-                      'Documentation': 'https://ipython.readthedocs.io/',
-                      'Funding': 'https://numfocus.org/',
-                      'Source': 'https://github.com/ipython/ipython',
-                      'Tracker': 'https://github.com/ipython/ipython/issues',
-                  })
-
 # ---------------------------------------------------------------------------
 # Find packages
 # ---------------------------------------------------------------------------
@@ -97,21 +62,6 @@ setup_args = dict(name=name,
 # ---------------------------------------------------------------------------
 # Find package data
 # ---------------------------------------------------------------------------
-
-
-def find_package_data():
-    """Find IPython's package_data."""
-    # This is not enough for these things to appear in an sdist.
-    # We need to muck with the MANIFEST to get this to work
-
-    package_data = {
-        'IPython.core': ['profile/README*'],
-        'IPython.core.tests': ['*.png', '*.jpg', 'daft_extension/*.py'],
-        'IPython.lib.tests': ['*.wav'],
-        'IPython.testing.plugin': ['*.txt'],
-    }
-
-    return package_data
 
 
 def check_package_data(package_data):
