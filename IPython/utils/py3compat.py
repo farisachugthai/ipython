@@ -128,7 +128,7 @@ def _shutil_which(cmd, mode=os.F_OK | os.X_OK, path=None):
 
     if sys.platform == "win32":
         # The current directory takes precedence on Windows.
-        if not os.curdir in path:
+        if os.curdir not in path:
             path.insert(0, os.curdir)
 
         # PATHEXT is necessary to check on Windows.
@@ -149,7 +149,7 @@ def _shutil_which(cmd, mode=os.F_OK | os.X_OK, path=None):
     seen = set()
     for dir in path:
         normdir = os.path.normcase(dir)
-        if not normdir in seen:
+        if normdir not in seen:
             seen.add(normdir)
             for thefile in files:
                 name = os.path.join(dir, thefile)

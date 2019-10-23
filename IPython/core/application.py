@@ -71,8 +71,8 @@ else:
         IPYTHON_SUPPRESS_CONFIG_ERRORS = False
     else:
         sys.exit(
-            "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}."
-            % _envvar)
+            "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}." %
+            _envvar)
 
 # aliases and flags
 
@@ -240,8 +240,7 @@ class BaseIPythonApplication(Application):
 
     verbose_crash = Bool(
         False,
-        help=
-        """Create a massive crash report when IPython encounters what may be an
+        help="""Create a massive crash report when IPython encounters what may be an
         internal error.  The default is to append a short message to the
         usual traceback""").tag(config=True)
 

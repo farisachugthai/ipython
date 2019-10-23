@@ -112,12 +112,14 @@ zip?
     [r"get_ipython().set_next_input('a = \\\nzip');get_ipython().run_line_magic('pinfo', 'zip')" + "\n"]
 )
 
-HELP_MULTILINE = ("""\
+HELP_MULTILINE = (
+    """\
 (a,
 b) = zip?
-""".splitlines(keepends=True), (1, 0),
-    [r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')" + "\n"]
-)
+""".splitlines(keepends=True),
+    (1, 0),
+    [r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')" +
+     "\n"])
 
 
 def null_cleanup_transformer(lines):

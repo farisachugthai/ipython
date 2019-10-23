@@ -540,8 +540,7 @@ class HistoryManager(HistoryAccessor):
             config=True)
     db_cache_size = Integer(
         0,
-        help=
-        "Write to database every x commands (higher values save disk access & power).\n"
+        help="Write to database every x commands (higher values save disk access & power).\n"
         "Values of 1 or less effectively disable caching.").tag(config=True)
     # The input and output caches
     db_input_cache = List()

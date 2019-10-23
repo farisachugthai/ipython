@@ -510,7 +510,7 @@ def make_tokens_by_line(lines: List[str]):
     NEWLINE, NL = tokenize.NEWLINE, tokenize.NL
     tokens_by_line = [[]]
     if len(lines) > 1 and not lines[0].endswith(
-        ('\n', '\r', '\r\n', '\x0b', '\x0c')):
+            ('\n', '\r', '\r\n', '\x0b', '\x0c')):
         warnings.warn(
             "`make_tokens_by_line` received a list of lines which do not have lineending markers ('\\n', '\\r', '\\r\\n', '\\x0b', '\\x0c'), behavior will be unspecified"
         )

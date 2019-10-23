@@ -100,8 +100,13 @@ def test_base64image():
 def test_image_filename_defaults():
     '''test format constraint, and validity of jpeg and png'''
     tpath = ipath.get_ipython_package_dir()
-    nt.assert_raises(ValueError, display.Image, filename=os.path.join(tpath, 'testing/tests/badformat.zip'),
-                     embed=True)
+    nt.assert_raises(
+        ValueError,
+        display.Image,
+        filename=os.path.join(
+            tpath,
+            'testing/tests/badformat.zip'),
+        embed=True)
     nt.assert_raises(ValueError, display.Image)
     nt.assert_raises(
         ValueError,

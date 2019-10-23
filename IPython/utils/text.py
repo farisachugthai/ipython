@@ -647,8 +647,7 @@ def _find_optimal(rlist, row_first=False, separator_size=2, displaywidth=80):
     return {'num_columns': ncols,
             'optimal_separator_width': (displaywidth - sumlength) // (ncols - 1) if (ncols - 1) else 0,
             'max_rows': max_rows,
-            'column_widths': col_widths
-            }
+            'column_widths': col_widths}
 
 
 def _get_or_default(mylist, i, default=None):

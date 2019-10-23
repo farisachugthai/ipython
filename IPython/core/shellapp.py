@@ -134,8 +134,7 @@ class InteractiveShellApp(Configurable):
 
     hide_initial_ns = Bool(
         True,
-        help=
-        """Should variables loaded at startup (by startup files, exec_lines, etc.)
+        help="""Should variables loaded at startup (by startup files, exec_lines, etc.)
         be hidden from tools like %who?""").tag(config=True)
 
     exec_files = List(
@@ -172,8 +171,7 @@ class InteractiveShellApp(Configurable):
         """).tag(config=True)
     pylab_import_all = Bool(
         True,
-        help=
-        """If true, IPython will populate the user namespace with numpy, pylab, etc.
+        help="""If true, IPython will populate the user namespace with numpy, pylab, etc.
         and an ``import *`` is done from numpy and pylab, when using pylab mode.
 
         When False, pylab mode should not import any names into the user namespace.

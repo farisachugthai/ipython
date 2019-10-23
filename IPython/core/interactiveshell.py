@@ -392,8 +392,7 @@ class InteractiveShell(SingletonConfigurable):
     loop_runner = Any(
         default_value="IPython.core.interactiveshell._asyncio_runner",
         allow_none=True,
-        help=
-        """Select the loop runner that will be used to execute top-level asynchronous code"""
+        help="""Select the loop runner that will be used to execute top-level asynchronous code"""
     ).tag(config=True)
 
     @default('loop_runner')
@@ -1065,7 +1064,7 @@ class InteractiveShell(SingletonConfigurable):
             alternative = IPython.core.hooks.deprecated[name]
             warn("Hook {} is deprecated. Use {} instead.".format(
                 name, alternative),
-                 stacklevel=2)
+                stacklevel=2)
 
         if not dp:
             dp = IPython.core.hooks.CommandChainDispatcher()
@@ -1336,8 +1335,7 @@ class InteractiveShell(SingletonConfigurable):
         if user_module is None:
             user_module = types.ModuleType(
                 "__main__",
-                doc=
-                "Automatically created module for IPython interactive environment"
+                doc="Automatically created module for IPython interactive environment"
             )
 
         # We must ensure that __builtin__ (without the final 's') is always
@@ -2559,7 +2557,7 @@ class InteractiveShell(SingletonConfigurable):
                 # Where was executable=executable defined previously?
                 ec = subprocess.call(cmd, shell=True
                                      # , executable=executable
-                                    )
+                                     )
             except KeyboardInterrupt:
                 # intercept control-C; a long traceback is not useful here
                 print('\n' + self.get_exception_only(), file=sys.stderr)
@@ -3359,7 +3357,7 @@ class InteractiveShell(SingletonConfigurable):
                         mod = ast.Interactive([node])
                     with compiler.extra_flags(
                             getattr(ast, 'PyCF_ALLOW_TOP_LEVEL_AWAIT', 0x0
-                                   ) if self.autoawait else 0x0):
+                                    ) if self.autoawait else 0x0):
                         code = compiler(mod, cell_name, mode)
                         asy = compare(code)
                     if (await self.run_code(code, result, async_=asy)):

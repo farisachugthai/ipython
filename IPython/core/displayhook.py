@@ -203,7 +203,7 @@ class DisplayHook(Configurable):
         # Avoid recursive reference when displaying _oh/Out
         if result is not self.shell.user_ns['_oh']:
             if len(self.shell.user_ns['_oh']
-                  ) >= self.cache_size and self.do_full_cache:
+                   ) >= self.cache_size and self.do_full_cache:
                 self.cull_cache()
 
             # Don't overwrite '_' and friends if '_' is in __builtin__
@@ -212,7 +212,7 @@ class DisplayHook(Configurable):
             # by the user.
             update_unders = True
             for unders in ['_' * i for i in range(1, 4)]:
-                if not unders in self.shell.user_ns:
+                if unders not in self.shell.user_ns:
                     continue
                 if getattr(self, unders) is not self.shell.user_ns.get(unders):
                     update_unders = False
@@ -227,7 +227,7 @@ class DisplayHook(Configurable):
                     '__': self.__,
                     '___': self.___
                 },
-                                interactive=False)
+                    interactive=False)
 
             # hackish access to top-level  namespace to create _1,_2...
             # dynamically

@@ -230,6 +230,8 @@ def _safe_repr(obj):
 
 class FormatterWarning(UserWarning):
     """Warning class for errors in formatters"""
+
+
 @decorator
 def catch_format_error(method, self, *args, **kwargs):
     """show traceback on failed format call"""
@@ -609,8 +611,7 @@ class PlainTextFormatter(BaseFormatter):
 
     max_seq_length = Integer(
         pretty.MAX_SEQ_LENGTH,
-        help=
-        """Truncate large collections (lists, dicts, tuples, sets) to this size.
+        help="""Truncate large collections (lists, dicts, tuples, sets) to this size.
 
         Set to 0 to disable truncation.
         """).tag(config=True)

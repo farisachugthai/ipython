@@ -141,11 +141,11 @@ class HistoryClear(HistoryTrim):
                 'force': True
             }
         }, force.help),
-             f=({
-                 'HistoryTrim': {
-                     'force': True
-                 }
-             }, force.help)))
+            f=({
+                'HistoryTrim': {
+                    'force': True
+                }
+            }, force.help)))
     aliases = Dict()
 
     def start(self):

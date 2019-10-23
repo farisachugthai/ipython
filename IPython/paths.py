@@ -1,4 +1,7 @@
 """Find files and directories which IPython uses.
+
+So the todo for this module is that I think the py3compat family of functions
+are pending deprecation.
 """
 import os.path
 import shutil
@@ -19,7 +22,6 @@ def get_ipython_dir():
     This uses the logic in `get_home_dir` to find the home directory
     and then adds .ipython to the end of the path.
     """
-
     env = os.environ
     pjoin = os.path.join
 

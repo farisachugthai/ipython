@@ -205,7 +205,7 @@ create_flags['parallel'] = ({
         'parallel': True
     }
 }, "Include the config files for parallel "
-                            "computing apps (ipengine, ipcontroller, etc.)")
+    "computing apps (ipengine, ipcontroller, etc.)")
 
 
 class ProfileCreate(BaseIPythonApplication):

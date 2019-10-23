@@ -1411,7 +1411,7 @@ class Video(DisplayObject):
             data = str(data)
 
         if url is None and isinstance(data, str) and data.startswith(
-            ('http:', 'https:')):
+                ('http:', 'https:')):
             url = data
             data = None
         elif os.path.exists(data):

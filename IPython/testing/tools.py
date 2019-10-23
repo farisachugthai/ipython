@@ -5,7 +5,6 @@ Authors
 - Fernando Perez <Fernando.Perez@berkeley.edu>
 """
 
-
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -37,7 +36,6 @@ from IPython.utils import py3compat
 
 from . import decorators as dec
 from . import skipdoctest
-
 
 # The docstring for full_path doctests differently on win32 (different path
 # separator) so just skip the doctest there.  The example remains informative.
@@ -130,10 +128,14 @@ parse_test_output.__test__ = False
 def default_argv():
     """Return a valid default argv for creating testing instances of ipython"""
 
-    return ['--quick',  # so no config file is loaded
-            # Other defaults to minimize side effects on stdout
-            '--colors=NoColor', '--no-term-title', '--no-banner',
-            '--autocall=0']
+    return [
+        '--quick',  # so no config file is loaded
+        # Other defaults to minimize side effects on stdout
+        '--colors=NoColor',
+        '--no-term-title',
+        '--no-banner',
+        '--autocall=0'
+    ]
 
 
 def default_config():
@@ -215,8 +217,7 @@ def ipexec(fname, options=None, commands=()):
             print(k, v)
     p = Popen(full_cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE, env=env)
     out, err = p.communicate(
-        input=py3compat.encode(
-            '\n'.join(commands)) or None)
+        input=py3compat.encode('\n'.join(commands)) or None)
     out, err = py3compat.decode(out), py3compat.decode(err)
     # `import readline` causes 'ESC[?1034h' to be output sometimes,
     # so strip that out before doing comparisons
@@ -225,8 +226,11 @@ def ipexec(fname, options=None, commands=()):
     return out, err
 
 
-def ipexec_validate(fname, expected_out, expected_err='',
-                    options=None, commands=()):
+def ipexec_validate(fname,
+                    expected_out,
+                    expected_err='',
+                    options=None,
+                    commands=()):
     """Utility to call 'ipython filename' and validate output/error.
 
     This function raises an AssertionError if the validation fails.
@@ -250,36 +254,36 @@ def ipexec_validate(fname, expected_out, expected_err='',
     Returns
     -------
     None
-    """
 
-    import nose.tools as nt
+    """
+    # Why is this here it's already at the top of the module?
+    # import nose.tools as nt
 
     out, err = ipexec(fname, options, commands)
+    # Why are these lines here you could just do a logging.debug call?
     # print 'OUT', out  # dbg
     # print 'ERR', err  # dbg
     # If there are any errors, we must check those before stdout, as they may be
     # more informative than simply having an empty stdout.
     if err:
         if expected_err:
-            nt.assert_equal(
-                "\n".join(
-                    err.strip().splitlines()), "\n".join(
-                    expected_err.strip().splitlines()))
+            nt.assert_equal("\n".join(err.strip().splitlines()),
+                            "\n".join(expected_err.strip().splitlines()))
         else:
             raise ValueError('Running file %r produced error: %r' %
                              (fname, err))
     # If no errors or output on stderr was expected, match stdout
-    nt.assert_equal(
-        "\n".join(
-            out.strip().splitlines()), "\n".join(
-            expected_out.strip().splitlines()))
+    nt.assert_equal("\n".join(out.strip().splitlines()),
+                    "\n".join(expected_out.strip().splitlines()))
 
 
 class TempFileMixin(unittest.TestCase):
     """Utility class to create temporary Python/IPython files.
 
-    Meant as a mixin class for test cases."""
+    Meant as a mixin class for test cases.
 
+    Should be deprecated IMO. Pytest fixtures could very easily replace this.
+    """
     def mktmp(self, src, ext='.py'):
         """Make a valid python temp file."""
         fname = temp_pyfile(src, ext)
@@ -363,7 +367,6 @@ class AssertPrints(object):
     abcd
     def
     """
-
     def __init__(self, s, channel='stdout', suppress=True):
         self.s = s
         if isinstance(self.s, (str, _re_type)):
@@ -407,8 +410,8 @@ printed_msg = """Found {0!r} in printed output (on {1}):
 class AssertNotPrints(AssertPrints):
     """Context manager for checking that certain output *isn't* produced.
 
-    Counterpart of AssertPrints"""
-
+    Counterpart of AssertPrints.
+    """
     def __exit__(self, etype, value, traceback):
         try:
             if value is not None:
@@ -443,7 +446,10 @@ def mute_warn():
 
 @contextmanager
 def make_tempfile(name):
-    """ Create an empty, named, temporary file for the duration of the context.
+    """Create an empty, named, temporary file for the duration of the context.
+
+    Why does this exist and why does it work the way it does wth.
+    tempfile has existed for too long for this to ever have been committed.
     """
     open(name, 'w').close()
     try:

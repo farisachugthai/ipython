@@ -108,8 +108,7 @@ class PylabMagics(Magics):
         '--no-import-all',
         action='store_true',
         default=None,
-        help=
-        """Prevent IPython from performing ``import *`` into the interactive namespace.
+        help="""Prevent IPython from performing ``import *`` into the interactive namespace.
 
         You can govern the default behavior of this flag with the
         InteractiveShellApp.pylab_import_all configurable.

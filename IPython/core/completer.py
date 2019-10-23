@@ -324,11 +324,11 @@ def completions_sorting_key(word):
     if word.startswith('%%'):
         # If there's another % in there, this is something else, so leave it
         # alone
-        if not "%" in word[2:]:
+        if "%" not in word[2:]:
             word = word[2:]
             prio2 = 2
     elif word.startswith('%'):
-        if not "%" in word[1:]:
+        if "%" not in word[1:]:
             word = word[1:]
             prio2 = 1
 
@@ -609,8 +609,7 @@ class Completer(Configurable):
 
     jedi_compute_type_timeout = Int(
         default_value=400,
-        help=
-        """Experimental: restrict time (in milliseconds) during which Jedi can compute types.
+        help="""Experimental: restrict time (in milliseconds) during which Jedi can compute types.
         Set to 0 to stop computing types. Non-zero value lower than 100ms may hurt
         performance by preventing jedi to build its cache.
         """).tag(config=True)
@@ -1341,7 +1340,7 @@ class IPCompleter(Completer):
                 c for c in self.shell.configurables
                 if c.__class__.class_traits(config=True)
             ]),
-                             key=lambda x: x.__class__.__name__)
+                key=lambda x: x.__class__.__name__)
             classnames = [c.__class__.__name__ for c in classes]
 
             # return all classnames if config or %config is given
@@ -1477,9 +1476,8 @@ class IPCompleter(Completer):
             if self.debug:
                 return [
                     _FakeJediCompletion(
-                        'Oops Jedi has crashed, please report a bug with the following:\n"""\n%s\ns"""'
-                        % (e))
-                ]
+                        'Oops Jedi has crashed, please report a bug with the following:\n"""\n%s\ns"""' %
+                        (e))]
             else:
                 return []
 
@@ -2103,7 +2101,7 @@ class IPCompleter(Completer):
             latex_text, latex_matches = self.latex_matches(base_text)
             if latex_matches:
                 return latex_text, latex_matches, ['latex_matches'
-                                                  ] * len(latex_matches), ()
+                                                   ] * len(latex_matches), ()
             name_text = ''
             name_matches = []
             # need to add self.fwd_unicode_match() function here when done

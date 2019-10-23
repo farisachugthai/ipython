@@ -104,8 +104,7 @@ class ScriptMagics(Magics):
         return defaults
 
     script_paths = Dict(
-        help=
-        """Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
+        help="""Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
 
         Only necessary for items in script_magics where the default path will not
         find the right interpreter.

@@ -200,9 +200,9 @@ class Parser(Colorable):
     def format(self, raw, out=None, scheme=Undefined):
         import warnings
         if scheme is not Undefined:
-            warnings.warn('The `scheme` argument of IPython.utils.PyColorize:Parser.format is deprecated since IPython 6.0.'
-                          'It will have no effect. Set the parser `style` directly.',
-                          stacklevel=2)
+            warnings.warn(
+                'The `scheme` argument of IPython.utils.PyColorize:Parser.format is deprecated since IPython 6.0.'
+                'It will have no effect. Set the parser `style` directly.', stacklevel=2)
         return self.format2(raw, out)[0]
 
     def format2(self, raw, out=None):

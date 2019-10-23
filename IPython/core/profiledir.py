@@ -50,8 +50,7 @@ class ProfileDir(LoggingConfigurable):
 
     location = Unicode(
         u'',
-        help=
-        """Set the profile location directly. This overrides the logic used by the
+        help="""Set the profile location directly. This overrides the logic used by the
         `profile` option.""",
     ).tag(config=True)
 

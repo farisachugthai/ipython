@@ -104,7 +104,10 @@ warnings.filterwarnings(
 
 # Jedi older versions
 warnings.filterwarnings(
-    'error', message='.*elementwise != comparison failed and.*', category=FutureWarning, module='.*')
+    'error',
+    message='.*elementwise != comparison failed and.*',
+    category=FutureWarning,
+    module='.*')
 
 if version_info < (6,):
     # nose.tools renames all things from `camelCase` to `snake_case` which raise an
@@ -118,7 +121,8 @@ if version_info < (8,):
                             category=PendingDeprecationWarning, module='.*')
 else:
     warnings.warn(
-        'Completer.complete was pending deprecation and should be changed to Deprecated', FutureWarning)
+        'Completer.complete was pending deprecation and should be changed to Deprecated',
+        FutureWarning)
 
 
 # ------------------------------------------------------------------------------
@@ -267,8 +271,8 @@ sec.exclude('rmagic')
 # autoreload does some strange stuff, so move it to its own test section
 sec.exclude('autoreload')
 sec.exclude('tests.test_autoreload')
-test_sections['autoreload'] = TestSection('autoreload',
-                                          ['IPython.extensions.autoreload', 'IPython.extensions.tests.test_autoreload'])
+test_sections['autoreload'] = TestSection(
+    'autoreload', ['IPython.extensions.autoreload', 'IPython.extensions.tests.test_autoreload'])
 test_group_names.append('autoreload')
 
 

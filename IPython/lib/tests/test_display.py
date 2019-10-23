@@ -116,12 +116,11 @@ def test_existing_path_FileLinks():
     actual = sorted(actual.split('\n'))
     # the links should always have forward slashes, even on windows, so replace
     # backslashes with forward slashes here
-    expected = ["%s/<br>" % td,
-                "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
-                (tf2.name.replace("\\", "/"), split(tf2.name)[1]),
-                "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
-                (tf1.name.replace("\\", "/"), split(tf1.name)[1])]
-    expected.sort()
+    expected = sorted(["%s/<br>" % td,
+                       "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
+                       (tf2.name.replace("\\", "/"), split(tf2.name)[1]),
+                       "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
+                       (tf1.name.replace("\\", "/"), split(tf1.name)[1])])
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
 
@@ -139,8 +138,7 @@ def test_existing_path_FileLinks_alt_formatter():
     fl = display.FileLinks(td, notebook_display_formatter=fake_formatter)
     actual = fl._repr_html_()
     actual = sorted(actual.split('\n'))
-    expected = ["hello", "world"]
-    expected.sort()
+    expected = sorted(["hello", "world"])
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
 
@@ -153,12 +151,11 @@ def test_existing_path_FileLinks_repr():
     fl = display.FileLinks(td)
     actual = repr(fl)
     actual = sorted(actual.split('\n'))
-    expected = [
+    expected = sorted([
         '%s/' % td,
         '  %s' % split(tf1.name)[1],
         '  %s' % split(tf2.name)[1]
-    ]
-    expected.sort()
+    ])
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
 
@@ -176,8 +173,7 @@ def test_existing_path_FileLinks_repr_alt_formatter():
     fl = display.FileLinks(td, terminal_display_formatter=fake_formatter)
     actual = repr(fl)
     actual = sorted(actual.split('\n'))
-    expected = ["hello", "world"]
-    expected.sort()
+    expected = sorted(["hello", "world"])
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
 
