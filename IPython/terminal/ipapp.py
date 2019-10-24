@@ -58,7 +58,6 @@ ipython locate profile foo # print the path to the directory for profile `foo`
 
 class IPAppCrashHandler(CrashHandler):
     """sys.excepthook for IPython itself, leaves a detailed report on disk."""
-
     def __init__(self, app):
         contact_name = release.author
         contact_email = release.author_email
@@ -94,9 +93,11 @@ flags = dict(base_flags)
 flags.update(shell_flags)
 frontend_flags = {}
 addflag = lambda *args: frontend_flags.update(boolean_flag(*args))
-addflag('autoedit-syntax', 'TerminalInteractiveShell.autoedit_syntax',
-        'Turn on auto editing of files with syntax errors.',
-        'Turn off auto editing of files with syntax errors.')
+
+# So in the 'whatsnew' for ipython FIVE it's noted this doesn't work anymore.
+# addflag('autoedit-syntax', 'TerminalInteractiveShell.autoedit_syntax',
+#         'Turn on auto editing of files with syntax errors.',
+#         'Turn off auto editing of files with syntax errors.')
 addflag(
     'simple-prompt',
     'TerminalInteractiveShell.simple_prompt',
@@ -160,10 +161,10 @@ aliases.update(shell_aliases)
 
 
 class LocateIPythonApp(BaseIPythonApplication):
-    description = """print the path to the IPython dir"""
+    description = """Print the path to the IPython dir."""
     subcommands = dict(profile=(
         'IPython.core.profileapp.ProfileLocate',
-        "print the path to an IPython profile directory",
+        "Print the path to an IPython profile directory.",
     ), )
 
     def start(self):
@@ -187,7 +188,8 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         klass=object,
         # use default_value otherwise which only allow subclasses.
         default_value=TerminalInteractiveShell,
-        help="Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends"
+        help=
+        "Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends"
     ).tag(config=True)
 
     @default('classes')
@@ -210,26 +212,6 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             LoggingMagics,
         ]
 
-    deprecated_subcommands = dict(
-        qtconsole=('qtconsole.qtconsoleapp.JupyterQtConsoleApp',
-                   """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter Qt Console."""
-                   ),
-        notebook=('notebook.notebookapp.NotebookApp',
-                  """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter HTML Notebook Server."""
-                  ),
-        console=('jupyter_console.app.ZMQTerminalIPythonApp',
-                 """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter terminal-based Console."""
-                 ),
-        nbconvert=('nbconvert.nbconvertapp.NbConvertApp',
-                   "DEPRECATED, Will be removed in IPython 6.0 : Convert notebooks to/from other formats."
-                   ),
-        trust=('nbformat.sign.TrustNotebookApp',
-               "DEPRECATED, Will be removed in IPython 6.0 : Sign notebooks to trust their potentially unsafe contents at load."
-               ),
-        kernelspec=('jupyter_client.kernelspecapp.KernelSpecApp',
-                    "DEPRECATED, Will be removed in IPython 6.0 : Manage Jupyter kernel specifications."
-                    ),
-    )
     subcommands = dict(
         profile=("IPython.core.profileapp.ProfileApp",
                  "Create and manage IPython profiles."),
@@ -240,11 +222,6 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         history=('IPython.core.historyapp.HistoryApp',
                  "Manage the IPython history database."),
     )
-    deprecated_subcommands['install-nbextension'] = (
-        "notebook.nbextensions.InstallNBExtensionApp",
-        "DEPRECATED, Will be removed in IPython 6.0 : Install Jupyter notebook extension files"
-    )
-    subcommands.update(deprecated_subcommands)
 
     # *do* autocreate requested profile, but don't create the config file.
     auto_create = Bool(True)
@@ -269,7 +246,8 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         False,
         help="""If a command or file is given via the command-line,
         e.g. 'ipython foo.py', start an interactive shell after executing the
-        file or command.""").tag(config=True)
+        file or command. This is presented in the API as App.force_interact"""
+    ).tag(config=True)
 
     @observe('force_interact')
     def _force_interact_changed(self, change):
@@ -325,11 +303,14 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         self.init_code()
 
     def init_shell(self):
-        """initialize the InteractiveShell instance"""
-        # Create an InteractiveShell instance.
-        # shell.display_banner should always be False for the terminal
-        # based app, because we call shell.show_banner() by hand below
-        # so the banner shows *before* all extension loading stuff.
+        """Initialize the InteractiveShell instance.
+
+        Create an InteractiveShell instance.
+
+        shell.display_banner should always be False for the terminal
+        based app, because we call shell.show_banner() by hand below
+        so the banner shows *before* all extension loading stuff.
+        """
         self.shell = self.interactive_shell_class.instance(
             parent=self,
             profile_dir=self.profile_dir,
@@ -338,7 +319,7 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         self.shell.configurables.append(self)
 
     def init_banner(self):
-        """optionally display the banner"""
+        """Optionally display the banner."""
         if self.display_banner and self.interact:
             self.shell.show_banner()
         # Make sure there is a space below the banner.
@@ -369,6 +350,18 @@ def load_default_config(ipython_dir=None):
     """Load the default config file from the default ipython_dir.
 
     This is useful for embedded shells.
+
+    Parameters
+    ----------
+    ipython_dir : str (path-like), optional
+        The directory where IPython config files live. If `None`, then
+        `IPython.paths.get_ipython_dir` is queried.
+
+    Returns
+    -------
+    TerminalIPythonApp.config : traitlets.config.config
+        I guess that'd be the type but idk.
+
     """
     if ipython_dir is None:
         ipython_dir = get_ipython_dir()

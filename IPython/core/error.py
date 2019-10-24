@@ -62,3 +62,17 @@ class InputRejected(Exception):
     Raise this in your NodeTransformer to indicate that InteractiveShell should
     not execute the supplied input.
     """
+
+
+class AliasError(Exception):
+    """Oct 24, 2019: Moved from `IPython.core.alias`."""
+    pass
+
+
+class InvalidAliasError(AliasError):
+    pass
+
+
+class KillEmbedded(Exception):
+    """This one's from `IPython.terminal.embed`."""
+    pass

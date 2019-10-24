@@ -25,9 +25,9 @@ import re
 import sys
 
 from traitlets.config.configurable import Configurable
-from IPython.core.error import UsageError
-
 from traitlets import List, Instance
+
+from IPython.core.error import UsageError, AliasError, InvalidAliasError
 
 # -----------------------------------------------------------------------------
 # Utilities
@@ -125,14 +125,6 @@ def default_aliases():
         default_aliases = []
 
     return default_aliases
-
-
-class AliasError(Exception):
-    pass
-
-
-class InvalidAliasError(AliasError):
-    pass
 
 
 class Alias:

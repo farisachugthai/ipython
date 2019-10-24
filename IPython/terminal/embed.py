@@ -8,20 +8,16 @@ An embedded IPython shell.
 import sys
 import warnings
 
+from traitlets import Bool, CBool, Unicode
+
 from IPython.core import ultratb, compilerop
 from IPython.core import magic_arguments
+from IPython.core.error import KillEmbedded
 from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.core.interactiveshell import DummyMod, InteractiveShell
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 from IPython.terminal.ipapp import load_default_config
-
-from traitlets import Bool, CBool, Unicode
 from IPython.utils.io import ask_yes_no
-
-
-class KillEmbedded(Exception):
-    pass
-
 
 # kept for backward compatibility as IPython 6 was released with
 # the typo. See https://github.com/ipython/ipython/pull/10706
@@ -107,13 +103,15 @@ class EmbeddedMagics(Magics):
 
     @line_magic
     def exit_raise(self, parameter_s=''):
-        """%exit_raise Make the current embedded kernel exit and raise and exception.
+        """Make the current embedded kernel exit and raise an exception.
+
+        .. magic:: %exit_raise
 
         This function sets an internal flag so that an embedded IPython will
-        raise a `IPython.terminal.embed.KillEmbedded` Exception on exit, and then exit the current I. This is
-        useful to permanently exit a loop that create IPython embed instance.
+        raise a `IPython.terminal.embed.KillEmbedded` Exception on exit, and
+        then exit the current I. This is useful to permanently exit a loop
+        that create IPython embed instance.
         """
-
         self.shell.should_raise = True
         self.shell.ask_exit()
 
@@ -141,8 +139,7 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
             and (self._init_location_id not in InteractiveShellEmbed._inactive_locations)
 
     def _disable_init_location(self):
-        """Disable the current Instance creation location"""
-        InteractiveShellEmbed._inactive_locations.add(self._init_location_id)
+        """Disable the current Instance creation location."""        InteractiveShellEmbed._inactive_locations.add(self._init_location_id)
 
     @embedded_active.setter
     def embedded_active(self, value):
@@ -269,33 +266,36 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
 
         Parameters
         ----------
-
-        local_ns, module
-          Working local namespace (a dict) and module (a module or similar
-          object). If given as None, they are automatically taken from the scope
-          where the shell was called, so that program variables become visible.
+        local_ns : module
+            Working local namespace (a dict) and module (a module or similar
+            object). If given as None, they are automatically taken from the scope
+            where the shell was called, so that program variables become visible.
 
         stack_depth : int
-          How many levels in the stack to go to looking for namespaces (when
-          local_ns or module is None). This allows an intermediate caller to
-          make sure that this function gets the namespace from the intended
-          level in the stack. By default (0) it will get its locals and globals
-          from the immediate caller.
+            How many levels in the stack to go to looking for namespaces (when
+            local_ns or module is None). This allows an intermediate caller to
+            make sure that this function gets the namespace from the intended
+            level in the stack. By default (0) it will get its locals and globals
+            from the immediate caller.
 
         compile_flags
-          A bit field identifying the __future__ features
-          that are enabled, as passed to the builtin :func:`compile` function.
-          If given as None, they are automatically taken from the scope where
-          the shell was called.
+            A bit field identifying the __future__ features
+            that are enabled, as passed to the builtin :func:`compile` function.
+            If given as None, they are automatically taken from the scope where
+            the shell was called.
+
+        Raises
+        ------
+        DeprecationWarning
+            If global_ns, display_banner or module are used.
 
         """
-
-        if (global_ns is not None) and (module is None):
+        if global_ns is not None and module is None:
             raise DeprecationWarning(
                 "'global_ns' keyword argument is deprecated, and has been removed in IPython 5.0 use `module` keyword argument instead."
             )
 
-        if (display_banner is not None):
+        if display_banner is not None:
             warnings.warn(
                 "The display_banner parameter is deprecated since IPython 4.0",
                 DeprecationWarning)
@@ -313,8 +313,7 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
                     module = sys.modules[global_ns['__name__']]
                 except KeyError:
                     warnings.warn("Failed to get module %s" %
-                                  global_ns.get('__name__', 'unknown module')
-                                  )
+                                  global_ns.get('__name__', 'unknown module'))
                     module = DummyMod()
                     module.__dict__ = global_ns
             if compile_flags is None:

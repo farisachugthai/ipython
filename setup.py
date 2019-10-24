@@ -6,12 +6,6 @@ Under Posix environments it works like a typical setup.py script.
 Under Windows, the command sdist is not supported, since IPython
 requires utilities which are not available under Windows.
 
-.. todo:: Fix disutils warning
-
-    C:\tools\miniconda3\lib\distutils\dist.py:274: UserWarning: Unknown distribution option: 'project_urls'
-    warnings.warn(msg)
-
-    That's a little obnoxious
 
 -----------------------------------------------------------------------------
 
@@ -33,10 +27,6 @@ site-packages/ipython-7.8.0-dist-info/ is  file called entry_points.txt.
 It only has the following for it's contents:
 
 [console_scripts]
-iptest = IPython.testing.iptestcontroller:main
-iptest3 = IPython.testing.iptestcontroller:main
-ipython = IPython:start_ipython
-ipython3 = IPython:start_ipython
 
 [pygments.lexers]
 ipython = IPython.lib.lexers:IPythonLexer
@@ -48,7 +38,7 @@ This is so weird to me how this script is set up. Like check this::
     if 'setuptools' in sys.modules:
         setuptools_extra_args['entry_points'] = {
             'console_scripts':
-            find_entry_points(),
+            # find_entry_points(),
             'pygments.lexers': [
                 'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
                 'ipython = IPython.lib.lexers:IPythonLexer',
@@ -59,6 +49,15 @@ This is so weird to me how this script is set up. Like check this::
 So if this user doesn't have setuptools installed, then they don't get the
 pygments lexers installed? Wth?
 
+Here's something worth keeping in mind.
+
+>>> import importlib_metadata
+>>> importlib_metadata.entry_points()
+...  # +ELLIPSIS
+EntryPoint(name='iptest', value='IPython.testing.iptestcontroller:main', group='console_scripts'),
+EntryPoint(name='iptest3', value='IPython.testing.iptestcontroller:main', group='console_scripts'),
+EntryPoint(name='ipython', value='IPython:start_ipython', group='console_scripts'),
+EntryPoint(name='ipython3', value='IPython:start_ipython', group='console_scripts'),
 
 """
 from __future__ import print_function
@@ -77,6 +76,10 @@ from distutils.command.install_data import install_data
 from distutils.util import change_root, convert_path
 
 from distutils.core import setup
+try:
+    import importlib_metadata
+except ImportError:
+    importlib_metadata = None
 
 from setuptools import find_packages
 
@@ -137,27 +140,30 @@ packages = find_packages()
 
 # Create a dict with the basic information
 # This dict is eventually passed to setup after additional keys are added.
-setup_args = dict(name=name,
-                  version=version,
-                  description=description,
-                  long_description=long_description,
-                  author=author,
-                  author_email=author_email,
-                  url=url,
-                  license=license,
-                  platforms=platforms,
-                  keywords=keywords,
-                  classifiers=classifiers,
-                  cmdclass={'install_data': install_data_ext},
-                  project_urls={
-                      'Documentation': 'https://ipython.readthedocs.io/',
-                      'Funding': 'https://numfocus.org/',
-                      'Source': 'https://github.com/ipython/ipython',
-                      'Tracker': 'https://github.com/ipython/ipython/issues',
-                  })
+setup_args = dict(
+    name=name,
+    version=version,
+    description=description,
+    long_description=long_description,
+    author=author,
+    author_email=author_email,
+    url=url,
+    license=license,
+    platforms=platforms,
+    keywords=keywords,
+    classifiers=classifiers,
+    # cmdclass={'install_data': install_data_ext},
+    project_urls={
+        'Documentation': 'https://ipython.readthedocs.io/',
+        'Funding': 'https://numfocus.org/',
+        'Source': 'https://github.com/ipython/ipython',
+        'Tracker': 'https://github.com/ipython/ipython/issues',
+    })
 
 setup_args['packages'] = packages
+
 # setup_args['package_data'] = package_data
+# TODO: use resourcemanager API
 setup_args['package_data'] = {
     '': ['*.txt', '*.rst'],
     'IPython.core': ['profile/README*'],
@@ -165,26 +171,6 @@ setup_args['package_data'] = {
     'IPython.lib.tests': ['*.wav'],
     'IPython.testing.plugin': ['*.txt'],
 }
-
-# setup_args['data_files'] = data_files
-
-# ---------------------------------------------------------------------------
-# custom distutils commands
-# ---------------------------------------------------------------------------
-# imports here, so they are after setuptools import if there was one
-
-setup_args['cmdclass'] = {
-    'build_py': check_package_data_first(git_prebuild('IPython')),
-    'sdist': git_prebuild('IPython', sdist),
-    'symlink': install_symlinked,
-    'install_lib_symlink': install_lib_symlink,
-    'install_scripts_sym': install_scripts_for_symlink,
-    'unsymlink': unsymlink,
-}
-
-# ---------------------------------------------------------------------------
-# Handle scripts, dependencies, and setuptools specific things
-# ---------------------------------------------------------------------------
 
 # For some commands, use setuptools.  Note that we do NOT list install here!
 # If you want a setuptools-enhanced install, just run 'setupegg.py install'
@@ -278,8 +264,13 @@ if 'setuptools' in sys.modules:
     setuptools_extra_args['python_requires'] = '>=3.5'
     setuptools_extra_args['zip_safe'] = False
     setuptools_extra_args['entry_points'] = {
-        'console_scripts':
-        find_entry_points(),
+        'console_scripts': [
+            'iptest = IPython.testing.iptestcontroller:main',
+            'iptest3 = IPython.testing.iptestcontroller:main',
+            'ipython = IPython:start_ipython',
+            'ipython3 = IPython:start_ipython',
+        ],
+        # find_entry_points(),
         'pygments.lexers': [
             'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
             'ipython = IPython.lib.lexers:IPythonLexer',
@@ -289,20 +280,11 @@ if 'setuptools' in sys.modules:
     setup_args['extras_require'] = extras_require
     setup_args['install_requires'] = install_requires
 
-else:
-    # scripts has to be a non-empty list, or install_scripts isn't called
-    setup_args['scripts'] = [
-        e.split('=')[0].strip() for e in find_entry_points()
-    ]
-
-    setup_args['cmdclass']['build_scripts'] = build_scripts_entrypt
-
 # ---------------------------------------------------------------------------
 # Do the actual setup now
 # ---------------------------------------------------------------------------
 
 setup_args.update(setuptools_extra_args)
-
 
 class install_data_ext(install_data):
     def initialize_options(self):

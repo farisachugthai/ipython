@@ -101,9 +101,9 @@ author = 'The IPython Development Team'
 
 author_email = 'ipython-dev@python.org'
 
-url = 'https://ipython.org'
+url = 'https://ipython.readthedocs.com'
 
-platforms = ['Linux', 'Mac OSX', 'Windows']
+platforms = ['Linux', 'Mac OSX', 'Windows', 'Android']
 
 keywords = ['Interactive', 'Interpreter', 'Shell', 'Embedding']
 

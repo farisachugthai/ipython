@@ -14,9 +14,10 @@ docrepr = "*"
 matplotlib = "*"
 Sphinx = "*"
 pytest = "*"
-ipython-doctest-plugin = {editable = true,path = "./IPython/testing/plugin"}
+ipython-doctest-plugin = {editable = true,path = "."}
 nose = "*"
 testpath = "*"
+pywin32 = "*"
 
 [requires]
 python_version = "3.7"
