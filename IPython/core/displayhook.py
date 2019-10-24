@@ -227,7 +227,7 @@ class DisplayHook(Configurable):
                     '__': self.__,
                     '___': self.___
                 },
-                    interactive=False)
+                                interactive=False)
 
             # hackish access to top-level  namespace to create _1,_2...
             # dynamically
@@ -249,8 +249,8 @@ class DisplayHook(Configurable):
             return
         if self.shell.logger.log_output:
             self.shell.logger.log_write(format_dict['text/plain'], 'output')
-        self.shell.history_manager.output_hist_reprs[self.prompt_count] = \
-            format_dict['text/plain']
+        self.shell.history_manager.output_hist_reprs[
+            self.prompt_count] = format_dict['text/plain']
 
     def finish_displayhook(self):
         """Finish up all displayhook activities."""
@@ -276,7 +276,7 @@ class DisplayHook(Configurable):
             self.finish_displayhook()
 
     def cull_cache(self):
-        """Output cache is full, cull the oldest entries"""
+        """Output cache is full, cull the oldest entries."""
         oh = self.shell.user_ns.get('_oh', {})
         sz = len(oh)
         cull_count = max(int(sz * self.cull_fraction), 2)
@@ -291,6 +291,13 @@ class DisplayHook(Configurable):
             oh.pop(n, None)
 
     def flush(self):
+        """Checks self.do_full_cache.
+
+        Raises
+        ------
+        :exc:`ValueError`
+
+        """
         if not self.do_full_cache:
             raise ValueError("You shouldn't have reached the cache flush "
                              "if full caching is not enabled!")
@@ -300,7 +307,7 @@ class DisplayHook(Configurable):
             key = '_' + repr(n)
             try:
                 del self.shell.user_ns[key]
-            except BaseException:
+            except Exception:  # don't use baseexception like wth
                 pass
         # In some embedded circumstances, the user_ns doesn't have the
         # '_oh' key set up.
@@ -325,15 +332,12 @@ class DisplayHook(Configurable):
 
 
 class CapturingDisplayHook:
-
     def __init__(self, shell, outputs=None):
         self.shell = shell
         if outputs is None:
             outputs = []
         self.outputs = outputs
 
-    def __call__(self, result=None):
-        if result is None:
-            return
+    def __call__(self, result):
         format_dict, md_dict = self.shell.display_formatter.format(result)
         self.outputs.append({'data': format_dict, 'metadata': md_dict})
