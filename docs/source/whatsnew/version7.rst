@@ -2,6 +2,25 @@
  7.x Series
 ============
 
+.. _version 790:
+
+IPython 7.9 is a small release with a couple of improvement and bug fixes.
+
+ - Xterm terminal title should be restored on exit :ghpull:`11910`
+ - special variables ``_``,``__``, ``___`` are not set anymore when cache size
+   is 0 or less.  :ghpull:`11877`
+ - Autoreload should have regained some speed by using a new heuristic logic to
+   find all objects needing reload. This should avoid large objects traversal
+   like pandas dataframes. :ghpull:`11876`
+ - Get ready for Python 4. :ghpull:`11874`
+ - `%env` Magic nonw has euristic to hide potentially sensitive values :ghpull:`11896`
+
+This is a small release despite a number of Pull Request Pending that need to
+be reviewed/worked on. Many of the core developers have been busy outside of
+IPython/Jupyter and we thanks all contributor for their patience; we'll work on
+these as soon as we have time. 
+
+
 .. _version780:
 
 IPython 7.8.0
