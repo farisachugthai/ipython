@@ -1,4 +1,4 @@
-.. _developer_guide:
+. _developer_guide:
 
 =====================================================
 Developer's guide for third party tools and libraries
@@ -14,9 +14,9 @@ Developer's guide for third party tools and libraries
    :maxdepth: 2
    :titlesonly:
 
+   licensing
    how_ipython_works
    wrapperkernels
    execution
-   lexer
    config
    inputhook_app

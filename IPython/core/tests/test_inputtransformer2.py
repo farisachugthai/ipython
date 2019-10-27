@@ -69,57 +69,41 @@ def test():
 
 ######
 
-AUTOCALL_QUOTE = (
-    [",f 1 2 3\n"], (1, 0),
-    ['f("1", "2", "3")\n']
-)
+AUTOCALL_QUOTE = ([",f 1 2 3\n"], (1, 0), ['f("1", "2", "3")\n'])
 
-AUTOCALL_QUOTE2 = (
-    [";f 1 2 3\n"], (1, 0),
-    ['f("1 2 3")\n']
-)
+AUTOCALL_QUOTE2 = ([";f 1 2 3\n"], (1, 0), ['f("1 2 3")\n'])
 
-AUTOCALL_PAREN = (
-    ["/f 1 2 3\n"], (1, 0),
-    ['f(1, 2, 3)\n']
-)
+AUTOCALL_PAREN = (["/f 1 2 3\n"], (1, 0), ['f(1, 2, 3)\n'])
 
-SIMPLE_HELP = (
-    ["foo?\n"], (1, 0),
-    ["get_ipython().run_line_magic('pinfo', 'foo')\n"]
-)
+SIMPLE_HELP = (["foo?\n"], (1, 0),
+               ["get_ipython().run_line_magic('pinfo', 'foo')\n"])
 
-DETAILED_HELP = (
-    ["foo??\n"], (1, 0),
-    ["get_ipython().run_line_magic('pinfo2', 'foo')\n"]
-)
+DETAILED_HELP = (["foo??\n"], (1, 0),
+                 ["get_ipython().run_line_magic('pinfo2', 'foo')\n"])
 
-MAGIC_HELP = (
-    ["%foo?\n"], (1, 0),
-    ["get_ipython().run_line_magic('pinfo', '%foo')\n"]
-)
+MAGIC_HELP = (["%foo?\n"], (1, 0),
+              ["get_ipython().run_line_magic('pinfo', '%foo')\n"])
 
-HELP_IN_EXPR = (
-    ["a = b + c?\n"], (1, 0),
-    ["get_ipython().set_next_input('a = b + c');"
-     "get_ipython().run_line_magic('pinfo', 'c')\n"]
-)
+HELP_IN_EXPR = (["a = b + c?\n"], (1, 0), [
+    "get_ipython().set_next_input('a = b + c');"
+    "get_ipython().run_line_magic('pinfo', 'c')\n"
+])
 
 HELP_CONTINUED_LINE = ("""\
 a = \\
 zip?
-""".splitlines(keepends=True), (1, 0),
-    [r"get_ipython().set_next_input('a = \\\nzip');get_ipython().run_line_magic('pinfo', 'zip')" + "\n"]
-)
+""".splitlines(keepends=True), (1, 0), [
+    r"get_ipython().set_next_input('a = \\\nzip');get_ipython().run_line_magic('pinfo', 'zip')"
+    + "\n"
+])
 
-HELP_MULTILINE = (
-    """\
+HELP_MULTILINE = ("""\
 (a,
 b) = zip?
-""".splitlines(keepends=True),
-    (1, 0),
-    [r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')" +
-     "\n"])
+""".splitlines(keepends=True), (1, 0), [
+    r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')"
+    + "\n"
+])
 
 
 def null_cleanup_transformer(lines):
@@ -162,18 +146,16 @@ def test_continued_line():
     lines = MULTILINE_MAGIC_ASSIGN[0]
     nt.assert_equal(ipt2.find_end_of_continued_line(lines, 1), 2)
 
-    nt.assert_equal(
-        ipt2.assemble_continued_line(
-            lines, (1, 5), 2), "foo    bar")
+    nt.assert_equal(ipt2.assemble_continued_line(lines, (1, 5), 2),
+                    "foo    bar")
 
 
 def test_find_assign_magic():
     check_find(ipt2.MagicAssign, MULTILINE_MAGIC_ASSIGN)
     check_find(ipt2.MagicAssign, MULTILINE_SYSTEM_ASSIGN, match=False)
-    check_find(
-        ipt2.MagicAssign,
-        MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT,
-        match=False)
+    check_find(ipt2.MagicAssign,
+               MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT,
+               match=False)
 
 
 def test_transform_assign_magic():
@@ -239,10 +221,8 @@ def test_transform_help():
     nt.assert_equal(tf.transform(HELP_IN_EXPR[0]), HELP_IN_EXPR[2])
 
     tf = ipt2.HelpEnd((1, 0), (2, 3))
-    nt.assert_equal(
-        tf.transform(
-            HELP_CONTINUED_LINE[0]),
-        HELP_CONTINUED_LINE[2])
+    nt.assert_equal(tf.transform(HELP_CONTINUED_LINE[0]),
+                    HELP_CONTINUED_LINE[2])
 
     tf = ipt2.HelpEnd((1, 0), (2, 8))
     nt.assert_equal(tf.transform(HELP_MULTILINE[0]), HELP_MULTILINE[2])
@@ -257,8 +237,9 @@ def test_find_assign_op_dedent():
             self.string = s
 
     nt.assert_equal(_find_assign_op([Tk(s) for s in ('', 'a', '=', 'b')]), 2)
-    nt.assert_equal(_find_assign_op(
-        [Tk(s) for s in ('', '(', 'a', '=', 'b', ')', '=', '5')]), 6)
+    nt.assert_equal(
+        _find_assign_op(
+            [Tk(s) for s in ('', '(', 'a', '=', 'b', ')', '=', '5')]), 6)
 
 
 def test_check_complete():

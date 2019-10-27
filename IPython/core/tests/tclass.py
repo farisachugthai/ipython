@@ -2,7 +2,6 @@
 
 See test_run for details."""
 
-
 import sys
 
 # We want to ensure that while objects remain available for immediate access,

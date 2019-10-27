@@ -16,15 +16,17 @@ def test_prefilter():
     """Test user input conversions"""
 
     # pairs of (raw, expected correct) input
-    pairs = [('2+2', '2+2'),
-             ]
+    pairs = [
+        ('2+2', '2+2'),
+    ]
 
     for raw, correct in pairs:
         nt.assert_equal(ip.prefilter(raw), correct)
 
 
 def test_prefilter_shadowed():
-    def dummy_magic(line): pass
+    def dummy_magic(line):
+        pass
 
     prev_automagic_state = ip.automagic
     ip.automagic = True
@@ -52,7 +54,10 @@ def test_prefilter_shadowed():
 def test_autocall_binops():
     """See https://github.com/ipython/ipython/issues/81"""
     ip.magic('autocall 2')
-    def f(x): return x
+
+    def f(x):
+        return x
+
     ip.user_ns['f'] = f
     try:
         nt.assert_equal(ip.prefilter('f 1'), 'f(1)')
@@ -62,7 +67,8 @@ def test_autocall_binops():
         # Run tests again with a more permissive exclude_regexp, which will
         # allow transformation of binary operations ('f -1' -> 'f(-1)').
         pm = ip.prefilter_manager
-        ac = AutocallChecker(shell=pm.shell, prefilter_manager=pm,
+        ac = AutocallChecker(shell=pm.shell,
+                             prefilter_manager=pm,
                              config=pm.config)
         try:
             ac.priority = 1
@@ -100,7 +106,6 @@ def test_prefilter_attribute_errors():
     """Capture exceptions thrown by user objects on attribute access.
 
     See http://github.com/ipython/ipython/issues/988."""
-
     class X(object):
         def __getattr__(self, k):
             raise ValueError('broken object')

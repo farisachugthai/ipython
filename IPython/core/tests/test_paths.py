@@ -104,9 +104,9 @@ def test_get_ipython_dir_4():
                 raise
 
         with modified_env({
-            'IPYTHON_DIR': None,
-            'IPYTHONDIR': None,
-            'XDG_CONFIG_HOME': XDG_TEST_DIR,
+                'IPYTHON_DIR': None,
+                'IPYTHONDIR': None,
+                'XDG_CONFIG_HOME': XDG_TEST_DIR,
         }), warnings.catch_warnings(record=True) as w:
             ipdir = paths.get_ipython_dir()
 
@@ -127,9 +127,9 @@ def test_get_ipython_dir_5():
                 raise
 
         with modified_env({
-            'IPYTHON_DIR': None,
-            'IPYTHONDIR': None,
-            'XDG_CONFIG_HOME': XDG_TEST_DIR,
+                'IPYTHON_DIR': None,
+                'IPYTHONDIR': None,
+                'XDG_CONFIG_HOME': XDG_TEST_DIR,
         }):
             ipdir = paths.get_ipython_dir()
 

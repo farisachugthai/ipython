@@ -10,7 +10,8 @@ import argparse
 from nose.tools import assert_equal
 
 from IPython.core.magic_arguments import (argument, argument_group, kwds,
-                                          magic_arguments, parse_argstring, real_name)
+                                          magic_arguments, parse_argstring,
+                                          real_name)
 
 
 @magic_arguments()
@@ -76,7 +77,8 @@ def foo(self, args):
 def test_magic_arguments():
     assert_equal(
         magic_foo1.__doc__,
-        '::\n\n  %foo1 [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n')
+        '::\n\n  %foo1 [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n'
+    )
     assert_equal(getattr(magic_foo1, 'argcmd_name', None), None)
     assert_equal(real_name(magic_foo1), 'foo1')
     assert_equal(magic_foo1(None, ''), argparse.Namespace(foo=None))
@@ -90,7 +92,8 @@ def test_magic_arguments():
 
     assert_equal(
         magic_foo3.__doc__,
-        '::\n\n  %foo3 [-f FOO] [-b BAR] [-z BAZ]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n\nGroup:\n  -b BAR, --bar BAR  a grouped argument\n\nSecond Group:\n  -z BAZ, --baz BAZ  another grouped argument\n')
+        '::\n\n  %foo3 [-f FOO] [-b BAR] [-z BAZ]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n\nGroup:\n  -b BAR, --bar BAR  a grouped argument\n\nSecond Group:\n  -z BAZ, --baz BAZ  another grouped argument\n'
+    )
     assert_equal(getattr(magic_foo3, 'argcmd_name', None), None)
     assert_equal(real_name(magic_foo3), 'foo3')
     assert_equal(magic_foo3(None, ''),
@@ -99,7 +102,8 @@ def test_magic_arguments():
 
     assert_equal(
         magic_foo4.__doc__,
-        '::\n\n  %foo4 [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n')
+        '::\n\n  %foo4 [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n'
+    )
     assert_equal(getattr(magic_foo4, 'argcmd_name', None), None)
     assert_equal(real_name(magic_foo4), 'foo4')
     assert_equal(magic_foo4(None, ''), argparse.Namespace())
@@ -107,7 +111,8 @@ def test_magic_arguments():
 
     assert_equal(
         magic_foo5.__doc__,
-        '::\n\n  %frobnicate [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n')
+        '::\n\n  %frobnicate [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n'
+    )
     assert_equal(getattr(magic_foo5, 'argcmd_name', None), 'frobnicate')
     assert_equal(real_name(magic_foo5), 'frobnicate')
     assert_equal(magic_foo5(None, ''), argparse.Namespace(foo=None))
@@ -115,7 +120,8 @@ def test_magic_arguments():
 
     assert_equal(
         magic_magic_foo.__doc__,
-        '::\n\n  %magic_foo [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n')
+        '::\n\n  %magic_foo [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n'
+    )
     assert_equal(getattr(magic_magic_foo, 'argcmd_name', None), None)
     assert_equal(real_name(magic_magic_foo), 'magic_foo')
     assert_equal(magic_magic_foo(None, ''), argparse.Namespace(foo=None))
@@ -123,7 +129,8 @@ def test_magic_arguments():
 
     assert_equal(
         foo.__doc__,
-        '::\n\n  %foo [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n')
+        '::\n\n  %foo [-f FOO]\n\n A docstring.\n\noptional arguments:\n  -f FOO, --foo FOO  an argument\n'
+    )
     assert_equal(getattr(foo, 'argcmd_name', None), None)
     assert_equal(real_name(foo), 'foo')
     assert_equal(foo(None, ''), argparse.Namespace(foo=None))

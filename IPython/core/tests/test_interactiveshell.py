@@ -4,11 +4,10 @@
 Historically the main classes in interactiveshell have been under-tested.  This
 module should grow as many single-method tests as possible to trap many of the
 recurring bugs we seem to encounter with high-level interaction.
-"""
 
+"""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
 import asyncio
 import ast
 import os
@@ -27,7 +26,10 @@ from IPython.core.error import InputRejected
 from IPython.core.inputtransformer import InputTransformer
 from IPython.core import interactiveshell
 from IPython.testing.decorators import (
-    skipif, skip_win32, onlyif_unicode_paths, onlyif_cmds_exist,
+    skipif,
+    skip_win32,
+    onlyif_unicode_paths,
+    onlyif_cmds_exist,
 )
 from IPython.testing import tools as tt
 from IPython.utils.process import find_cmd
@@ -67,11 +69,13 @@ class InteractiveShellTestCase(unittest.TestCase):
     def test_run_cell_multiline(self):
         """Multi-block, multi-line cells must execute correctly.
         """
-        src = '\n'.join(["x=1",
-                         "y=2",
-                         "if 1:",
-                         "    x += 1",
-                         "    y += 1", ])
+        src = '\n'.join([
+            "x=1",
+            "y=2",
+            "if 1:",
+            "    x += 1",
+            "    y += 1",
+        ])
         res = ip.run_cell(src)
         self.assertEqual(ip.user_ns['x'], 2)
         self.assertEqual(ip.user_ns['y'], 3)
@@ -130,6 +134,7 @@ class InteractiveShellTestCase(unittest.TestCase):
         class Spam(object):
             def __repr__(self):
                 return "\xe9" * 50
+
         import IPython.core.formatters
         f = IPython.core.formatters.PlainTextFormatter()
         f([Spam(), Spam()])
@@ -170,24 +175,23 @@ class InteractiveShellTestCase(unittest.TestCase):
         "Code in functions must be able to access variables outside them."
         ip = get_ipython()
         ip.run_cell("a = 10")
-        ip.run_cell(("def f(x):\n"
-                     "    return x + a"))
+        ip.run_cell(("def f(x):\n" "    return x + a"))
         ip.run_cell("b = f(12)")
         self.assertEqual(ip.user_ns["b"], 22)
 
     def test_bad_custom_tb(self):
         """Check that InteractiveShell is protected from bad custom exception handlers"""
-        ip.set_custom_exc((IOError,), lambda etype, value, tb: 1 / 0)
-        self.assertEqual(ip.custom_exceptions, (IOError,))
+        ip.set_custom_exc((IOError, ), lambda etype, value, tb: 1 / 0)
+        self.assertEqual(ip.custom_exceptions, (IOError, ))
         with tt.AssertPrints("Custom TB Handler failed", channel='stderr'):
             ip.run_cell(u'raise IOError("foo")')
         self.assertEqual(ip.custom_exceptions, ())
 
     def test_bad_custom_tb_return(self):
         """Check that InteractiveShell is protected from bad return types in custom exception handlers"""
-        ip.set_custom_exc((NameError,), lambda etype,
-                          value, tb, tb_offset=None: 1)
-        self.assertEqual(ip.custom_exceptions, (NameError,))
+        ip.set_custom_exc((NameError, ),
+                          lambda etype, value, tb, tb_offset=None: 1)
+        self.assertEqual(ip.custom_exceptions, (NameError, ))
         with tt.AssertPrints("Custom TB Handler failed", channel='stderr'):
             ip.run_cell(u'a=abracadabra')
         self.assertEqual(ip.custom_exceptions, ())
@@ -213,9 +217,8 @@ class InteractiveShellTestCase(unittest.TestCase):
         self.assertEqual(ip.var_expand(u'echo {f[:-1]}'), u'echo Ca\xf1')
         self.assertEqual(ip.var_expand(u'echo {1*2}'), u'echo 2')
 
-        self.assertEqual(
-            ip.var_expand(u"grep x | awk '{print $1}'"),
-            u"grep x | awk '{print $1}'")
+        self.assertEqual(ip.var_expand(u"grep x | awk '{print $1}'"),
+                         u"grep x | awk '{print $1}'")
 
         ip.user_ns['f'] = b'Ca\xc3\xb1o'
         # This should not raise any exception:
@@ -347,8 +350,11 @@ class InteractiveShellTestCase(unittest.TestCase):
 
         # Get info on line magic
         lfind = ip._ofind('lmagic')
-        info = dict(found=True, isalias=False, ismagic=True,
-                    namespace='IPython internal', obj=lmagic.__wrapped__,
+        info = dict(found=True,
+                    isalias=False,
+                    ismagic=True,
+                    namespace='IPython internal',
+                    obj=lmagic.__wrapped__,
                     parent=None)
         nt.assert_equal(lfind, info)
 
@@ -361,8 +367,11 @@ class InteractiveShellTestCase(unittest.TestCase):
 
         # Get info on cell magic
         find = ip._ofind('cmagic')
-        info = dict(found=True, isalias=False, ismagic=True,
-                    namespace='IPython internal', obj=cmagic.__wrapped__,
+        info = dict(found=True,
+                    isalias=False,
+                    ismagic=True,
+                    namespace='IPython internal',
+                    obj=cmagic.__wrapped__,
                     parent=None)
         nt.assert_equal(find, info)
 
@@ -371,11 +380,16 @@ class InteractiveShellTestCase(unittest.TestCase):
             @property
             def foo(self):
                 raise NotImplementedError()
+
         a = A()
 
         found = ip._ofind('a.foo', [('locals', locals())])
-        info = dict(found=True, isalias=False, ismagic=False,
-                    namespace='locals', obj=A.foo, parent=a)
+        info = dict(found=True,
+                    isalias=False,
+                    ismagic=False,
+                    namespace='locals',
+                    obj=A.foo,
+                    parent=a)
         nt.assert_equal(found, info)
 
     def test_ofind_multiple_attribute_lookups(self):
@@ -389,8 +403,12 @@ class InteractiveShellTestCase(unittest.TestCase):
         a.a.a = A()
 
         found = ip._ofind('a.a.a.foo', [('locals', locals())])
-        info = dict(found=True, isalias=False, ismagic=False,
-                    namespace='locals', obj=A.foo, parent=a.a.a)
+        info = dict(found=True,
+                    isalias=False,
+                    ismagic=False,
+                    namespace='locals',
+                    obj=A.foo,
+                    parent=a.a.a)
         nt.assert_equal(found, info)
 
     def test_ofind_slotted_attributes(self):
@@ -402,13 +420,21 @@ class InteractiveShellTestCase(unittest.TestCase):
 
         a = A()
         found = ip._ofind('a.foo', [('locals', locals())])
-        info = dict(found=True, isalias=False, ismagic=False,
-                    namespace='locals', obj=a.foo, parent=a)
+        info = dict(found=True,
+                    isalias=False,
+                    ismagic=False,
+                    namespace='locals',
+                    obj=a.foo,
+                    parent=a)
         nt.assert_equal(found, info)
 
         found = ip._ofind('a.bar', [('locals', locals())])
-        info = dict(found=False, isalias=False, ismagic=False,
-                    namespace=None, obj=None, parent=a)
+        info = dict(found=False,
+                    isalias=False,
+                    ismagic=False,
+                    namespace=None,
+                    obj=None,
+                    parent=a)
         nt.assert_equal(found, info)
 
     def test_ofind_prefers_property_to_instance_level_attribute(self):
@@ -416,6 +442,7 @@ class InteractiveShellTestCase(unittest.TestCase):
             @property
             def foo(self):
                 return 'bar'
+
         a = A()
         a.__dict__['foo'] = 'baz'
         nt.assert_equal(a.foo, 'bar')
@@ -429,7 +456,7 @@ class InteractiveShellTestCase(unittest.TestCase):
             called.append(etype)
             shell.showtraceback((etype, value, tb), tb_offset=tb_offset)
 
-        ip.set_custom_exc((SyntaxError,), my_handler)
+        ip.set_custom_exc((SyntaxError, ), my_handler)
         try:
             ip.run_cell("1f")
             # Check that this was called, and only once.
@@ -445,7 +472,7 @@ class InteractiveShellTestCase(unittest.TestCase):
             called.append(etype)
             shell.showtraceback((etype, value, tb), tb_offset=tb_offset)
 
-        ip.set_custom_exc((ValueError,), my_handler)
+        ip.set_custom_exc((ValueError, ), my_handler)
         try:
             res = ip.run_cell("raise ValueError('test')")
             # Check that this was called, and only once.
@@ -484,7 +511,8 @@ class InteractiveShellTestCase(unittest.TestCase):
         except KeyboardInterrupt:
             msg = ip.get_exception_only()
         self.assertEqual(
-            msg, 'IPython.core.tests.test_interactiveshell.DerivedInterrupt: foo\n')
+            msg,
+            'IPython.core.tests.test_interactiveshell.DerivedInterrupt: foo\n')
 
     def test_inspect_text(self):
         ip.run_cell('a = 5')
@@ -500,9 +528,8 @@ class InteractiveShellTestCase(unittest.TestCase):
         result = ip.run_cell('a = x_invalid_id_x')
         self.assertFalse(ip.last_execution_succeeded)
         self.assertFalse(ip.last_execution_result.success)
-        self.assertIsInstance(
-            ip.last_execution_result.error_in_exec,
-            NameError)
+        self.assertIsInstance(ip.last_execution_result.error_in_exec,
+                              NameError)
 
     def test_reset_aliasing(self):
         """ Check that standard posix aliases work after %reset. """
@@ -516,7 +543,6 @@ class InteractiveShellTestCase(unittest.TestCase):
 
 
 class TestSafeExecfileNonAsciiPath(unittest.TestCase):
-
     @onlyif_unicode_paths
     def setUp(self):
         self.BASETESTDIR = tempfile.mkdtemp()
@@ -540,7 +566,6 @@ class TestSafeExecfileNonAsciiPath(unittest.TestCase):
 
 
 class ExitCodeChecks(tt.TempFileMixin):
-
     def setUp(self):
         self.system = ip.system_raw
 
@@ -574,7 +599,6 @@ class ExitCodeChecks(tt.TempFileMixin):
 
 
 class TestSystemRaw(ExitCodeChecks):
-
     def setUp(self):
         super().setUp()
         self.system = ip.system_raw
@@ -596,11 +620,11 @@ class TestSystemRaw(ExitCodeChecks):
                       "keyboard interrupt from subprocess.call")
         self.assertEqual(ip.user_ns['_exit_code'], -signal.SIGINT)
 
+
 # TODO: Exit codes are currently ignored on Windows.
 
 
 class TestSystemPipedExitCode(ExitCodeChecks):
-
     def setUp(self):
         super().setUp()
         self.system = ip.system_piped
@@ -625,8 +649,7 @@ class TestModules(tt.TempFileMixin):
         self.mktmp("import sys\n"
                    "print('numpy' in sys.modules)\n"
                    "print('ipyparallel' in sys.modules)\n"
-                   "print('ipykernel' in sys.modules)\n"
-                   )
+                   "print('ipykernel' in sys.modules)\n")
         out = "False\nFalse\nFalse\n"
         tt.ipexec_validate(self.fname, out)
 
@@ -668,6 +691,7 @@ class TestAstTransform(unittest.TestCase):
 
         def f(x):
             called.add(x)
+
         ip.push({'f': f})
 
         with tt.AssertPrints("std. dev. of"):
@@ -684,6 +708,7 @@ class TestAstTransform(unittest.TestCase):
 
         def f(x):
             called.append(x)
+
         ip.push({'f': f})
 
         # Test with an expression
@@ -717,7 +742,8 @@ class IntegerWrapper(ast.NodeTransformer):
     def visit_Num(self, node):
         if isinstance(node.n, int):
             return ast.Call(func=ast.Name(id='Integer', ctx=ast.Load()),
-                            args=[node], keywords=[])
+                            args=[node],
+                            keywords=[])
         return node
 
     # For Python 3.8+
@@ -737,6 +763,7 @@ class TestAstTransform2(unittest.TestCase):
         def Integer(*args):
             self.calls.append(args)
             return args
+
         ip.push({"Integer": Integer})
 
     def tearDown(self):
@@ -745,7 +772,7 @@ class TestAstTransform2(unittest.TestCase):
 
     def test_run_cell(self):
         ip.run_cell("n = 2")
-        self.assertEqual(self.calls, [(2,)])
+        self.assertEqual(self.calls, [(2, )])
 
         # This shouldn't throw an error
         ip.run_cell("o = 2.0")
@@ -756,16 +783,17 @@ class TestAstTransform2(unittest.TestCase):
 
         def f(x):
             called.add(x)
+
         ip.push({'f': f})
 
         with tt.AssertPrints("std. dev. of"):
             ip.run_line_magic("timeit", "-n1 f(1)")
-        self.assertEqual(called, {(1,)})
+        self.assertEqual(called, {(1, )})
         called.clear()
 
         with tt.AssertPrints("std. dev. of"):
             ip.run_cell_magic("timeit", "-n1 f(2)", "f(3)")
-        self.assertEqual(called, {(2,), (3,)})
+        self.assertEqual(called, {(2, ), (3, )})
 
 
 class ErrorTransformer(ast.NodeTransformer):
@@ -813,7 +841,6 @@ class StringRejector(ast.NodeTransformer):
 
 
 class TestAstTransformInputRejection(unittest.TestCase):
-
     def setUp(self):
         self.transformer = StringRejector()
         ip.ast_transformers.append(self.transformer)
@@ -909,7 +936,6 @@ def test_user_expression():
 
 class TestSyntaxErrorTransformer(unittest.TestCase):
     """Check that SyntaxError raised by an input transformer is handled by run_cell()"""
-
     @staticmethod
     def transformer(lines):
         for line in lines:
@@ -931,7 +957,7 @@ class TestSyntaxErrorTransformer(unittest.TestCase):
         with tt.AssertPrints('1234'):
             ip.run_cell('1234')
         with tt.AssertPrints('SyntaxError: invalid syntax'):
-            ip.run_cell('1 2 3')   # plain python syntax error
+            ip.run_cell('1 2 3')  # plain python syntax error
         with tt.AssertPrints('SyntaxError: input contains "syntaxerror"'):
             # input transformer syntax error
             ip.run_cell('2345  # syntaxerror')
@@ -973,7 +999,6 @@ def wrn():
 
 
 class TestImportNoDeprecate(tt.TempFileMixin):
-
     def setUp(self):
         """Make a valid python temp file."""
         self.mktmp("""
@@ -999,7 +1024,7 @@ def wrn():
 
 def test_custom_exc_count():
     hook = mock.Mock(return_value=None)
-    ip.set_custom_exc((SyntaxError,), hook)
+    ip.set_custom_exc((SyntaxError, ), hook)
     before = ip.execution_count
     ip.run_cell("def foo()", store_history=True)
     # restore default excepthook

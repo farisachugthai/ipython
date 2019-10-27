@@ -7,7 +7,7 @@ Notes
 
 For now this uses IPython hooks, so it can't be in IPython.utils.  If we can get
 rid of that dependency, we could move it there.
------
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -20,7 +20,7 @@ import tempfile
 
 from io import UnsupportedOperation
 
-from IPython.core.get_ipython import get_ipython
+from IPython.core.getipython import get_ipython
 from IPython.core.display import display
 from IPython.core.error import TryNext
 from IPython.utils.data import chop
@@ -41,9 +41,7 @@ def display_page(strng, start=0, screen_lines=25):
 
 
 def as_hook(page_func):
-    """Wrap a pager func to strip the `self` arg
-
-    so it can be called as a hook.
+    """Wrap a pager func to strip the `self` arg so it can be called as a hook.
     """
     return lambda self, *args, **kwargs: page_func(*args, **kwargs)
 
@@ -81,6 +79,21 @@ def _detect_screen_size(screen_lines_def):
 
     This is called by page(). It can raise an error (e.g. when run in the
     test suite), so it's separated out so it can easily be called in a try block.
+
+    .. admonition:: This function depends on termios and curses which may not
+                    be available on all platforms.
+
+    Notes
+    -----
+
+    There is a bug in curses, where *sometimes* it fails to properly
+    initialize, and then after the endwin() call is made, the
+    terminal is left in an unusable state.  Rather than trying to
+    check every time for this (by requesting and comparing termios
+    flags each time), we just save the initial terminal state and
+    unconditionally reset it every time.  It's cheaper than making
+    the checks.
+
     """
     TERM = os.environ.get('TERM', None)
     if not ((TERM == 'xterm' or TERM == 'xterm-color') and
@@ -95,13 +108,6 @@ def _detect_screen_size(screen_lines_def):
     except ImportError:
         return screen_lines_def
 
-    # There is a bug in curses, where *sometimes* it fails to properly
-    # initialize, and then after the endwin() call is made, the
-    # terminal is left in an unusable state.  Rather than trying to
-    # check every time for this (by requesting and comparing termios
-    # flags each time), we just save the initial terminal state and
-    # unconditionally reset it every time.  It's cheaper than making
-    # the checks.
     try:
         term_flags = termios.tcgetattr(sys.stdout)
     except termios.error as err:
@@ -148,7 +154,6 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
     If no system pager works, the string is sent through a 'dumb pager'
     written in python, very simplistic.
     """
-
     # for compatibility with mime-bundle form:
     if isinstance(strng, dict):
         strng = strng['text/plain']
@@ -259,8 +264,7 @@ def page(data, start=0, screen_lines=0, pager_cmd=None):
 
 
 def page_file(fname, start=0, pager_cmd=None):
-    """Page a file, using an optional pager command and starting line.
-    """
+    """Page a file, using an optional pager command and starting line."""
 
     pager_cmd = get_pager_cmd(pager_cmd)
     pager_cmd += ' ' + get_pager_start(pager_cmd, start)

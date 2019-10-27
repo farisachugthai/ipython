@@ -66,7 +66,7 @@ from .core.interactiveshell import InteractiveShell  # noqa F0401
 from .terminal.embed import embed  # noqa F0401
 from .core.application import Application  # noqa F0401
 from .core import release
-from .core.getipython import get_ipython   # noqa F0401
+from .core.getipython import get_ipython  # noqa F0401
 import os
 import sys
 
@@ -126,6 +126,7 @@ def embed_kernel(module=None, local_ns=None, **kwargs):
         Further keyword args are relayed to the IPKernelApp constructor,
         allowing configuration of the Kernel.  Will only have an effect
         on the first embed_kernel call for a given process.
+
     """
 
     (caller_module, caller_locals) = extract_module_locals(1)
@@ -142,13 +143,13 @@ def embed_kernel(module=None, local_ns=None, **kwargs):
 def start_ipython(argv=None, **kwargs):
     """Launch a normal IPython instance (as opposed to embedded)
 
-    `IPython.embed()` puts a shell in a particular calling scope,
+    `IPython.embed` puts a shell in a particular calling scope,
     such as a function or method for debugging purposes,
     which is often not desirable.
 
-    `start_ipython()` does full, regular IPython initialization,
+    `start_ipython` does full, regular IPython initialization,
     including loading startup files, configuration, etc.
-    much of which is skipped by `embed()`.
+    much of which is skipped by `embed`.
 
     This is a public API method, and will survive implementation changes.
 

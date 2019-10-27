@@ -1,19 +1,14 @@
 """Tests for the key interactiveshell module, where the main ipython class is defined.
+
 """
-# -----------------------------------------------------------------------------
-# Module imports
-# -----------------------------------------------------------------------------
+import textwrap
 
-# third party
 import nose.tools as nt
-
-# our own packages
+# from nose.tools.nontrivial import nottest
 
 from IPython import get_ipython
+
 ip = get_ipython()
-# -----------------------------------------------------------------------------
-# Test functions
-# -----------------------------------------------------------------------------
 
 
 def test_reset():
@@ -41,6 +36,7 @@ def test_reset():
 # Tests for reporting of exceptions in various modes, handling of SystemExit,
 # and %tb functionality.  This is really a mix of testing ultraTB and
 # interactiveshell.
+
 
 def doctest_tb_plain():
     """
@@ -218,12 +214,16 @@ SystemExit: (2, 'Mode = exit')
 
 
 def test_run_cell():
-    import textwrap
+    """running a cell.
+
+    .. note:: needed to rename a variable that shadowed the
+    builtin `complex`.
+    """
     ip.run_cell('a = 10\na+=1')
     ip.run_cell('assert a == 11\nassert 1')
 
     nt.assert_equal(ip.user_ns['a'], 11)
-    complex = textwrap.dedent("""
+    complex_doctest = textwrap.dedent("""
     if 1:
         print "hello"
         if 1:
@@ -241,11 +241,3 @@ def test_run_cell():
     """)
     # Simply verifies that this kind of input is run
     ip.run_cell(complex)
-
-
-def test_db():
-    """Test the internal database used for variable persistence."""
-    ip.db['__unittest_'] = 12
-    nt.assert_equal(ip.db['__unittest_'], 12)
-    del ip.db['__unittest_']
-    assert '__unittest_' not in ip.db

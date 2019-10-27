@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests for CommandChainDispatcher."""
 
-
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
@@ -37,6 +36,7 @@ class Fail(object):
         self.called = True
         raise TryNext(self.message)
 
+
 # -----------------------------------------------------------------------------
 # Test functions
 # -----------------------------------------------------------------------------
@@ -46,8 +46,7 @@ def test_command_chain_dispatcher_ff():
     """Test two failing hooks"""
     fail1 = Fail(u'fail1')
     fail2 = Fail(u'fail2')
-    dp = CommandChainDispatcher([(0, fail1),
-                                 (10, fail2)])
+    dp = CommandChainDispatcher([(0, fail1), (10, fail2)])
 
     try:
         dp()
@@ -67,10 +66,12 @@ def test_command_chain_dispatcher_fofo():
     okay1 = Okay(u'okay1')
     okay2 = Okay(u'okay2')
 
-    dp = CommandChainDispatcher([(0, fail1),
-                                 # (5, okay1), # add this later
-                                 (10, fail2),
-                                 (15, okay2)])
+    dp = CommandChainDispatcher([
+        (0, fail1),
+        # (5, okay1), # add this later
+        (10, fail2),
+        (15, okay2)
+    ])
     dp.add(okay1, 5)
 
     nt.assert_equal(dp(), u'okay1')

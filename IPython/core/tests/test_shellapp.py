@@ -27,7 +27,6 @@ SQLITE_NOT_AVAILABLE_ERROR = ('WARNING: IPython History requires SQLite,'
 
 class TestFileToRun(tt.TempFileMixin, unittest.TestCase):
     """Test the behavior of the file_to_run parameter."""
-
     def test_py_script_file_attribute(self):
         """Test that `__file__` is set when running `ipython file.py`"""
         src = "print(__file__)\n"
@@ -52,8 +51,10 @@ class TestFileToRun(tt.TempFileMixin, unittest.TestCase):
         src = "True\n"
         self.mktmp(src)
 
-        out, err = tt.ipexec(self.fname, options=['-i'],
-                             commands=['"__file__" in globals()', 'print(123)', 'exit()'])
+        out, err = tt.ipexec(
+            self.fname,
+            options=['-i'],
+            commands=['"__file__" in globals()', 'print(123)', 'exit()'])
         if 'False' not in out:
             print("Subprocess stderr:")
             print(err)

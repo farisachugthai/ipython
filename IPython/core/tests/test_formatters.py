@@ -12,8 +12,12 @@ import nose.tools as nt
 from IPython import get_ipython
 from traitlets.config import Config
 from IPython.core.formatters import (
-    PlainTextFormatter, HTMLFormatter, PDFFormatter, _mod_name_key,
-    DisplayFormatter, JSONFormatter,
+    PlainTextFormatter,
+    HTMLFormatter,
+    PDFFormatter,
+    _mod_name_key,
+    DisplayFormatter,
+    JSONFormatter,
 )
 from IPython.utils.io import capture_output
 
@@ -106,6 +110,7 @@ def test_bad_precision():
 
     def set_fp(p):
         f.float_precision = p
+
     nt.assert_raises(ValueError, set_fp, '%')
     nt.assert_raises(ValueError, set_fp, '%.3f%i')
     nt.assert_raises(ValueError, set_fp, 'foo')
@@ -266,6 +271,7 @@ def test_error_method():
     class BadHTML(object):
         def _repr_html_(self):
             raise ValueError("Bad HTML")
+
     bad = BadHTML()
     with capture_output() as captured:
         result = f(bad)
@@ -281,6 +287,7 @@ def test_nowarn_notimplemented():
     class HTMLNotImplemented(object):
         def _repr_html_(self):
             raise NotImplementedError
+
     h = HTMLNotImplemented()
     with capture_output() as captured:
         result = f(h)
@@ -306,6 +313,7 @@ def test_error_pretty_method():
     class BadPretty(object):
         def _repr_pretty_(self):
             return "hello"
+
     bad = BadPretty()
     with capture_output() as captured:
         result = f(bad)
@@ -345,6 +353,7 @@ def test_print_method_bound():
     class MyHTML(object):
         def _repr_html_(self):
             return "hello"
+
     with capture_output() as captured:
         result = f(MyHTML)
     nt.assert_is(result, None)
@@ -357,7 +366,6 @@ def test_print_method_bound():
 
 
 def test_print_method_weird():
-
     class TextMagicHat(object):
         def __getattr__(self, key):
             return key
@@ -494,25 +502,22 @@ def test_repr_mime():
     d, md = f.format(obj)
     html_f.enabled = save_enabled
 
-    nt.assert_equal(sorted(d), ['application/json+test.v2',
-                                'image/png',
-                                'plain/text',
-                                'text/html',
-                                'text/plain'])
+    nt.assert_equal(sorted(d), [
+        'application/json+test.v2', 'image/png', 'plain/text', 'text/html',
+        'text/plain'
+    ])
     nt.assert_equal(md, {})
 
     d, md = f.format(obj, include={'image/png'})
-    nt.assert_equal(list(d.keys()), ['image/png'],
-                    'Include should filter out even things from repr_mimebundle')
     nt.assert_equal(
-        d['image/png'],
-        'i-overwrite',
-        '_repr_mimebundle_ take precedence')
+        list(d.keys()), ['image/png'],
+        'Include should filter out even things from repr_mimebundle')
+    nt.assert_equal(d['image/png'], 'i-overwrite',
+                    '_repr_mimebundle_ take precedence')
 
 
 def test_pass_correct_include_exclude():
     class Tester(object):
-
         def __init__(self, include=None, exclude=None):
             self.include = include
             self.exclude = exclude
@@ -531,12 +536,9 @@ def test_pass_correct_include_exclude():
     exclude = {'c', 'e', 'f'}
 
     f = get_ipython().display_formatter
-    f.format(
-        Tester(
-            include=include,
-            exclude=exclude),
-        include=include,
-        exclude=exclude)
+    f.format(Tester(include=include, exclude=exclude),
+             include=include,
+             exclude=exclude)
     f.format(Tester(exclude=exclude), exclude=exclude)
     f.format(Tester(include=include), include=include)
 
@@ -559,12 +561,10 @@ def test_repr_mime_meta():
     obj = HasReprMimeMeta()
     d, md = f.format(obj)
     nt.assert_equal(sorted(d), ['image/png', 'text/plain'])
-    nt.assert_equal(md, {
-        'image/png': {
-            'width': 5,
-            'height': 10,
-        }
-    })
+    nt.assert_equal(md, {'image/png': {
+        'width': 5,
+        'height': 10,
+    }})
 
 
 def test_repr_mime_failure():

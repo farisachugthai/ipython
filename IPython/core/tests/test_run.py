@@ -14,7 +14,6 @@ as otherwise it may influence later tests.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import functools
 import os
 from os.path import join as pjoin
@@ -107,8 +106,6 @@ def doctest_run_option_parser():
     ['print*.py']
 
     """
-
-
 @dec.skip_win32
 def doctest_run_option_parser_for_posix():
     r"""Test option parser in %run (Linux/OSX specific).
@@ -124,8 +121,6 @@ def doctest_run_option_parser_for_posix():
     ['print_argv.py']
 
     """
-
-
 @dec.skip_if_not_win32
 def doctest_run_option_parser_for_windows():
     r"""Test option parser in %run (Windows specific).
@@ -160,12 +155,12 @@ def doctest_reset_del():
     Out[5]: 2
     """
 
+
 # For some tests, it will be handy to organize them in a class with a common
 # setup that makes a temp file
 
 
 class TestMagicRunPass(tt.TempFileMixin):
-
     def setUp(self):
         content = "a = [1,2,3]\nb = 1"
         self.mktmp(content)
@@ -227,11 +222,9 @@ class TestMagicRunPass(tt.TempFileMixin):
 
 
 class TestMagicRunSimple(tt.TempFileMixin):
-
     def test_simpledef(self):
         """Test that simple class definitions work."""
-        src = ("class foo: pass\n"
-               "def f(): return foo()")
+        src = ("class foo: pass\n" "def f(): return foo()")
         self.mktmp(src)
         _ip.magic('run %s' % self.fname)
         _ip.run_cell('t = isinstance(f(), foo)')
@@ -280,9 +273,7 @@ class TestMagicRunSimple(tt.TempFileMixin):
     def test_run_second(self):
         """Test that running a second file doesn't clobber the first, gh-3547
         """
-        self.mktmp("avar = 1\n"
-                   "def afunc():\n"
-                   "  return avar\n")
+        self.mktmp("avar = 1\n" "def afunc():\n" "  return avar\n")
 
         with tt.TempFileMixin() as empty:
             empty.mktmp("")
@@ -390,12 +381,10 @@ tclass.py: deleting object: C-third
     def test_run_nb(self):
         """Test %run notebook.ipynb"""
         from nbformat import v4, writes
-        nb = v4.new_notebook(
-            cells=[
-                v4.new_markdown_cell("The Ultimate Question of Everything"),
-                v4.new_code_cell("answer=42")
-            ]
-        )
+        nb = v4.new_notebook(cells=[
+            v4.new_markdown_cell("The Ultimate Question of Everything"),
+            v4.new_code_cell("answer=42")
+        ])
         src = writes(nb, version=4)
         self.mktmp(src, ext='.ipynb')
 
@@ -404,8 +393,7 @@ tclass.py: deleting object: C-third
         nt.assert_equal(_ip.user_ns['answer'], 42)
 
     def test_file_options(self):
-        src = ('import sys\n'
-               'a = " ".join(sys.argv[1:])\n')
+        src = ('import sys\n' 'a = " ".join(sys.argv[1:])\n')
         self.mktmp(src)
         test_opts = '-x 3 --verbose'
         _ip.run_line_magic("run", '{0} {1}'.format(self.fname, test_opts))
@@ -413,7 +401,6 @@ tclass.py: deleting object: C-third
 
 
 class TestMagicRunWithPackage(unittest.TestCase):
-
     def writefile(self, name, content):
         path = os.path.join(self.tempdir.name, name)
         d = os.path.dirname(path)
@@ -423,8 +410,8 @@ class TestMagicRunWithPackage(unittest.TestCase):
             f.write(textwrap.dedent(content))
 
     def setUp(self):
-        self.package = package = 'tmp{0}'.format(
-            ''.join([random.choice(string.ascii_letters) for i in range(10)]))
+        self.package = package = 'tmp{0}'.format(''.join(
+            [random.choice(string.ascii_letters) for i in range(10)]))
         """Temporary  (probably) valid python package name."""
 
         self.value = int(random.random() * 10000)
@@ -440,10 +427,12 @@ class TestMagicRunWithPackage(unittest.TestCase):
         self.writefile(os.path.join(package, 'relative.py'), """
         from .sub import x
         """)
-        self.writefile(os.path.join(package, 'absolute.py'), """
+        self.writefile(
+            os.path.join(package, 'absolute.py'), """
         from {0}.sub import x
         """.format(package))
-        self.writefile(os.path.join(package, 'args.py'), """
+        self.writefile(
+            os.path.join(package, 'args.py'), """
         import sys
         a = " ".join(sys.argv[1:])
         """.format(package))
@@ -456,9 +445,9 @@ class TestMagicRunWithPackage(unittest.TestCase):
     def check_run_submodule(self, submodule, opts=''):
         _ip.user_ns.pop('x', None)
         _ip.magic('run {2} -m {0}.{1}'.format(self.package, submodule, opts))
-        self.assertEqual(_ip.user_ns['x'], self.value,
-                         'Variable `x` is not loaded from module `{0}`.'
-                         .format(submodule))
+        self.assertEqual(
+            _ip.user_ns['x'], self.value,
+            'Variable `x` is not loaded from module `{0}`.'.format(submodule))
 
     def test_run_submodule_with_absolute_import(self):
         self.check_run_submodule('absolute')
@@ -478,6 +467,7 @@ class TestMagicRunWithPackage(unittest.TestCase):
         def wrapper(*args, **kwds):
             with patch.object(debugger.Pdb, 'run', staticmethod(eval)):
                 return func(*args, **kwds)
+
         return wrapper
 
     @with_fake_debugger
@@ -491,8 +481,8 @@ class TestMagicRunWithPackage(unittest.TestCase):
     def test_module_options(self):
         _ip.user_ns.pop('a', None)
         test_opts = '-x abc -m test'
-        _ip.run_line_magic(
-            'run', '-m {0}.args {1}'.format(self.package, test_opts))
+        _ip.run_line_magic('run',
+                           '-m {0}.args {1}'.format(self.package, test_opts))
         nt.assert_equal(_ip.user_ns['a'], test_opts)
 
     def test_module_options_with_separator(self):

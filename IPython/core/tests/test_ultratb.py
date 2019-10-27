@@ -14,7 +14,6 @@ from unittest import mock
 import IPython.core.ultratb as ultratb
 from IPython.core.ultratb import ColorTB, VerboseTB, find_recursion
 
-
 from IPython.testing import tools as tt
 from IPython.testing.decorators import onlyif_unicode_paths
 from IPython.utils.syspathcontext import prepended_to_syspath
@@ -36,7 +35,6 @@ def recursionlimit(frames):
     """
     decorator to set the recursion limit temporarily
     """
-
     def inner(test_function):
         def wrapper(*args, **kwargs):
             _orig_rec_limit = ultratb._FRAME_RECURSION_LIMIT
@@ -151,10 +149,8 @@ class NestedGenExprTestCase(unittest.TestCase):
     https://github.com/ipython/ipython/issues/8293
     https://github.com/ipython/ipython/issues/8205
     """
-
     def test_nested_genexpr(self):
-        code = dedent(
-            """\
+        code = dedent("""\
             class SpecificException(Exception):
                 pass
 
@@ -162,8 +158,7 @@ class NestedGenExprTestCase(unittest.TestCase):
                 raise SpecificException("Success!")
 
             sum(sum(foo(x) for _ in [0]) for x in [0])
-            """
-        )
+            """)
         with tt.AssertPrints('SpecificException: Success!', suppress=False):
             ip.run_cell(code)
 
@@ -352,6 +347,7 @@ def r3o2():
 
         def capture_exc(*args, **kwargs):
             captured.append(sys.exc_info())
+
         with mock.patch.object(ip, 'showtraceback', capture_exc):
             ip.run_cell("r3o2()")
 
@@ -359,8 +355,8 @@ def r3o2():
         etype, evalue, tb = captured[0]
         self.assertIn("recursion", str(evalue))
 
-        records = ip.InteractiveTB.get_records(
-            tb, 3, ip.InteractiveTB.tb_offset)
+        records = ip.InteractiveTB.get_records(tb, 3,
+                                               ip.InteractiveTB.tb_offset)
         for r in records[:10]:
             print(r[1:4])
 
@@ -376,6 +372,7 @@ def r3o2():
 
 
 # ----------------------------------------------------------------------------
+
 
 # module testing (minimal)
 def test_handlers():

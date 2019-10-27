@@ -1,4 +1,6 @@
-from IPython.core import inputtransformer as ipt
+# from IPython.core import inputtransformer as ipt
+from IPython.core import inputtransformer2 as ipt
+
 import tokenize
 import nose.tools as nt
 
@@ -18,6 +20,7 @@ def transform_and_reset(transformer):
 
     return transform
 
+
 # Transformer tests
 
 
@@ -33,6 +36,7 @@ def transform_checker(tests, transformer, **kwargs):
             nt.assert_equal(out, tr)
     finally:
         transformer.reset()
+
 
 # Data for all the syntax tests in the form of lists of pairs of
 # raw/transformed input.  We store it here as a global dict so that we can use
@@ -324,24 +328,18 @@ syntax_ml = \
 
 
 def test_assign_system():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.assign_from_system),
-        syntax['assign_system'])
+    tt.check_pairs(transform_and_reset(ipt.assign_from_system),
+                   syntax['assign_system'])
 
 
 def test_assign_magic():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.assign_from_magic),
-        syntax['assign_magic'])
+    tt.check_pairs(transform_and_reset(ipt.assign_from_magic),
+                   syntax['assign_magic'])
 
 
 def test_classic_prompt():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.classic_prompt),
-        syntax['classic_prompt'])
+    tt.check_pairs(transform_and_reset(ipt.classic_prompt),
+                   syntax['classic_prompt'])
     for example in syntax_ml['classic_prompt']:
         transform_checker(example, ipt.classic_prompt)
     for example in syntax_ml['multiline_datastructure_prompt']:
@@ -415,75 +413,63 @@ def test_help_end():
 
 
 def test_escaped_noesc():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.escaped_commands),
-        syntax['escaped_noesc'])
+    tt.check_pairs(transform_and_reset(ipt.escaped_commands),
+                   syntax['escaped_noesc'])
 
 
 def test_escaped_shell():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.escaped_commands),
-        syntax['escaped_shell'])
+    tt.check_pairs(transform_and_reset(ipt.escaped_commands),
+                   syntax['escaped_shell'])
 
 
 def test_escaped_help():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.escaped_commands),
-        syntax['escaped_help'])
+    tt.check_pairs(transform_and_reset(ipt.escaped_commands),
+                   syntax['escaped_help'])
 
 
 def test_escaped_magic():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.escaped_commands),
-        syntax['escaped_magic'])
+    tt.check_pairs(transform_and_reset(ipt.escaped_commands),
+                   syntax['escaped_magic'])
 
 
 def test_escaped_quote():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.escaped_commands),
-        syntax['escaped_quote'])
+    tt.check_pairs(transform_and_reset(ipt.escaped_commands),
+                   syntax['escaped_quote'])
 
 
 def test_escaped_quote2():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.escaped_commands),
-        syntax['escaped_quote2'])
+    tt.check_pairs(transform_and_reset(ipt.escaped_commands),
+                   syntax['escaped_quote2'])
 
 
 def test_escaped_paren():
-    tt.check_pairs(
-        transform_and_reset(
-            ipt.escaped_commands),
-        syntax['escaped_paren'])
+    tt.check_pairs(transform_and_reset(ipt.escaped_commands),
+                   syntax['escaped_paren'])
 
 
 def test_cellmagic():
     for example in syntax_ml['cellmagic']:
         transform_checker(example, ipt.cellmagic)
 
-    line_example = [(u'%%bar 123', None),
-                    (u'hello', None),
-                    (u'', u_fmt("get_ipython().run_cell_magic('bar', '123', 'hello')")),
-                    ]
+    line_example = [
+        (u'%%bar 123', None),
+        (u'hello', None),
+        (u'', u_fmt("get_ipython().run_cell_magic('bar', '123', 'hello')")),
+    ]
     transform_checker(line_example, ipt.cellmagic, end_on_blank_line=True)
 
 
 def test_has_comment():
-    tests = [('text', False),
-             ('text #comment', True),
-             ('text #comment\n', True),
-             ('#comment', True),
-             ('#comment\n', True),
-             ('a = "#string"', False),
-             ('a = "#string" # comment', True),
-             ('a #comment not "string"', True),
-             ]
+    tests = [
+        ('text', False),
+        ('text #comment', True),
+        ('text #comment\n', True),
+        ('#comment', True),
+        ('#comment\n', True),
+        ('a = "#string"', False),
+        ('a = "#string" # comment', True),
+        ('a #comment not "string"', True),
+    ]
     tt.check_pairs(ipt.has_comment, tests)
 
 
@@ -496,21 +482,19 @@ def decistmt(tokens):
     result = []
     for toknum, tokval, _, _, _ in tokens:
         if toknum == tokenize.NUMBER and '.' in tokval:  # replace NUMBER tokens
-            for newtok in [
-                (tokenize.NAME, 'Decimal'),
-                (tokenize.OP, '('),
-                (tokenize.STRING, repr(tokval)),
-                (tokenize.OP, ')')
-            ]:
+            for newtok in [(tokenize.NAME, 'Decimal'), (tokenize.OP, '('),
+                           (tokenize.STRING, repr(tokval)),
+                           (tokenize.OP, ')')]:
                 yield newtok
         else:
             yield (toknum, tokval)
 
 
 def test_token_input_transformer():
-    tests = [(u'1.2', u_fmt(u"Decimal ('1.2')")),
-             (u'"1.2"', u'"1.2"'),
-             ]
+    tests = [
+        (u'1.2', u_fmt(u"Decimal ('1.2')")),
+        (u'"1.2"', u'"1.2"'),
+    ]
     tt.check_pairs(transform_and_reset(decistmt), tests)
     ml_tests = \
         [[(u"a = 1.2; b = '''x", None),

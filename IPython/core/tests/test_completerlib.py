@@ -25,6 +25,7 @@ class MockEvent(object):
     def __init__(self, line):
         self.line = line
 
+
 # -----------------------------------------------------------------------------
 # Test functions begin
 # -----------------------------------------------------------------------------
@@ -85,8 +86,11 @@ class Test_magic_run_completer(unittest.TestCase):
         # We specifically use replace here rather than normpath, because
         # at one point there were duplicates 'adir' and 'adir/', and normpath
         # would hide the failure for that.
-        self.assertEqual(match, {join(self.BASETESTDIR, f).replace('\\', '/')
-                                 for f in (u'a.py', u'aao.py', u'aao.txt', u'adir/')})
+        self.assertEqual(
+            match, {
+                join(self.BASETESTDIR, f).replace('\\', '/')
+                for f in (u'a.py', u'aao.py', u'aao.txt', u'adir/')
+            })
 
 
 class Test_magic_run_completer_nonascii(unittest.TestCase):
@@ -129,6 +133,7 @@ class Test_magic_run_completer_nonascii(unittest.TestCase):
         match = set(magic_run_completer(mockself, event))
         self.assertEqual(match, {u"a.py", u"aaø.py"})
 
+
 # module_completer:
 
 
@@ -146,8 +151,8 @@ def test_import_invalid_module():
         intersection = s.intersection(invalid_module_names)
         nt.assert_equal(intersection, set())
 
-        assert valid_module_names.issubset(
-            s), valid_module_names.intersection(s)
+        assert valid_module_names.issubset(s), valid_module_names.intersection(
+            s)
 
 
 def test_bad_module_all():

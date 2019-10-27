@@ -4,7 +4,6 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 from unittest import TestCase
 from inspect import signature, Signature, Parameter
 import os
@@ -18,7 +17,6 @@ from decorator import decorator
 
 from IPython.testing.tools import AssertPrints, AssertNotPrints
 from IPython.utils.path import compress_user
-
 
 # -----------------------------------------------------------------------------
 # Globals and constants
@@ -44,10 +42,10 @@ THIS_LINE_NUMBER = 41  # Put here the actual number of this line
 
 
 class Test(TestCase):
-
     def test_find_source_lines(self):
-        self.assertEqual(oinspect.find_source_lines(Test.test_find_source_lines),
-                         THIS_LINE_NUMBER + 6)
+        self.assertEqual(
+            oinspect.find_source_lines(Test.test_find_source_lines),
+            THIS_LINE_NUMBER + 6)
 
 
 # A couple of utilities to ensure these tests work the same from a source or a
@@ -61,17 +59,16 @@ def match_pyfiles(f1, f2):
 
 
 def test_find_file():
-    match_pyfiles(
-        oinspect.find_file(test_find_file),
-        os.path.abspath(__file__))
+    match_pyfiles(oinspect.find_file(test_find_file),
+                  os.path.abspath(__file__))
 
 
 def test_find_file_decorated1():
-
     @decorator
     def noop1(f):
         def wrapper(*a, **kw):
             return f(*a, **kw)
+
         return wrapper
 
     @noop1
@@ -83,7 +80,6 @@ def test_find_file_decorated1():
 
 
 def test_find_file_decorated2():
-
     @decorator
     def noop2(f, *a, **kw):
         return f(*a, **kw)
@@ -105,15 +101,13 @@ def test_find_file_magic():
 
 # A few generic objects we can then inspect in the tests below
 
+
 class Call(object):
     """This is the class docstring."""
-
     def __init__(self, x, y=1):
         """This is the constructor docstring."""
-
     def __call__(self, *a, **kw):
         """This is the call docstring."""
-
     def method(self, x, z=2):
         """Some method's docstring"""
 
@@ -141,7 +135,6 @@ class NoBoolCall:
     """
     callable with `__bool__` raising should still be inspect-able.
     """
-
     def __call__(self):
         """does nothing"""
         pass
@@ -157,7 +150,6 @@ class SerialLiar(object):
     unittest.mock.call does something similar, but it's not ideal for testing
     as the failure mode is to eat all your RAM. This gives up after 10k levels.
     """
-
     def __init__(self, max_fibbing_twig, lies_told=0):
         if lies_told > 10000:
             raise RuntimeError('Nose too long, honesty is the best policy')
@@ -167,6 +159,7 @@ class SerialLiar(object):
 
     def __getattr__(self, item):
         return SerialLiar(self.max_fibbing_twig, self.lies_told + 1)
+
 
 # -----------------------------------------------------------------------------
 # Tests
@@ -182,7 +175,8 @@ def test_info():
     nt.assert_equal(i['base_class'], expted_class)
     nt.assert_regex(
         i['string_form'],
-        "<class 'IPython.core.tests.test_oinspect.Call'( at 0x[0-9a-f]{1,9})?>")
+        "<class 'IPython.core.tests.test_oinspect.Call'( at 0x[0-9a-f]{1,9})?>"
+    )
     fname = __file__
     if fname.endswith(".pyc"):
         fname = fname[:-1]
@@ -261,13 +255,11 @@ def test_getdoc():
 
     class B(object):
         """standard docstring"""
-
         def getdoc(self):
             return "custom docstring"
 
     class C(object):
         """standard docstring"""
-
         def getdoc(self):
             return None
 
@@ -287,6 +279,7 @@ def test_empty_property_has_no_source():
 
 def test_property_sources():
     import posixpath
+
     # A simple adder whose source and signature stays
     # the same across Python distributions
 
@@ -335,7 +328,9 @@ def test_property_docstring_is_in_info_for_detail_level_0():
 
 def test_pdef():
     # See gh-1914
-    def foo(): pass
+    def foo():
+        pass
+
     inspector.pdef(foo, 'foo')
 
 
@@ -423,7 +418,9 @@ def test_builtin_init():
 
 
 def test_render_signature_short():
-    def short_fun(a=1): pass
+    def short_fun(a=1):
+        pass
+
     sig = oinspect._render_signature(
         signature(short_fun),
         short_fun.__name__,
@@ -435,29 +432,32 @@ def test_render_signature_long():
     from typing import Optional
 
     def long_function(
-        a_really_long_parameter: int,
-        and_another_long_one: bool = False,
-        let_us_make_sure_this_is_looong: Optional[str] = None,
-    ) -> bool: pass
+            a_really_long_parameter: int,
+            and_another_long_one: bool = False,
+            let_us_make_sure_this_is_looong: Optional[str] = None,
+    ) -> bool:
+        pass
 
     sig = oinspect._render_signature(
         signature(long_function),
         long_function.__name__,
     )
-    nt.assert_in(sig, [
-        # Python >=3.7
-        '''\
+    nt.assert_in(
+        sig,
+        [
+            # Python >=3.7
+            '''\
 long_function(
     a_really_long_parameter: int,
     and_another_long_one: bool = False,
     let_us_make_sure_this_is_looong: Union[str, NoneType] = None,
 ) -> bool\
 ''',  # Python <=3.6
-        '''\
+            '''\
 long_function(
     a_really_long_parameter:int,
     and_another_long_one:bool=False,
     let_us_make_sure_this_is_looong:Union[str, NoneType]=None,
 ) -> bool\
 ''',
-    ])
+        ])

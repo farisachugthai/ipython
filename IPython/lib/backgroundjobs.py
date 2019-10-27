@@ -33,7 +33,7 @@ use of the system.
 import sys
 import threading
 
-from IPython.core.get_ipython import get_ipython
+from IPython.core.getipython import get_ipython
 from IPython.core.ultratb import AutoFormattedTB
 from logging import error, debug
 

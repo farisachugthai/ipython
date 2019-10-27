@@ -4,7 +4,6 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 from IPython.testing import decorators as dec
 from .. import pylabtools as pt
 from IPython.core.display import _PNG, _JPEG

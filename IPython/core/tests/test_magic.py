@@ -2,6 +2,12 @@
 """Tests for various magic functions.
 
 Needs to be run by nose (to make ipython session available).
+
+Dude holy fuck. There are FORTY different calls to ip = get_ipython()
+
+....why wouldn't we set up anything to reduce THAT amount of
+code duplication like wth.
+
 """
 
 import io
@@ -16,14 +22,13 @@ from importlib import invalidate_caches
 from io import StringIO
 
 import nose.tools as nt
-
+from nose.tools.nontrivial import nottest
 import shlex
 
 from IPython import get_ipython
 from IPython.core import magic
 from IPython.core.error import UsageError
-from IPython.core.magic import (Magics, magics_class, line_magic,
-                                cell_magic,
+from IPython.core.magic import (Magics, magics_class, line_magic, cell_magic,
                                 register_line_magic, register_cell_magic)
 from IPython.core.magics import execution, script, code, logging, osm
 from IPython.testing import decorators as dec
@@ -41,16 +46,8 @@ class DummyMagics(magic.Magics):
 
 def test_extract_code_ranges():
     instr = "1 3 5-6 7-9 10:15 17: :10 10- -13 :"
-    expected = [(0, 1),
-                (2, 3),
-                (4, 6),
-                (6, 9),
-                (9, 14),
-                (16, None),
-                (None, 9),
-                (9, None),
-                (None, 13),
-                (None, None)]
+    expected = [(0, 1), (2, 3), (4, 6), (6, 9), (9, 14), (16, None), (None, 9),
+                (9, None), (None, 13), (None, None)]
     actual = list(code.extract_code_ranges(instr))
     nt.assert_equal(actual, expected)
 
@@ -58,12 +55,10 @@ def test_extract_code_ranges():
 def test_extract_symbols():
     source = """import foo\na = 10\ndef b():\n    return 42\n\n\nclass A: pass\n\n\n"""
     symbols_args = ["a", "b", "A", "A,b", "A,a", "z"]
-    expected = [([], ['a']),
-                (["def b():\n    return 42\n"], []),
+    expected = [([], ['a']), (["def b():\n    return 42\n"], []),
                 (["class A: pass\n"], []),
                 (["class A: pass\n", "def b():\n    return 42\n"], []),
-                (["class A: pass\n"], ['a']),
-                ([], ['z'])]
+                (["class A: pass\n"], ['a']), ([], ['z'])]
     for symbols, exp in zip(symbols_args, expected):
         nt.assert_equal(code.extract_symbols(source, symbols), exp)
 
@@ -100,16 +95,17 @@ def test_cell_magic_not_found():
 def test_magic_error_status():
     def fail(shell):
         1 / 0
+
     _ip.register_magic_function(fail)
     result = _ip.run_cell('%fail')
     assert isinstance(result.error_in_exec, ZeroDivisionError)
 
 
 def test_config():
-    """ test that config magic does not raise
-    can happen if Configurable init is moved too early into
-    Magics.__init__ as then a Config object will be registered as a
-    magic.
+    """Test that config magic does not raise.
+
+    Can happen if Configurable init is moved too early into
+    Magics.__init__ as then a Config object will be registered as a magic.
     """
     # should not raise.
     _ip.magic('config')
@@ -139,8 +135,9 @@ def test_config_print_class():
                              "'TerminalInteractiveShell.* options'")
 
 
+@nottest
 def test_rehashx():
-    # clear up everything
+    """This test uses the db attribute which IPython hasn't had for years.""" """.earsr yn't had fo hasIPythonch hie wutribb attdhe ses tu esttThis """  # clear up everything
     _ip.alias_manager.clear_aliases()
     del _ip.db['syscmdlist']
 
@@ -194,8 +191,6 @@ def doctest_hist_f():
 
     In [13]: import os; os.unlink(tfile)
     """
-
-
 @dec.skip_without('sqlite3')
 def doctest_hist_r():
     """Test %hist -r
@@ -213,8 +208,6 @@ def doctest_hist_r():
     x=1 # random
     %hist -r 2
     """
-
-
 @dec.skip_without('sqlite3')
 def doctest_hist_op():
     """Test %hist -op
@@ -297,7 +290,7 @@ def test_hist_pof():
 @dec.skip_without('sqlite3')
 def test_macro():
     ip = get_ipython()
-    ip.history_manager.reset()   # Clear any existing history.
+    ip.history_manager.reset()  # Clear any existing history.
     cmds = ["a=1", "def b():\n  return a**2", "print(a,b())"]
     for i, cmd in enumerate(cmds, start=1):
         ip.history_manager.store_inputs(i, cmd)
@@ -362,8 +355,8 @@ def test_reset_in():
     _ip.run_cell("parrot", store_history=True)
     nt.assert_true('parrot' in [_ip.user_ns[x] for x in ('_i', '_ii', '_iii')])
     _ip.magic('%reset -f in')
-    nt.assert_false('parrot' in [_ip.user_ns[x]
-                                 for x in ('_i', '_ii', '_iii')])
+    nt.assert_false(
+        'parrot' in [_ip.user_ns[x] for x in ('_i', '_ii', '_iii')])
     nt.assert_equal(len(set(_ip.user_ns['In'])), 1)
 
 
@@ -386,13 +379,12 @@ def test_reset_in_length():
 
 
 class TestResetErrors(TestCase):
-
     def test_reset_redefine(self):
-
         @magics_class
         class KernelMagics(Magics):
             @line_magic
-            def less(self, shell): pass
+            def less(self, shell):
+                pass
 
         _ip.register_magics(KernelMagics)
 
@@ -435,8 +427,7 @@ def test_time():
     with tt.AssertPrints("Wall time: "):
         ip.run_cell("%time None")
 
-    ip.run_cell("def f(kmjy):\n"
-                "    %time print (2*kmjy)")
+    ip.run_cell("def f(kmjy):\n" "    %time print (2*kmjy)")
 
     with tt.AssertPrints("Wall time: "):
         with tt.AssertPrints("hihi", suppress=False):
@@ -444,9 +435,7 @@ def test_time():
 
 
 def test_time_last_not_expression():
-    ip.run_cell("%%time\n"
-                "var_1 = 1\n"
-                "var_2 = 2\n")
+    ip.run_cell("%%time\n" "var_1 = 1\n" "var_2 = 2\n")
     assert ip.user_ns['var_1'] == 1
     del ip.user_ns['var_1']
     assert ip.user_ns['var_2'] == 2
@@ -467,9 +456,7 @@ def test_time3():
     ip.user_ns.pop('run', None)
 
     with tt.AssertNotPrints("not found", channel='stderr'):
-        ip.run_cell("%%time\n"
-                    "run = 0\n"
-                    "run += 1")
+        ip.run_cell("%%time\n" "run = 0\n" "run += 1")
 
 
 def test_multiline_time():
@@ -477,7 +464,8 @@ def test_multiline_time():
     ip = get_ipython()
     ip.user_ns.pop('run', None)
 
-    ip.run_cell(dedent("""\
+    ip.run_cell(
+        dedent("""\
         %%time
         a = "ho"
         b = "hey"
@@ -491,8 +479,7 @@ def test_time_local_ns():
     Test that local_ns is actually global_ns when running a cell magic
     """
     ip = get_ipython()
-    ip.run_cell("%%time\n"
-                "myvar = 1")
+    ip.run_cell("%%time\n" "myvar = 1")
     nt.assert_equal(ip.user_ns['myvar'], 1)
     del ip.user_ns['myvar']
 
@@ -628,6 +615,7 @@ def test_whos():
     class A(object):
         def __repr__(self):
             raise Exception()
+
     _ip.user_ns['a'] = A()
     _ip.magic("whos")
 
@@ -669,6 +657,7 @@ def test_timeit_shlex():
 
 def test_timeit_special_syntax():
     "Test %%timeit with IPython special syntax"
+
     @register_line_magic
     def lmagic(line):
         ip = get_ipython()
@@ -688,7 +677,7 @@ def test_timeit_return():
     """
 
     res = _ip.run_line_magic('timeit', '-n10 -r10 -o 1')
-    assert(res is not None)
+    assert (res is not None)
 
 
 def test_timeit_quiet():
@@ -713,6 +702,7 @@ def test_timeit_invalid_return():
 @dec.skipif(execution.profile is None)
 def test_prun_special_syntax():
     "Test %%prun with IPython special syntax"
+
     @register_line_magic
     def lmagic(line):
         ip = get_ipython()
@@ -745,7 +735,7 @@ def test_extension():
     sys.path.insert(0, daft_path)
     try:
         _ip.user_ns.pop('arq', None)
-        invalidate_caches()   # Clear import caches
+        invalidate_caches()  # Clear import caches
         _ip.magic("load_ext daft_extension")
         nt.assert_equal(_ip.user_ns['arq'], 185)
         _ip.magic("unload_ext daft_extension")
@@ -756,7 +746,7 @@ def test_extension():
 
 def test_notebook_export_json():
     _ip = get_ipython()
-    _ip.history_manager.reset()   # Clear any existing history.
+    _ip.history_manager.reset()  # Clear any existing history.
     cmds = [u"a=1", u"def b():\n  return a**2", u"print('noël, été', b())"]
     for i, cmd in enumerate(cmds, start=1):
         _ip.history_manager.store_inputs(i, cmd)
@@ -766,7 +756,6 @@ def test_notebook_export_json():
 
 
 class TestEnv(TestCase):
-
     def test_env(self):
         env = _ip.magic("env")
         self.assertTrue(isinstance(env, dict))
@@ -775,14 +764,12 @@ class TestEnv(TestCase):
         env = _ip.magic("env")
         hidden = "<hidden>"
         with mock.patch.dict(
-            os.environ,
-            {
-                "API_KEY": "abc123",
-                "SECRET_THING": "ssshhh",
-                "JUPYTER_TOKEN": "",
-                "VAR": "abc"
-            }
-        ):
+                os.environ, {
+                    "API_KEY": "abc123",
+                    "SECRET_THING": "ssshhh",
+                    "JUPYTER_TOKEN": "",
+                    "VAR": "abc"
+                }):
             env = _ip.magic("env")
         assert env["API_KEY"] == hidden
         assert env["SECRET_THING"] == hidden
@@ -815,7 +802,6 @@ class TestEnv(TestCase):
 
 
 class CellMagicTestCase(TestCase):
-
     def check_ident(self, magic):
         # Manually called, we get the result
         out = _ip.run_cell_magic(magic, 'a', 'b')
@@ -826,6 +812,7 @@ class CellMagicTestCase(TestCase):
 
     def test_cell_magic_func_deco(self):
         "Cell magic using simple decorator"
+
         @register_cell_magic
         def cellm(line, cell):
             return line, cell
@@ -834,6 +821,7 @@ class CellMagicTestCase(TestCase):
 
     def test_cell_magic_reg(self):
         "Cell magic manually registered"
+
         def cellm(line, cell):
             return line, cell
 
@@ -842,9 +830,9 @@ class CellMagicTestCase(TestCase):
 
     def test_cell_magic_class(self):
         "Cell magics declared via a class"
+
         @magics_class
         class MyMagics(Magics):
-
             @cell_magic
             def cellm3(self, line, cell):
                 return line, cell
@@ -854,9 +842,9 @@ class CellMagicTestCase(TestCase):
 
     def test_cell_magic_class2(self):
         "Cell magics declared via a class, #2"
+
         @magics_class
         class MyMagics2(Magics):
-
             @cell_magic('cellm4')
             def cellm33(self, line, cell):
                 return line, cell
@@ -1004,10 +992,8 @@ def test_script_err():
 @dec.skip_win32
 def test_script_out_err():
     ip = get_ipython()
-    ip.run_cell_magic(
-        "script",
-        "--out output --err error sh",
-        "echo 'hi'\necho 'hello' >&2")
+    ip.run_cell_magic("script", "--out output --err error sh",
+                      "echo 'hi'\necho 'hello' >&2")
     nt.assert_equal(ip.user_ns['output'], 'hi\n')
     nt.assert_equal(ip.user_ns['error'], 'hello\n')
 
@@ -1032,10 +1018,8 @@ def test_script_bg_err():
 @dec.skip_win32
 def test_script_bg_out_err():
     ip = get_ipython()
-    ip.run_cell_magic(
-        "script",
-        "--bg --out output --err error sh",
-        "echo 'hi'\necho 'hello' >&2")
+    ip.run_cell_magic("script", "--bg --out output --err error sh",
+                      "echo 'hi'\necho 'hello' >&2")
     nt.assert_equal(ip.user_ns['output'].read(), b'hi\n')
     nt.assert_equal(ip.user_ns['error'].read(), b'hello\n')
     ip.user_ns['output'].close()
@@ -1120,15 +1104,14 @@ def test_alias_magic():
     # Test that line alias with parameters passed in is created successfully.
     ip.run_line_magic(
         'alias_magic',
-        '--line history_alias history --params ' +
-        shlex.quote('3'))
+        '--line history_alias history --params ' + shlex.quote('3'))
     nt.assert_in('history_alias', mm.magics['line'])
 
 
 def test_save():
     """Test %save."""
     ip = get_ipython()
-    ip.history_manager.reset()   # Clear any existing history.
+    ip.history_manager.reset()  # Clear any existing history.
     cmds = [u"a=1", u"def b():\n  return a**2", u"print(a, b())"]
     for i, cmd in enumerate(cmds, start=1):
         ip.history_manager.store_inputs(i, cmd)
@@ -1165,7 +1148,8 @@ def test_store():
     nt.assert_equal(ip.user_ns['var'], 39)
 
 
-def _run_edit_test(arg_s, exp_filename=None,
+def _run_edit_test(arg_s,
+                   exp_filename=None,
                    exp_lineno=-1,
                    exp_contents=None,
                    exp_is_temp=None):

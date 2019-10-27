@@ -1,7 +1,6 @@
 # encoding: utf-8
-"""
-An embedded IPython shell.
-"""
+"""An embedded IPython shell."""
+
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -105,7 +104,8 @@ class EmbeddedMagics(Magics):
     def exit_raise(self, parameter_s=''):
         """Make the current embedded kernel exit and raise an exception.
 
-        .. magic:: %exit_raise
+        .. used to have a magic directive here. suspected it was killing the doc build
+        ..  %exit_raise
 
         This function sets an internal flag so that an embedded IPython will
         raise a `IPython.terminal.embed.KillEmbedded` Exception on exit, and
@@ -139,7 +139,8 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
             and (self._init_location_id not in InteractiveShellEmbed._inactive_locations)
 
     def _disable_init_location(self):
-        """Disable the current Instance creation location."""        InteractiveShellEmbed._inactive_locations.add(self._init_location_id)
+        """Disable the current Instance creation location."""
+        InteractiveShellEmbed._inactive_locations.add(self._init_location_id)
 
     @embedded_active.setter
     def embedded_active(self, value):

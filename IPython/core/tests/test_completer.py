@@ -233,9 +233,8 @@ class TestCompleter(unittest.TestCase):
         nt.assert_equal(matches[0], "Ⅴ")
 
     @nt.nottest  # now we have a completion for \jmath
-    @decorators.knownfailureif(
-        sys.platform == "win32", "Fails if there is a C:\\j... path"
-    )
+    @decorators.knownfailureif(sys.platform == "win32",
+                               "Fails if there is a C:\\j... path")
     def test_no_ascii_back_completion(self):
         ip = get_ipython()
         with TemporaryWorkingDirectory():  # Avoid any filename completions
@@ -276,9 +275,8 @@ class TestCompleter(unittest.TestCase):
         for s in ['""', '""" """', '"hi" "ipython"']:
             nt.assert_false(completer.has_open_quotes(s))
 
-    @decorators.knownfailureif(
-        sys.platform == "win32", "abspath completions fail on Windows"
-    )
+    @decorators.knownfailureif(sys.platform == "win32",
+                               "abspath completions fail on Windows")
     def test_abspath_file_completions(self):
         ip = get_ipython()
         with TemporaryDirectory() as tmpdir:
@@ -328,23 +326,23 @@ class TestCompleter(unittest.TestCase):
 
             # Single quote matches embedded single quote
             text = "open('foo"
-            c = ip.Completer._complete(
-                cursor_line=0, cursor_pos=len(text), full_text=text
-            )[1]
+            c = ip.Completer._complete(cursor_line=0,
+                                       cursor_pos=len(text),
+                                       full_text=text)[1]
             nt.assert_equal(c, [escaped])
 
             # Double quote requires no escape
             text = 'open("foo'
-            c = ip.Completer._complete(
-                cursor_line=0, cursor_pos=len(text), full_text=text
-            )[1]
+            c = ip.Completer._complete(cursor_line=0,
+                                       cursor_pos=len(text),
+                                       full_text=text)[1]
             nt.assert_equal(c, [name])
 
             # No quote requires an escape
             text = "%ls foo"
-            c = ip.Completer._complete(
-                cursor_line=0, cursor_pos=len(text), full_text=text
-            )[1]
+            c = ip.Completer._complete(cursor_line=0,
+                                       cursor_pos=len(text),
+                                       full_text=text)[1]
             nt.assert_equal(c, [escaped])
 
     def test_all_completions_dups(self):
@@ -411,9 +409,8 @@ class TestCompleter(unittest.TestCase):
             c = next(completions)  # should be `open`
             ip.Completer.use_jedi = False
         assert "file" in c.signature, "Signature of function was not found by completer"
-        assert (
-            "encoding" in c.signature
-        ), "Signature of function was not found by completer"
+        assert ("encoding" in c.signature
+                ), "Signature of function was not found by completer"
 
     def test_deduplicate_completions(self):
         """
@@ -421,20 +418,15 @@ class TestCompleter(unittest.TestCase):
         """
         ip = get_ipython()
         ip.ex(
-            textwrap.dedent(
-                """
+            textwrap.dedent("""
         class Z:
             zoo = 1
-        """
-            )
-        )
+        """))
         with provisionalcompleter():
             ip.Completer.use_jedi = True
             l = list(
-                _deduplicate_completions(
-                    "Z.z", ip.Completer.completions(
-                        "Z.z", 3))
-            )
+                _deduplicate_completions("Z.z",
+                                         ip.Completer.completions("Z.z", 3)))
             ip.Completer.use_jedi = False
 
         assert len(
@@ -454,10 +446,8 @@ class TestCompleter(unittest.TestCase):
         ip = get_ipython()
         ip.ex("a=list(range(5))")
         _, c = ip.complete(".", line="a[0].")
-        nt.assert_false(
-            ".real" in c,
-            "Shouldn't have completed on a[0]: %s" %
-            c)
+        nt.assert_false(".real" in c,
+                        "Shouldn't have completed on a[0]: %s" % c)
 
         def _(line, cursor_pos, expect, message, completion):
             with greedy_completion(), provisionalcompleter():
@@ -472,16 +462,13 @@ class TestCompleter(unittest.TestCase):
 
         with provisionalcompleter():
             yield _, "a[0].", 5, "a[0].real", "Should have completed on a[0].: %s", Completion(
-                5, 5, "real"
-            )
+                5, 5, "real")
             yield _, "a[0].r", 6, "a[0].real", "Should have completed on a[0].r: %s", Completion(
-                5, 6, "real"
-            )
+                5, 6, "real")
 
             if sys.version_info > (3, 4):
                 yield _, "a[0].from_", 10, "a[0].from_bytes", "Should have completed on a[0].from_: %s", Completion(
-                    5, 10, "from_bytes"
-                )
+                    5, 10, "from_bytes")
 
     def test_omit__names(self):
         # also happens to test IPCompleter as a configurable
@@ -828,7 +815,8 @@ class TestCompleter(unittest.TestCase):
             "a\nb": None,
             "a'b": None,
             'a"b': None,
-            "a word": None}
+            "a word": None
+        }
         _, matches = complete(line_buffer="d['a")
         nt.assert_in("a\\nb", matches)
         nt.assert_in("a\\'b", matches)
@@ -969,15 +957,14 @@ class TestCompleter(unittest.TestCase):
 
         ip = get_ipython()
         complete = ip.Completer.complete
-        ip.user_ns["d"] = numpy.array(
-            [], dtype=[("hello", "f"), ("world", "f")])
+        ip.user_ns["d"] = numpy.array([],
+                                      dtype=[("hello", "f"), ("world", "f")])
         _, matches = complete(line_buffer="d['")
         nt.assert_in("hello", matches)
         nt.assert_in("world", matches)
         # complete on the numpy struct itself
-        dt = numpy.dtype(
-            [("my_head", [("my_dt", ">u4"), ("my_df", ">u4")]), ("my_data", ">f4", 5)]
-        )
+        dt = numpy.dtype([("my_head", [("my_dt", ">u4"), ("my_df", ">u4")]),
+                          ("my_data", ">f4", 5)])
         x = numpy.zeros(2, dtype=dt)
         ip.user_ns["d"] = x[1]
         _, matches = complete(line_buffer="d['")
@@ -1087,8 +1074,7 @@ class TestCompleter(unittest.TestCase):
 
         ip.Completer.use_jedi = False
         ip.ex(
-            dedent(
-                """
+            dedent("""
             class Test:
                 def meth(self, meth_arg1):
                     print("meth")
@@ -1099,9 +1085,7 @@ class TestCompleter(unittest.TestCase):
                 def meth_2(self, meth2_arg1, meth2_arg2):
                     print("meth2")
             test = Test()
-            """
-            )
-        )
+            """))
         _, matches = ip.complete(None, "test.meth(")
         nt.assert_in("meth_arg1=", matches)
         nt.assert_not_in("meth2_arg1=", matches)

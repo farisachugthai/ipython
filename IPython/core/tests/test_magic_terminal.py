@@ -50,24 +50,26 @@ def check_cpaste(code, should_fail=False):
 
 def test_cpaste():
     """Test cpaste magic"""
-
     def runf():
         """Marker function: sets a flag when executed.
         """
         ip.user_ns['code_ran'] = True
         return 'runf'  # return string so '+ runf()' doesn't result in success
 
-    tests = {'pass': ["runf()",
-                      "In [1]: runf()",
-                      "In [1]: if 1:\n   ...:     runf()",
-                      "> > > runf()",
-                      ">>> runf()",
-                      "   >>> runf()",
-                      ],
-
-             'fail': ["1 + runf()",
-                      "++ runf()",
-                      ]}
+    tests = {
+        'pass': [
+            "runf()",
+            "In [1]: runf()",
+            "In [1]: if 1:\n   ...:     runf()",
+            "> > > runf()",
+            ">>> runf()",
+            "   >>> runf()",
+        ],
+        'fail': [
+            "1 + runf()",
+            "++ runf()",
+        ]
+    }
 
     ip.user_ns['runf'] = runf
 
@@ -80,7 +82,6 @@ def test_cpaste():
 
 class PasteTestCase(TestCase):
     """Multiple tests for clipboard pasting"""
-
     def paste(self, txt, flags='-q'):
         """Paste input text, by default in quiet mode"""
         ip.hooks.clipboard_get = lambda: txt

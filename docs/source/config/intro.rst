@@ -8,7 +8,7 @@ Setting configurable options
 ============================
 
 Many of IPython's classes have configurable attributes (see
-:doc:`options/index` for the list). These can be
+:doc:`../options/index` for the list). These can be
 configured in several ways.
 
 Python config files
@@ -116,9 +116,9 @@ IPython starts, so they can't be changed like this.
 Running IPython from Python
 ----------------------------
 
-If you are using :ref:`embedding` to start IPython from a normal 
-python file, you can set configuration options the same way as in a 
-config file by creating a traitlets config object and passing it to 
+If you are using :ref:`embedding` to start IPython from a normal
+python file, you can set configuration options the same way as in a
+config file by creating a traitlets config object and passing it to
 start_ipython like in the example below.
 
 .. literalinclude:: ../../../examples/Embedding/start_ipython_config.py

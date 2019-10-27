@@ -35,7 +35,7 @@ import sys
 import warnings
 import re
 
-from IPython.core.get_ipython import get_ipython
+from IPython.core.getipython import get_ipython
 from IPython.utils import PyColorize
 from IPython.utils import coloransi, py3compat
 from IPython.core.excolors import exception_colors
@@ -85,100 +85,6 @@ def BdbQuit_IPython_excepthook(self, et, ev, tb, tb_offset=None):
     print('Exiting Debugger.')
 
 
-class Tracer(object):
-    """
-    DEPRECATED
-
-    Class for local debugging, similar to pdb.set_trace.
-
-    Instances of this class, when called, behave like pdb.set_trace, but
-    providing IPython's enhanced capabilities.
-
-    This is implemented as a class which must be initialized in your own code
-    and not as a standalone function because we need to detect at runtime
-    whether IPython is already active or not.  That detection is done in the
-    constructor, ensuring that this code plays nicely with a running IPython,
-    while functioning acceptably (though with limitations) if outside of it.
-    """
-
-    @skip_doctest
-    def __init__(self, colors=None):
-        """
-        DEPRECATED
-
-        Create a local debugger instance.
-
-        Parameters
-        ----------
-
-        colors : str, optional
-            The name of the color scheme to use, it must be one of IPython's
-            valid color schemes.  If not given, the function will default to
-            the current IPython scheme when running inside IPython, and to
-            'NoColor' otherwise.
-
-        Examples
-        --------
-        ::
-
-            from IPython.core.debugger import Tracer; debug_here = Tracer()
-
-        Later in your code::
-
-            debug_here()  # -> will open up the debugger at that point.
-
-        Once the debugger activates, you can use all of its regular commands to
-        step through code, set breakpoints, etc.  See the pdb documentation
-        from the Python standard library for usage details.
-        """
-        warnings.warn(
-            "`Tracer` is deprecated since version 5.1, directly use "
-            "`IPython.core.debugger.Pdb.set_trace()`",
-            DeprecationWarning,
-            stacklevel=2)
-
-        ip = get_ipython()
-        if ip is None:
-            # Outside of ipython, we set our own exception hook manually
-            sys.excepthook = functools.partial(BdbQuit_excepthook,
-                                               excepthook=sys.excepthook)
-            def_colors = 'NoColor'
-        else:
-            # In ipython, we use its custom exception handler mechanism
-            def_colors = ip.colors
-            ip.set_custom_exc((bdb.BdbQuit,), BdbQuit_IPython_excepthook)
-
-        if colors is None:
-            colors = def_colors
-
-        # The stdlib debugger internally uses a modified repr from the `repr`
-        # module, that limits the length of printed strings to a hardcoded
-        # limit of 30 characters.  That much trimming is too aggressive, let's
-        # at least raise that limit to 80 chars, which should be enough for
-        # most interactive uses.
-        try:
-            try:
-                from reprlib import aRepr  # Py 3
-            except ImportError:
-                from repr import aRepr  # Py 2
-            aRepr.maxstring = 80
-        except BaseException:
-            # This is only a user-facing convenience, so any error we encounter
-            # here can be warned about but can be otherwise ignored.  These
-            # printouts will tell us about problems if this API changes
-            import traceback
-            traceback.print_exc()
-
-        self.debugger = Pdb(colors)
-
-    def __call__(self):
-        """Starts an interactive debugger at the point where called.
-
-        This is similar to the pdb.set_trace() function from the std lib, but
-        using IPython's enhanced debugger."""
-
-        self.debugger.set_trace(sys._getframe().f_back)
-
 
 RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')
 
@@ -191,7 +97,10 @@ def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     """Make new_fn have old_fn's doc string. This is particularly useful
     for the ``do_...`` commands that hook into the help system.
     Adapted from from a comp.lang.python posting
-    by Duncan Booth."""
+    by Duncan Booth.
+
+    uhhh so what the hell does this do that functools.wraps() doesn't?
+    """
 
     def wrapper(*args, **kw):
         return new_fn(*args, **kw)
@@ -661,9 +570,15 @@ class Pdb(OldPdb):
 
 
 def set_trace(frame=None):
-    """
-    Start debugging from `frame`.
+    """Start debugging from `frame`.
 
     If frame is not specified, debugging starts from caller's frame.
+
+    The function is simply this:
+
+    Examples
+    --------
+    >>> Pdb().set_trace(frame or sys._getframe().f_back)
+
     """
     Pdb().set_trace(frame or sys._getframe().f_back)

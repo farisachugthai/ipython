@@ -11,10 +11,12 @@ from unittest import TestCase
 from IPython.testing.decorators import skip_without
 
 
-def iprc(x): return ip.run_cell(dedent(x)).raise_error()
+def iprc(x):
+    return ip.run_cell(dedent(x)).raise_error()
 
 
-def iprc_nr(x): return ip.run_cell(dedent(x))
+def iprc_nr(x):
+    return ip.run_cell(dedent(x))
 
 
 if sys.version_info > (3, 5):
@@ -27,14 +29,10 @@ if sys.version_info > (3, 5):
             nt.assert_true(_should_be_async("x = await bar()"))
             nt.assert_false(
                 _should_be_async(
-                    dedent(
-                        """
+                    dedent("""
                 async def awaitable():
                     pass
-            """
-                    )
-                )
-            )
+            """)))
 
         def _get_top_level_cases(self):
             # These are test cases that should be valid in a function
@@ -57,32 +55,37 @@ if sys.version_info > (3, 5):
             #
             # See https://bugs.python.org/issue1875
 
-            test_cases.append(('if', dedent("""
+            test_cases.append(('if',
+                               dedent("""
             if True:
                 {val}
             """)))
 
-            test_cases.append(('while', dedent("""
+            test_cases.append(('while',
+                               dedent("""
             while True:
                 {val}
                 break
             """)))
 
-            test_cases.append(('try', dedent("""
+            test_cases.append(('try',
+                               dedent("""
             try:
                 {val}
             except:
                 pass
             """)))
 
-            test_cases.append(('except', dedent("""
+            test_cases.append(('except',
+                               dedent("""
             try:
                 pass
             except:
                 {val}
             """)))
 
-            test_cases.append(('finally', dedent("""
+            test_cases.append(('finally',
+                               dedent("""
             try:
                 pass
             except:
@@ -91,19 +94,22 @@ if sys.version_info > (3, 5):
                 {val}
             """)))
 
-            test_cases.append(('for', dedent("""
+            test_cases.append(('for',
+                               dedent("""
             for _ in range(4):
                 {val}
             """)))
 
-            test_cases.append(('nested', dedent("""
+            test_cases.append(('nested',
+                               dedent("""
             if True:
                 while True:
                     {val}
                     break
             """)))
 
-            test_cases.append(('deep-nested', dedent("""
+            test_cases.append(('deep-nested',
+                               dedent("""
             if True:
                 while True:
                     break
@@ -122,12 +128,14 @@ if sys.version_info > (3, 5):
 
             test_cases = []
 
-            test_cases.append(('class', dedent("""
+            test_cases.append(('class',
+                               dedent("""
             class V:
                 {val}
             """)))
 
-            test_cases.append(('nested-class', dedent("""
+            test_cases.append(('nested-class',
+                               dedent("""
             class V:
                 class C:
                     {val}
@@ -139,13 +147,16 @@ if sys.version_info > (3, 5):
             tl_err_test_cases = self._get_top_level_cases()
             tl_err_test_cases.extend(self._get_ry_syntax_errors())
 
-            vals = ('return', 'yield', 'yield from (_ for _ in range(3))',
-                    dedent('''
+            vals = (
+                'return',
+                'yield',
+                'yield from (_ for _ in range(3))',
+                dedent('''
                         def f():
                             pass
                         return
                         '''),
-                    )
+            )
 
             for test_name, test_case in tl_err_test_cases:
                 # This example should work if 'pass' is used as the value
@@ -165,22 +176,27 @@ if sys.version_info > (3, 5):
             # detection isn't *too* aggressive, and works inside a function
             func_contexts = []
 
-            func_contexts.append(('func', False, dedent("""
+            func_contexts.append(
+                ('func', False, dedent("""
             def f():""")))
 
-            func_contexts.append(('method', False, dedent("""
+            func_contexts.append(('method', False,
+                                  dedent("""
             class MyClass:
                 def __init__(self):
             """)))
 
-            func_contexts.append(('async-func', True, dedent("""
+            func_contexts.append(
+                ('async-func', True, dedent("""
             async def f():""")))
 
-            func_contexts.append(('async-method', True, dedent("""
+            func_contexts.append(('async-method', True,
+                                  dedent("""
             class MyClass:
                 async def f(self):""")))
 
-            func_contexts.append(('closure', False, dedent("""
+            func_contexts.append(('closure', False,
+                                  dedent("""
             def f():
                 def g():
             """)))
@@ -202,9 +218,7 @@ if sys.version_info > (3, 5):
             # yield is allowed in async functions, starting in Python 3.6,
             # and yield from is not allowed in any version
             vals = ('return', 'yield', 'yield from (_ for _ in range(3))')
-            async_safe = (True,
-                          sys.version_info >= (3, 6),
-                          False)
+            async_safe = (True, sys.version_info >= (3, 6), False)
             vals = tuple(zip(vals, async_safe))
 
             success_tests = zip(self._get_top_level_cases(), repeat(False))
@@ -217,8 +231,8 @@ if sys.version_info > (3, 5):
                     nested_case = nest_case(context, test_case)
 
                     for val, async_safe in vals:
-                        val_should_fail = (should_fail or
-                                           (async_func and not async_safe))
+                        val_should_fail = (should_fail
+                                           or (async_func and not async_safe))
 
                         test_id = (context_name, test_name, val)
                         cell = nested_case.format(val=val)
@@ -268,8 +282,7 @@ if sys.version_info > (3, 5):
             iprc("""
             import asyncio
             await asyncio.sleep(0.001)
-            """
-                 )
+            """)
 
         def test_autoawait(self):
             iprc("%autoawait False")
@@ -277,8 +290,7 @@ if sys.version_info > (3, 5):
             iprc("""
             from asyncio import sleep
             await sleep(0.1)
-            """
-                 )
+            """)
 
         @skip_without('curio')
         def test_autoawait_curio(self):

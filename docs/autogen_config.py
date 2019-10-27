@@ -9,7 +9,7 @@ from traitlets import Undefined
 from collections import defaultdict
 
 here = abspath(dirname(__file__))
-options = join(here, 'source', 'config', 'options')
+options = join(here, 'source')
 generated = join(options, 'config-generated.txt')
 
 import textwrap

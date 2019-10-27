@@ -110,7 +110,7 @@ from inspect import (getsourcefile, getfile, getmodule, ismodule, isclass,
                      ismethod, isfunction, istraceback, isframe, iscode)
 
 # IPython's own modules
-from IPython.core.get_ipython import get_ipython
+from IPython.core.getipython import get_ipython
 from IPython.core import debugger
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.excolors import exception_colors

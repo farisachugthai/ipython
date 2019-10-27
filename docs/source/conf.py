@@ -14,11 +14,18 @@
 #
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
+from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 import os
 import shutil
 import sys
 
-from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
+import sphinx
+from sphinx.ext.autodoc import cut_lines
+from sphinx.util.docfields import GroupedField
+from sphinx.domains.rst import ReSTDomain
+from sphinx.util import logging
+
+logger = logging.getLogger(__name__)
 
 
 # http://read-the-docs.readthedocs.io/en/latest/faq.html
@@ -318,4 +325,8 @@ def setup(app):
                         indextemplate='pair: %s; configuration value')
 
     app.add_lexer('ipythontb', IPythonTracebackLexer)
-    app.add_lexer('ipy', IPyLexer)
+    app.add_lexer('ipython', IPyLexer)
+
+    fdesc = GroupedField('parameter', label='Parameters',
+                         names=['param'], can_collapse=True)
+    app.add_object_type('directive', 'dir', 'pair: %s; directive')

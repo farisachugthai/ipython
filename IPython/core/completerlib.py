@@ -2,6 +2,12 @@
 """Implementations for various useful completers.
 
 These are all loaded by default by IPython.
+
+.. data:: TIMEOUT_STORAGE
+
+    Time in seconds after which the rootmodules will be stored
+    permanently in the ipython ip.db database (kept in the user's `IPYTHONDIR`).
+
 """
 # -----------------------------------------------------------------------------
 #  Copyright (C) 2010-2011 The IPython Development Team.
@@ -11,22 +17,17 @@ These are all loaded by default by IPython.
 #  The full license is in the file COPYING.txt, distributed with this software.
 # -----------------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------
-# Imports
-# -----------------------------------------------------------------------------
-
-# Stdlib imports
 import glob
+from importlib import import_module
+# Isn't this only a builtin in 3.8+ ?
+from importlib.machinery import all_suffixes
 import inspect
 import os
 import re
 import sys
-from importlib import import_module
-from importlib.machinery import all_suffixes
-
-# Third-party imports
 from time import time
 from zipimport import zipimporter
+
 
 # Our own imports
 from IPython.core.completer import expand_user, compress_user
@@ -43,8 +44,6 @@ from typing import List
 # -----------------------------------------------------------------------------
 _suffixes = all_suffixes()
 
-# Time in seconds after which the rootmodules will be stored permanently in the
-# ipython ip.db database (kept in the user's .ipython dir).
 TIMEOUT_STORAGE = 2
 
 # Time in seconds after which we give up
@@ -64,10 +63,19 @@ magic_run_re = re.compile(r'.*(\.ipy|\.ipynb|\.py[w]?)$')
 # -----------------------------------------------------------------------------
 
 
-def module_list(path):
-    """
-    Return the list containing the names of the modules available in the given
-    folder.
+def module_list(path=None):
+    """Return the list of the modules available in the given folder.
+
+    Parameters
+    ----------
+    path : str, optional
+        Path to check. Defaults to cwd.
+
+    Returns
+    -------
+    modules : list
+        list(set(modules))??? When modules is initialized as a list???
+
     """
     # sys.path has the cwd as an empty string, but isdir/listdir need it as '.'
     if path == '':
@@ -92,7 +100,7 @@ def module_list(path):
     else:
         try:
             files = list(zipimporter(path)._files.keys())
-        except BaseException:
+        except Exception:
             files = []
 
     # Build a list of modules which match the import_re regex.
@@ -156,13 +164,11 @@ def is_importable(module, attr, only_modules):
 
 
 def try_import(mod: str, only_modules=False) -> List[str]:
-    """
-    Try to import given module and return list of potential completions.
-    """
+    """Try to import given module and return list of potential completions."""
     mod = mod.rstrip('.')
     try:
         m = import_module(mod)
-    except BaseException:
+    except Exception:
         return []
 
     m_is_init = '__init__' in (getattr(m, '__file__', '') or '')
@@ -186,18 +192,21 @@ def try_import(mod: str, only_modules=False) -> List[str]:
 
 
 def quick_completer(cmd, completions):
-    r""" Easily create a trivial completer for a command.
+    r"""Easily create a trivial completer for a command.
 
     Takes either a list of completions, or all completions in string (that will
     be split on whitespace).
 
-    Example::
+    Examples
+    --------
+    :
 
         [d:\ipython]|1> import ipy_completers
         [d:\ipython]|2> ipy_completers.quick_completer('foo', ['bar','baz'])
         [d:\ipython]|3> foo b<TAB>
         bar baz
         [d:\ipython]|3> foo ba
+
     """
 
     if isinstance(completions, str):
@@ -210,12 +219,18 @@ def quick_completer(cmd, completions):
 
 
 def module_completion(line):
-    """
-    Returns a list containing the completion possibilities for an import line.
+    """Returns a list containing the completion possibilities for an import line.
 
-    The line looks like this :
-    'import xml.d'
-    'from xml.dom import'
+    Examples
+    --------
+    The line looks like this:
+
+    import xml.d<Tab>
+    from xml.dom import <Tab>
+
+    Where the user's cursor is placed at the <Tab> marker and indicates
+    initializing the completer.
+
     """
 
     words = line.split(' ')
@@ -265,7 +280,7 @@ def module_completer(self, event):
 
 
 def magic_run_completer(self, event):
-    """Complete files that end in .py or .ipy or .ipynb for the %run command.
+    """Complete files that end in .py or .ipy or .ipynb for the `%run` command.
     """
     comps = arg_split(event.line, strict=False)
     # relpath should be the current token that we need to complete.
@@ -308,7 +323,7 @@ def magic_run_completer(self, event):
 
 
 def cd_completer(self, event):
-    """Completer function for cd, which only returns directories."""
+    """Completer function for `%cd`, which only returns directories."""
     ip = get_ipython()
     relpath = event.symbol
 
@@ -366,5 +381,17 @@ def cd_completer(self, event):
 
 
 def reset_completer(self, event):
-    "A completer for %reset magic"
+    """A completer for the `%reset` magic.
+
+    Parameters
+    ----------
+    event : ?
+
+    Returns
+    -------
+    uhhh just this line.
+
+    >>> return '-f -s in out array dhist'.split()
+
+    """
     return '-f -s in out array dhist'.split()

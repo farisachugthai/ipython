@@ -1,5 +1,4 @@
-"""Testing support (tools to test IPython itself).
-"""
+"""Testing support (tools to test IPython itself)."""
 
 # -----------------------------------------------------------------------------
 #  Copyright (C) 2009-2011  The IPython Development Team
@@ -7,17 +6,11 @@
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
-
-
 import os
-
-# -----------------------------------------------------------------------------
-# Functions
-# -----------------------------------------------------------------------------
-
-# User-level entry point for testing
+from nose.tools.nontrivial import nottest
 
 
+@nottest
 def test(**kwargs):
     """Run the entire IPython test suite.
 
@@ -49,4 +42,5 @@ IPYTHON_TESTING_TIMEOUT_SCALE = float(os.getenv(
 
 # So nose doesn't try to run this as a test itself and we end up with an
 # infinite test loop
-test.__test__ = False
+# Doesn't nose have a method for that?
+# test.__test__ = False

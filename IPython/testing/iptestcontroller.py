@@ -5,12 +5,10 @@ This module runs one or more subprocesses which will actually run the IPython
 test suite.
 
 """
-
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
-
 import argparse
+import logging
 import multiprocessing.pool
 import os
 import stat
@@ -30,22 +28,36 @@ from IPython.utils.tempdir import TemporaryDirectory
 
 
 class TestController:
-    """Run tests in a subprocess
+    """Run tests in a subprocess.
+
+    I don't know why the following were comments.
+
+    Attributes
+    ----------
+    section : str, optional
+        IPython test suite to be executed.
+    cmd : list
+        command line arguments to be executed
+    env : dict
+        extra environment variables to set for the subprocess
+    dirs : list
+        `tempfile.TemporaryDirectory` instances to clear up when the
+        process finishes
+    process : :class:`subprocess.Popen` instance
+        The instance of the tests running.
+    stdout : str
+        process stdout+stderr
+
     """
-    #: str, IPython test suite to be executed.
     section = None
-    #: list, command line arguments to be executed
     cmd = None
-    #: dict, extra environment variables to set for the subprocess
     env = None
-    #: list, TemporaryDirectory instances to clear up when the process finishes
     dirs = None
-    #: subprocess.Popen instance
     process = None
-    #: str, process stdout+stderr
     stdout = None
 
     def __init__(self):
+        """Bind self.cmd to an empty list, env to a dict, and dirs to list."""
         self.cmd = []
         self.env = {}
         self.dirs = []
@@ -59,8 +71,8 @@ class TestController:
         pass
 
     def launch(self, buffer_output=False, capture_output=False):
-        # print('*** ENV:', self.env)  # dbg
-        # print('*** CMD:', self.cmd)  # dbg
+        logging.debug('*** ENV:', self.env)
+        logging.debug('*** CMD:', self.cmd)
         env = os.environ.copy()
         env.update(self.env)
         if buffer_output:
@@ -87,7 +99,7 @@ class TestController:
         try:
             print('Cleaning up stale PID: %d' % subp.pid)
             subp.kill()
-        except BaseException:  # (OSError, WindowsError) ?
+        except Exception:  # (OSError, WindowsError) ?
             # This is just a best effort, if we fail or the process was
             # really gone, ignore it.
             pass
@@ -112,8 +124,14 @@ class TestController:
 
 
 class PyTestController(TestController):
-    """Run Python tests using IPython.testing.iptest"""
-    #: str, Python command to execute in subprocess
+    """Run Python tests using IPython.testing.iptest.
+
+    Attributes
+    ----------
+    pycmd : str
+        Python command to execute in subprocess
+
+    """
     pycmd = None
 
     def __init__(self, section, options):
@@ -477,6 +495,8 @@ def default_options():
 
 
 def main():
+    """Moved this out of the function and now it's harmless :D.
+
     # iptest doesn't work correctly if the working directory is the
     # root of the IPython source tree. Tell the user to avoid
     # frustration.
@@ -485,9 +505,12 @@ def main():
         print("Don't run iptest from the IPython source directory",
               file=sys.stderr)
         sys.exit(1)
+
     # Arguments after -- should be passed through to nose. Argparse treats
     # everything after -- as regular positional arguments, so we separate them
     # first.
+
+    """
     try:
         ix = sys.argv.index('--')
     except ValueError:

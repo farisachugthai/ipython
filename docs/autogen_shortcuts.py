@@ -168,6 +168,15 @@ def generate_output():
             csv.write(':kbd:`{}`\t{}\t{}\n'.format(k[0], k[1], v))
 
 
+def running_in_ipython():
+    ipython_keybindings = create_ipython_shortcuts(get_ipython())
+
+    ipy_bindings = ipython_keybindings.bindings
+
+    needs_refactoring(ipy_bindings)
+
+
+
 def main():
     """Like why did so much of this HAVE to be executed in the global namespace?"""
     # I think vscode just changed the lambda to a def.
@@ -195,11 +204,11 @@ def main():
     # ipy_bindings = create_ipython_shortcuts(_DummyTerminal()).bindings
 
     # Let's break up the steps as much as possible I'm gonna need a while to debug this bs
-    ipython_keybindings = create_ipython_shortcuts(get_ipython())
 
-    ipy_bindings = ipython_keybindings.bindings
+    # Uh yeah this fix only works if get_ipython() returns anything.
 
-    needs_refactoring(ipy_bindings)
+    if get_ipython() is not None:
+        running_in_ipython()
 
     # else:
     #     error_message = 'Are you running this in Jupyter? Please switch over to IPython to auto-generate the prompt_toolkit keybindings correctly.'
