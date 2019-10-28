@@ -184,7 +184,7 @@ def main():
     # I got something better
 
     here = abspath(dirname(__file__))
-    dest = join(here, 'source', 'config', 'shortcuts')
+    dest = join(here, 'source', 'shortcuts')
     shell = get_ipython()
 
     if shell is None:

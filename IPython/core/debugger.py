@@ -14,6 +14,12 @@ changes. Licensing should therefore be under the standard Python terms.  For
 details on the PSF (Python Software Foundation) standard license, see:
 
 https://docs.python.org/2/license.html
+
+Or:
+https://docs.python.org/2/license.html
+
+https://docs.python.org/3/license.html
+
 """
 
 # *****************************************************************************
@@ -83,7 +89,6 @@ def BdbQuit_IPython_excepthook(self, et, ev, tb, tb_offset=None):
         DeprecationWarning,
         stacklevel=2)
     print('Exiting Debugger.')
-
 
 
 RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')

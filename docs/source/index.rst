@@ -101,10 +101,10 @@ repository <http://github.com/ipython/ipython>`_.
    development/index
    coredev/index
    api/index
+   shortcuts
    terminal
    kernel
    reference
-   options/index
    todo
    about/index
 

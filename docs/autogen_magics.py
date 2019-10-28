@@ -23,10 +23,12 @@ def format_docstring(func):
     lines = [_strip_underline(l) for l in docstring.splitlines()]
     return "\n".join(lines)
 
-output = [
-"Line magics",
-"===========",
-"",
+output = ["""
+
+Line magics
+=============
+
+"""
 ]
 
 # Case insensitive sort by name

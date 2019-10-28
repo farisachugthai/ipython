@@ -11,8 +11,9 @@ Configuring IPython
    :maxdepth: 2
 
    intro
-   shortcuts/index
    details
+   eventloops
+   integrating
 
 .. seealso::
 

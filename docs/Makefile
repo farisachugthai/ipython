@@ -86,9 +86,11 @@ api: source/api/generated/gen.txt
 
 source/api/generated/gen.txt:
 	$(PYTHON) autogen_api.py
+	# TODO:
+	# $(PYTHON) autogen_api_numpy.py
 	@echo "Build API docs finished."
 
-autogen_shortcuts: autogen_shortcuts.py ../IPython/terminal/interactiveshell.py source/config/shortcuts/index.rst
+autogen_shortcuts: autogen_shortcuts.py ../IPython/terminal/interactiveshell.py source/shortcuts.rst
 	$(PYTHON) autogen_shortcuts.py
 	@echo "Created docs for shortcuts"
 

@@ -1,9 +1,12 @@
-.. _events:
-.. _callbacks:
 
 ==============
 IPython Events
 ==============
+
+.. index:: events, callbacks
+
+.. .. _events:
+   .. _callbacks:
 
 Extension code can register callbacks functions which will be called on specific
 events within the IPython code. You can see the current list of available
@@ -17,22 +20,22 @@ For example::
         def __init__(self, ip):
             self.shell = ip
             self.last_x = None
-        
+
         def pre_execute(self):
             self.last_x = self.shell.user_ns.get('x', None)
-        
+
         def pre_run_cell(self, info):
             print('Cell code: "%s"' % info.raw_cell)
-        
+
         def post_execute(self):
             if self.shell.user_ns.get('x', None) != self.last_x:
                 print("x changed!")
-        
+
         def post_run_cell(self, result):
             print('Cell code: "%s"' % result.info.raw_cell)
             if result.error_before_exec:
                 print('Error before execution: %s' % result.error_before_exec)
-        
+
     def load_ipython_extension(ip):
         vw = VarWatcher(ip)
         ip.events.register('pre_execute', vw.pre_execute)
@@ -44,45 +47,56 @@ For example::
 Events
 ======
 
-These are the events IPython will emit. Callbacks will be passed no arguments, unless otherwise specified.
+These are the events IPython will emit. Callbacks will be passed no
+arguments, unless otherwise specified.
 
-shell_initialized
------------------
 
-.. code-block:: python
+``shell_initialized``
+=====================
+
+.. code-block:: ipython
 
     def shell_initialized(ipython):
         ...
 
 This event is triggered only once, at the end of setting up IPython.
-Extensions registered to load by default as part of configuration can use this to execute code to finalize setup.
+Extensions registered to load by default as part of configuration can use
+this to execute code to finalize setup.
+
 Callbacks will be passed the InteractiveShell instance.
 
-pre_run_cell
-------------
+
+``pre_run_cell``
+================
 
 ``pre_run_cell`` fires prior to interactive execution (e.g. a cell in a notebook).
 It can be used to note the state prior to execution, and keep track of changes.
 An object containing information used for the code execution is provided as an argument.
 
-pre_execute
------------
+
+``pre_execute``
+===============
 
 ``pre_execute`` is like ``pre_run_cell``, but is triggered prior to *any* execution.
 Sometimes code can be executed by libraries, etc. which
 skipping the history/display mechanisms, in which cases ``pre_run_cell`` will not fire.
 
-post_run_cell
--------------
+
+``post_run_cell``
+=================
 
 ``post_run_cell`` runs after interactive execution (e.g. a cell in a notebook).
-It can be used to cleanup or notify or perform operations on any side effects produced during execution.
-For instance, the inline matplotlib backend uses this event to display any figures created but not explicitly displayed during the course of the cell.
+
+It can be used to cleanup or notify or perform operations on any side effects
+produced during execution.
+
+For instance, the inline matplotlib backend uses this event to display any
+figures created but not explicitly displayed during the course of the cell.
 The object which will be returned as the execution result is provided as an
 argument.
 
-post_execute
-------------
+``post_execute``
+================
 
 The same as ``pre_execute``, ``post_execute`` is like ``post_run_cell``,
 but fires for *all* executions, not just interactive ones.
@@ -91,9 +105,9 @@ but fires for *all* executions, not just interactive ones.
 .. seealso::
 
    Module :mod:`IPython.core.hooks`
-     The older 'hooks' system allows end users to customise some parts of
-     IPython's behaviour.
-   
+      The older 'hooks' system allows end users to customise some parts of
+      IPython's behaviour.
+
    :doc:`inputtransforms`
-     By registering input transformers that don't change code, you can monitor
-     what is being executed.
+      By registering input transformers that don't change code, you can monitor
+      what is being executed.

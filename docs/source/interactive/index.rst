@@ -15,9 +15,11 @@ done some work in the classic Python REPL.
     of date, we welcome any report of inaccuracy, and Pull Requests that make
     that up to date.
 
+
+.. why was this toctree hidden?
+
 .. toctree::
    :maxdepth: 2
-   :hidden:
 
    tutorial
    plotting

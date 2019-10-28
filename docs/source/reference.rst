@@ -1,3 +1,5 @@
+.. _reference:
+
 =================
 IPython Reference
 =================
@@ -27,41 +29,74 @@ recognizing and executing any default options  set in  ``ipython_config.py``.
 
 This behavior is different from standard Python, which when called as:
 
-    ``python`` `-i` file
+:command:`python` `-i` ``file``
 
-will execute only that one file, and in doing so, will ignore your configuration setup.
+will execute only that one file, and in doing so, will ignore your
+configuration setup.
 
 Please note that some of the configuration options are not available at the
 command line, simply because they are not practical here. Look into your
 configuration files for details on those. There are separate configuration files
-for each profile, and the files look like :file:`ipython_config.py` or
-:file:`ipython_config_{frontendname}.py`.  Profile directories look like
-:file:`profile_{profilename}` and are typically installed in the
-:envvar:`IPYTHONDIR` directory, which defaults to :file:`$HOME/.ipython`. For
-Windows users, :envvar:`HOME` resolves to :file:`C:\\Users\\{YourUserName}` in
-most instances.
+for each profile, and the files look like ``ipython_config.py`` or
+``ipython_config_{frontendname}.py``.
+
+Profile directories look like ``profile_{profilename}`` and are
+typically installed in the :envvar:`IPYTHONDIR` directory, which defaults
+to ``$HOME/.ipython`` or ``%USERPROFILE%\.ipython``.
+
 
 Command-line Options
 --------------------
 
-To see the options IPython accepts, use ``ipython --help`` (and you probably
-should run the output through a pager such as ``ipython --help | less`` for
-more convenient reading).  This shows all the options that have a single-word
-alias to control them, but IPython lets you configure all of its objects from
-the command-line by passing the full class name and a corresponding value; type
-``ipython --help-all`` to see this full list.  For example::
+To see the options IPython accepts, use ``ipython --help``.
 
-    $ ipython --help-all
-    <...snip...>
-    --matplotlib=<CaselessStrEnum> (InteractiveShellApp.matplotlib)
-        Default: None
-        Choices: ['auto', 'gtk', 'gtk3', 'inline', 'nbagg', 'notebook', 'osx', 'qt', 'qt4', 'qt5', 'tk', 'wx']
-        Configure matplotlib for interactive use with the default matplotlib
-        backend.
-    <...snip...>
+.. tip:: Run the output through a pager such as ``ipython --help | less`` for more convenient reading.
+
+   Note that this can be done from inside of IPython like so.
 
 
-Indicate that the following::
+.. this didn't work oddly. like it worked but it didn't send the info to less :/
+.. .. code-block:: ipython
+
+..    help_docs = !ipython --help
+..    %page help_docs
+
+.. oddly enough this worked perfectly though
+
+.. code-block:: ipython
+
+   !ipython --help | less -
+
+
+.. admonition:: To use the %page magic, ensure that the $PAGER env var is set.
+
+This variable is set by default on Unix like systems; however, it typically is
+unset on Windows.
+
+
+Help all
+--------
+
+This shows all the options that have a single-word alias to toggle them,
+but IPython lets you configure all of it's objects from
+the command-line by passing the full class name and a corresponding value.
+
+As an example, type ``ipython --help-all`` to see this full list.::
+
+   $ ipython --help-all
+
+   <...SNIP...>
+
+   --matplotlib=<CaselessStrEnum> (InteractiveShellApp.matplotlib)
+      Default: None
+      Choices: ['auto', 'gtk', 'gtk3', 'inline', 'nbagg', 'notebook', 'osx', 'qt', 'qt4', 'qt5', 'tk', 'wx']
+      Configure matplotlib for interactive use with the default matplotlib
+      backend.
+
+   <...SNIP...>
+
+
+Indicates that the following::
 
    $ ipython --matplotlib qt
 
@@ -71,8 +106,10 @@ is equivalent to::
    $ ipython --TerminalIPythonApp.matplotlib='qt'
 
 Note that in the second form, you *must* use the equal sign, as the expression
-is evaluated as an actual Python assignment.  While in the above example the
-short form is more convenient, only the most common options have a short form,
+is evaluated as an actual Python assignment.
+
+While in the above example the short form is more convenient,
+only the most common options have a short form,
 while any configurable variable in IPython can be set at the command-line by
 using the long form.  This long form is the same syntax used in the
 configuration files, if you want to set these options permanently.
@@ -88,31 +125,39 @@ does, however, offer many features which are not available at a standard python
 prompt. What follows is a list of these.
 
 
-Caution for Windows users
--------------------------
+.. Well we didn't choose it. Stop badgering users about things outside of
+   their control and present solutions.
 
-Windows, unfortunately, uses the '\\' character as a path separator. This is a
-terrible choice, because '\\' also represents the escape character in most
-modern programming languages, including Python. For this reason, using '/'
-character is recommended if you have problems with ``\``.  However, in Windows
-commands '/' flags options, so you can not use it for the root directory. This
-means that paths beginning at the root must be typed in a contrived manner
-like: ``%copy \opt/foo/bar.txt \tmp``
+.. Caution for Windows users
+.. -------------------------
+
+.. Windows, unfortunately, uses the '\\' character as a path separator. This is a
+.. terrible choice, because '\\' also represents the escape character in most
+.. modern programming languages, including Python. For this reason, using '/'
+.. character is recommended if you have problems with ``\``.  However, in Windows
+.. commands '/' flags options, so you can not use it for the root directory. This
+.. means that paths beginning at the root must be typed in a contrived manner
+.. like: ``%copy \opt/foo/bar.txt \tmp``
 
 .. _magic:
 
 Magic command system
 --------------------
 
-IPython will treat any line whose first character is a % as a special
-call to a 'magic' function. These allow you to control the behavior of
-IPython itself, plus a lot of system-type features. They are all
-prefixed with a % character, but parameters are given without
+IPython will treat any line whose first character is a :kbd:`%` as a special
+call to a 'magic' function.
+
+These allow you to control the behavior of
+IPython itself, plus a lot of system-type features. All magics are
+prefixed with a :kbd:`%` character, but `magic_parameters` are given without
 parentheses or quotes.
 
-Lines that begin with ``%%`` signal a *cell magic*: they take as arguments not
-only the rest of the current line, but all lines below them as well, in the
-current execution block.  Cell magics can in fact make arbitrary modifications
+Lines that begin with :kbd:`%%` signal a `cell_magic`.
+
+They take as arguments not only the rest of the current line, but all lines
+in the current execution block are interpreted as arguments to the magic.
+
+Cell magics can, in fact, make arbitrary modifications
 to the input they receive, which need not even be valid Python code at all.
 They receive the whole block as a single string.
 
@@ -124,11 +169,11 @@ the same name::
 
 The following uses the builtin :magic:`timeit` in cell mode::
 
-  In [10]: %%timeit x = range(10000)
+   In [10]: %%timeit x = range(10000)
       ...: min(x)
       ...: max(x)
       ...:
-  1000 loops, best of 3: 438 us per loop
+   1000 loops, best of 3: 438 us per loop
 
 In this case, ``x = range(10000)`` is called as the line argument, and the
 block with ``min(x)`` and ``max(x)`` is called as the cell body.  The
@@ -137,10 +182,10 @@ block with ``min(x)`` and ``max(x)`` is called as the cell body.  The
 If you have 'automagic' enabled (as it is by default), you don't need to type in
 the single ``%`` explicitly for line magics; IPython will scan its internal
 list of magic functions and call one if it exists. With automagic on you can
-then just type ``cd mydir`` to go to directory 'mydir'::
+then just type `%cd` mydir to go to directory 'mydir'::
 
-      In [9]: cd mydir
-      /home/fperez/mydir
+   In [9]: cd mydir
+   /home/fperez/mydir
 
 Cell magics *always* require an explicit ``%%`` prefix, automagic
 calling only works for line magics.
@@ -735,22 +780,20 @@ The following sample file illustrating how to use the embedding
 functionality is provided in the examples directory as embed_class_long.py.
 It should be fairly self-explanatory:
 
-.. literalinclude:: ../../../examples/Embedding/embed_class_long.py
-    :language: python
+.. .. literalinclude:: ../../../examples/Embedding/embed_class_long.py
+..     :language: python
 
 Once you understand how the system functions, you can use the following
 code fragments in your programs which are ready for cut and paste:
 
-.. literalinclude:: ../../../examples/Embedding/embed_class_short.py
-    :language: python
+.. .. literalinclude:: ../../../examples/Embedding/embed_class_short.py
+..     :language: python
+
 
 Using the Python debugger (pdb)
 ===============================
 
-Running entire programs via pdb
--------------------------------
-
-pdb, the Python debugger, is a powerful interactive debugger which
+:mod:`pdb`, the Python debugger, is a powerful interactive debugger which
 allows you to step through code, set breakpoints, watch variables,
 etc.  IPython makes it very easy to start any script under the control
 of pdb, regardless of whether you have wrapped it into a 'main()'
@@ -761,13 +804,16 @@ how to control where pdb will stop execution first.
 For more information on the use of the pdb debugger, see :ref:`debugger-commands`
 in the Python documentation.
 
+Running entire programs via pdb
+-------------------------------
+
 IPython extends the debugger with a few useful additions, like coloring of
 tracebacks. The debugger will adopt the color scheme selected for IPython.
 
 The ``where`` command has also been extended to take as argument the number of
 context line to show. This allows to a many line of context on shallow stack trace:
 
-.. code::
+.. sourcecode:: ipython
 
     In [5]: def foo(x):
     ...:     1
@@ -808,7 +854,7 @@ context line to show. This allows to a many line of context on shallow stack tra
 
 And less context on shallower Stack Trace:
 
-.. code::
+.. code:: ipython
 
     ipdb> where 1
     <ipython-input-13-afa180a57233>(1)<module>
@@ -830,6 +876,11 @@ And less context on shallower Stack Trace:
 Post-mortem debugging
 ---------------------
 
+.. option:: --pdb
+
+   Enable the IPython-enhanced debugger if any code executed in the session
+   triggers an uncaught exception.
+
 Going into a debugger when an exception occurs can be
 extremely useful in order to find the origin of subtle bugs, because pdb
 opens up at the point in your code which triggered the exception, and
@@ -850,13 +901,21 @@ put the following lines toward the top of your 'main' routine::
     sys.excepthook = ultratb.FormattedTB(mode='Verbose',
     color_scheme='Linux', call_pdb=1)
 
-The mode keyword can be either 'Verbose' or 'Plain', giving either very
-detailed or normal tracebacks respectively. The color_scheme keyword can
-be one of 'NoColor', 'Linux' (default) or 'LightBG'. These are the same
-options which can be set in IPython with ``--colors`` and ``--xmode``.
+
+.. option:: --xmode
+
+   The 'mode' keyword can be either 'Verbose' or 'Plain', giving either very
+   detailed or normal tracebacks respectively.
+
+.. option:: --colors
+
+   The 'color_scheme' keyword can be one of 'NoColor', 'Linux' (default) or
+   'LightBG'.
+
 
 This will give any of your programs detailed, colored tracebacks with
-automatic invocation of pdb.
+automatic invocation of :mod:`pdb`.
+
 
 .. _pasting_with_prompts:
 
@@ -984,7 +1043,7 @@ neither v2 PyQt nor PySide work.
 Plotting with matplotlib
 ========================
 
-matplotlib_ provides high quality 2D and 3D plotting for Python. matplotlib_
+`matplotlib` provides high quality 2D and 3D plotting for Python. `matplotlib`
 can produce plots on screen using a variety of GUI toolkits, including Tk,
 PyGTK, PyQt4 and wxPython. It also provides a number of commands useful for
 scientific computing, all with a syntax compatible with that of the popular
@@ -999,6 +1058,7 @@ matplotlib backend.  You can also request a specific backend with
 backend value, which produces static figures inlined inside the application
 window instead of matplotlib's interactive figures that live in separate
 windows.
+
 
 .. _interactive_demos:
 
@@ -1020,35 +1080,48 @@ want to continue, you simply execute the next block of the demo. The
 following listing shows the markup necessary for dividing a script into
 sections for execution as a demo:
 
-.. literalinclude:: ../../../examples/IPython Kernel/example-demo.py
-    :language: python
+.. .. literalinclude:: ../../../examples/IPython Kernel/example-demo.py
+..     :language: python
 
 In order to run a file as a demo, you must first make a Demo object out
 of it. If the file is named myscript.py, the following code will make a
-demo::
+demo:
+
+.. sourcecode:: ipython
 
     from IPython.lib.demo import Demo
-
     mydemo = Demo('myscript.py')
 
-This creates the mydemo object, whose blocks you run one at a time by
+
+This creates the 'mydemo' object, whose blocks you run one at a time by
 simply calling the object with no arguments. Then call it to run each step
 of the demo::
 
     mydemo()
 
-Demo objects can be
-restarted, you can move forward or back skipping blocks, re-execute the
-last block, etc. See the :mod:`IPython.lib.demo` module and the
+Demo objects can be restarted, you can move forward or back skipping blocks,
+re-execute the last block, etc.
+
+See the :mod:`IPython.lib.demo` module and the
 :class:`~IPython.lib.demo.Demo` class for details.
 
-Limitations: These demos are limited to
-fairly simple uses. In particular, you cannot break up sections within
-indented code (loops, if statements, function definitions, etc.)
+Limitations:
+------------
+
+These demos are limited to fairly simple uses. In particular, you cannot
+break up sections within indented code.
+
+I.E. (loops, if statements, function definitions, etc.)
+
 Supporting something like this would basically require tracking the
 internal execution state of the Python interpreter, so only top-level
-divisions are allowed. If you want to be able to open an IPython
-instance at an arbitrary point in a program, you can use IPython's
-:ref:`embedding facilities <Embedding>`.
+divisions are allowed.
 
-.. include:: ../links.txt
+
+.. tip::
+
+   If you want to be able to open an IPython
+   instance at an arbitrary point in a program, you can use IPython's
+   :ref:`embedding facilities <Embedding>`.
+
+.. .. include:: ../links.txt

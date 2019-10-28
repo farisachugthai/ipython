@@ -103,12 +103,13 @@ deprecated = {
 def editor(self, filename, linenum=None, wait=True):
     """Open the default editor at the given filename and linenumber.
 
+    IPython configures a default editor at startup by reading $EDITOR from
+    the environment, and falling back on vi (unix) or notepad (win32).
+
     This is IPython's default editor hook, you can use it as an example to
     write your own modified one.  To set your own editor function as the
-    new editor hook, call ip.set_hook('editor',yourfunc)."""
-
-    # IPython configures a default editor at startup by reading $EDITOR from
-    # the environment, and falling back on vi (unix) or notepad (win32).
+    new editor hook, call get_ipython().set_hook('editor', yourfunc).
+    """
     editor = self.editor
 
     # marker for at which line to open the file (for existing objects)
@@ -171,9 +172,11 @@ def synchronize_with_editor(self, filename, linenum, column):
 
 
 class CommandChainDispatcher:
-    """ Dispatch calls to a chain of commands until some func can handle it
+    """Dispatch calls to a chain of commands until some func can handle it
 
-    Usage: instantiate, execute "add" to add commands (with optional
+    Usage
+    ------
+    Instantiate, execute "add" to add commands (with optional
     priority), execute normally via f() calling mechanism.
 
     """
@@ -185,11 +188,12 @@ class CommandChainDispatcher:
             self.chain = commands
 
     def __call__(self, *args, **kw):
-        """ Command chain is called just like normal func.
+        """Command chain is called just like normal func.
 
         This will call all funcs in chain with the same args as were given to
         this function, and return the result of first func that didn't raise
-        TryNext"""
+        :exc:`TryNext`.
+        """
         last_exc = TryNext()
         for prio, cmd in self.chain:
             # print "prio",prio,"cmd",cmd #dbg

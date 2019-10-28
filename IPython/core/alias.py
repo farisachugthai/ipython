@@ -1,11 +1,19 @@
 # encoding: utf-8
-"""
-System command aliases.
+"""System command aliases.
+
+.. data:: shell_line_split
+
+    This is used as the pattern for calls to split_user_input.
+
+It's a compiled regular expression.::
+
+    shell_line_split = re.compile(r'^(\s*)()(\S+)(.*$)')
 
 Authors:
 
 * Fernando Perez
 * Brian Granger
+
 """
 
 # -----------------------------------------------------------------------------
@@ -40,8 +48,13 @@ shell_line_split = re.compile(r'^(\s*)()(\S+)(.*$)')
 def default_aliases():
     """Return list of shell aliases to auto-define.
 
-    Notes:
+    Returns
     -------
+    list
+        Platform-specific list of aliases
+
+    Notes
+    -----
     The aliases defined here should be safe to use on a kernel
     regardless of what frontend it is attached to.  Frontends that use a
     kernel in-process can define additional aliases that will only work in
@@ -136,12 +149,26 @@ class Alias:
     ----------
     blacklist : ...wait is that a dict?
         Seriously why is that a dict?
+        Blacklisted keywords that can not be turned into aliases.
+
     """
 
     # Prepare blacklist
     blacklist = {'cd', 'popd', 'pushd', 'dhist', 'alias', 'unalias'}
 
     def __init__(self, shell, name, cmd):
+        """Initialize an alias.
+
+        Parameters
+        ----------
+        shell : TODO
+            foo
+        name
+            bar
+        cmd
+            baz
+
+        """
         self.shell = shell
         self.name = name
         self.cmd = cmd
@@ -149,7 +176,13 @@ class Alias:
         self.nargs = self.validate()
 
     def validate(self):
-        """Validate the alias, and return the number of arguments."""
+        """Validate the alias, and return the number of arguments.
+
+        Raises
+        ------
+        InvalidAliasError
+
+        """
         if self.name in self.blacklist:
             raise InvalidAliasError("The name %s can't be aliased "
                                     "because it is a keyword or builtin." %

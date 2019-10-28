@@ -99,10 +99,10 @@ def is_stable(extra):
 
 if is_stable(iprelease['_version_extra']):
     tags.add('ipystable')
-    print('Adding Tag: ipystable')
+    logger.info('Adding Tag: ipystable')
 else:
     tags.add('ipydev')
-    print('Adding Tag: ipydev')
+    logger.info('Adding Tag: ipydev')
     rst_prolog += """
 .. warning::
 
@@ -137,7 +137,10 @@ github_project_url = "https://github.com/ipython/ipython"
 # Otherwise Sphinx emits thousands of warnings
 numpydoc_show_class_members = False
 numpydoc_class_members_toctree = False
-warning_is_error = True
+
+highlight_language = 'ipython'
+# warning_is_error = True
+warning_is_error = False
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -167,7 +170,7 @@ exclude_patterns = []
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.

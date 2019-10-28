@@ -9,4 +9,9 @@
    :Release: |version|
    :Date: |today|
 
-.. include:: generated/gen.txt
+.. .. include:: generated/gen.txt
+
+.. toctree::
+   :glob:
+
+   generated/*
