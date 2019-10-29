@@ -84,14 +84,14 @@ class CapturedIO(object):
 
     @property
     def stdout(self):
-        "Captured standard output"
+        """Captured :data:`sys.stdout`."""
         if not self._stdout:
             return ''
         return self._stdout.getvalue()
 
     @property
     def stderr(self):
-        "Captured standard error"
+        """Captured :data:`sys.stderr`."""
         if not self._stderr:
             return ''
         return self._stderr.getvalue()

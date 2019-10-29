@@ -17,6 +17,9 @@ requirements:
   host:
     - pip
     - python
+    - numpy
+    - matplotlib
+
   run:
     - python
 
@@ -47,11 +50,4 @@ about:
   home: "https://ipython.org"
   license: BSD
   license_family: BSD
-  license_file: 
   summary: "IPython: Productive Interactive Computing"
-  doc_url: 
-  dev_url: 
-
-extra:
-  recipe-maintainers:
-    - your-github-id-here

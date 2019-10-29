@@ -104,6 +104,15 @@ option.
 
 Be sure to update :any:`jedi` to the latest stable version or to try the
 current development version to get better completions.
+
+Jesus Fucking Christ
+--------------------
+
+How much of this could be deleted with no loss in value?
+
+I think you can access the shell's completers through
+``get_ipython().Completers()``
+
 """
 
 # Copyright (c) IPython Development Team.

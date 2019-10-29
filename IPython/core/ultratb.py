@@ -87,14 +87,16 @@ Inheritance diagram:
 # Distributed under the terms of the BSD License.  The full license is in
 # the file COPYING, distributed as part of this software.
 # *****************************************************************************
-
 import dis
+from importlib.util import source_from_cache
 import inspect
+from logging import info, error, debug
 import keyword
 import linecache
 import os
 import pydoc
 import re
+from shutil import get_terminal_size
 import sys
 import time
 import tokenize
@@ -115,15 +117,11 @@ from IPython.core import debugger
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.excolors import exception_colors
 from IPython.utils import PyColorize
+
+# How easily can we get rid of these 3 imports
 from IPython.utils import path as util_path
 from IPython.utils import py3compat
 from IPython.utils.data import uniq_stable
-from IPython.utils.terminal import get_terminal_size
-
-from logging import info, error, debug
-
-from importlib.util import source_from_cache
-
 import IPython.utils.colorable as colorable
 
 # Globals
@@ -485,7 +483,23 @@ def find_recursion(etype, value, records):
 # ---------------------------------------------------------------------------
 # Module classes
 class TBTools(colorable.Colorable):
-    """Basic tools used by all traceback printer classes."""
+    """Basic tools used by all traceback printer classes.
+
+    Jesus Christ. Dude I love when people leave 10 line long comments but
+    guys docstrings exist for a reason.
+
+    Attributes
+    ----------
+    _ostream : ?
+        Output stream to write to.  Note that we store the original value in
+        a private attribute and then make the public ostream a property, so
+        that we can delay accessing sys.stdout until runtime.  The way
+        things are written now, the sys.stdout object is dynamically managed
+        so a reference to it should NEVER be stored statically.  This
+        property approach confines this detail to a single location, and all
+        subclasses can simply access self.ostream for writing.
+
+    """
 
     # Number of frames to skip when reporting tracebacks
     tb_offset = 0
@@ -501,16 +515,10 @@ class TBTools(colorable.Colorable):
         super(TBTools, self).__init__(parent=parent, config=config)
         self.call_pdb = call_pdb
 
-        # Output stream to write to.  Note that we store the original value in
-        # a private attribute and then make the public ostream a property, so
-        # that we can delay accessing sys.stdout until runtime.  The way
-        # things are written now, the sys.stdout object is dynamically managed
-        # so a reference to it should NEVER be stored statically.  This
-        # property approach confines this detail to a single location, and all
-        # subclasses can simply access self.ostream for writing.
         self._ostream = ostream
 
         # Create color table
+        # Yo this isn't in the public signature at all
         self.color_scheme_table = exception_colors()
 
         self.set_colors(color_scheme)
@@ -1500,8 +1508,10 @@ class ColorTB(FormattedTB):
 class SyntaxTB(ListTB):
     """Extension which holds some state: the last exception value"""
 
-    def __init__(self, color_scheme='NoColor', parent=None, config=None):
-        ListTB.__init__(self, color_scheme, parent=parent, config=config)
+    def __init__(self, color_scheme_table=None, color_scheme='NoColor', parent=None, config=None):
+        """Had to add the color_scheme_table because of crashes."""
+        self.color_scheme_table = color_scheme_table
+        ListTB.__init__(self, color_scheme=color_scheme, parent=parent, config=config)
         self.last_syntax_error = None
 
     def __call__(self, etype, value, elist):

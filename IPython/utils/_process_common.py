@@ -2,6 +2,8 @@
 
 This file is only meant to be imported by the platform-specific implementations
 of subprocess utilities, and it contains tools that are common to all of them.
+
+.. note:: arg_split is used in completerlib so we can't wipe this file yet.
 """
 
 # -----------------------------------------------------------------------------

@@ -28,10 +28,11 @@ import re
 from importlib import import_module
 
 
-class Obj(object):
-    '''Namespace to hold arbitrary information.'''
+class Obj:
+    """Namespace to hold arbitrary information."""
 
     def __init__(self, **kwargs):
+        """`setattr` the items in 'kwargs'."""
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -39,15 +40,28 @@ class Obj(object):
 class FuncClsScanner(ast.NodeVisitor):
     """Scan a module for top-level functions and classes.
 
-    Skips objects with an @undoc decorator, or a name starting with '_'.
+    Skips objects with an `@undoc` decorator, or a name starting with :kbd:`_`.
 
+    WOW THANKS FOR NOT INCLUDING ANYTHING IN THE INIT.
     """
 
-    def __init__(self):
+    def __init__(self, classes=None, classes_seen=None, functions=None):
+        """The oddest __init__ I've ever seen.
+
+        I think he tried homebrewing his own `super` by literally calling the
+        superclasses init with self as the only arg.
+
+        Dude why.
+
+        Also I added these 3 parameters to the call signature.
+
+        Could refactor so they're actually used but for now I just want them
+        visible.
+        """
         ast.NodeVisitor.__init__(self)
-        self.classes = []
-        self.classes_seen = set()
-        self.functions = []
+        if classes is None: self.classes = []
+        if classes_seen is None: self.classes_seen = set()
+        if functions is None: self.functions = []
 
     @staticmethod
     def has_undoc_decorator(node):
@@ -79,14 +93,19 @@ class FuncClsScanner(ast.NodeVisitor):
         self.visit(mod)
         return self.functions, self.classes
 
-# Functions and classes
 
+class ApiDocWriter:
+    """Class for automatic detection and parsing of API docs.
 
-class ApiDocWriter(object):
-    ''' Class for automatic detection and parsing of API docs
-    to Sphinx-parsable reST format'''
+    Created to convert nodes in docs to Sphinx-parsable reST format.
 
-    # only separating first two levels
+    Attributes
+    ----------
+    rst_section_levels : list
+        rst_section_levels = ['*', '=', '-', '~', '^']
+        Only separating first two levels.
+
+    """
     rst_section_levels = ['*', '=', '-', '~', '^']
 
     def __init__(self,
@@ -96,38 +115,46 @@ class ApiDocWriter(object):
                  module_skip_patterns=None,
                  names_from__all__=None,
                  ):
-        ''' Initialize package for parsing
+        """Initialize package for parsing.
 
         Parameters
         ----------
         package_name : string
             Name of the top-level package.  *package_name* must be the
             name of an importable package
+
         rst_extension : string, optional
-            Extension for reST files, default '.rst'
+            Extension for reST files. Defaults to 'rst'.
+
         package_skip_patterns : None or sequence of {strings, regexps}
             Sequence of strings giving URIs of packages to be excluded
             Operates on the package path, starting at (including) the
             first dot in the package path, after *package_name* - so,
             if *package_name* is ``sphinx``, then ``sphinx.util`` will
             result in ``.util`` being passed for earching by these
-            regexps.  If is None, gives default. Default is:
-            ['\\.tests$']
+            regexps.  If is None, gives default.
+
+            Defaults to:
+                ['\\.tests$']
+
         module_skip_patterns : None or sequence
             Sequence of strings giving URIs of modules to be excluded
             Operates on the module name including preceding URI path,
             back to the first dot after *package_name*.  For example
             ``sphinx.util.console`` results in the string to search of
             ``.util.console``
-            If is None, gives default. Default is:
-            ['\\.setup$', '\\._']
+
+            Defaults to:
+                ['\\.setup$', '\\._']
+
         names_from__all__ : set, optional
             Modules listed in here will be scanned by doing ``from mod import *``,
             rather than finding function and class definitions by scanning the
             AST. This is intended for API modules which expose things defined in
             other files. Modules listed here must define ``__all__`` to avoid
             exposing everything they import.
-        '''
+
+        """
         if package_skip_patterns is None:
             package_skip_patterns = ['\\.tests$']
         if module_skip_patterns is None:
@@ -139,11 +166,14 @@ class ApiDocWriter(object):
         self.names_from__all__ = names_from__all__ or set()
 
     def get_package_name(self):
+        """Literal getters and setters. @property rang and wanted his nvm..."""
         return self._package_name
 
     def set_package_name(self, package_name):
-        ''' Set package_name
+        """Set package_name
 
+        Examples
+        --------
         >>> docwriter = ApiDocWriter('sphinx')
         >>> import sphinx
         >>> docwriter.root_path == sphinx.__path__[0]
@@ -152,7 +182,8 @@ class ApiDocWriter(object):
         >>> import docutils
         >>> docwriter.root_path == docutils.__path__[0]
         True
-        '''
+
+        """
         # It's also possible to imagine caching the module parsing here
         self._package_name = package_name
         self.root_module = import_module(package_name)
@@ -163,18 +194,18 @@ class ApiDocWriter(object):
                             'get/set package_name')
 
     def _uri2path(self, uri):
-        ''' Convert uri to absolute filepath
+        """ Convert uri to absolute filepath.
 
         Parameters
         ----------
         uri : string
-            URI of python module to return path for
+            URI of python module to return path for.
 
         Returns
         -------
         path : None or string
-            Returns None if there is no valid path for this URI
-            Otherwise returns absolute file system path for URI
+            Returns `None` if there is no valid path for this URI.
+            Otherwise returns absolute file system path for URI.
 
         Examples
         --------
@@ -189,7 +220,7 @@ class ApiDocWriter(object):
         True
         >>> docwriter._uri2path('sphinx.does_not_exist')
 
-        '''
+        """
         if uri == self.package_name:
             return os.path.join(self.root_path, '__init__.py')
         path = uri.replace('.', os.path.sep)
@@ -205,14 +236,21 @@ class ApiDocWriter(object):
         return path
 
     def _path2uri(self, dirpath):
-        ''' Convert directory path to uri '''
+        """Convert directory path to uri.
+
+        Parameters
+        ----------
+        dirpath : str
+            path to convert
+
+        """
         relpath = dirpath.replace(self.root_path, self.package_name)
         if relpath.startswith(os.path.sep):
             relpath = relpath[1:]
         return relpath.replace(os.path.sep, '.')
 
     def _parse_module(self, uri):
-        ''' Parse module defined in *uri* '''
+        """ Parse module defined in *uri* """
         filename = self._uri2path(uri)
         if filename is None:
             # nothing that we could handle here.
@@ -224,7 +262,7 @@ class ApiDocWriter(object):
     def _import_funcs_classes(self, uri):
         """Import * from uri, and separate out functions and classes.
 
-        Please tell me that thisis like 10 year old code here because
+        Please tell me that this is like 10 year old code here because
         why else would you run a blind exec?
         """
         ns = {}
@@ -249,7 +287,7 @@ class ApiDocWriter(object):
             return self._parse_module(uri)
 
     def generate_api_doc(self, uri):
-        '''Make autodoc documentation template string for a module
+        """Make autodoc documentation template string for a module
 
         Parameters
         ----------
@@ -260,7 +298,8 @@ class ApiDocWriter(object):
         -------
         S : string
             Contents of API doc
-        '''
+
+        """
         # get the names of all classes and functions
         functions, classes = self.find_funcs_classes(uri)
         if not len(functions) and not len(classes):
@@ -309,7 +348,7 @@ class ApiDocWriter(object):
         return ad
 
     def _survives_exclude(self, matchstr, match_type):
-        ''' Returns True if *matchstr* does not match patterns
+        """ Returns True if *matchstr* does not match patterns
 
         ``self.package_name`` removed from front of string if present
 
@@ -328,7 +367,16 @@ class ApiDocWriter(object):
         >>> dw.module_skip_patterns.append('^\\.badmod$')
         >>> dw._survives_exclude('sphinx.badmod', 'module')
         False
-        '''
+
+        Raises
+        ------
+        :exc:`ValueError`
+            The error message he wrote literally says can't interpret type %s
+
+        Why wouldn't you raise a TypeError?
+        Like this is confusingly bad.
+
+        """
         if match_type == 'module':
             patterns = self.module_skip_patterns
         elif match_type == 'package':
@@ -350,8 +398,7 @@ class ApiDocWriter(object):
         return True
 
     def discover_modules(self):
-        '''Return module sequence discovered from ``self.package_name``
-
+        """Return module sequence discovered from ``self.package_name``
 
         Parameters
         ----------
@@ -372,7 +419,7 @@ class ApiDocWriter(object):
         >>> 'sphinx.util' in dw.discover_modules()
         False
 
-        '''
+        """
         modules = [self.package_name]
         # raw directory parsing
         for dirpath, dirnames, filenames in os.walk(self.root_path):

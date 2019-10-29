@@ -3,9 +3,8 @@
 """Setup script for IPython.
 
 Under Posix environments it works like a typical setup.py script.
-Under Windows, the command sdist is not supported, since IPython
-requires utilities which are not available under Windows.
 
+And now it does on Windows as well.
 
 -----------------------------------------------------------------------------
 
@@ -70,7 +69,8 @@ import sys
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
 
-from distutils.command.sdist import sdist
+# from distutils.command.sdist import sdist
+from setuptools.build_meta import build_sdist
 
 from distutils.command.install_data import install_data
 from distutils.util import change_root, convert_path
@@ -81,7 +81,7 @@ try:
 except ImportError:
     importlib_metadata = None
 
-from setuptools import find_packages
+from setuptools import find_packages, setup, build_meta
 
 isfile = os.path.isfile
 pjoin = os.path.join
@@ -105,13 +105,6 @@ if os.name in ('nt', 'dos'):
     os_name = 'windows'
 else:
     os_name = os.name
-
-# Under Windows, 'sdist' has not been supported.  Now that the docs build with
-# Sphinx it might work, but let's not turn it on until someone confirms that it
-# actually works.
-# if os_name == 'windows' and 'sdist' in sys.argv:
-#     print('The sdist command is not available under Windows.  Exiting.')
-#     sys.exit(1)
 
 # ------------------------------------------------------------------------------
 # Things related to the IPython documentation
@@ -174,6 +167,7 @@ setup_args['package_data'] = {
 
 # For some commands, use setuptools.  Note that we do NOT list install here!
 # If you want a setuptools-enhanced install, just run 'setupegg.py install'
+# Uh no? We import setuptools at the beginning now.
 needs_setuptools = {
     'develop',
     'release',
@@ -187,6 +181,9 @@ needs_setuptools = {
     'easy_install',
     'upload',
     'install_egg_info',
+    # cool new pep517 toys
+    'build_wheel',
+    'build_sdist',
 }
 
 if len(needs_setuptools.intersection(sys.argv)) > 0:

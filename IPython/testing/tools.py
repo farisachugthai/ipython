@@ -3,6 +3,7 @@
 Authors
 -------
 - Fernando Perez <Fernando.Perez@berkeley.edu>
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -82,6 +83,12 @@ def full_path(startPath, files):
 def parse_test_output(txt):
     """Parse the output of a test run and return errors, failures.
 
+    Dude what the hell is this return statement?
+
+    >>> return 0, 0
+
+    What type is that?? Is it.....I have no idea.
+
     Parameters
     ----------
     txt : str
@@ -96,6 +103,7 @@ def parse_test_output(txt):
     -------
     nerr, nfail
       number of errors and failures.
+
     """
 
     err_m = re.search(r'^FAILED \(errors=(\d+)\)', txt, re.MULTILINE)
@@ -139,7 +147,13 @@ def default_argv():
 
 
 def default_config():
-    """Return a config object with good defaults for testing."""
+    """Return a config object with good defaults for testing.
+
+    This means, a tempfile.NamedTemporaryFile is used for the history.sqlite
+    file AKA the HistoryManager.hist_file, autocall is set to 0 and the db
+    cache is set very high so as to prevent disk writes.
+
+    """
     config = Config()
     config.TerminalInteractiveShell.colors = 'NoColor'
     config.TerminalTerminalInteractiveShell.term_title = False,
@@ -152,15 +166,22 @@ def default_config():
 
 
 def get_ipython_cmd(as_string=False):
-    """
-    Return appropriate IPython command line name. By default, this will return
-    a list that can be used with subprocess.Popen, for example, but passing
-    `as_string=True` allows for returning the IPython command as a string.
+    """ Return appropriate IPython command line name.
+
+    By default, this will return a `list` that can be used with
+    `subprocess.Popen`, for example, but passing `as_string=True`
+    allows for returning the IPython command as a `str`.
 
     Parameters
     ----------
-    as_string: bool
-        Flag to allow to return the command as a string.
+    as_string : bool
+        Does this function return a str?
+
+    Returns
+    -------
+    ipython_cmd : str or list
+        `sys.executable` -m IPython as a list or a str.
+
     """
     ipython_cmd = [sys.executable, "-m", "IPython"]
 
@@ -191,7 +212,9 @@ def ipexec(fname, options=None, commands=()):
 
     Returns
     -------
-    ``(stdout, stderr)`` of ipython subprocess.
+    Possibly returns a tuple from the subprocess initialized.
+        ``(stdout, stderr)`` of ipython subprocess.
+
     """
     if options is None:
         options = []
@@ -201,24 +224,19 @@ def ipexec(fname, options=None, commands=()):
     test_dir = os.path.dirname(__file__)
 
     ipython_cmd = get_ipython_cmd()
+
     # Absolute path for filename
     full_fname = os.path.join(test_dir, fname)
     full_cmd = ipython_cmd + cmdargs + [full_fname]
-    env = os.environ.copy()
-    # FIXME: ignore all warnings in ipexec while we have shims
-    # should we keep suppressing warnings here, even after removing shims?
-    env['PYTHONWARNINGS'] = 'ignore'
-    # env.pop('PYTHONWARNINGS', None)  # Avoid extraneous warnings appearing
-    # on stderr
-    for k, v in env.items():
-        # Debug a bizarre failure we've seen on Windows:
-        # TypeError: environment can only contain strings
-        if not isinstance(v, str):
-            print(k, v)
-    p = Popen(full_cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE, env=env)
+
+    p = Popen(full_cmd, stdout=PIPE, stderr=PIPE,
+              stdin=PIPE, env=os.environ.copy())
+
     out, err = p.communicate(
         input=py3compat.encode('\n'.join(commands)) or None)
+
     out, err = py3compat.decode(out), py3compat.decode(err)
+
     # `import readline` causes 'ESC[?1034h' to be output sometimes,
     # so strip that out before doing comparisons
     if out:
@@ -284,6 +302,7 @@ class TempFileMixin(unittest.TestCase):
 
     Should be deprecated IMO. Pytest fixtures could very easily replace this.
     """
+
     def mktmp(self, src, ext='.py'):
         """Make a valid python temp file."""
         fname = temp_pyfile(src, ext)
@@ -367,6 +386,7 @@ class AssertPrints(object):
     abcd
     def
     """
+
     def __init__(self, s, channel='stdout', suppress=True):
         self.s = s
         if isinstance(self.s, (str, _re_type)):
@@ -412,6 +432,7 @@ class AssertNotPrints(AssertPrints):
 
     Counterpart of AssertPrints.
     """
+
     def __exit__(self, etype, value, traceback):
         try:
             if value is not None:

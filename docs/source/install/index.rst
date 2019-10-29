@@ -5,61 +5,26 @@ Installation
 ============
 
 .. toctree:: Installation
-   :maxdepth: 1
+   :maxdepth: 2
 
    install
    kernel_install
-
 
 This section will guide you through :ref:`installing IPython itself <install>`,
 and installing :ref:`kernels for Jupyter <kernel_install>` if you wish to
 work with multiple version of Python, or you're working in
 multiple environments.
 
+Troubleshooting
+===============
 
-Quick install reminder
-~~~~~~~~~~~~~~~~~~~~~~
+.. admonition:: This troubleshooting guide is old.
 
-To install IPython, open your console of choice, and run the following.
-This assumes a working installation of python is available:
-
-.. code-block:: bash
-
-    $ pip install ipython
-
-Install and register an IPython kernel with Jupyter:
-
-.. code-block:: bash
-
-    $ python -m pip install ipykernel
-
-    $ python -m ipykernel install [--user] [--name <machine-readable-name>] [--display-name <"User Friendly Name">]
-
-.. caution:: Python versions
-
-   The above commands assume that python points to python3. It may be necessary
-   to specify which version of python in the case that there are multiple
-   available on the $PATH.
-
-For more help see
-
-.. code-block:: bash
-
-    $ python -m ipykernel install  --help
-
-
-.. seealso::
-
-   `Installing Jupyter <http://jupyter.readthedocs.io/en/latest/install.html>`__
-     The Notebook, nbconvert, and many other former pieces of IPython are now
-     part of Project Jupyter.
-
-
-TroubleShooting
-
-If you are encountering this error message you are likely trying to install or
+If you are encountering an error message you are likely trying to install or
 use IPython from source. You need to checkout the remote 5.x branch. If you are
-using git the following should work::
+using git the following should work
+
+.. code-block:: bash
 
   $ git fetch origin
   $ git checkout 5.x
@@ -98,3 +63,26 @@ version::
         ...
         install_requires=install_req
     )
+
+
+Aside on setuptools
+--------------------
+
+As a quick explanation for the instructions on how to invoke setup.py,
+one can refer to the output of ``pip uninstall``.:
+
+.. code-block:: console-session
+
+   C:\tools\miniconda3\python.exe -m pip uninstall [options] -r <requirements file> ...
+
+   Description:
+      Uninstall packages.
+
+      pip is able to uninstall most installed packages. Known exceptions are:
+
+   .. nested::
+
+      - **Pure distutils packages installed with ``python setup.py install``, which
+        leave behind no metadata to determine what files were installed.
+      - Script wrappers installed by ``python setup.py develop``.**
+

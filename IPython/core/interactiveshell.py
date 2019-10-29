@@ -839,11 +839,13 @@ class InteractiveShell(SingletonConfigurable):
 
     @observe('colors')
     def init_inspector(self, changes=None):
+        """I have genuinely no idea what this code is trying to do."""
         # Object inspector
-        self.inspector = oinspect.Inspector(oinspect.InspectColors,
-                                            PyColorize.ANSICodeColors,
-                                            self.colors,
-                                            self.object_info_string_level)
+        # self.inspector = oinspect.Inspector(oinspect.InspectColors,
+        #                                     PyColorize.ANSICodeColors,
+        #                                     self.colors,
+        #                                     self.object_info_string_level)
+        pass
 
     def init_io(self):
         # This will just use sys.stdout and sys.stderr. If you want to
@@ -1843,12 +1845,24 @@ class InteractiveShell(SingletonConfigurable):
     debugger_cls = Pdb
 
     def init_traceback_handlers(self, custom_exceptions):
-        # Syntax error handler.
-        self.SyntaxTB = ultratb.SyntaxTB(color_scheme='NoColor', parent=self)
+        """Syntax error handler.
 
-        # The interactive one is initialized with an offset, meaning we always
-        # want to remove the topmost item in the traceback, which is our own
-        # internal code. Valid modes: ['Plain','Context','Verbose','Minimal']
+        The interactive one is initialized with an offset, meaning we always
+        want to remove the topmost item in the traceback, which is our own
+        internal code. Valid modes: ['Plain','Context','Verbose','Minimal']
+
+        >>> self.SyntaxTB = ultratb.SyntaxTB(color_scheme='NoColor', parent=self)
+
+        .. todo:: This method is causing a lot of problems currently.
+
+            Really doesn't help that this method alone initializes 2 classes
+            and only accepts 1 parameter. Ofc the 1 parameter isn't used in
+            the initialization of either of the classes.
+
+            We should really consider offloading this. Debugger?
+
+        """
+        self.SyntaxTB = ultratb.SyntaxTB(color_scheme='NoColor', parent=self)
         self.InteractiveTB = ultratb.AutoFormattedTB(
             mode='Plain',
             color_scheme='NoColor',
@@ -1869,7 +1883,7 @@ class InteractiveShell(SingletonConfigurable):
         self.InteractiveTB.set_mode(mode=self.xmode)
 
     def set_custom_exc(self, exc_tuple, handler):
-        """set_custom_exc(exc_tuple, handler)
+        """Set a handler if self.run_code() raises an error.
 
         Set a custom exception handler, which will be called if any of the
         exceptions in exc_tuple occur in the mainloop (specifically, in the
@@ -1877,7 +1891,6 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         ----------
-
         exc_tuple : tuple of exception classes
             A *tuple* of exception classes, for which to call the defined
             handler.  It is very important that you use a tuple, and NOT A
@@ -1907,7 +1920,13 @@ class InteractiveShell(SingletonConfigurable):
 
         WARNING: by putting in your own exception handler into IPython's main
         execution loop, you run a very good chance of nasty crashes.  This
-        facility should only be used if you really know what you are doing."""
+        facility should only be used if you really know what you are doing.
+
+        Raises
+        ------
+        :exc:`TypeError`
+            If 'exc_tuple' is not a `tuple`.
+        """
         if not isinstance(exc_tuple, tuple):
             raise TypeError("The custom exceptions must be given as a tuple.")
 
@@ -1918,7 +1937,7 @@ class InteractiveShell(SingletonConfigurable):
             print('Traceback      :', tb)
 
         def validate_stb(stb):
-            """validate structured traceback return type
+            """Validate structured traceback return type.
 
             return type of CustomTB *should* be a list of strings, but allow
             single strings or None, which are harmless.
@@ -2001,6 +2020,19 @@ class InteractiveShell(SingletonConfigurable):
         from whichever source.
 
         raises ValueError if none of these contain any information
+
+        Validaes the exception information.
+        Then posts them like so.:
+
+        >>> sys.last_type = etype
+        >>> sys.last_value = value
+        >>> sys.last_traceback = tb
+
+        Now store the exception info in sys.last_type etc.
+        WARNING: these variables are somewhat deprecated and not
+        necessarily safe to use in a threaded environment, but tools
+        like pdb depend on their existence, so let's set them.  If we
+        find problems in the field, we'll need to revisit their use.
         """
         if exc_tuple is None:
             etype, value, tb = sys.exc_info()
@@ -2015,11 +2047,6 @@ class InteractiveShell(SingletonConfigurable):
         if etype is None:
             raise ValueError("No exception to find")
 
-        # Now store the exception info in sys.last_type etc.
-        # WARNING: these variables are somewhat deprecated and not
-        # necessarily safe to use in a threaded environment, but tools
-        # like pdb depend on their existence, so let's set them.  If we
-        # find problems in the field, we'll need to revisit their use.
         sys.last_type = etype
         sys.last_value = value
         sys.last_traceback = tb

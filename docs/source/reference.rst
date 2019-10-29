@@ -956,6 +956,11 @@ And pasting from IPython sessions works equally well::
     In [2]: f(3)
     Out[2]: 9
 
+
+In addition, interactive sessions can be copy-pasted and placed into
+documentation as per the Sphinx extension. See more :ref:`ipython-directive`.
+
+
 .. _gui_support:
 
 GUI event loop support
@@ -991,12 +996,13 @@ For developers that want to integrate additional event loops with IPython, see
 :doc:`/config/eventloops`.
 
 When running inside IPython with an integrated event loop, a GUI application
-should *not* start its own event loop. This means that applications that are
-meant to be used both
+should *not* start its own event loop.
+
+This means that applications that are meant to be used both
 in IPython and as standalone apps need to have special code to detects how the
 application is being run. We highly recommend using IPython's support for this.
 Since the details vary slightly between toolkits, we point you to the various
-examples in our source directory :file:`examples/IPython Kernel/gui/` that
+examples in our source directory :doc:`examples/IPython Kernel/gui/` that
 demonstrate these capabilities.
 
 PyQt and PySide

@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-#
-# IPython documentation build configuration file.
+"""
+IPython documentation build configuration file.
 
-# NOTE: This file has been edited manually from the auto-generated one from
-# sphinx.  Do NOT delete and re-generate.  If any changes from sphinx are
-# needed, generate a scratch one and merge by hand any new fields needed.
+NOTE: This file has been edited manually from the auto-generated one from
+sphinx.  Do NOT delete and re-generate.  If any changes from sphinx are
+needed, generate a scratch one and merge by hand any new fields needed.
 
-#
-# This file is execfile()d with the current directory set to its containing dir.
-#
-# The contents of this file are pickled, so don't put values in the namespace
-# that aren't pickleable (module imports are okay, they're removed automatically).
-#
-# All configuration values have a default value; values that are commented out
-# serve to show the default value.
-from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
+
+This file is execfile()d with the current directory set to its containing dir.
+
+The contents of this file are pickled, so don't put values in the namespace
+that aren't pickleable (module imports are okay, they're removed automatically).
+
+All configuration values have a default value; values that are commented out
+serve to show the default value.
+"""
+import logging
 import os
 import shutil
 import sys
@@ -23,9 +24,14 @@ import sphinx
 from sphinx.ext.autodoc import cut_lines
 from sphinx.util.docfields import GroupedField
 from sphinx.domains.rst import ReSTDomain
-from sphinx.util import logging
+from sphinx.util.logging import getLogger
 
-logger = logging.getLogger(__name__)
+from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
+
+logger = getLogger(__name__)
+logger.setLevel(logging.INFO)
+# logger.addHandler(logging.StreamHandler().setLevel(logging.INFO))
+# logger.addFilter(logging.Filter())
 
 
 # http://read-the-docs.readthedocs.io/en/latest/faq.html

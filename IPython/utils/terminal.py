@@ -14,8 +14,6 @@ Authors:
 
 import os
 import sys
-import warnings
-from shutil import get_terminal_size as _get_terminal_size
 
 # This variable is part of the expected API of the module:
 ignore_termtitle = True
@@ -51,15 +49,6 @@ def toggle_set_term_title(val):
     ignore_termtitle = not(val)
 
 
-def _set_term_title(*args, **kw):
-    """Dummy no-op."""
-    pass
-
-
-def _restore_term_title():
-    pass
-
-
 def _set_term_title_xterm(title):
     """Change virtual terminal title in xterm-workalikes """
     # save the current title to the xterm "stack"
@@ -71,11 +60,13 @@ def _restore_term_title_xterm():
     """sys.stdout.write('\033[23;0t')."""
     sys.stdout.write('\033[23;0t')
 
+
 if os.name == 'posix':
     TERM = os.environ.get('TERM', '')
     if TERM.startswith('xterm'):
         _set_term_title = _set_term_title_xterm
         _restore_term_title = _restore_term_title_xterm
+
 elif sys.platform == 'win32':
     try:
         import ctypes
@@ -87,14 +78,18 @@ elif sys.platform == 'win32':
             """Set terminal title using ctypes to access the Win32 APIs."""
             SetConsoleTitleW(title)
     except ImportError:
+        ctypes = None
+
         def _set_term_title(title):
-            """Set terminal title using the 'title' command."""
+            """Set terminal title using the 'title' command.
+
+            .. warning:: Cannot be on network share when issuing system commands
+            """
             global ignore_termtitle
 
+            curr = os.getcwd()
+            os.chdir("C:")
             try:
-                # Cannot be on network share when issuing system commands
-                curr = os.getcwd()
-                os.chdir("C:")
                 ret = os.system("title " + title)
             finally:
                 os.chdir(curr)
@@ -107,21 +102,9 @@ def set_term_title(title):
     """Set terminal title using the necessary platform-dependent calls."""
     if ignore_termtitle:
         return
-    _set_term_title(title)
 
 
 def restore_term_title():
     """Restore, if possible, terminal title to the original state"""
     if ignore_termtitle:
         return
-    _restore_term_title()
-
-
-def freeze_term_title():
-    warnings.warn("This function is deprecated, use toggle_set_term_title()")
-    global ignore_termtitle
-    ignore_termtitle = True
-
-
-def get_terminal_size(defaultx=80, defaulty=25):
-    return _get_terminal_size((defaultx, defaulty))

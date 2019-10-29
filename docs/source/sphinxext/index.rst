@@ -13,6 +13,7 @@ Table of Contents
 
    ipython_sphinx_directive
    lexer
+   developers_notes
 
 
 .. todo:: Need to add rst docs for

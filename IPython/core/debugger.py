@@ -21,17 +21,12 @@ https://docs.python.org/2/license.html
 https://docs.python.org/3/license.html
 
 """
-
 # *****************************************************************************
-#
 #       This file is licensed under the PSF license.
 #
 #       Copyright (C) 2001 Python Software Foundation, www.python.org
 #       Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
-#
-#
 # *****************************************************************************
-
 from pdb import Pdb as OldPdb
 import bdb
 import functools
@@ -44,10 +39,10 @@ import re
 from IPython.core.getipython import get_ipython
 from IPython.utils import PyColorize
 from IPython.utils import coloransi, py3compat
-from IPython.core.excolors import exception_colors
+# from IPython.core.excolors import exception_colors
 from IPython.testing.skipdoctest import skip_doctest
 
-prompt = 'ipdb> '
+prompt = 'IPdb> '
 
 # We have to check this directly from sys.argv, config struct not yet available
 

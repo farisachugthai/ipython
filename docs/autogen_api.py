@@ -15,22 +15,32 @@ GOT IT. apigen is  ./sphinxext/apigen.py
 Jesus Christ that was tough.
 
 """
-from sphinxext.apigen import ApiDocWriter
+import logging
 import os
+from pathlib import Path
 import sys
+
+from .sphinxext.apigen import ApiDocWriter
+
+
+class SphinxDirectories:
+    """Put all of the directories that the APIDocWriter and Sphinx need in 1 spot.
+
+    Don't like the way it's set up? Okay. Subclass this and use your own!
+
+    See isn't that a little nicer than globals EVERYWHERE?
+    """
+
+    def __init__(self):
+        self.cwd = Path('.').absolute()
+        self.source = self.cwd.joinpath('source')
+        self.outdir = self.source.joinpath('api', 'generated')
 
 
 def main():
-    """Does this module have to be 100% globals?"""
-    pjoin = os.path.join
-    here = os.path.abspath(os.path.dirname(__file__))
-    sys.path.append(pjoin(os.path.abspath(here), 'sphinxext'))
-    source = pjoin(here, 'source')
-    package = 'IPython'
-    outdir = pjoin(source, 'api', 'generated')
-    docwriter = ApiDocWriter(package, rst_extension='.rst')
     # You have to escape the . here because . is a special char for regexps.
     # You must do make clean if you change this!
+    docwriter = ApiDocWriter('IPython', rst_extension='.rst')
     docwriter.package_skip_patterns += [r'\.external$',
                                         # Extensions are documented elsewhere.
                                         r'\.extensions',
@@ -49,8 +59,6 @@ def main():
     docwriter.module_skip_patterns += [r'\.lib\.inputhook.+',
                                        r'\.ipdoctest',
                                        r'\.testing\.plugin',
-                                       # Backwards compat import for lib.lexers
-                                       r'\.nbconvert\.utils\.lexers',
                                        # We document this manually.
                                        r'\.utils\.py3compat',
                                        # These are exposed in display
@@ -81,15 +89,18 @@ def main():
     })
 
     # Now, generate the outputs
-    docwriter.write_api_docs(outdir)
+    # docwriter.write_api_docs(outdir)
+    api_dirs = SphinxDirectories()
+    docwriter.write_api_docs(api_dirs.outdir)
     # Write index with .txt extension - we can include it, but Sphinx won't try
     # to compile it
-    docwriter.write_index(outdir, 'gen.txt',
-                          relative_to=pjoin(source, 'api')
-                          )
-    print('%d files written' % len(docwriter.written_modules))
+
+    # Don't actually know if we need the fspath but hey
+    # TODO: change the filename to anything more descriptive and document it's
+    # existence somewhere!!!
+    docwriter.write_index(api_dirs.outdir.__fspath__(), 'gen.txt',)
+    logging.info('%d files written' % len(docwriter.written_modules))
 
 
-# *****************************************************************************
 if __name__ == '__main__':
     main()

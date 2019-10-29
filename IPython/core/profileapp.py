@@ -4,6 +4,29 @@ An application for managing IPython profiles.
 
 To be invoked as the `ipython profile` subcommand.
 
+.. note:: For developers looking to extend the profile subcommand!
+
+    The dict where your code can attach to the shell is in :class:`ProfileApp`.
+
+Therefore it's noteworthy to see how we did this.
+
+.. class:: ProfileApp
+
+    IPython subcommand to work with profiles.
+
+    .. attribute:: subcommands
+
+        The `traitlets.traitlets.Dict` that maps the `profile` subcommands
+        to their handlers.
+
+Let's give an example.
+
+On the command line, if I were to run ``ipython profile list``, ``list``
+would be a subcommand of ``profile``.
+
+If I wanted to extend the ``ipython profile`` functionality, I'd need to
+register it in `ProfileApp.subcommands`.
+
 Authors:
 
 * Min RK
@@ -93,7 +116,18 @@ ipython locate profile foo # print the path to the directory for profile 'foo'
 
 
 def list_profiles_in(path):
-    """List profiles in a given root directory."""
+    """List profiles in a given root directory.
+
+    .. caution:: Variable not in call signature that's initialized in the function.
+
+        A list for 'profiles'.
+
+    Parameters
+    ----------
+    path : str
+        Directory to check.
+
+    """
     profiles = []
 
     # for python 3.6+ rewrite to: with os.scandir(path) as dirlist:
@@ -159,6 +193,7 @@ class ProfileList(Application):
             print('    %s' % profile)
 
     def list_profile_dirs(self):
+        """Lists profiles in the `IPYTHONDIR` and then the `os.path.curdir`."""
         profiles = list_bundled_profiles()
         if profiles:
             print()
@@ -187,6 +222,7 @@ class ProfileList(Application):
         print()
 
     def start(self):
+        """Calls self.list_profile_dirs."""
         self.list_profile_dirs()
 
 
@@ -209,15 +245,31 @@ create_flags['parallel'] = ({
 
 
 class ProfileCreate(BaseIPythonApplication):
+    """IPython Application with auto_create *config-files* set to the True.
+
+    Attributes
+    ----------
+    A handful. Thankfully they're not grouped together at the top so I'll
+    document it when I'm done fishing through this whole file to reorganize
+    this classes attributes and put them together! :D
+
+    """
     name = u'ipython-profile'
     description = create_help
     examples = _create_examples
     auto_create = Bool(True)
 
     def _log_format_default(self):
+        """Dude look at how pathetic this default formatting message is.
+
+        >>> return "[%(name)s] %(message)s"
+
+        Like ffs we should encourage people to subclass this and overwrite it.
+        """
         return "[%(name)s] %(message)s"
 
     def _copy_config_files_default(self):
+        """A method that returns True. I don't understand why it exists."""
         return True
 
     parallel = Bool(
@@ -226,6 +278,15 @@ class ProfileCreate(BaseIPythonApplication):
 
     @observe('parallel')
     def _parallel_changed(self, change):
+        """Handler for if the ipyparallel files change.
+
+        ipyparallel is configured by the following files.:
+
+        * ipcontroller_config.py
+        * ipengine_config.py
+        * ipcluster_config.py
+
+        """
         parallel_files = [
             'ipcontroller_config.py', 'ipengine_config.py',
             'ipcluster_config.py'
@@ -239,6 +300,17 @@ class ProfileCreate(BaseIPythonApplication):
                     self.config_files.remove(cf)
 
     def parse_command_line(self, argv):
+        """Parses the command line as passed by 'argv'.
+
+        Differentiated from the superclasses method with.:
+
+        >>> # accept positional arg as profile name
+        >>> if self.extra_args:
+            >>> self.profile = self.extra_args[0]
+
+        Kinda dumb you say? I'd agree.
+
+        """
         super(ProfileCreate, self).parse_command_line(argv)
         # accept positional arg as profile name
         if self.extra_args:

@@ -135,7 +135,7 @@ class TimeitTemplateFiller(ast.NodeTransformer):
         self.ast_stmt = ast_stmt
 
     def visit_FunctionDef(self, node):
-        "Fill in the setup statement"
+        """Fill in the 'setup' statement."""
         self.generic_visit(node)
         if node.name == "inner":
             node.body[:1] = self.ast_setup.body
@@ -143,7 +143,7 @@ class TimeitTemplateFiller(ast.NodeTransformer):
         return node
 
     def visit_For(self, node):
-        "Fill in the statement to be timed"
+        """Fill in the statement to be timed."""
         if getattr(getattr(node.body[0], 'value', None), 'id', None) == 'stmt':
             node.body = self.ast_stmt.body
         return node

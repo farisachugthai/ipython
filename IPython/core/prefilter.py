@@ -114,8 +114,12 @@ class PrefilterManager(Configurable):
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
                      allow_none=True)
 
-    def __init__(self, shell=None, **kwargs):
+    def __init__(self, shell=None, _transformers=None, _checkers=None, _handlers=None, _esc_handlers=None, **kwargs):
         super(PrefilterManager, self).__init__(shell=shell, **kwargs)
+        self._transformers = _transformers or []
+        self._checkers = _checkers or []
+        self._handlers = _handlers or {}
+        self._esc_handlers = _esc_handlers or {}
         self.shell = shell
         self.init_transformers()
         self.init_handlers()
@@ -127,7 +131,6 @@ class PrefilterManager(Configurable):
 
     def init_transformers(self):
         """Create the default transformers."""
-        self._transformers = []
         for transformer_cls in _default_transformers:
             transformer_cls(shell=self.shell,
                             prefilter_manager=self,
@@ -163,7 +166,6 @@ class PrefilterManager(Configurable):
 
     def init_checkers(self):
         """Create the default checkers."""
-        self._checkers = []
         for checker in _default_checkers:
             checker(shell=self.shell, prefilter_manager=self, parent=self)
 
@@ -197,8 +199,6 @@ class PrefilterManager(Configurable):
 
     def init_handlers(self):
         """Create the default handlers."""
-        self._handlers = {}
-        self._esc_handlers = {}
         for handler in _default_handlers:
             handler(shell=self.shell, prefilter_manager=self, parent=self)
 
@@ -357,10 +357,6 @@ class PrefilterTransformer(Configurable):
                              **kwargs)
         self.prefilter_manager.register_transformer(self)
 
-    def transform(self, line, continue_prompt):
-        """Transform a line, returning the new one."""
-        return None
-
     def __repr__(self):
         return "<%s(priority=%r, enabled=%r)>" % (self.__class__.__name__,
                                                   self.priority, self.enabled)
@@ -403,11 +399,9 @@ class EmacsChecker(PrefilterChecker):
     enabled = Bool(False).tag(config=True)
 
     def check(self, line_info):
-        "Emacs ipython-mode tags certain input lines."
+        """Emacs ipython-mode tags certain input lines."""
         if line_info.line.endswith('# PYTHON-MODE'):
             return self.prefilter_manager.get_handler_by_name('emacs')
-        else:
-            return None
 
 
 class MacroChecker(PrefilterChecker):
@@ -418,8 +412,6 @@ class MacroChecker(PrefilterChecker):
         obj = self.shell.user_ns.get(line_info.ifun)
         if isinstance(obj, Macro):
             return self.prefilter_manager.get_handler_by_name('macro')
-        else:
-            return None
 
 
 class IPyAutocallChecker(PrefilterChecker):
@@ -427,13 +419,11 @@ class IPyAutocallChecker(PrefilterChecker):
     priority = Integer(300).tag(config=True)
 
     def check(self, line_info):
-        "Instances of IPyAutocall in user_ns get autocalled immediately"
+        """Instances of IPyAutocall in user_ns get autocalled immediately."""
         obj = self.shell.user_ns.get(line_info.ifun, None)
         if isinstance(obj, IPyAutocall):
             obj.set_ip(self.shell)
             return self.prefilter_manager.get_handler_by_name('auto')
-        else:
-            return None
 
 
 class AssignmentChecker(PrefilterChecker):
@@ -450,11 +440,10 @@ class AssignmentChecker(PrefilterChecker):
         if line_info.the_rest:
             if line_info.the_rest[0] in '=,':
                 return self.prefilter_manager.get_handler_by_name('normal')
-        else:
-            return None
 
 
 class AutoMagicChecker(PrefilterChecker):
+    """What the hell is the point of all of these classes that only return None?"""
 
     priority = Integer(700).tag(config=True)
 
@@ -464,8 +453,7 @@ class AutoMagicChecker(PrefilterChecker):
         check_esc_chars. This just checks for automagic.  Also, before
         triggering the magic handler, make sure that there is nothing in the
         user namespace which could shadow it."""
-        if not self.shell.automagic or not self.shell.find_magic(
-                line_info.ifun):
+        if not self.shell.automagic or not self.shell.find_magic(line_info.ifun):
             return None
 
         # We have a likely magic method.  Make sure we should actually call it.
@@ -490,8 +478,6 @@ class PythonOpsChecker(PrefilterChecker):
         spurious (and very confusing) geattr() accesses."""
         if line_info.the_rest and line_info.the_rest[0] in '!=()<>,+*/%^&|':
             return self.prefilter_manager.get_handler_by_name('normal')
-        else:
-            return None
 
 
 class AutocallChecker(PrefilterChecker):

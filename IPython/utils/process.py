@@ -14,6 +14,8 @@ import sys
 
 if sys.platform == 'win32':
     from ._process_win32 import system, getoutput, arg_split, check_pid
+
+# What the actual hell is the cli platform
 elif sys.platform == 'cli':
     from ._process_cli import system, getoutput, arg_split, check_pid
 else:

@@ -6,10 +6,24 @@ Integrating your objects with IPython
 
 Tab completion
 ==============
+.. todo:: Come back to this section.
+
+   It's so underdocumented I genuinely don't understand what it's referring to.
+   Like define a method on my objects? How does the InteractiveShell interface with it?
+   What do you mean the subscript expression obj[key]?
+
+   So if my object is a dict then I can customize how it completes?
+
+   Why?
+
+   Why is this type specific???
 
 To change the attributes displayed by tab-completing your object, define a
 ``__dir__(self)`` method for it. For more details, see the documentation of the
 built-in `dir() function <http://docs.python.org/library/functions.html#dir>`_.
+
+.. also yo what the hell are the 2 lines above. That's true of any object that
+   has literally no relevance to IPython any more than Monty Python does.
 
 You can also customise key completions for your objects, e.g. pressing tab after
 ``obj["a``. To do so, define a method ``_ipython_key_completions_()``, which
@@ -38,9 +52,13 @@ For example::
     class Shout(object):
         def __init__(self, text):
             self.text = text
-        
+
         def _repr_html_(self):
             return "<h1>" + self.text + "</h1>"
+
+
+``__repr_*_`` methods
+----------------------
 
 We often want to provide frontends with guidance on how to display the data. To
 support this, ``_repr_*_()`` methods can also return a ``(data, metadata)``
@@ -48,6 +66,10 @@ tuple where ``metadata`` is a dictionary containing arbitrary key-value pairs fo
 the frontend to interpret. An example use case is ``_repr_jpeg_()``, which can
 be set to return a jpeg image and a ``{'height': 400, 'width': 600}`` dictionary
 to inform the frontend how to size the image.
+
+
+Continued operator overloading
+------------------------------
 
 There are also two more powerful display methods:
 
@@ -65,8 +87,12 @@ There are also two more powerful display methods:
       Displays the object as a side effect; the return value is ignored. If this
       is defined, all other display methods are ignored.
 
-To customize how the REPL pretty-prints your object, add a `_repr_pretty_`
-method to the class.  The method should accept a pretty printer, and a boolean
+.. todo:: If we redo this section, let's START with a description of the
+          classes in IPython.lib.pretty and after defining them, we use the
+          section below to describe to the user how to interface with it.
+
+To customize how the REPL pretty-prints your object, add a ``_repr_pretty_``
+method to the class.  The method should accept a pretty printer, and a `Bool`
 that indicates whether the printer detected a cycle.  The method should act on
 the printer to produce your customized pretty output.  Here is an example::
 
