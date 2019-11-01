@@ -1,7 +1,6 @@
-"""prompt-toolkit utilities
+""":mod:`prompt_toolkit` utilities.
 
-Everything in this module is a private API,
-not to be used outside IPython.
+Everything in this module is a private API, not to be used outside IPython.
 """
 
 # Copyright (c) IPython Development Team.

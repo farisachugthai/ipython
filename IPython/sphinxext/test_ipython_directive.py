@@ -1,4 +1,7 @@
+import logging
+import os
 
+from .ipython_directive import IPythonDirective
 # Simple smoke test, needs to be converted to a proper automatic test.
 
 
@@ -179,4 +182,5 @@ if __name__ == '__main__':
     if not os.path.isdir('_static'):
         os.mkdir('_static')
     test()
-    print('All OK? Check figures in _static/')
+    # still a terrible log message
+    logging.info('All OK? Check figures in _static/')

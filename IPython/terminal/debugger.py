@@ -21,15 +21,45 @@ from prompt_toolkit.formatted_text import PygmentsTokens
 class TerminalPdb(Pdb):
     """Standalone IPython debugger."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _ptcomp=None, kb=None, *args, **kwargs):
+        """Refactored to encourage visibility in parameters.
+
+        Parameters
+        ----------
+        _ptcomp : Completer, optional
+            If None, defaults to IPCompleter
+        kb : KeyBindings, optional
+            Defaults to standard IPython keybindings if None.
+
+        """
         Pdb.__init__(self, *args, **kwargs)
-        self._ptcomp = None
-        self.pt_init()
+        if _ptcomp is not None:
+            self._ptcomp = _ptcomp
+        else:
+            self.pt_init()
+
+        if kb is None:
+            kb = self.setup_prompt_keybindings()
+
+        self.pt_app = PromptSession(
+            message=(lambda: PygmentsTokens(self.get_prompt_tokens())),
+            editing_mode=getattr(EditingMode, self.shell.editing_mode.upper()),
+            key_bindings=kb,
+            history=self.shell.debugger_history,
+            completer=self._ptcomp,
+            enable_history_search=True,  # we don't check the shell parameter?
+            mouse_support=self.shell.mouse_support,
+            complete_style=self.shell.pt_complete_style,
+            style=self.shell.style,
+            inputhook=self.shell.inputhook,
+            color_depth=self.shell.color_depth,
+        )
+
+    def get_prompt_tokens(self):
+        return [(Token.Prompt, self.prompt)]
 
     def pt_init(self):
-        def get_prompt_tokens():
-            return [(Token.Prompt, self.prompt)]
-
+        """Refactored to setup the completer."""
         if self._ptcomp is None:
             compl = IPCompleter(
                 shell=self.shell,
@@ -39,6 +69,7 @@ class TerminalPdb(Pdb):
             )
             self._ptcomp = IPythonPTCompleter(compl)
 
+    def setup_prompt_keybindings(self):
         kb = KeyBindings()
         supports_suspend = Condition(lambda: hasattr(signal, 'SIGTSTP'))
         kb.add('c-z', filter=supports_suspend)(suspend_to_bg)
@@ -50,20 +81,7 @@ class TerminalPdb(Pdb):
                            & vi_insert_mode | emacs_insert_mode
                            & ~cursor_in_leading_ws
                            ))(display_completions_like_readline)
-
-        self.pt_app = PromptSession(
-            message=(lambda: PygmentsTokens(get_prompt_tokens())),
-            editing_mode=getattr(EditingMode, self.shell.editing_mode.upper()),
-            key_bindings=kb,
-            history=self.shell.debugger_history,
-            completer=self._ptcomp,
-            enable_history_search=True,
-            mouse_support=self.shell.mouse_support,
-            complete_style=self.shell.pt_complete_style,
-            style=self.shell.style,
-            inputhook=self.shell.inputhook,
-            color_depth=self.shell.color_depth,
-        )
+        return kb
 
     def cmdloop(self, intro=None):
         """Repeatedly issue a prompt, accept input, parse an initial prefix

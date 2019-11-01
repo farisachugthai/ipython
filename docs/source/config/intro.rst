@@ -4,6 +4,8 @@
 Overview of the IPython configuration system
 ============================================
 
+.. why did was this previously in development???
+
 This section describes the IPython configuration system. This is based on
 :mod:`traitlets.config`; see that documentation for more information
 about the overall architecture.

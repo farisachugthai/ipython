@@ -46,8 +46,7 @@ Usage
     This file is typically installed in the `IPYTHONDIR` directory, and there
     is a separate configuration directory for each profile. The default profile
     directory will be located in $IPYTHONDIR/profile_default. IPYTHONDIR
-    defaults to to `$HOME/.ipython`.  For Windows users, $HOME resolves to
-    C:\\Users\\YourUserName in most instances.
+    defaults to to `$HOME/.ipython` or %USERPROFILE%.
 
     To initialize a profile with the default configuration file, do::
 
@@ -115,20 +114,20 @@ MAIN FEATURES
 
 * Tab completion in the local namespace:
 
-  At any time, hitting tab will complete any available python commands or
+  At any time, hitting Tab will complete any available python commands or
   variable names, and show you a list of the possible completions if there's
   no unambiguous one. It will also complete filenames in the current directory.
 
 * Search previous command history in multiple ways:
 
-  - Start typing, and then use arrow keys up/down or (Ctrl-p/Ctrl-n) to search
-    through the history items that match what you've typed so far.
+  - Start typing, and then use arrow keys (Up/Down) or (Ctrl-p/Ctrl-n) to
+    search through the history items that match what you've typed so far.
 
   - Hit Ctrl-r: opens a search prompt. Begin typing and the system searches
     your history for lines that match what you've typed so far, completing as
     much as it can.
 
-  - %hist: search history by index.
+  - %history: search history by index.
 
 * Persistent command history across sessions.
 
@@ -139,8 +138,8 @@ MAIN FEATURES
 * The reload command does a 'deep' reload of a module: changes made to the
   module since you imported will actually be available without having to exit.
 
-* Verbose and colored exception traceback printouts. See the magic xmode and
-  xcolor functions for details (just type %magic).
+* Verbose and colored exception traceback printouts. See the magics `%xmode`
+  and `%xcolor` functions for details (just type %magic).
 
 * Input caching system:
 
@@ -150,8 +149,8 @@ MAIN FEATURES
 
   The following GLOBAL variables always exist (so don't overwrite them!):
   _i: stores previous input.
-  _ii: next previous.
-  _iii: next-next previous.
+  _ii: previous input before that.
+  _iii: stores earlier input.
   _ih : a list of all input _ih[n] is the input from line n.
 
   Additionally, global variables named _i<n> are dynamically created (<n>

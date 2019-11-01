@@ -20,7 +20,7 @@ import os
 from pathlib import Path
 import sys
 
-from .sphinxext.apigen import ApiDocWriter
+from sphinxext.apigen import ApiDocWriter
 
 
 class SphinxDirectories:

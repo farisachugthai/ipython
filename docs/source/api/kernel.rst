@@ -1,6 +1,70 @@
-Terminal IPython options
-========================
+IPython kernel options
+======================
 
+These options can be used in :file:`ipython_kernel_config.py`. The kernel also respects any options in `ipython_config.py`
+
+
+
+.. configtrait:: ConnectionFileMixin.connection_file
+
+    JSON file in which to store connection info [default: kernel-<pid>.json]
+
+    This file will contain the IP, ports, and authentication key needed to connect
+    clients to this kernel. By default, this file will be created in the security dir
+    of the current profile, but can be specified by absolute path.
+
+    :trait type: Unicode
+
+.. configtrait:: ConnectionFileMixin.control_port
+
+    set the control (ROUTER) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+
+.. configtrait:: ConnectionFileMixin.hb_port
+
+    set the heartbeat port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+
+.. configtrait:: ConnectionFileMixin.iopub_port
+
+    set the iopub (PUB) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+
+.. configtrait:: ConnectionFileMixin.ip
+
+    Set the kernel's IP address [default localhost].
+    If the IP address is something other than localhost, then
+    Consoles on other machines will be able to connect
+    to the Kernel, so be careful!
+
+    :trait type: Unicode
+
+.. configtrait:: ConnectionFileMixin.shell_port
+
+    set the shell (ROUTER) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+
+.. configtrait:: ConnectionFileMixin.stdin_port
+
+    set the stdin (ROUTER) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+
+.. configtrait:: ConnectionFileMixin.transport
+
+    No description
+
+    :options: ``'tcp'``, ``'ipc'``
+    :default: ``'tcp'``
 
 .. configtrait:: InteractiveShellApp.code_to_run
 
@@ -102,7 +166,6 @@ Terminal IPython options
 
     :trait type: Bool
     :default: ``False``
-
 
 
 .. configtrait:: Application.log_datefmt
@@ -208,13 +271,39 @@ Terminal IPython options
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalIPythonApp.code_to_run
+.. configtrait:: IPKernelApp.auto_create
+
+    Whether to create profile dir if it doesn't exist
+
+    :trait type: Bool
+    :default: ``False``
+
+.. configtrait:: IPKernelApp.code_to_run
 
     Execute the given command string.
 
     :trait type: Unicode
 
-.. configtrait:: TerminalIPythonApp.copy_config_files
+.. configtrait:: IPKernelApp.connection_file
+
+    JSON file in which to store connection info [default: kernel-<pid>.json]
+
+    This file will contain the IP, ports, and authentication key needed to connect
+    clients to this kernel. By default, this file will be created in the security dir
+    of the current profile, but can be specified by absolute path.
+
+    :trait type: Unicode
+    :CLI option: ``-f``
+
+.. configtrait:: IPKernelApp.control_port
+
+    set the control (ROUTER) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+    :CLI option: ``--control``
+
+.. configtrait:: IPKernelApp.copy_config_files
 
     Whether to install the default config files into the profile dir.
     If a new profile is being created, and IPython contains config files for that
@@ -224,15 +313,14 @@ Terminal IPython options
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalIPythonApp.display_banner
+.. configtrait:: IPKernelApp.displayhook_class
 
-    Whether to display a banner upon starting IPython.
+    The importstring for the DisplayHook factory
 
-    :trait type: Bool
-    :default: ``True``
-    :CLI option: ``--banner``
+    :trait type: DottedObjectName
+    :default: ``'ipykernel.displayhook.ZMQDisplayHook'``
 
-.. configtrait:: TerminalIPythonApp.exec_PYTHONSTARTUP
+.. configtrait:: IPKernelApp.exec_PYTHONSTARTUP
 
     Run the file referenced by the PYTHONSTARTUP environment
     variable at IPython startup.
@@ -240,25 +328,25 @@ Terminal IPython options
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalIPythonApp.exec_files
+.. configtrait:: IPKernelApp.exec_files
 
     List of files to run at IPython startup.
 
     :trait type: List
 
-.. configtrait:: TerminalIPythonApp.exec_lines
+.. configtrait:: IPKernelApp.exec_lines
 
     lines of code to run at IPython startup.
 
     :trait type: List
 
-.. configtrait:: TerminalIPythonApp.extensions
+.. configtrait:: IPKernelApp.extensions
 
     A list of dotted module names of IPython extensions to load.
 
     :trait type: List
 
-.. configtrait:: TerminalIPythonApp.extra_config_file
+.. configtrait:: IPKernelApp.extra_config_file
 
     Path to an extra config file to load.
 
@@ -266,35 +354,33 @@ Terminal IPython options
 
     :trait type: Unicode
 
-.. configtrait:: TerminalIPythonApp.extra_extension
+.. configtrait:: IPKernelApp.extra_extension
 
     dotted module name of an IPython extension to load.
 
     :trait type: Unicode
 
-.. configtrait:: TerminalIPythonApp.file_to_run
+.. configtrait:: IPKernelApp.file_to_run
 
     A file to be run
 
     :trait type: Unicode
 
-.. configtrait:: TerminalIPythonApp.force_interact
-
-    If a command or file is given via the command-line,
-    e.g. 'ipython foo.py', start an interactive shell after executing the
-    file or command. This is presented in the API as App.force_interact
-
-    :trait type: Bool
-    :default: ``False``
-    :CLI option: ``-i``
-
-.. configtrait:: TerminalIPythonApp.gui
+.. configtrait:: IPKernelApp.gui
 
     Enable GUI event loop integration with any of ('glut', 'gtk', 'gtk2', 'gtk3', 'osx', 'pyglet', 'qt', 'qt4', 'qt5', 'tk', 'wx', 'gtk2', 'qt4').
 
     :options: ``'glut'``, ``'gtk'``, ``'gtk2'``, ``'gtk3'``, ``'osx'``, ``'pyglet'``, ``'qt'``, ``'qt4'``, ``'qt5'``, ``'tk'``, ``'wx'``, ``'gtk2'``, ``'qt4'``
 
-.. configtrait:: TerminalIPythonApp.hide_initial_ns
+.. configtrait:: IPKernelApp.hb_port
+
+    set the heartbeat port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+    :CLI option: ``--hb``
+
+.. configtrait:: IPKernelApp.hide_initial_ns
 
     Should variables loaded at startup (by startup files, exec_lines, etc.)
     be hidden from tools like %who?
@@ -302,14 +388,33 @@ Terminal IPython options
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalIPythonApp.interactive_shell_class
+.. configtrait:: IPKernelApp.interrupt
 
-    Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends
+    ONLY USED ON WINDOWS
+    Interrupt this process when the parent is signaled.
 
-    :trait type: Type
-    :default: ``'IPython.terminal.interactiveshell.TerminalInteractiveShell'``
+    :trait type: Int
+    :default: ``0``
 
-.. configtrait:: TerminalIPythonApp.ipython_dir
+.. configtrait:: IPKernelApp.iopub_port
+
+    set the iopub (PUB) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+    :CLI option: ``--iopub``
+
+.. configtrait:: IPKernelApp.ip
+
+    Set the kernel's IP address [default localhost].
+    If the IP address is something other than localhost, then
+    Consoles on other machines will be able to connect
+    to the Kernel, so be careful!
+
+    :trait type: Unicode
+    :CLI option: ``--ip``
+
+.. configtrait:: IPKernelApp.ipython_dir
 
     The name of the IPython directory. This directory is used for logging
     configuration (through profiles), history storage, etc. The default
@@ -318,62 +423,103 @@ Terminal IPython options
 
     :trait type: Unicode
 
-.. configtrait:: TerminalIPythonApp.log_datefmt
+.. configtrait:: IPKernelApp.kernel_class
+
+    The Kernel subclass to be used.
+
+    This should allow easy re-use of the IPKernelApp entry point
+    to configure and launch kernels other than IPython's own.
+
+    :trait type: Type
+    :default: ``'ipykernel.ipkernel.IPythonKernel'``
+
+.. configtrait:: IPKernelApp.log_datefmt
 
     The date format used by logging formatters for %(asctime)s
 
     :trait type: Unicode
     :default: ``'%Y-%m-%d %H:%M:%S'``
 
-.. configtrait:: TerminalIPythonApp.log_format
+.. configtrait:: IPKernelApp.log_format
 
     The Logging format template
 
     :trait type: Unicode
     :default: ``'[%(name)s]%(highlevel)s %(message)s'``
 
-.. configtrait:: TerminalIPythonApp.log_level
+.. configtrait:: IPKernelApp.log_level
 
     Set the log level by value or name.
 
     :options: ``0``, ``10``, ``20``, ``30``, ``40``, ``50``, ``'DEBUG'``, ``'INFO'``, ``'WARN'``, ``'ERROR'``, ``'CRITICAL'``
     :default: ``30``
 
-.. configtrait:: TerminalIPythonApp.matplotlib
+.. configtrait:: IPKernelApp.matplotlib
 
     Configure matplotlib for interactive use with
     the default matplotlib backend.
 
     :options: ``'auto'``, ``'agg'``, ``'gtk'``, ``'gtk3'``, ``'inline'``, ``'ipympl'``, ``'nbagg'``, ``'notebook'``, ``'osx'``, ``'pdf'``, ``'ps'``, ``'qt'``, ``'qt4'``, ``'qt5'``, ``'svg'``, ``'tk'``, ``'widget'``, ``'wx'``
 
-.. configtrait:: TerminalIPythonApp.module_to_run
+.. configtrait:: IPKernelApp.module_to_run
 
     Run the module as a script.
 
     :trait type: Unicode
 
-.. configtrait:: TerminalIPythonApp.overwrite
+.. configtrait:: IPKernelApp.no_stderr
+
+    redirect stderr to the null device
+
+    :trait type: Bool
+    :default: ``False``
+    :CLI option: ``--no-stderr``
+
+.. configtrait:: IPKernelApp.no_stdout
+
+    redirect stdout to the null device
+
+    :trait type: Bool
+    :default: ``False``
+    :CLI option: ``--no-stdout``
+
+.. configtrait:: IPKernelApp.outstream_class
+
+    The importstring for the OutStream factory
+
+    :trait type: DottedObjectName
+    :default: ``'ipykernel.iostream.OutStream'``
+
+.. configtrait:: IPKernelApp.overwrite
 
     Whether to overwrite existing config files when copying
 
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalIPythonApp.profile
+.. configtrait:: IPKernelApp.parent_handle
+
+    kill this process if its parent dies.  On Windows, the argument
+    specifies the HANDLE of the parent process, otherwise it is simply boolean.
+
+    :trait type: Int
+    :default: ``0``
+
+.. configtrait:: IPKernelApp.profile
 
     The IPython profile to use.
 
     :trait type: Unicode
     :default: ``'default'``
 
-.. configtrait:: TerminalIPythonApp.pylab
+.. configtrait:: IPKernelApp.pylab
 
     Pre-load matplotlib and numpy for interactive use,
     selecting a particular matplotlib backend and loop integration.
 
     :options: ``'auto'``, ``'agg'``, ``'gtk'``, ``'gtk3'``, ``'inline'``, ``'ipympl'``, ``'nbagg'``, ``'notebook'``, ``'osx'``, ``'pdf'``, ``'ps'``, ``'qt'``, ``'qt4'``, ``'qt5'``, ``'svg'``, ``'tk'``, ``'widget'``, ``'wx'``
 
-.. configtrait:: TerminalIPythonApp.pylab_import_all
+.. configtrait:: IPKernelApp.pylab_import_all
 
     If true, IPython will populate the user namespace with numpy, pylab, etc.
     and an ``import *`` is done from numpy and pylab, when using pylab mode.
@@ -383,22 +529,45 @@ Terminal IPython options
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalIPythonApp.quick
+.. configtrait:: IPKernelApp.quiet
 
-    Start IPython quickly by skipping the loading of config files.
+    Only send stdout/stderr to output stream
 
     :trait type: Bool
-    :default: ``False``
-    :CLI option: ``--quick``
+    :default: ``True``
 
-.. configtrait:: TerminalIPythonApp.reraise_ipython_extension_failures
+.. configtrait:: IPKernelApp.reraise_ipython_extension_failures
 
     Reraise exceptions encountered loading IPython extensions?
 
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalIPythonApp.verbose_crash
+.. configtrait:: IPKernelApp.shell_port
+
+    set the shell (ROUTER) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+    :CLI option: ``--shell``
+
+.. configtrait:: IPKernelApp.stdin_port
+
+    set the stdin (ROUTER) port [default: random]
+
+    :trait type: Int
+    :default: ``0``
+    :CLI option: ``--stdin``
+
+.. configtrait:: IPKernelApp.transport
+
+    No description
+
+    :options: ``'tcp'``, ``'ipc'``
+    :default: ``'tcp'``
+    :CLI option: ``--transport``
+
+.. configtrait:: IPKernelApp.verbose_crash
 
     Create a massive crash report when IPython encounters what may be an
     internal error.  The default is to append a short message to the
@@ -406,6 +575,97 @@ Terminal IPython options
 
     :trait type: Bool
     :default: ``False``
+
+.. configtrait:: Kernel._darwin_app_nap
+
+    Whether to use appnope for compatibility with OS X App Nap.
+
+    Only affects OS X >= 10.9.
+
+    :trait type: Bool
+    :default: ``True``
+
+.. configtrait:: Kernel._execute_sleep
+
+    No description
+
+    :trait type: Float
+    :default: ``0.0005``
+
+.. configtrait:: Kernel._poll_interval
+
+    No description
+
+    :trait type: Float
+    :default: ``0.01``
+
+.. configtrait:: Kernel.stop_on_error_timeout
+
+    time (in seconds) to wait for messages to arrive
+    when aborting queued requests after an error.
+
+    Requests that arrive within this window after an error
+    will be cancelled.
+
+    Increase in the event of unusually slow network
+    causing significant delays,
+    which can manifest as e.g. "Run all" in a notebook
+    aborting some, but not all, messages after an error.
+
+    :trait type: Float
+    :default: ``0.1``
+
+.. configtrait:: IPythonKernel._darwin_app_nap
+
+    Whether to use appnope for compatibility with OS X App Nap.
+
+    Only affects OS X >= 10.9.
+
+    :trait type: Bool
+    :default: ``True``
+
+.. configtrait:: IPythonKernel._execute_sleep
+
+    No description
+
+    :trait type: Float
+    :default: ``0.0005``
+
+.. configtrait:: IPythonKernel._poll_interval
+
+    No description
+
+    :trait type: Float
+    :default: ``0.01``
+
+.. configtrait:: IPythonKernel.help_links
+
+    No description
+
+    :trait type: List
+
+.. configtrait:: IPythonKernel.stop_on_error_timeout
+
+    time (in seconds) to wait for messages to arrive
+    when aborting queued requests after an error.
+
+    Requests that arrive within this window after an error
+    will be cancelled.
+
+    Increase in the event of unusually slow network
+    causing significant delays,
+    which can manifest as e.g. "Run all" in a notebook
+    aborting some, but not all, messages after an error.
+
+    :trait type: Float
+    :default: ``0.1``
+
+.. configtrait:: IPythonKernel.use_experimental_completions
+
+    Set this flag to False to deactivate the use of experimental IPython completion APIs.
+
+    :trait type: Bool
+    :default: ``True``
 
 .. configtrait:: InteractiveShell.ast_node_interactivity
 
@@ -463,7 +723,7 @@ Terminal IPython options
     The part of the banner to be printed before the profile
 
     :trait type: Unicode
-    :default: ``"Python 3.7.3 (default, Apr  3 2019, 19:16:38) \\nType 'copyri...``
+    :default: ``"Python 3.7.4 (default, Aug  9 2019, 18:34:13) [MSC v.1915 64...``
 
 .. configtrait:: InteractiveShell.banner2
 
@@ -598,6 +858,34 @@ Terminal IPython options
     :default: ``False``
     :CLI option: ``--pdb``
 
+.. configtrait:: InteractiveShell.prompt_in1
+
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
+
+    :trait type: Unicode
+    :default: ``'In [\\#]: '``
+
+.. configtrait:: InteractiveShell.prompt_in2
+
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
+
+    :trait type: Unicode
+    :default: ``'   .\\D.: '``
+
+.. configtrait:: InteractiveShell.prompt_out
+
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
+
+    :trait type: Unicode
+    :default: ``'Out[\\#]: '``
+
+.. configtrait:: InteractiveShell.prompts_pad_left
+
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
+
+    :trait type: Bool
+    :default: ``True``
+
 .. configtrait:: InteractiveShell.quiet
 
     No description
@@ -653,7 +941,7 @@ Terminal IPython options
     :options: ``'Context'``, ``'Plain'``, ``'Verbose'``, ``'Minimal'``
     :default: ``'Context'``
 
-.. configtrait:: TerminalInteractiveShell.ast_node_interactivity
+.. configtrait:: ZMQInteractiveShell.ast_node_interactivity
 
     'all', 'last', 'last_expr' or 'none', 'last_expr_or_assign' specifying
     which nodes should be run interactively (displaying output from expressions).
@@ -661,21 +949,21 @@ Terminal IPython options
     :options: ``'all'``, ``'last'``, ``'last_expr'``, ``'none'``, ``'last_expr_or_assign'``
     :default: ``'last_expr'``
 
-.. configtrait:: TerminalInteractiveShell.ast_transformers
+.. configtrait:: ZMQInteractiveShell.ast_transformers
 
     A list of ast.NodeTransformer subclass instances, which will be applied
     to user input before code is run.
 
     :trait type: List
 
-.. configtrait:: TerminalInteractiveShell.autoawait
+.. configtrait:: ZMQInteractiveShell.autoawait
 
     Automatically run await statement in the top level repl.
 
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalInteractiveShell.autocall
+.. configtrait:: ZMQInteractiveShell.autocall
 
     Make IPython automatically call any callable object even if you didn't
     type explicit parentheses. For example, 'str 43' becomes 'str(43)'
@@ -687,34 +975,27 @@ Terminal IPython options
     :options: ``0``, ``1``, ``2``
     :default: ``0``
 
-.. configtrait:: TerminalInteractiveShell.autoindent
-
-    Autoindent IPython code entered interactively.
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: TerminalInteractiveShell.automagic
+.. configtrait:: ZMQInteractiveShell.automagic
 
     Enable magic commands to be called without the leading %.
 
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalInteractiveShell.banner1
+.. configtrait:: ZMQInteractiveShell.banner1
 
     The part of the banner to be printed before the profile
 
     :trait type: Unicode
-    :default: ``"Python 3.7.3 (default, Apr  3 2019, 19:16:38) \\nType 'copyri...``
+    :default: ``"Python 3.7.4 (default, Aug  9 2019, 18:34:13) [MSC v.1915 64...``
 
-.. configtrait:: TerminalInteractiveShell.banner2
+.. configtrait:: ZMQInteractiveShell.banner2
 
     The part of the banner to be printed after the profile
 
     :trait type: Unicode
 
-.. configtrait:: TerminalInteractiveShell.cache_size
+.. configtrait:: ZMQInteractiveShell.cache_size
 
     Set the size of the output cache.  The default is 1000, you can
     change it permanently in your config file.  Setting it to 0 completely
@@ -726,7 +1007,7 @@ Terminal IPython options
     :trait type: Int
     :default: ``1000``
 
-.. configtrait:: TerminalInteractiveShell.color_info
+.. configtrait:: ZMQInteractiveShell.color_info
 
     Use colors for displaying information about objects. Because this
     information is passed through a pager (like 'less'), and some pagers
@@ -735,45 +1016,28 @@ Terminal IPython options
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalInteractiveShell.colors
+.. configtrait:: ZMQInteractiveShell.colors
 
     Set the color scheme (NoColor, Neutral, Linux, or LightBG).
 
     :options: ``'Neutral'``, ``'NoColor'``, ``'LightBG'``, ``'Linux'``
     :default: ``'Neutral'``
 
-.. configtrait:: TerminalInteractiveShell.confirm_exit
-
-    Set to confirm when you try to exit IPython with an EOF (Control-D
-    in Unix, Control-Z/Enter in Windows). By typing 'exit' or 'quit',
-    you can force a direct exit without any confirmation.
-
-    :trait type: Bool
-    :default: ``True``
-    :CLI option: ``--confirm-exit``
-
-.. configtrait:: TerminalInteractiveShell.debug
+.. configtrait:: ZMQInteractiveShell.debug
 
     No description
 
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.disable_failing_post_execute
+.. configtrait:: ZMQInteractiveShell.disable_failing_post_execute
 
     Don't call post-execute functions that have failed in the past.
 
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.display_completions
-
-    Options for displaying tab completions, 'column', 'multicolumn', and 'readlinelike'. These options are for `prompt_toolkit`, see `prompt_toolkit` documentation for more information.
-
-    :options: ``'column'``, ``'multicolumn'``, ``'readlinelike'``
-    :default: ``'multicolumn'``
-
-.. configtrait:: TerminalInteractiveShell.display_page
+.. configtrait:: ZMQInteractiveShell.display_page
 
     If True, anything that would be passed to the pager
     will be displayed as regular output instead.
@@ -781,28 +1045,7 @@ Terminal IPython options
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.editing_mode
-
-    Shortcut style to use at the prompt. 'vi' or 'emacs'.
-
-    :trait type: Unicode
-    :default: ``'emacs'``
-
-.. configtrait:: TerminalInteractiveShell.editor
-
-    Set the editor used by IPython (default to $EDITOR/vi/notepad).
-
-    :trait type: Unicode
-    :default: ``'nvim'``
-
-.. configtrait:: TerminalInteractiveShell.enable_history_search
-
-    Allows to enable/disable the prompt toolkit history search
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: TerminalInteractiveShell.enable_html_pager
+.. configtrait:: ZMQInteractiveShell.enable_html_pager
 
     (Provisional API) enables html representation in mime bundles sent
     to pagers.
@@ -810,47 +1053,14 @@ Terminal IPython options
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.extra_open_editor_shortcuts
-
-    Enable vi (v) or Emacs (C-X C-E) shortcuts to open an external editor. This is in addition to the F2 binding, which is always enabled.
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: TerminalInteractiveShell.handle_return
-
-    Provide an alternative handler to be called when the user presses Return. This is an advanced option intended for debugging, which may be changed or removed in later releases.
-
-    :trait type: Any
-
-.. configtrait:: TerminalInteractiveShell.highlight_matching_brackets
-
-    Highlight matching brackets.
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: TerminalInteractiveShell.highlighting_style
-
-    The name or class of a Pygments style to use for syntax
-    highlighting. To see available styles, run `pygmentize -L styles`.
-
-    :trait type: Union
-
-.. configtrait:: TerminalInteractiveShell.highlighting_style_overrides
-
-    Override highlighting format for specific tokens
-
-    :trait type: Dict
-
-.. configtrait:: TerminalInteractiveShell.history_length
+.. configtrait:: ZMQInteractiveShell.history_length
 
     Total length of command history
 
     :trait type: Int
     :default: ``10000``
 
-.. configtrait:: TerminalInteractiveShell.history_load_length
+.. configtrait:: ZMQInteractiveShell.history_load_length
 
     The number of saved history entries to be loaded
     into the history buffer at startup.
@@ -858,26 +1068,26 @@ Terminal IPython options
     :trait type: Int
     :default: ``1000``
 
-.. configtrait:: TerminalInteractiveShell.ipython_dir
+.. configtrait:: ZMQInteractiveShell.ipython_dir
 
     No description
 
     :trait type: Unicode
 
-.. configtrait:: TerminalInteractiveShell.logappend
+.. configtrait:: ZMQInteractiveShell.logappend
 
     Start logging to the given file in append mode.
     Use `logfile` to specify a log file to **overwrite** logs to.
 
     :trait type: Unicode
 
-.. configtrait:: TerminalInteractiveShell.logfile
+.. configtrait:: ZMQInteractiveShell.logfile
 
     The name of the logfile to use.
 
     :trait type: Unicode
 
-.. configtrait:: TerminalInteractiveShell.logstart
+.. configtrait:: ZMQInteractiveShell.logstart
 
     Start logging to the default log file in overwrite mode.
     Use `logappend` to specify a log file to **append** logs to.
@@ -885,104 +1095,89 @@ Terminal IPython options
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.loop_runner
+.. configtrait:: ZMQInteractiveShell.loop_runner
 
     Select the loop runner that will be used to execute top-level asynchronous code
 
     :trait type: Any
     :default: ``'IPython.core.interactiveshell._asyncio_runner'``
 
-.. configtrait:: TerminalInteractiveShell.mouse_support
-
-    Enable mouse support in the prompt
-    (Note: prevents selecting text with the mouse)
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: TerminalInteractiveShell.object_info_string_level
+.. configtrait:: ZMQInteractiveShell.object_info_string_level
 
     No description
 
     :options: ``0``, ``1``, ``2``
     :default: ``0``
 
-.. configtrait:: TerminalInteractiveShell.pdb
+.. configtrait:: ZMQInteractiveShell.pdb
 
     Automatically call the pdb debugger after every exception.
 
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.prompt_includes_vi_mode
+.. configtrait:: ZMQInteractiveShell.prompt_in1
 
-    Display the current vi mode (when using vi editing mode).
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
+
+    :trait type: Unicode
+    :default: ``'In [\\#]: '``
+
+.. configtrait:: ZMQInteractiveShell.prompt_in2
+
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
+
+    :trait type: Unicode
+    :default: ``'   .\\D.: '``
+
+.. configtrait:: ZMQInteractiveShell.prompt_out
+
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
+
+    :trait type: Unicode
+    :default: ``'Out[\\#]: '``
+
+.. configtrait:: ZMQInteractiveShell.prompts_pad_left
+
+    Deprecated since IPython 4.0 and ignored since 5.0, set TerminalInteractiveShell.prompts object directly.
 
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalInteractiveShell.prompts_class
-
-    Class used to generate Prompt token for prompt_toolkit
-
-    :trait type: Type
-    :default: ``'IPython.terminal.prompts.Prompts'``
-
-.. configtrait:: TerminalInteractiveShell.quiet
+.. configtrait:: ZMQInteractiveShell.quiet
 
     No description
 
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.separate_in
+.. configtrait:: ZMQInteractiveShell.separate_in
 
     No description
 
     :trait type: SeparateUnicode
     :default: ``'\\n'``
 
-.. configtrait:: TerminalInteractiveShell.separate_out
+.. configtrait:: ZMQInteractiveShell.separate_out
 
     No description
 
     :trait type: SeparateUnicode
 
-.. configtrait:: TerminalInteractiveShell.separate_out2
+.. configtrait:: ZMQInteractiveShell.separate_out2
 
     No description
 
     :trait type: SeparateUnicode
 
-.. configtrait:: TerminalInteractiveShell.show_rewritten_input
+.. configtrait:: ZMQInteractiveShell.show_rewritten_input
 
     Show rewritten input, e.g. for autocall.
 
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalInteractiveShell.simple_prompt
-
-    Use `raw_input` for the REPL, without completion and prompt colors.
-
-    Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
-    IPython own testing machinery, and emacs inferior-shell integration through elpy.
-
-    This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
-    environment variable is set, or the current terminal is not a tty.
-
-    :trait type: Bool
-    :default: ``False``
-    :CLI option: ``--simple-prompt``
-
-.. configtrait:: TerminalInteractiveShell.space_for_menu
-
-    Number of line at the bottom of the screen to reserve for the completion menu
-
-    :trait type: Int
-    :default: ``6``
-
-.. configtrait:: TerminalInteractiveShell.sphinxify_docstring
+.. configtrait:: ZMQInteractiveShell.sphinxify_docstring
 
     Enables rich html representation of docstrings. (This requires the
     docrepr module).
@@ -990,137 +1185,19 @@ Terminal IPython options
     :trait type: Bool
     :default: ``False``
 
-.. configtrait:: TerminalInteractiveShell.term_title
-
-    Automatically set the terminal title
-
-    :trait type: Bool
-    :default: ``True``
-    :CLI option: ``--term-title``
-
-.. configtrait:: TerminalInteractiveShell.term_title_format
-
-    Customize the terminal title format.  This is a python format string. Available substitutions are: {cwd}.
-
-    :trait type: Unicode
-    :default: ``'IPython: {cwd}'``
-
-.. configtrait:: TerminalInteractiveShell.true_color
-
-    Use 24bit colors instead of 256 colors in prompt highlighting. If your terminal supports true color, the following command should print 'TRUECOLOR' in orange: printf "\x1b[38;2;255;100;0mTRUECOLOR\x1b[0m\n"
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: TerminalInteractiveShell.wildcards_case_sensitive
+.. configtrait:: ZMQInteractiveShell.wildcards_case_sensitive
 
     No description
 
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: TerminalInteractiveShell.xmode
+.. configtrait:: ZMQInteractiveShell.xmode
 
     Switch modes for the IPython exception handlers.
 
     :options: ``'Context'``, ``'Plain'``, ``'Verbose'``, ``'Minimal'``
     :default: ``'Context'``
-
-
-.. configtrait:: HistoryAccessor.connection_options
-
-    Options for configuring the SQLite connection
-
-    These options are passed as keyword args to sqlite3.connect
-    when establishing database connections.
-
-    :trait type: Dict
-
-.. configtrait:: HistoryAccessor.enabled
-
-    enable the SQLite history
-
-    set enabled=False to disable the SQLite history,
-    in which case there will be no stored history, no SQLite connection,
-    and no background saving thread.  This may be necessary in some
-    threaded environments where IPython is embedded.
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: HistoryAccessor.hist_file
-
-    Path to file to use for SQLite history database.
-
-    By default, IPython will put the history database in the IPython
-    profile directory.  If you would rather share one history among
-    profiles, you can set this value in each, so that they are consistent.
-
-    Due to an issue with fcntl, SQLite is known to misbehave on some NFS
-    mounts.  If you see IPython hanging, try setting this to something on a
-    local disk, e.g::
-
-        ipython --HistoryManager.hist_file=/tmp/ipython_hist.sqlite
-
-    you can also use the specific value `:memory:` (including the colon
-    at both end but not the back ticks), to avoid creating an history file.
-
-    :trait type: Unicode
-
-.. configtrait:: HistoryManager.connection_options
-
-    Options for configuring the SQLite connection
-
-    These options are passed as keyword args to sqlite3.connect
-    when establishing database connections.
-
-    :trait type: Dict
-
-.. configtrait:: HistoryManager.db_cache_size
-
-    Write to database every x commands (higher values save disk access & power).
-    Values of 1 or less effectively disable caching.
-
-    :trait type: Int
-    :default: ``0``
-
-.. configtrait:: HistoryManager.db_log_output
-
-    Should the history database include output? (default: no)
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: HistoryManager.enabled
-
-    enable the SQLite history
-
-    set enabled=False to disable the SQLite history,
-    in which case there will be no stored history, no SQLite connection,
-    and no background saving thread.  This may be necessary in some
-    threaded environments where IPython is embedded.
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: HistoryManager.hist_file
-
-    Path to file to use for SQLite history database.
-
-    By default, IPython will put the history database in the IPython
-    profile directory.  If you would rather share one history among
-    profiles, you can set this value in each, so that they are consistent.
-
-    Due to an issue with fcntl, SQLite is known to misbehave on some NFS
-    mounts.  If you see IPython hanging, try setting this to something on a
-    local disk, e.g::
-
-        ipython --HistoryManager.hist_file=/tmp/ipython_hist.sqlite
-
-    you can also use the specific value `:memory:` (including the colon
-    at both end but not the back ticks), to avoid creating an history file.
-
-    :trait type: Unicode
 
 .. configtrait:: ProfileDir.location
 
@@ -1130,240 +1207,110 @@ Terminal IPython options
     :trait type: Unicode
     :CLI option: ``--profile-dir``
 
-.. configtrait:: BaseFormatter.deferred_printers
+.. configtrait:: Session.buffer_threshold
 
-    No description
+    Threshold (in bytes) beyond which an object's buffer should be extracted to avoid pickling.
 
-    :trait type: Dict
+    :trait type: Int
+    :default: ``1024``
 
-.. configtrait:: BaseFormatter.enabled
+.. configtrait:: Session.check_pid
 
-    No description
+    Whether to check PID to protect against calls after fork.
+
+    This check can be disabled if fork-safety is handled elsewhere.
 
     :trait type: Bool
     :default: ``True``
 
-.. configtrait:: BaseFormatter.singleton_printers
+.. configtrait:: Session.copy_threshold
 
-    No description
-
-    :trait type: Dict
-
-.. configtrait:: BaseFormatter.type_printers
-
-    No description
-
-    :trait type: Dict
-
-.. configtrait:: PlainTextFormatter.deferred_printers
-
-    No description
-
-    :trait type: Dict
-
-.. configtrait:: PlainTextFormatter.float_precision
-
-    No description
-
-    :trait type: CUnicode
-
-.. configtrait:: PlainTextFormatter.max_seq_length
-
-    Truncate large collections (lists, dicts, tuples, sets) to this size.
-
-    Set to 0 to disable truncation.
+    Threshold (in bytes) beyond which a buffer should be sent without copying.
 
     :trait type: Int
-    :default: ``1000``
+    :default: ``65536``
 
-.. configtrait:: PlainTextFormatter.max_width
+.. configtrait:: Session.debug
 
-    No description
+    Debug output in the Session
+
+    :trait type: Bool
+    :default: ``False``
+
+.. configtrait:: Session.digest_history_size
+
+    The maximum number of digests to remember.
+
+    The digest history will be culled when it exceeds this value.
 
     :trait type: Int
-    :default: ``79``
+    :default: ``65536``
 
-.. configtrait:: PlainTextFormatter.newline
+.. configtrait:: Session.item_threshold
 
-    No description
+    The maximum number of items for a container to be introspected for custom serialization.
+    Containers larger than this are pickled outright.
+
+    :trait type: Int
+    :default: ``64``
+
+.. configtrait:: Session.key
+
+    execution key, for signing messages.
+
+    :trait type: CBytes
+    :default: ``b''``
+
+.. configtrait:: Session.keyfile
+
+    path to file containing execution key.
 
     :trait type: Unicode
-    :default: ``'\\n'``
+    :CLI option: ``--keyfile``
 
-.. configtrait:: PlainTextFormatter.pprint
+.. configtrait:: Session.metadata
 
-    No description
-
-    :trait type: Bool
-    :default: ``True``
-    :CLI option: ``--pprint``
-
-.. configtrait:: PlainTextFormatter.singleton_printers
-
-    No description
+    Metadata dictionary, which serves as the default top-level metadata dict for each message.
 
     :trait type: Dict
 
-.. configtrait:: PlainTextFormatter.type_printers
+.. configtrait:: Session.packer
 
-    No description
+    The name of the packer for serializing messages.
+    Should be one of 'json', 'pickle', or an import name
+    for a custom callable serializer.
 
-    :trait type: Dict
+    :trait type: DottedObjectName
+    :default: ``'json'``
 
-.. configtrait:: PlainTextFormatter.verbose
+.. configtrait:: Session.session
 
-    No description
+    The UUID identifying this session.
 
-    :trait type: Bool
-    :default: ``False``
+    :trait type: CUnicode
+    :CLI option: ``--ident``
 
-.. configtrait:: Completer.backslash_combining_completions
+.. configtrait:: Session.signature_scheme
 
-    Enable unicode completions, e.g. \alpha<tab> . Includes completion of latex commands, unicode names, and expanding unicode characters back to latex commands.
+    The digest scheme used to construct the message signatures.
+    Must have the form 'hmac-HASH'.
 
-    :trait type: Bool
-    :default: ``True``
+    :trait type: Unicode
+    :default: ``'hmac-sha256'``
 
-.. configtrait:: Completer.debug
+.. configtrait:: Session.unpacker
 
-    Enable debug for the Completer. Mostly print extra information for experimental jedi integration.
+    The name of the unpacker for unserializing messages.
+    Only used with custom functions for `packer`.
 
-    :trait type: Bool
-    :default: ``False``
+    :trait type: DottedObjectName
+    :default: ``'json'``
 
-.. configtrait:: Completer.greedy
+.. configtrait:: Session.username
 
-    Activate greedy completion
-    PENDING DEPRECTION. this is now mostly taken care of with Jedi.
+    Username for the Session. Default is your system username.
 
-    This will enable completion on elements of lists, results of function calls, etc.,
-    but can be unsafe because the code is actually evaluated on TAB.
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: Completer.jedi_compute_type_timeout
-
-    Experimental: restrict time (in milliseconds) during which Jedi can compute types.
-    Set to 0 to stop computing types. Non-zero value lower than 100ms may hurt
-    performance by preventing jedi to build its cache.
-
-    :trait type: Int
-    :default: ``400``
-
-.. configtrait:: Completer.use_jedi
-
-    Experimental: Use Jedi to generate autocompletions. Default to True if jedi is installed.
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: IPCompleter.backslash_combining_completions
-
-    Enable unicode completions, e.g. \alpha<tab> . Includes completion of latex commands, unicode names, and expanding unicode characters back to latex commands.
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: IPCompleter.debug
-
-    Enable debug for the Completer. Mostly print extra information for experimental jedi integration.
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: IPCompleter.greedy
-
-    Activate greedy completion
-    PENDING DEPRECTION. this is now mostly taken care of with Jedi.
-
-    This will enable completion on elements of lists, results of function calls, etc.,
-    but can be unsafe because the code is actually evaluated on TAB.
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: IPCompleter.jedi_compute_type_timeout
-
-    Experimental: restrict time (in milliseconds) during which Jedi can compute types.
-    Set to 0 to stop computing types. Non-zero value lower than 100ms may hurt
-    performance by preventing jedi to build its cache.
-
-    :trait type: Int
-    :default: ``400``
-
-.. configtrait:: IPCompleter.limit_to__all__
-
-    DEPRECATED as of version 5.0.
-
-    Instruct the completer to use __all__ for the completion
-
-    Specifically, when completing on ``object.<tab>``.
-
-    When True: only those names in obj.__all__ will be included.
-
-    When False [default]: the __all__ attribute is ignored
-
-    :trait type: Bool
-    :default: ``False``
-
-.. configtrait:: IPCompleter.merge_completions
-
-    Whether to merge completion results into a single list
-
-    If False, only the completion results from the first non-empty
-    completer will be returned.
-
-    :trait type: Bool
-    :default: ``True``
-
-.. configtrait:: IPCompleter.omit__names
-
-    Instruct the completer to omit private method names
-
-    Specifically, when completing on ``object.<tab>``.
-
-    When 2 [default]: all names that start with '_' will be excluded.
-
-    When 1: all 'magic' names (``__foo__``) will be excluded.
-
-    When 0: nothing will be excluded.
-
-    :options: ``0``, ``1``, ``2``
-    :default: ``2``
-
-.. configtrait:: IPCompleter.use_jedi
-
-    Experimental: Use Jedi to generate autocompletions. Default to True if jedi is installed.
-
-    :trait type: Bool
-    :default: ``True``
-
-
-.. configtrait:: ScriptMagics.script_magics
-
-    Extra script cell magics to define
-
-    This generates simple wrappers of `%%script foo` as `%%foo`.
-
-    If you want to add script magics that aren't on your path,
-    specify them in script_paths
-
-    :trait type: List
-
-.. configtrait:: ScriptMagics.script_paths
-
-    Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
-
-    Only necessary for items in script_magics where the default path will not
-    find the right interpreter.
-
-    :trait type: Dict
-
-.. configtrait:: LoggingMagics.quiet
-
-    Suppress output of log state when logging is enabled
-
-    :trait type: Bool
-    :default: ``False``
+    :trait type: Unicode
+    :default: ``'username'``
+    :CLI option: ``--user``
 

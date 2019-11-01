@@ -19,4 +19,6 @@ Developer's guide for third party tools and libraries
    wrapperkernels
    execution
    config
-   inputhook_app
+
+.. note::
+   inputhook_app got removed because it was so obviously unfinished.

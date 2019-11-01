@@ -67,6 +67,9 @@ class ProfileDir(LoggingConfigurable):
 
     _location_isset = Bool(False)  # flag for detecting multiply set location
 
+    def __repr__(self):
+        return '{!r}'.format(self.location)
+
     @observe('location')
     def _location_changed(self, change):
         """Handler for when the location of the profiledir changes.

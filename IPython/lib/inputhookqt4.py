@@ -22,7 +22,6 @@ import threading
 
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.external.qt_for_kernel import QtCore, QtGui
-from IPython.lib.inputhook import allow_CTRL_C, ignore_CTRL_C, stdin_ready
 
 # -----------------------------------------------------------------------------
 # Module Globals

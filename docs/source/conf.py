@@ -317,6 +317,19 @@ texinfo_documents = [
 modindex_common_prefix = ['IPython.']
 
 
+if sphinx.version_info < (1, 8):
+    autodoc_default_flags = ['members', 'undoc-members']
+else:
+    autodoc_default_options = {
+        'members': True,
+        'member-order': 'bysource',
+        'special-members': '__init__',
+        'exclude-members': '__weakref__',
+    }
+
+autodoc_inherit_docstrings = False
+
+
 # Cleanup
 # -------
 # delete release info to avoid pickling errors from sphinx

@@ -68,16 +68,16 @@ nosep_config.InteractiveShell.separate_out2 = ''
 
 shell_flags['nosep'] = (nosep_config, "Eliminate all spacing between prompts.")
 shell_flags['pylab'] = ({
-    'InteractiveShellApp': {
-        'pylab': 'auto'
-    }
-}, """Pre-load matplotlib and numpy for interactive use with
+                            'InteractiveShellApp': {
+                                'pylab': 'auto'
+                            }
+                        }, """Pre-load matplotlib and numpy for interactive use with
     the default matplotlib backend.""")
 shell_flags['matplotlib'] = ({
-    'InteractiveShellApp': {
-        'matplotlib': 'auto'
-    }
-}, """Configure matplotlib for interactive use with
+                                 'InteractiveShellApp': {
+                                     'matplotlib': 'auto'
+                                 }
+                             }, """Configure matplotlib for interactive use with
     the default matplotlib backend.""")
 
 # it's possible we don't want short aliases for *all* of these:
@@ -94,6 +94,7 @@ shell_aliases = dict(
     matplotlib='InteractiveShellApp.matplotlib',
 )
 shell_aliases['cache-size'] = 'InteractiveShell.cache_size'
+
 
 # -----------------------------------------------------------------------------
 # Main classes and functions
@@ -121,7 +122,7 @@ class InteractiveShellApp(Configurable):
     ).tag(config=True)
     extra_extension = Unicode(
         '', help="dotted module name of an IPython extension to load.").tag(
-            config=True)
+        config=True)
 
     reraise_ipython_extension_failures = Bool(
         False,
@@ -280,7 +281,7 @@ class InteractiveShellApp(Configurable):
                         raise
                     msg = ("Error in loading extension: {ext}\n"
                            "Check your config files in {location}".format(
-                               ext=ext, location=self.profile_dir.location))
+                        ext=ext, location=self.profile_dir.location))
                     self.log.warning(msg, exc_info=True)
         except BaseException:
             if self.reraise_ipython_extension_failures:

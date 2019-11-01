@@ -7,6 +7,7 @@ Configuration and customization
 .. toctree::
    :maxdepth: 2
 
+   intro
    details
    eventloops
    integrating

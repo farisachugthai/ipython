@@ -86,28 +86,6 @@ repository <http://github.com/ipython/ipython>`_.
 
 
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   overview
-   whatsnew/index
-   install/index
-   interactive/index
-   config/index
-   extending/index
-   sphinxext/index
-   extensions/index
-   development/index
-   coredev/index
-   api/index
-   shortcuts
-   terminal
-   kernel
-   reference
-   todo
-   about/index
-
 
 IPython Documentation
 ---------------------
@@ -184,6 +162,27 @@ See Also
 
    `ipyparallel documentation <http://ipyparallel.readthedocs.io/en/latest/>`_
      Formerly ``IPython.parallel``.
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Table of Contents
+
+   overview
+   install/index
+   interactive/index
+   config/index
+   magics
+   extending/index
+   extensions/index
+   sphinxext/index
+   development/index
+   coredev
+   api/index
+   reference
+   todo
+   whatsnew/index
+   about/index
 
 
 .. only:: html

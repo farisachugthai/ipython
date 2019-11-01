@@ -1,19 +1,18 @@
-""" History related magics and functionality """
-
+"""History related magics and functionality """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
 import atexit
 import datetime
 import os
 import re
-try:
-    import sqlite3
-except ImportError:
-    try:
-        from pysqlite2 import dbapi2 as sqlite3
-    except ImportError:
-        sqlite3 = None
+# try:
+# lol how long has it been since all this logic was necessary
+import sqlite3
+# except ImportError:
+#     try:
+#         from pysqlite2 import dbapi2 as sqlite3
+#     except ImportError:
+#         sqlite3 = None
 import threading
 
 from traitlets.config.configurable import LoggingConfigurable
@@ -294,7 +293,8 @@ class HistoryAccessor(HistoryAccessorBase):
 
     def writeout_cache(self):
         """Overridden by HistoryManager to dump the cache before certain
-        database lookups."""
+        database lookups.
+        """
         pass
 
     # -------------------------------
@@ -505,17 +505,25 @@ class HistoryAccessor(HistoryAccessorBase):
 
 class HistoryManager(HistoryAccessor):
     """A class to organize all history-related functionality in one place.
-    """
-    # Public interface
 
-    # An instance of the IPython shell we are attached to
+    Public interface
+    ----------------
+    shell : traitlets.traitlets.Instance
+        An instance of the IPython shell we are attached to.
+    input_hist_parsed
+    input_hist_raw
+        Lists to hold processed and raw history. These start with a blank entry
+        so that we can index them starting from 1
+    dir_hist
+        A list of directories visited during session
+
+    TODO: More parameters
+
+    """
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
                      allow_none=True)
-    # Lists to hold processed and raw history. These start with a blank entry
-    # so that we can index them starting from 1
     input_hist_parsed = List([""])
     input_hist_raw = List([""])
-    # A list of directories visited during session
     dir_hist = List()
 
     @default('dir_hist')
@@ -567,6 +575,16 @@ class HistoryManager(HistoryAccessor):
 
     def __init__(self, shell=None, config=None, **traits):
         """Create a new history manager associated with a shell instance.
+
+        Parameters
+        ----------
+        shell
+            the usual
+        config
+            more of the same
+        traits : dict
+            startstarmap of traits
+
         """
         # We need a pointer back to the shell for various tasks.
         super(HistoryManager, self).__init__(shell=shell,
@@ -593,7 +611,8 @@ class HistoryManager(HistoryAccessor):
         """Get default history file name based on the Shell's profile.
 
         The profile parameter is ignored, but must exist for compatibility with
-        the parent class."""
+        the parent class.
+        """
         profile_dir = self.shell.profile_dir.location
         return os.path.join(profile_dir, 'history.sqlite')
 
@@ -628,7 +647,8 @@ class HistoryManager(HistoryAccessor):
 
     def reset(self, new_session=True):
         """Clear the session history, releasing all object references, and
-        optionally open a new session."""
+        optionally open a new session.
+        """
         self.output_hist.clear()
         # The directory history can't be completely empty
         self.dir_hist[:] = [os.getcwd()]
@@ -674,7 +694,14 @@ class HistoryManager(HistoryAccessor):
 
     def _get_range_session(self, start=1, stop=None, raw=True, output=False):
         """Get input and output history from the current session. Called by
-        get_range, and takes similar parameters."""
+        get_range, and takes similar parameters.
+
+        Yields
+        ------
+        0, i, line : tuple
+            Idk.
+
+        """
         input_hist = self.input_hist_raw if raw else self.input_hist_parsed
 
         n = len(input_hist)
@@ -690,7 +717,7 @@ class HistoryManager(HistoryAccessor):
                 line = (input_hist[i], self.output_hist_reprs.get(i))
             else:
                 line = input_hist[i]
-            yield (0, i, line)
+            yield 0, i, line
 
     def get_range(self, session=0, start=1, stop=None, raw=True, output=False):
         """Retrieve input by session.
@@ -852,7 +879,8 @@ class HistorySavingThread(threading.Thread):
 
     It waits for the HistoryManager's save_flag to be set, then writes out
     the history cache. The main thread is responsible for setting the flag when
-    the cache size reaches a defined threshold."""
+    the cache size reaches a defined threshold.
+    """
     daemon = True
     stop_now = False
     enabled = True
