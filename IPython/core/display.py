@@ -15,8 +15,8 @@ from copy import deepcopy
 from os.path import splitext
 from pathlib import Path, PurePath
 
-from IPython.utils.py3compat import cast_unicode
-from IPython.testing.skipdoctest import skip_doctest
+# from IPython.utils.py3compat import cast_unicode
+# from IPython.testing.skipdoctest import skip_doctest
 
 __all__ = [
     'display', 'display_pretty', 'display_html', 'display_markdown',
@@ -785,7 +785,7 @@ class SVG(DisplayObject):
             # fallback on the input, trust the user
             # but this is probably an error.
             pass
-        svg = cast_unicode(svg)
+        # svg = cast_unicode(svg)
         self._data = svg
 
     def _repr_svg_(self):
@@ -1499,7 +1499,7 @@ def clear_output(wait=False):
         sys.stderr.flush()
 
 
-@skip_doctest
+# @skip_doctest
 def set_matplotlib_formats(*formats, **kwargs):
     """Select figure formats for the inline backend. Optionally pass quality for JPEG.
 
@@ -1531,7 +1531,7 @@ def set_matplotlib_formats(*formats, **kwargs):
     select_figure_formats(shell, formats, **kw)
 
 
-@skip_doctest
+# @skip_doctest
 def set_matplotlib_close(close=True):
     """Set whether the inline backend closes all figures automatically or not.
 

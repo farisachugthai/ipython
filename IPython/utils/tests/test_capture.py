@@ -12,7 +12,6 @@
 # Imports
 # -----------------------------------------------------------------------------
 
-
 import sys
 
 import nose.tools as nt
@@ -52,12 +51,24 @@ full_data = {
     'application/json': "{}",
 }
 full_metadata = {
-    'image/png': {"png": "exists"},
-    'image/jpeg': {"jpeg": "exists"},
-    'image/svg+xml': {"svg": "exists"},
-    'text/html': {"html": "exists"},
-    'application/javascript': {"js": "exists"},
-    'application/json': {"json": "exists"},
+    'image/png': {
+        "png": "exists"
+    },
+    'image/jpeg': {
+        "jpeg": "exists"
+    },
+    'image/svg+xml': {
+        "svg": "exists"
+    },
+    'text/html': {
+        "html": "exists"
+    },
+    'application/javascript': {
+        "js": "exists"
+    },
+    'application/json': {
+        "json": "exists"
+    },
 }
 
 hello_stdout = "hello, stdout"
@@ -81,7 +92,8 @@ def test_rich_output():
     metadata = basic_metadata
     rich = capture.RichOutput(data=data, metadata=metadata)
     yield nt.assert_equal, rich._repr_html_(), data['text/html']
-    yield nt.assert_equal, rich._repr_png_(), (data['image/png'], metadata['image/png'])
+    yield nt.assert_equal, rich._repr_png_(), (data['image/png'],
+                                               metadata['image/png'])
     yield nt.assert_equal, rich._repr_latex_(), None
     yield nt.assert_equal, rich._repr_javascript_(), None
     yield nt.assert_equal, rich._repr_svg_(), None
@@ -101,7 +113,8 @@ def test_rich_output_metadata():
     metadata = full_metadata
     rich = capture.RichOutput(data=data, metadata=metadata)
     for method, mime in _mime_map.items():
-        yield nt.assert_equal, getattr(rich, method)(), (data[mime], metadata[mime])
+        yield nt.assert_equal, getattr(rich,
+                                       method)(), (data[mime], metadata[mime])
 
 
 def test_rich_output_display():

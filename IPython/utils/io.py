@@ -18,7 +18,6 @@ from something blindly crashing.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import atexit
 import os
 import sys
@@ -32,10 +31,11 @@ from .capture import CapturedIO, capture_output
 
 @undoc
 class IOStream:
-
     def __init__(self, stream, fallback=None):
-        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
-             DeprecationWarning, stacklevel=2)
+        warn(
+            'IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
+            DeprecationWarning,
+            stacklevel=2)
         if not hasattr(stream, 'write') or not hasattr(stream, 'flush'):
             if fallback is not None:
                 stream = fallback
@@ -47,6 +47,7 @@ class IOStream:
         # clone all methods not overridden:
         def clone(meth):
             return not hasattr(self, meth) and not meth.startswith('_')
+
         for meth in filter(clone, dir(stream)):
             try:
                 val = getattr(stream, meth)
@@ -59,11 +60,14 @@ class IOStream:
         cls = self.__class__
         tpl = '{mod}.{cls}({args})'
         return tpl.format(mod=cls.__module__,
-                          cls=cls.__name__, args=self.stream)
+                          cls=cls.__name__,
+                          args=self.stream)
 
     def write(self, data):
-        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
-             DeprecationWarning, stacklevel=2)
+        warn(
+            'IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
+            DeprecationWarning,
+            stacklevel=2)
         try:
             self._swrite(data)
         except BaseException:
@@ -74,12 +78,15 @@ class IOStream:
                 print(data, end='', file=self.stream)
             except BaseException:
                 # if we get here, something is seriously broken.
-                print('ERROR - failed to write data to stream:', self.stream,
+                print('ERROR - failed to write data to stream:',
+                      self.stream,
                       file=sys.stderr)
 
     def writelines(self, lines):
-        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
-             DeprecationWarning, stacklevel=2)
+        warn(
+            'IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
+            DeprecationWarning,
+            stacklevel=2)
         if isinstance(lines, str):
             lines = [lines]
         for line in lines:
@@ -118,6 +125,7 @@ class Tee(object):
     When the object is closed or deleted, it closes the original file given to
     it for duplication.
     """
+
     # Inspired by:
     # http://mail.python.org/pipermail/python-list/2007-May/442737.html
 
@@ -240,12 +248,13 @@ def atomic_writing(*args, **kwargs):
 @undoc
 def raw_print(*args, **kw):
     """DEPRECATED: Raw print to sys.__stdout__, otherwise identical interface to print()."""
-    warn(
-        "IPython.utils.io.raw_print has been deprecated since IPython 7.0",
-        DeprecationWarning,
-        stacklevel=2)
+    warn("IPython.utils.io.raw_print has been deprecated since IPython 7.0",
+         DeprecationWarning,
+         stacklevel=2)
 
-    print(*args, sep=kw.get('sep', ' '), end=kw.get('end', '\n'),
+    print(*args,
+          sep=kw.get('sep', ' '),
+          end=kw.get('end', '\n'),
           file=sys.__stdout__)
     sys.__stdout__.flush()
 
@@ -258,7 +267,9 @@ def raw_print_err(*args, **kw):
         DeprecationWarning,
         stacklevel=2)
 
-    print(*args, sep=kw.get('sep', ' '), end=kw.get('end', '\n'),
+    print(*args,
+          sep=kw.get('sep', ' '),
+          end=kw.get('end', '\n'),
           file=sys.__stderr__)
     sys.__stderr__.flush()
 

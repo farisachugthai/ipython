@@ -20,8 +20,11 @@ import nose.tools as nt
 import IPython
 from IPython import paths
 from IPython.testing import decorators as dec
-from IPython.testing.decorators import (skip_if_not_win32, skip_win32,
-                                        onlyif_unicode_paths,)
+from IPython.testing.decorators import (
+    skip_if_not_win32,
+    skip_win32,
+    onlyif_unicode_paths,
+)
 from IPython.testing.tools import make_tempfile, AssertPrints
 from IPython.utils import path
 from IPython.utils.tempdir import TemporaryDirectory
@@ -39,7 +42,10 @@ except ImportError:
     except ImportError:
         import _winreg as wreg
         # Add entries that needs to be stubbed by the testing code
-        (wreg.OpenKey, wreg.QueryValueEx,) = (None, None)
+        (
+            wreg.OpenKey,
+            wreg.QueryValueEx,
+        ) = (None, None)
 
 # -----------------------------------------------------------------------------
 # Globals
@@ -81,20 +87,15 @@ def setup_environment():
     each testfunction needs a pristine environment.
     """
     global oldstuff, platformstuff
-    oldstuff = (
-        env.copy(),
-        os.name,
-        sys.platform,
-        path.get_home_dir,
-        IPython.__file__,
-        os.getcwd())
+    oldstuff = (env.copy(), os.name, sys.platform, path.get_home_dir,
+                IPython.__file__, os.getcwd())
 
 
 def teardown_environment():
     """Restore things that were remembered by the setup_environment function
     """
-    (oldenv, os.name, sys.platform, path.get_home_dir,
-     IPython.__file__, old_wd) = oldstuff
+    (oldenv, os.name, sys.platform, path.get_home_dir, IPython.__file__,
+     old_wd) = oldstuff
     os.chdir(old_wd)
     reload(path)
 
@@ -134,9 +135,7 @@ def test_get_home_dir_2():
     sys.frozen = True
     # fake filename for IPython.__init__
     IPython.__file__ = abspath(
-        join(
-            HOME_TEST_DIR,
-            "Library.zip/IPython/__init__.py")).lower()
+        join(HOME_TEST_DIR, "Library.zip/IPython/__init__.py")).lower()
 
     home_dir = path.get_home_dir(True)
     nt.assert_equal(home_dir, unfrozen)
@@ -168,6 +167,7 @@ def test_get_home_dir_5():
     # set os.name = posix, to prevent My Documents fallback on Windows
     os.name = 'posix'
     nt.assert_raises(path.HomeDirError, path.get_home_dir, True)
+
 
 # Should we stub wreg fully so we can run the test on all platforms?
 @skip_if_not_win32
@@ -269,9 +269,8 @@ def test_get_long_path_name_win32():
 
         # Make a long path. Expands the path of tmpdir prematurely as it may already have a long
         # path component, so ensure we include the long form of it
-        long_path = os.path.join(
-            path.get_long_path_name(tmpdir),
-            'this is my long path name')
+        long_path = os.path.join(path.get_long_path_name(tmpdir),
+                                 'this is my long path name')
         os.makedirs(long_path)
 
         # Test to see if the short path evaluates correctly.
@@ -287,7 +286,6 @@ def test_get_long_path_name():
 
 
 class TestRaiseDeprecation(unittest.TestCase):
-
     @dec.skip_win32  # can't create not-user-writable dir on win
     @with_environment
     def test_not_writable_ipdir(self):
@@ -346,7 +344,6 @@ def test_unicode_in_filename():
 
 
 class TestShellGlob(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.filenames_start_with_a = ['a0', 'a1', 'a2']
@@ -377,27 +374,24 @@ class TestShellGlob(unittest.TestCase):
     def check_match(self, patterns, matches):
         with self.in_tempdir():
             # glob returns unordered list. that's why sorted is required.
-            nt.assert_equal(sorted(path.shellglob(patterns)),
-                            sorted(matches))
+            nt.assert_equal(sorted(path.shellglob(patterns)), sorted(matches))
 
     def common_cases(self):
         return [
             (['*'], self.filenames),
             (['a*'], self.filenames_start_with_a),
             (['*c'], ['*c']),
-            (['*', 'a*', '*b', '*c'], self.filenames
-             + self.filenames_start_with_a
-             + self.filenames_end_with_b
-             + ['*c']),
+            (['*', 'a*', '*b', '*c'], self.filenames +
+             self.filenames_start_with_a + self.filenames_end_with_b + ['*c']),
             (['a[012]'], self.filenames_start_with_a),
         ]
 
     @skip_win32
     def test_match_posix(self):
         for (patterns, matches) in self.common_cases() + [
-                ([r'\*'], ['*']),
-                ([r'a\*', 'a*'], ['a*'] + self.filenames_start_with_a),
-                ([r'a\[012]'], ['a[012]']),
+            ([r'\*'], ['*']),
+            ([r'a\*', 'a*'], ['a*'] + self.filenames_start_with_a),
+            ([r'a\[012]'], ['a[012]']),
         ]:
             yield (self.check_match, patterns, matches)
 
@@ -407,8 +401,8 @@ class TestShellGlob(unittest.TestCase):
                 # In windows, backslash is interpreted as path
                 # separator.  Therefore, you can't escape glob
                 # using it.
-                ([r'a\*', 'a*'], [r'a\*'] + self.filenames_start_with_a),
-                ([r'a\[012]'], [r'a\[012]']),
+            ([r'a\*', 'a*'], [r'a\*'] + self.filenames_start_with_a),
+            ([r'a\[012]'], [r'a\[012]']),
         ]:
             yield (self.check_match, patterns, matches)
 
@@ -448,12 +442,16 @@ class TestLinkOrCopy(unittest.TestCase):
         return os.path.join(self.tempdir.name, *args)
 
     def assert_inode_not_equal(self, a, b):
-        nt.assert_not_equal(os.stat(a).st_ino, os.stat(b).st_ino,
-                            "%r and %r do reference the same indoes" % (a, b))
+        nt.assert_not_equal(
+            os.stat(a).st_ino,
+            os.stat(b).st_ino,
+            "%r and %r do reference the same indoes" % (a, b))
 
     def assert_inode_equal(self, a, b):
-        nt.assert_equal(os.stat(a).st_ino, os.stat(b).st_ino,
-                        "%r and %r do not reference the same indoes" % (a, b))
+        nt.assert_equal(
+            os.stat(a).st_ino,
+            os.stat(b).st_ino,
+            "%r and %r do not reference the same indoes" % (a, b))
 
     def assert_content_equal(self, a, b):
         with open(a) as a_f:
@@ -506,8 +504,5 @@ class TestLinkOrCopy(unittest.TestCase):
         path.link_or_copy(self.src, dst)
         path.link_or_copy(self.src, dst)
         self.assert_inode_equal(self.src, dst)
-        nt.assert_equal(
-            sorted(
-                os.listdir(
-                    self.tempdir.name)), [
-                'src', 'target'])
+        nt.assert_equal(sorted(os.listdir(self.tempdir.name)),
+                        ['src', 'target'])

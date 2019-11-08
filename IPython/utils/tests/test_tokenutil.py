@@ -17,10 +17,9 @@ def expect_token(expected, cell, cursor_pos):
             offset += len(line) + 1
     column = cursor_pos - offset
     line_with_cursor = '%s|%s' % (line[:column], line[column:])
-    nt.assert_equal(token, expected,
-                    "Expected %r, got %r in: %r (pos %i)" % (
-                        expected, token, line_with_cursor, cursor_pos)
-                    )
+    nt.assert_equal(
+        token, expected, "Expected %r, got %r in: %r (pos %i)" %
+        (expected, token, line_with_cursor, cursor_pos))
 
 
 def test_simple():
@@ -44,10 +43,7 @@ def test_function():
 
 
 def test_multiline():
-    cell = '\n'.join([
-        'a = 5',
-        'b = hello("string", there)'
-    ])
+    cell = '\n'.join(['a = 5', 'b = hello("string", there)'])
     expected = 'hello'
     start = cell.index(expected) + 1
     for i in range(start, start + len(expected)):
@@ -60,13 +56,8 @@ def test_multiline():
 
 def test_multiline_token():
     cell = '\n'.join([
-        '"""\n\nxxxxxxxxxx\n\n"""',
-        '5, """',
-        'docstring',
-        'multiline token',
-        '""", [',
-        '2, 3, "complicated"]',
-        'b = hello("string", there)'
+        '"""\n\nxxxxxxxxxx\n\n"""', '5, """', 'docstring', 'multiline token',
+        '""", [', '2, 3, "complicated"]', 'b = hello("string", there)'
     ])
     expected = 'hello'
     start = cell.index(expected) + 1

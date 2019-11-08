@@ -18,7 +18,6 @@ def test_base():
 
 
 def test_SubClass():
-
     class SubClass(Base):
         y = 2
 
@@ -37,7 +36,7 @@ def test_SubClass_with_trait_names_attr():
         trait_names = 44
 
     res = dir2(SubClass())
-    assert('trait_names' in res)
+    assert ('trait_names' in res)
 
 
 def test_misbehaving_object_without_trait_names():
@@ -57,4 +56,4 @@ def test_misbehaving_object_without_trait_names():
 
     for bad_klass in (MisbehavingGetattr, SillierWithDir):
         res = dir2(bad_klass())
-        assert('some_method' in res)
+        assert ('some_method' in res)

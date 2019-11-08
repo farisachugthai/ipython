@@ -4,7 +4,6 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import sys
 from io import StringIO
 
@@ -22,8 +21,10 @@ class RichOutput(object):
 
     def display(self):
         from IPython.display import publish_display_data
-        publish_display_data(data=self.data, metadata=self.metadata,
-                             transient=self.transient, update=self.update)
+        publish_display_data(data=self.data,
+                             metadata=self.metadata,
+                             transient=self.transient,
+                             update=self.update)
 
     def _repr_mime_(self, mime):
         if mime not in self.data:
@@ -71,7 +72,6 @@ class CapturedIO(object):
     Additionally, there's a ``c.show()`` method which will print all of the
     above in the same order, and can be invoked simply via ``c()``.
     """
-
     def __init__(self, stdout, stderr, outputs=None):
         self._stdout = stdout
         self._stderr = stderr

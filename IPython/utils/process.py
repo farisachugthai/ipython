@@ -6,7 +6,6 @@ Utilities for working with external processes.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 from ._process_common import getoutputerror, get_output_error_code, process_handler
 import os
 import shutil
@@ -65,5 +64,4 @@ def abbrev_cwd():
     if len(parts) > 2:
         tail = '/'.join(parts[-2:])
 
-    return (drivepart + (
-        cwd == '/' and '/' or tail))
+    return (drivepart + (cwd == '/' and '/' or tail))

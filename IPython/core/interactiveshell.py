@@ -841,10 +841,10 @@ class InteractiveShell(SingletonConfigurable):
     def init_inspector(self, changes=None):
         """I have genuinely no idea what this code is trying to do."""
         # Object inspector
-        # self.inspector = oinspect.Inspector(oinspect.InspectColors,
-        #                                     PyColorize.ANSICodeColors,
-        #                                     self.colors,
-        #                                     self.object_info_string_level)
+        self.inspector = oinspect.Inspector(oinspect.InspectColors,
+                                            PyColorize.ANSICodeColors,
+                                            self.colors,
+                                            self.object_info_string_level)
         pass
 
     def init_io(self):

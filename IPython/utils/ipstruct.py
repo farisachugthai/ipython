@@ -85,7 +85,8 @@ class Struct(dict):
         """
         if not self._allownew and key not in self:
             raise KeyError(
-                "can't create new attribute %s when allow_new_attr(False)" % key)
+                "can't create new attribute %s when allow_new_attr(False)" %
+                key)
         dict.__setitem__(self, key, value)
 
     def __setattr__(self, key, value):
@@ -116,8 +117,7 @@ class Struct(dict):
             # self.__dict__
             if key in self.__dict__ or hasattr(Struct, key):
                 raise AttributeError(
-                    'attr %s is a protected member of class Struct.' % key
-                )
+                    'attr %s is a protected member of class Struct.' % key)
         try:
             self.__setitem__(key, value)
         except KeyError as e:
@@ -362,11 +362,20 @@ class Struct(dict):
 
         # policies for conflict resolution: two argument functions which return
         # the value that will go in the new struct
-        def preserve(old, new): return old
-        def update(old, new): return new
-        def add(old, new): return old + new
-        def add_flip(old, new): return new + old  # note change of order!
-        def add_s(old, new): return old + ' ' + new
+        def preserve(old, new):
+            return old
+
+        def update(old, new):
+            return new
+
+        def add(old, new):
+            return old + new
+
+        def add_flip(old, new):
+            return new + old  # note change of order!
+
+        def add_s(old, new):
+            return old + ' ' + new
 
         # default policy is to keep current keys when there's a conflict
         conflict_solve = dict.fromkeys(self, preserve)
@@ -381,7 +390,8 @@ class Struct(dict):
                                ('add', add), ('add_flip', add_flip),
                                ('add_s', add_s)]:
                 if name in inv_conflict_solve_user.keys():
-                    inv_conflict_solve_user[func] = inv_conflict_solve_user[name]
+                    inv_conflict_solve_user[func] = inv_conflict_solve_user[
+                        name]
                     del inv_conflict_solve_user[name]
             conflict_solve.update(self.__dict_invert(inv_conflict_solve_user))
         for key in data_dict:

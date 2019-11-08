@@ -30,6 +30,7 @@ def _writable_dir(path):
 
 
 if sys.platform == 'win32':
+
     def _get_long_path_name(path):
         """Get a long path name (expand ~) on Windows using ctypes.
 
@@ -55,8 +56,9 @@ if sys.platform == 'win32':
             raise ImportError(
                 'you need to have ctypes installed for this to work')
         _GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
-        _GetLongPathName.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p,
-                                     ctypes.c_uint]
+        _GetLongPathName.argtypes = [
+            ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint
+        ]
 
         buf = ctypes.create_unicode_buffer(260)
         rv = _GetLongPathName(path, buf, 260)
@@ -65,6 +67,7 @@ if sys.platform == 'win32':
         else:
             return buf.value
 else:
+
     def _get_long_path_name(path):
         """Dummy no-op."""
         return path
@@ -107,8 +110,11 @@ def unquote_filename(name, win32=(sys.platform == 'win32')):
         Path with a tilde added.
 
     """
-    warn("'unquote_filename' is deprecated since IPython 5.0 and should not "
-         "be used anymore", DeprecationWarning, stacklevel=2)
+    warn(
+        "'unquote_filename' is deprecated since IPython 5.0 and should not "
+        "be used anymore",
+        DeprecationWarning,
+        stacklevel=2)
     if win32:
         if name.startswith(("'", '"')) and name.endswith(("'", '"')):
             name = name[1:-1]
@@ -155,9 +161,11 @@ def get_py_filename(name, force_win32=None):
 
     name = os.path.expanduser(name)
     if force_win32 is not None:
-        warn("The 'force_win32' argument to 'get_py_filename' is deprecated "
-             "since IPython 5.0 and should not be used anymore",
-             DeprecationWarning, stacklevel=2)
+        warn(
+            "The 'force_win32' argument to 'get_py_filename' is deprecated "
+            "since IPython 5.0 and should not be used anymore",
+            DeprecationWarning,
+            stacklevel=2)
     if not os.path.isfile(name) and not name.endswith('.py'):
         name += '.py'
     if os.path.isfile(name):
@@ -206,9 +214,9 @@ def filefind(filename, path_dirs=None):
         return filename
 
     if path_dirs is None:
-        path_dirs = ("",)
+        path_dirs = ("", )
     elif isinstance(path_dirs, str):
-        path_dirs = (path_dirs,)
+        path_dirs = (path_dirs, )
 
     for path in path_dirs:
         if path == '.':
@@ -269,7 +277,8 @@ def get_home_dir(require_writable=False):
         return py3compat.cast_unicode(homedir, sys.getfilesystemencoding())
     else:
         raise HomeDirError('%s is not a writable dir, '
-                           'set $HOME environment variable to override' % homedir)
+                           'set $HOME environment variable to override' %
+                           homedir)
 
 
 def get_xdg_dir():
@@ -336,6 +345,7 @@ def unescape_glob(string):
         for pattern in '*[]!?':
             s = s.replace(r'\{0}'.format(pattern), pattern)
         return s
+
     return '\\'.join(map(unescape, string.split('\\\\')))
 
 

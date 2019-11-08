@@ -1,5 +1,3 @@
 [core]
-    # please enable on windows!
-    # autocrlf = true
+    autocrlf = false
     eol = lf
-

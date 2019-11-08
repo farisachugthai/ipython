@@ -1,5 +1,11 @@
 # Set this prefix to where you want to install the plugin
+<<<<<<< Updated upstream
 PREFIX=~/.local
+||||||| merged common ancestors
+PREFIX=/usr/local
+=======
+PREFIX=/data/data/com.termux/usr/local
+>>>>>>> Stashed changes
 
 NOSE0=nosetests -vs --with-doctest --doctest-tests --detailed-errors
 # NOSE=nosetests -vvs --with-ipdoctest --doctest-tests --doctest-extension=txt \

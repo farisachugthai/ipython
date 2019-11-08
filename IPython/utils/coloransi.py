@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tools for coloring text in ANSI terminals.
-"""
+"""Tools for coloring text in ANSI terminals."""
 
 # *****************************************************************************
 #       Copyright (C) 2002-2006 Fernando Perez. <fperez@colorado.edu>
@@ -67,7 +66,7 @@ class TermColors:
     This class should be used as a mixin for building color schemes."""
 
     NoColor = ''  # for color schemes in color-less terminals.
-    Normal = '\033[0m'   # Reset normal coloring
+    Normal = '\033[0m'  # Reset normal coloring
     _base = '\033[%sm'  # Template for all other colors
 
 
@@ -94,10 +93,10 @@ class InputTermColors:
 
     if os.name == 'nt' and os.environ.get('TERM', 'dumb') == 'emacs':
         # (X)emacs on W32 gets confused with \001 and \002 so we remove them
-        Normal = '\033[0m'   # Reset normal coloring
+        Normal = '\033[0m'  # Reset normal coloring
         _base = '\033[%sm'  # Template for all other colors
     else:
-        Normal = '\001\033[0m\002'   # Reset normal coloring
+        Normal = '\001\033[0m\002'  # Reset normal coloring
         _base = '\001\033[%sm\002'  # Template for all other colors
 
 
@@ -118,16 +117,16 @@ for name, value in color_templates:
 
 class ColorScheme:
     """Generic color scheme class. Just a name and a Struct."""
-
-    def __init__(self, __scheme_name_, colordict=None, **colormap):
-        self.name = __scheme_name_
-        if colordict is None:
-            self.colors = Struct(**colormap)
-        else:
-            self.colors = Struct(colordict)
+    def __init__(self, name, colordict=None, **colormap):
+        """Idk if my use of or here is correct."""
+        self.name = name
+        self.colors = Struct(colordict) or Struct(**colormap)
 
     def copy(self, name=None):
-        """Return a full copy of the object, optionally renaming it."""
+        """Return a full copy of the object, optionally renaming it.
+
+        Isnt there a dunder method for this that maybe is a better idea to use?
+        """
         if name is None:
             name = self.name
         return ColorScheme(name, self.colors.dict())
@@ -140,26 +139,26 @@ class ColorSchemeTable(dict):
     attributes and some convenient methods.
 
     active_scheme_name -> obvious
-    active_colors -> actual color table of the active scheme"""
-
-    def __init__(self, scheme_list=None, default_scheme=''):
+    active_colors -> actual color table of the active scheme
+    """
+    def __init__(self, scheme_list=None, default_scheme=None):
         """Create a table of color schemes.
 
         The table can be created empty and manually filled or it can be
         created with a list of valid color schemes AND the specification for
         the default active scheme.
         """
-
         # create object attributes to be set later
         self.active_scheme_name = ''
         self.active_colors = None
 
         if scheme_list:
-            if default_scheme == '':
-                raise ValueError('you must specify the default color scheme')
+            if default_scheme == None:
+                default_scheme = 'LightBG'
             for scheme in scheme_list:
                 self.add_scheme(scheme)
             self.set_active_scheme(default_scheme)
+        scheme_names = list(self.keys())
 
     def copy(self):
         """Return full copy of object"""
@@ -167,32 +166,31 @@ class ColorSchemeTable(dict):
 
     def add_scheme(self, new_scheme):
         """Add a new color scheme to the table."""
-        if not isinstance(new_scheme, ColorScheme):
-            raise ValueError(
-                'ColorSchemeTable only accepts ColorScheme instances')
+        # if not isinstance(new_scheme, ColorScheme):
+        #     raise ValueError(
+        #         'ColorSchemeTable only accepts ColorScheme instances')
         self[new_scheme.name] = new_scheme
 
-    def set_active_scheme(self, scheme, case_sensitive=0):
+    def set_active_scheme(self, scheme, case_sensitive=False):
         """Set the currently active scheme.
 
         Names are by default compared in a case-insensitive way, but this can
-        be changed by setting the parameter case_sensitive to true."""
-
-        scheme_names = list(self.keys())
+        be changed by setting the parameter case_sensitive to true.
+        """
         if case_sensitive:
             valid_schemes = scheme_names
             scheme_test = scheme
         else:
             valid_schemes = [s.lower() for s in scheme_names]
             scheme_test = scheme.lower()
-        try:
-            scheme_idx = valid_schemes.index(scheme_test)
-        except ValueError:
-            raise ValueError('Unrecognized color scheme: ' + scheme +
-                             '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
-        else:
-            active = scheme_names[scheme_idx]
-            self.active_scheme_name = active
-            self.active_colors = self[active].colors
-            # Now allow using '' as an index for the current active scheme
-            self[''] = self[active]
+        # try:
+        scheme_idx = valid_schemes.index(scheme_test)
+        # except ValueError:
+        #     raise ValueError('Unrecognized color scheme: ' + scheme +
+        #                      '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
+        # else:
+        active = scheme_names[scheme_idx]
+        self.active_scheme_name = active
+        self.active_colors = self[active].colors
+        # Now allow using '' as an index for the current active scheme
+        self[''] = self[active]

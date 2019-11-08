@@ -79,7 +79,8 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
     executable = None
     if shell and os.name == 'posix' and 'SHELL' in os.environ:
         executable = os.environ['SHELL']
-    p = subprocess.Popen(cmd, shell=shell,
+    p = subprocess.Popen(cmd,
+                         shell=shell,
                          executable=executable,
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,

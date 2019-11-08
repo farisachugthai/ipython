@@ -36,7 +36,8 @@ def _find_cmd(cmd):
     """Find the full path to a command using which."""
 
     path = sp.Popen(['/usr/bin/env', 'which', cmd],
-                    stdout=sp.PIPE, stderr=sp.PIPE).communicate()[0]
+                    stdout=sp.PIPE,
+                    stderr=sp.PIPE).communicate()[0]
     return py3compat.decode(path)
 
 
@@ -70,10 +71,10 @@ class ProcessHandler(object):
     def __init__(self, logfile=None, read_timeout=None,
                  terminate_timeout=None):
         """Arguments are used for pexpect calls."""
-        self.read_timeout = (ProcessHandler.read_timeout if read_timeout is
-                             None else read_timeout)
-        self.terminate_timeout = (ProcessHandler.terminate_timeout if
-                                  terminate_timeout is None else
+        self.read_timeout = (ProcessHandler.read_timeout
+                             if read_timeout is None else read_timeout)
+        self.terminate_timeout = (ProcessHandler.terminate_timeout
+                                  if terminate_timeout is None else
                                   terminate_timeout)
         self.logfile = sys.stdout if logfile is None else logfile
 
@@ -155,9 +156,8 @@ class ProcessHandler(object):
             if hasattr(pexpect, 'spawnb'):
                 child = pexpect.spawnb(self.sh, args=['-c', cmd])  # Pexpect-U
             else:
-                child = pexpect.spawn(
-                    self.sh, args=[
-                        '-c', cmd])  # Vanilla Pexpect
+                child = pexpect.spawn(self.sh, args=['-c',
+                                                     cmd])  # Vanilla Pexpect
             flush = sys.stdout.flush
             while True:
                 # res is the index of the pattern that caused the match, so we

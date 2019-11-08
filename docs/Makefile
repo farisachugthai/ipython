@@ -16,19 +16,14 @@ ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SRCDIR)
 
 # Put it first so that "make" without argument is like "make help".
 
-.PHONY: help clean html web pickle htmlhelp latex changes linkcheck api
+.PHONY: help clean html htmlhelp changes linkcheck api
 
 default: help
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html        standalone HTML files"
-	@echo "  html_noapi  same as above, without the time consuming API docs"
-	@echo "  pickle      pickle files (usable by e.g. sphinx-web)"
 	@echo "  htmlhelp    HTML files and a HTML help project"
-	@echo "  latex       LaTeX files, you can set PAPER=a4 or PAPER=letter"
-	@echo "  texinfo     Texinfo files"
-	@echo "  info        Texinfo files and run them through makeinfo"
 	@echo "  changes     an overview over all changed/added/deprecated items"
 	@echo "  linkcheck   check all external links for integrity (takes a long time)"
 	@echo
@@ -61,7 +56,7 @@ dist: html
 	cp -al build/html .
 	@echo "Build finished.  Final docs are in html/"
 
-html: api autoconfig automagic autogen_shortcuts
+html: api  automagic autogen_shortcuts
 html_noapi: clean_api autoconfig automagic autogen_shortcuts
 
 html html_noapi:
@@ -76,12 +71,6 @@ source/interactive/magics-generated.txt: autogen_magics.py
 	$(PYTHON) autogen_magics.py
 	@echo "Created docs for line & cell magics"
 
-autoconfig: source/config/options/config-generated.txt
-
-source/config/options/config-generated.txt: autogen_config.py
-	$(PYTHON) autogen_config.py
-	@echo "Created docs for config options"
-
 api: source/api/generated/gen.txt
 
 source/api/generated/gen.txt:
@@ -94,15 +83,6 @@ autogen_shortcuts: autogen_shortcuts.py ../IPython/terminal/interactiveshell.py 
 	$(PYTHON) autogen_shortcuts.py
 	@echo "Created docs for shortcuts"
 
-pickle:
-	mkdir -p build/pickle build/doctrees
-	$(SPHINXBUILD) -b pickle $(ALLSPHINXOPTS) build/pickle
-	@echo
-	@echo "Build finished; now you can process the pickle files or run"
-	@echo "  sphinx-web build/pickle"
-	@echo "to start the sphinx-web server."
-
-web: pickle
 
 htmlhelp:
 	mkdir -p build/htmlhelp build/doctrees
@@ -110,14 +90,6 @@ htmlhelp:
 	@echo
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in build/htmlhelp."
-
-latex: api autoconfig
-	mkdir -p build/latex build/doctrees
-	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) build/latex
-	@echo
-	@echo "Build finished; the LaTeX files are in build/latex."
-	@echo "Run \`make all-pdf' or \`make all-ps' in that directory to" \
-	      "run these through (pdf)latex."
 
 changes:
 	mkdir -p build/changes build/doctrees
@@ -131,22 +103,3 @@ linkcheck:
 	@echo
 	@echo "Link check complete; look for any errors in the above output " \
 	      "or in build/linkcheck/output.rst."
-
-texinfo:
-	mkdir -p $(BUILDDIR)/texinfo
-	$(SPHINXBUILD) -b texinfo $(ALLSPHINXOPTS) $(BUILDDIR)/texinfo
-	@echo
-	@echo "Build finished. The Texinfo files are in $(BUILDDIR)/texinfo."
-	@echo "Run \`make' in that directory to run these through makeinfo" \
-	      "(use \`make info' here to do that automatically)."
-
-info:
-	mkdir -p $(BUILDDIR)/texinfo
-	$(SPHINXBUILD) -b texinfo $(ALLSPHINXOPTS) $(BUILDDIR)/texinfo
-	@echo "Running Texinfo files through makeinfo..."
-	make -C $(BUILDDIR)/texinfo info
-	@echo "makeinfo finished; the Info files are in $(BUILDDIR)/texinfo."
-
-# Requires tabs. If setting values in your vimrc doesn't work type <C-v><Tab> to insert a tab literally.
-# magic:
-		# $(PYTHON) autogen_magics.py

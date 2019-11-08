@@ -67,6 +67,7 @@ def _modify_str_or_docstring(str_change_func):
             func.__doc__ = doc
             return func
         return doc
+
     return wrapper
 
 
@@ -91,6 +92,7 @@ def safe_unicode(e):
 
     return u'Unrecoverably corrupt evalue'
 
+
 # shutil.which from Python 3.4
 
 
@@ -105,6 +107,7 @@ def _shutil_which(cmd, mode=os.F_OK | os.X_OK, path=None):
 
     This is a backport of shutil.which from Python 3.4
     """
+
     # Check that a given file can be accessed with the correct mode.
     # Additionally check that `file` is not a directory, as on Windows
     # directories pass the os.access check.
@@ -178,7 +181,7 @@ cast_bytes_py2 = no_code
 cast_unicode_py2 = no_code
 buffer_to_bytes_py2 = no_code
 
-string_types = (str,)
+string_types = (str, )
 unicode_type = str
 
 which = shutil.which
@@ -193,10 +196,12 @@ def isidentifier(s, dotted=False):
 xrange = range
 
 
-def iteritems(d): return iter(d.items())
+def iteritems(d):
+    return iter(d.items())
 
 
-def itervalues(d): return iter(d.values())
+def itervalues(d):
+    return iter(d.values())
 
 
 getcwd = os.getcwd
@@ -218,6 +223,7 @@ _print_statement_re = re.compile(r"\bprint (?P<expr>.*)$", re.MULTILINE)
 def _print_statement_sub(match):
     expr = match.groups('expr')
     return "print(%s)" % expr
+
 
 # Abstract u'abc' syntax:
 @_modify_str_or_docstring
@@ -249,6 +255,7 @@ def annotate(**kwargs):
         else:
             f.__annotations__ = kwargs
         return f
+
     return dec
 
 
@@ -272,6 +279,7 @@ def annotate(**kwargs):
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 
 def with_metaclass(meta, *bases):
     """Create a base class with a metaclass."""

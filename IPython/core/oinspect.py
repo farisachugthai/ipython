@@ -1,10 +1,17 @@
-# -*- coding: utf-8 -*-
 """Tools for inspecting Python objects.
 
 Uses syntax highlighting for presenting the various information elements.
 
 Similar in spirit to the inspect module, but all calls take a name argument to
 reference the name under which an object is being read.
+
+*sigh.*
+
+Notes
+------
+Xonsh has a similarly named module. Check that out to see how cleanly we can
+use it as a drop-in replacement.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -12,10 +19,9 @@ reference the name under which an object is being read.
 
 __all__ = ['Inspector', 'InspectColors']
 
-# stdlib modules
 import ast
 import inspect
-from inspect import signature
+from inspect import signature, getsource, getfullargspec, getabsfile as find_file
 import linecache
 import warnings
 import os
@@ -37,7 +43,6 @@ from IPython.utils.text import indent
 from IPython.utils.wildcard import list_namespace
 from IPython.utils.wildcard import typestr2type
 from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
-from IPython.utils.py3compat import cast_unicode
 from IPython.utils.colorable import Colorable
 from IPython.utils.decorators import undoc
 
@@ -106,134 +111,11 @@ def object_info(**kw):
     return infodict
 
 
-def get_encoding(obj):
-    """Get encoding for python source file defining obj
-
-    Returns None if obj is not defined in a sourcefile.
-    """
-    ofile = find_file(obj)
-    # run contents of file through pager starting at line where the object
-    # is defined, as long as the file isn't binary and is actually on the
-    # filesystem.
-    if ofile is None:
-        return None
-    elif ofile.endswith(('.so', '.dll', '.pyd')):
-        return None
-    elif not os.path.isfile(ofile):
-        return None
-    else:
-        # Print only text files, not extension binaries.  Note that
-        # getsourcelines returns lineno with 1-offset and page() uses
-        # 0-offset, so we must adjust.
-        with stdlib_io.open(
-                ofile, 'rb') as buffer:  # Tweaked to use io.open for Python 2
-            encoding, lines = openpy.detect_encoding(buffer.readline)
-        return encoding
-
-
-def getdoc(obj):
-    """Stable wrapper around inspect.getdoc.
-
-    This can't crash because of attribute problems.
-
-    It also attempts to call a getdoc() method on the given object.  This
-    allows objects which provide their docstrings via non-standard mechanisms
-    (like Pyro proxies) to still be inspected by ipython's ? system.
-    """
-    # Allow objects to offer customized documentation via a getdoc method:
-    try:
-        ds = obj.getdoc()
-    except Exception:
-        pass
-    else:
-        if isinstance(ds, str):
-            return inspect.cleandoc(ds)
-    docstr = inspect.getdoc(obj)
-    encoding = get_encoding(obj)
-    return py3compat.cast_unicode(docstr, encoding=encoding)
-
-
-def getsource(obj, oname=''):
-    """Wrapper around inspect.getsource.
-
-    This can be modified by other projects to provide customized source
-    extraction.
-
-    Parameters
-    ----------
-    obj : object
-        an object whose source code we will attempt to extract
-    oname : str
-        (optional) a name under which the object is known
-
-    Returns
-    -------
-    src : unicode or None
-
-    """
-
-    if isinstance(obj, property):
-        sources = []
-        for attrname in ['fget', 'fset', 'fdel']:
-            fn = getattr(obj, attrname)
-            if fn is not None:
-                encoding = get_encoding(fn)
-                oname_prefix = ('%s.' % oname) if oname else ''
-                sources.append(
-                    cast_unicode(''.join(('# ', oname_prefix, attrname)),
-                                 encoding=encoding))
-                if inspect.isfunction(fn):
-                    sources.append(dedent(getsource(fn)))
-                else:
-                    # Default str/repr only prints function name,
-                    # pretty.pretty prints module name too.
-                    sources.append(
-                        cast_unicode('%s%s = %s\n' %
-                                     (oname_prefix, attrname, pretty(fn)),
-                                     encoding=encoding))
-        if sources:
-            return '\n'.join(sources)
-        else:
-            return None
-
-    else:
-        # Get source for non-property objects.
-
-        obj = _get_wrapped(obj)
-
-        try:
-            src = inspect.getsource(obj)
-        except TypeError:
-            # The object itself provided no meaningful source, try looking for
-            # its class definition instead.
-            if hasattr(obj, '__class__'):
-                try:
-                    src = inspect.getsource(obj.__class__)
-                except TypeError:
-                    return None
-
-        encoding = get_encoding(obj)
-        return cast_unicode(src, encoding=encoding)
-
-
 def is_simple_callable(obj):
     """True if obj is a function ()"""
     return (inspect.isfunction(obj) or inspect.ismethod(obj) or
             isinstance(obj, _builtin_func_type) or
             isinstance(obj, _builtin_meth_type))
-
-
-def getargspec(obj):
-    """Wrapper around :func:`inspect.getfullargspec` on Python 3, and
-    :func:inspect.getargspec` on Python 2.
-
-    In addition to functions and methods, this can also handle objects with a
-    ``__call__`` attribute.
-    """
-    if safe_hasattr(obj, '__call__') and not is_simple_callable(obj):
-        obj = obj.__call__
-
-    return inspect.getfullargspec(obj)
 
 
 def format_argspec(argspec):
@@ -267,39 +149,6 @@ def _get_wrapped(obj):
     return obj
 
 
-def find_file(obj):
-    """Find the absolute path to the file where an object was defined.
-
-    This is essentially a robust wrapper around `inspect.getabsfile`.
-
-    Returns None if no file can be found.
-
-    Parameters
-    ----------
-    obj : any Python object
-
-    Returns
-    -------
-    fname : str
-      The absolute path to the file where the object was defined.
-    """
-    obj = _get_wrapped(obj)
-
-    fname = None
-    try:
-        fname = inspect.getabsfile(obj)
-    except TypeError:
-        # For an instance, the file that matters is where its class was
-        # declared.
-        if hasattr(obj, '__class__'):
-            try:
-                fname = inspect.getabsfile(obj.__class__)
-            except TypeError:
-                # Can happen for builtins
-                pass
-    except BaseException:
-        pass
-    return cast_unicode(fname)
 
 
 def find_source_lines(obj):
@@ -336,6 +185,13 @@ def find_source_lines(obj):
 
 
 class Inspector(Colorable):
+    """Whew. Wth?
+
+    Parameters
+    ----------
+    scheme :
+        colorscheme
+    """
 
     def __init__(self,
                  color_table=InspectColors,
@@ -343,23 +199,21 @@ class Inspector(Colorable):
                  str_detail_level=0,
                  parent=None,
                  config=None):
-        super(Inspector, self).__init__(parent=parent, config=config)
         self.color_table = color_table
         self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         self.format = self.parser.format
         self.str_detail_level = str_detail_level
         self.set_active_scheme(scheme)
+        super().__init__(parent=parent, config=config)
 
     def _getdef(self, obj, oname=''):
         """Return the call signature for any callable object.
 
         If any exception is generated, None is returned instead and the
-        exception is suppressed."""
-        try:
-            hdef = _render_signature(signature(obj), oname)
-            return cast_unicode(hdef)
-        except BaseException:
-            return None
+        exception is suppressed.
+        """
+        hdef = _render_signature(signature(obj), oname)
+        return hdef
 
     def __head(self, h):
         """Return a header string with proper colors."""
@@ -399,13 +253,14 @@ class Inspector(Colorable):
         else:
             print(header, self.format(output), end=' ')
 
-    # In Python 3, all classes are new-style, so they all have __init__.
-    @skip_doctest
+    # In Python 3, all classes are new-style, so they all have __init__.q
     def pdoc(self, obj, oname='', formatter=None):
         """Print the docstring for any object.
 
-        Optional:
-        -formatter: a function to run the docstring through for specially
+        Parameters
+        -----------
+        formatter : 
+        a function to run the docstring through for specially
         formatted docstrings.
 
         Examples
@@ -434,7 +289,6 @@ class Inspector(Colorable):
         In [6]: %pdoc obj2
         No documentation found for obj2
         """
-
         head = self.__head  # For convenience
         lines = []
         ds = getdoc(obj)
@@ -461,7 +315,6 @@ class Inspector(Colorable):
 
     def psource(self, obj, oname=''):
         """Print the source code for an object."""
-
         # Flush the source cache because inspect can return out-of-date source
         linecache.checkcache()
         try:
@@ -518,7 +371,7 @@ class Inspector(Colorable):
                 title = header(title + ':') + '\n'
             else:
                 title = header((title + ':').ljust(title_width))
-            out.append(cast_unicode(title) + cast_unicode(content))
+            out.append((title) + cast_unicode(content))
         return "\n".join(out)
 
     def _mime_format(self, text, formatter=None):
@@ -537,7 +390,7 @@ class Inspector(Colorable):
         Formatters returning strings are supported but this behavior is deprecated.
 
         """
-        text = cast_unicode(text)
+        text = (text)
         defaults = {'text/plain': text, 'text/html': '<pre>' + text + '</pre>'}
 
         if formatter is None:

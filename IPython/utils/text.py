@@ -39,7 +39,6 @@ class LSString(str):
 
     Such strings are very useful to efficiently interact with the shell, which
     typically only understands whitespace-separated options for commands."""
-
     def get_list(self):
         try:
             return self.__list
@@ -67,11 +66,13 @@ class LSString(str):
         try:
             return self.__paths
         except AttributeError:
-            self.__paths = [Path(p)
-                            for p in self.split('\n') if os.path.exists(p)]
+            self.__paths = [
+                Path(p) for p in self.split('\n') if os.path.exists(p)
+            ]
             return self.__paths
 
     p = paths = property(get_paths)
+
 
 # FIXME: We need to reimplement type specific displayhook and then add this
 # back as a custom printer. This should also be moved outside utils into the
@@ -98,7 +99,6 @@ class SList(list):
 
     Any values which require transformations are computed only once and
     cached."""
-
     def get_list(self):
         return self
 
@@ -146,7 +146,6 @@ class SList(list):
             a.grep('Cha.*log', prune=1)
             a.grep('chm', field=-1)
         """
-
         def match_target(s):
             if field is None:
                 return s
@@ -158,7 +157,9 @@ class SList(list):
                 return ""
 
         if isinstance(pattern, str):
-            def pred(x): return re.search(pattern, x, re.IGNORECASE)
+
+            def pred(x):
+                return re.search(pattern, x, re.IGNORECASE)
         else:
             pred = pattern
         if not prune:
@@ -421,8 +422,8 @@ def long_substr(data):
     if len(data) > 1 and len(data[0]) > 0:
         for i in range(len(data[0])):
             for j in range(len(data[0]) - i + 1):
-                if j > len(substr) and all(
-                        data[0][i:i + j] in x for x in data):
+                if j > len(substr) and all(data[0][i:i + j] in x
+                                           for x in data):
                     substr = data[0][i:i + j]
     elif len(data) == 1:
         substr = data[0]
@@ -510,10 +511,10 @@ class EvalFormatter(Formatter):
         In [3]: f.format("{greeting[slice(2,4)]}", greeting="Hello")
         Out[3]: 'll'
     """
-
     def get_field(self, name, args, kwargs):
         v = eval(name, kwargs)
         return v, name
+
 
 # XXX: As of Python 3.4, the format string parsing no longer splits on a colon
 # inside [], so EvalFormatter can handle slicing. Once we only support 3.4 and
@@ -543,6 +544,7 @@ class FullEvalFormatter(Formatter):
         In [4]: f.format('{3*2}')
         Out[4]: '6'
     """
+
     # copied from Formatter._vformat with minor changes to allow eval
     # and replace the format_spec code with slicing
 
@@ -618,7 +620,9 @@ class DollarFormatter(FullEvalFormatter):
                 continue_from = m.end()
 
             # Re-yield the {foo} style pattern
-            yield (txt + literal_txt[continue_from:], field_name, format_spec, conversion)
+            yield (txt + literal_txt[continue_from:], field_name, format_spec,
+                   conversion)
+
 
 # -----------------------------------------------------------------------------
 # Utils to columnize a list of string
@@ -644,10 +648,16 @@ def _find_optimal(rlist, row_first=False, separator_size=2, displaywidth=80):
         ncols = len(col_widths)
         if sumlength + separator_size * (ncols - 1) <= displaywidth:
             break
-    return {'num_columns': ncols,
-            'optimal_separator_width': (displaywidth - sumlength) // (ncols - 1) if (ncols - 1) else 0,
-            'max_rows': max_rows,
-            'column_widths': col_widths}
+    return {
+        'num_columns':
+        ncols,
+        'optimal_separator_width': (displaywidth - sumlength) // (ncols - 1) if
+        (ncols - 1) else 0,
+        'max_rows':
+        max_rows,
+        'column_widths':
+        col_widths
+    }
 
 
 def _get_or_default(mylist, i, default=None):
@@ -713,15 +723,22 @@ def compute_item_matrix(items, row_first=False, empty=None, *args, **kwargs):
     info = _find_optimal(list(map(len, items)), row_first, *args, **kwargs)
     nrow, ncol = info['max_rows'], info['num_columns']
     if row_first:
-        return ([[_get_or_default(items, r * ncol + c, default=empty)
-                  for c in range(ncol)] for r in range(nrow)], info)
+        return ([[
+            _get_or_default(items, r * ncol + c, default=empty)
+            for c in range(ncol)
+        ] for r in range(nrow)], info)
     else:
-        return ([[_get_or_default(items, c * nrow + r, default=empty)
-                  for c in range(ncol)] for r in range(nrow)], info)
+        return ([[
+            _get_or_default(items, c * nrow + r, default=empty)
+            for c in range(ncol)
+        ] for r in range(nrow)], info)
 
 
-def columnize(items, row_first=False, separator='  ',
-              displaywidth=80, spread=False):
+def columnize(items,
+              row_first=False,
+              separator='  ',
+              displaywidth=80,
+              spread=False):
     """ Transform a list of strings into a single string with columns.
 
     Parameters
@@ -745,13 +762,18 @@ def columnize(items, row_first=False, separator='  ',
     """
     if not items:
         return '\n'
-    matrix, info = compute_item_matrix(items, row_first=row_first, separator_size=len(
-        separator), displaywidth=displaywidth)
+    matrix, info = compute_item_matrix(items,
+                                       row_first=row_first,
+                                       separator_size=len(separator),
+                                       displaywidth=displaywidth)
     if spread:
         separator = separator.ljust(int(info['optimal_separator_width']))
     fmatrix = [filter(None, x) for x in matrix]
-    def sjoin(x): return separator.join(
-        [y.ljust(w, ' ') for y, w in zip(x, info['column_widths'])])
+
+    def sjoin(x):
+        return separator.join(
+            [y.ljust(w, ' ') for y, w in zip(x, info['column_widths'])])
+
     return '\n'.join(map(sjoin, fmatrix)) + '\n'
 
 
@@ -779,10 +801,9 @@ def get_text_list(list_, last_sep=' and ', sep=", ", wrap_item_with=""):
     if len(list_) == 0:
         return ''
     if wrap_item_with:
-        list_ = ['%s%s%s' % (wrap_item_with, item, wrap_item_with) for
-                 item in list_]
+        list_ = [
+            '%s%s%s' % (wrap_item_with, item, wrap_item_with) for item in list_
+        ]
     if len(list_) == 1:
         return list_[0]
-    return '%s%s%s' % (
-        sep.join(i for i in list_[:-1]),
-        last_sep, list_[-1])
+    return '%s%s%s' % (sep.join(i for i in list_[:-1]), last_sep, list_[-1])

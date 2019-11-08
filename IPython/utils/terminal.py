@@ -18,14 +18,16 @@ import sys
 # This variable is part of the expected API of the module:
 ignore_termtitle = True
 
-
 if os.name == 'posix':
+
     def _term_clear():
         os.system('clear')
 elif sys.platform == 'win32':
+
     def _term_clear():
         os.system('cls')
 else:
+
     def _term_clear():
         pass
 
@@ -46,7 +48,7 @@ def toggle_set_term_title(val):
         appropriate platform-specific module).  If False, it is a no-op.
     """
     global ignore_termtitle
-    ignore_termtitle = not(val)
+    ignore_termtitle = not (val)
 
 
 def _set_term_title_xterm(title):

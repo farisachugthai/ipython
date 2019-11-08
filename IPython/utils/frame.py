@@ -88,6 +88,7 @@ def debugx(expr, pre_msg=''):
 # deactivate it by uncommenting the following line, which makes it a no-op
 #def debugx(expr,pre_msg=''): pass
 
+
 def extract_module_locals(depth=0):
     """Returns (module, locals) of the function `depth` frames away from the caller"""
     f = sys._getframe(depth + 1)

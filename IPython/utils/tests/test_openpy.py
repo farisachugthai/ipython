@@ -17,14 +17,13 @@ def test_detect_encoding():
 def test_read_file():
     with io.open(nonascii_path, encoding="iso-8859-5") as f:
         read_specified_enc = f.read()
-    read_detected_enc = openpy.read_py_file(
-        nonascii_path, skip_encoding_cookie=False)
+    read_detected_enc = openpy.read_py_file(nonascii_path,
+                                            skip_encoding_cookie=False)
     nt.assert_equal(read_detected_enc, read_specified_enc)
     assert "coding: iso-8859-5" in read_detected_enc
 
-    read_strip_enc_cookie = openpy.read_py_file(
-        nonascii_path, skip_encoding_cookie=True
-    )
+    read_strip_enc_cookie = openpy.read_py_file(nonascii_path,
+                                                skip_encoding_cookie=True)
     assert "coding: iso-8859-5" not in read_strip_enc_cookie
 
 
@@ -37,6 +36,6 @@ def test_source_to_unicode():
         source_bytes.decode("iso-8859-5").splitlines(),
     )
 
-    source_no_cookie = openpy.source_to_unicode(
-        source_bytes, skip_encoding_cookie=True)
+    source_no_cookie = openpy.source_to_unicode(source_bytes,
+                                                skip_encoding_cookie=True)
     nt.assert_not_in("coding: iso-8859-5", source_no_cookie)

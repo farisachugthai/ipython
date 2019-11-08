@@ -190,3 +190,15 @@ To see where IPython is looking for the IPython directory, use the command
    :doc:`/development/config`
       Technical details of the config system.
 
+Extending and integrating with IPython
+--------------------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   extensions/index
+   integrating
+   custommagics
+   inputtransforms
+   callbacks
+   eventloops

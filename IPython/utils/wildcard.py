@@ -27,7 +27,7 @@ def create_typestr2type_dicts(dont_include_in_type2typestr=["lambda"]):
     typestr2type, type2typestr = {}, {}
 
     for tname in typenamelist:
-        name = tname[:-4].lower()          # Cut 'Type' off the end of the name
+        name = tname[:-4].lower()  # Cut 'Type' off the end of the name
         obj = getattr(types, tname)
         typestr2type[name] = obj
         if name not in dont_include_in_type2typestr:
@@ -78,7 +78,10 @@ def dict_dir(obj):
     return ns
 
 
-def filter_ns(ns, name_pattern="*", type_pattern="all", ignore_case=True,
+def filter_ns(ns,
+              name_pattern="*",
+              type_pattern="all",
+              ignore_case=True,
               show_all=True):
     """Filter a namespace dictionary by name pattern and item type."""
     pattern = name_pattern.replace("*", ".*").replace("?", ".")
@@ -89,31 +92,39 @@ def filter_ns(ns, name_pattern="*", type_pattern="all", ignore_case=True,
 
     # Check each one matches regex; shouldn't be hidden; of correct type.
     return dict((key, obj) for key, obj in ns.items() if reg.match(key)
-                and show_hidden(key, show_all)
-                and is_type(obj, type_pattern))
+                and show_hidden(key, show_all) and is_type(obj, type_pattern))
 
 
-def list_namespace(namespace, type_pattern, filter,
-                   ignore_case=False, show_all=False):
+def list_namespace(namespace,
+                   type_pattern,
+                   filter,
+                   ignore_case=False,
+                   show_all=False):
     """Return dictionary of all objects in a namespace dictionary that match
     type_pattern and filter."""
     pattern_list = filter.split(".")
     if len(pattern_list) == 1:
-        return filter_ns(namespace, name_pattern=pattern_list[0],
+        return filter_ns(namespace,
+                         name_pattern=pattern_list[0],
                          type_pattern=type_pattern,
-                         ignore_case=ignore_case, show_all=show_all)
+                         ignore_case=ignore_case,
+                         show_all=show_all)
     else:
         # This is where we can change if all objects should be searched or
         # only modules. Just change the type_pattern to module to search only
         # modules
-        filtered = filter_ns(namespace, name_pattern=pattern_list[0],
+        filtered = filter_ns(namespace,
+                             name_pattern=pattern_list[0],
                              type_pattern="all",
-                             ignore_case=ignore_case, show_all=show_all)
+                             ignore_case=ignore_case,
+                             show_all=show_all)
         results = {}
         for name, obj in filtered.items():
-            ns = list_namespace(dict_dir(obj), type_pattern,
+            ns = list_namespace(dict_dir(obj),
+                                type_pattern,
                                 ".".join(pattern_list[1:]),
-                                ignore_case=ignore_case, show_all=show_all)
+                                ignore_case=ignore_case,
+                                show_all=show_all)
             for inner_name, inner_obj in ns.items():
                 results["%s.%s" % (name, inner_name)] = inner_obj
         return results

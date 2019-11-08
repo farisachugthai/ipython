@@ -9,7 +9,6 @@ from tempfile import TemporaryDirectory
 
 
 class NamedFileInTemporaryDirectory(object):
-
     def __init__(self, filename, mode='w+b', bufsize=-1, **kwds):
         """
         Open a file named `filename` in a temporary directory.
@@ -47,7 +46,6 @@ class TemporaryWorkingDirectory(TemporaryDirectory):
         with TemporaryWorkingDirectory() as tmpdir:
             ...
     """
-
     def __enter__(self):
         self.old_wd = _os.getcwd()
         _os.chdir(self.name)

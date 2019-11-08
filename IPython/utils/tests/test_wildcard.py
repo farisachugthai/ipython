@@ -50,84 +50,162 @@ root.__ANKA.__a = 20
 # -----------------------------------------------------------------------------
 
 
-class Tests (unittest.TestCase):
+class Tests(unittest.TestCase):
     def test_case(self):
         ns = root.__dict__
         tests = [
-            ("a*", ["abbot", "abel", "active", "arna", ]),
-            ("?b*.?o*", ["abbot.koppel", "abbot.loop",
-                         "abel.koppel", "abel.loop", ]),
+            ("a*", [
+                "abbot",
+                "abel",
+                "active",
+                "arna",
+            ]),
+            ("?b*.?o*", [
+                "abbot.koppel",
+                "abbot.loop",
+                "abel.koppel",
+                "abel.loop",
+            ]),
             ("_a*", []),
-            ("_*anka", ["__anka", ]),
-            ("_*a*", ["__anka", ]),
+            ("_*anka", [
+                "__anka",
+            ]),
+            ("_*a*", [
+                "__anka",
+            ]),
         ]
         for pat, res in tests:
             res.sort()
-            a = sorted(wildcard.list_namespace(ns, "all", pat, ignore_case=False,
-                                               show_all=False).keys())
+            a = sorted(
+                wildcard.list_namespace(ns,
+                                        "all",
+                                        pat,
+                                        ignore_case=False,
+                                        show_all=False).keys())
             self.assertEqual(a, res)
 
     def test_case_showall(self):
         ns = root.__dict__
         tests = [
-            ("a*", ["abbot", "abel", "active", "arna", ]),
-            ("?b*.?o*", ["abbot.koppel", "abbot.loop",
-                         "abel.koppel", "abel.loop", ]),
+            ("a*", [
+                "abbot",
+                "abel",
+                "active",
+                "arna",
+            ]),
+            ("?b*.?o*", [
+                "abbot.koppel",
+                "abbot.loop",
+                "abel.koppel",
+                "abel.loop",
+            ]),
             ("_a*", ["_apan"]),
-            ("_*anka", ["__anka", ]),
-            ("_*a*", ["__anka", "_apan", ]),
+            ("_*anka", [
+                "__anka",
+            ]),
+            ("_*a*", [
+                "__anka",
+                "_apan",
+            ]),
         ]
         for pat, res in tests:
             res.sort()
-            a = sorted(wildcard.list_namespace(ns, "all", pat, ignore_case=False,
-                                               show_all=True).keys())
+            a = sorted(
+                wildcard.list_namespace(ns,
+                                        "all",
+                                        pat,
+                                        ignore_case=False,
+                                        show_all=True).keys())
             self.assertEqual(a, res)
 
     def test_nocase(self):
         ns = root.__dict__
         tests = [
-            ("a*", ["abbot", "abel", "ABEL", "active", "arna", ]),
-            ("?b*.?o*", ["abbot.koppel", "abbot.loop", "abel.koppel", "abel.loop",
-                         "ABEL.koppel", "ABEL.loop", ]),
+            ("a*", [
+                "abbot",
+                "abel",
+                "ABEL",
+                "active",
+                "arna",
+            ]),
+            ("?b*.?o*", [
+                "abbot.koppel",
+                "abbot.loop",
+                "abel.koppel",
+                "abel.loop",
+                "ABEL.koppel",
+                "ABEL.loop",
+            ]),
             ("_a*", []),
-            ("_*anka", ["__anka", "__ANKA", ]),
-            ("_*a*", ["__anka", "__ANKA", ]),
+            ("_*anka", [
+                "__anka",
+                "__ANKA",
+            ]),
+            ("_*a*", [
+                "__anka",
+                "__ANKA",
+            ]),
         ]
         for pat, res in tests:
             res.sort()
-            a = sorted(wildcard.list_namespace(ns, "all", pat, ignore_case=True,
-                                               show_all=False).keys())
+            a = sorted(
+                wildcard.list_namespace(ns,
+                                        "all",
+                                        pat,
+                                        ignore_case=True,
+                                        show_all=False).keys())
             self.assertEqual(a, res)
 
     def test_nocase_showall(self):
         ns = root.__dict__
         tests = [
-            ("a*", ["abbot", "abel", "ABEL", "active", "arna", ]),
-            ("?b*.?o*", ["abbot.koppel", "abbot.loop", "abel.koppel", "abel.loop",
-                         "ABEL.koppel", "ABEL.loop", ]),
+            ("a*", [
+                "abbot",
+                "abel",
+                "ABEL",
+                "active",
+                "arna",
+            ]),
+            ("?b*.?o*", [
+                "abbot.koppel",
+                "abbot.loop",
+                "abel.koppel",
+                "abel.loop",
+                "ABEL.koppel",
+                "ABEL.loop",
+            ]),
             ("_a*", ["_apan", "_APAN"]),
-            ("_*anka", ["__anka", "__ANKA", ]),
+            ("_*anka", [
+                "__anka",
+                "__ANKA",
+            ]),
             ("_*a*", ["__anka", "__ANKA", "_apan", "_APAN"]),
         ]
         for pat, res in tests:
             res.sort()
-            a = sorted(sorted(wildcard.list_namespace(ns, "all", pat, ignore_case=True,
-                                                      show_all=True).keys()))
+            a = sorted(
+                sorted(
+                    wildcard.list_namespace(ns,
+                                            "all",
+                                            pat,
+                                            ignore_case=True,
+                                            show_all=True).keys()))
             self.assertEqual(a, res)
 
     def test_dict_attributes(self):
         """Dictionaries should be indexed by attributes, not by keys. This was
         causing Github issue 129."""
         ns = {"az": {"king": 55}, "pq": {1: 0}}
-        tests = [
-            ("a*", ["az"]),
-            ("az.k*", ["az.keys"]),
-            ("pq.k*", ["pq.keys"])
-        ]
+        tests = [("a*", ["az"]), ("az.k*", ["az.keys"]),
+                 ("pq.k*", ["pq.keys"])]
         for pat, res in tests:
             res.sort()
-            a = sorted(wildcard.list_namespace(ns, "all", pat, ignore_case=False,
-                                               show_all=True).keys())
+            a = sorted(
+                wildcard.list_namespace(ns,
+                                        "all",
+                                        pat,
+                                        ignore_case=False,
+                                        show_all=True).keys())
             self.assertEqual(a, res)
 
     def test_dict_dir(self):

@@ -20,7 +20,6 @@ class ShimImporter(object):
     This ensures that submodule imports return the real target module,
     not a clone that will confuse `is` and `isinstance` checks.
     """
-
     def __init__(self, src, mirror):
         self.src = src
         self.mirror = mirror
@@ -53,7 +52,6 @@ class ShimImporter(object):
 
 
 class ShimModule(types.ModuleType):
-
     def __init__(self, *args, **kwargs):
         self._mirror = kwargs.pop("mirror")
         src = kwargs.pop("src", None)
@@ -62,9 +60,7 @@ class ShimModule(types.ModuleType):
         super(ShimModule, self).__init__(*args, **kwargs)
         # add import hook for descendent modules
         if src:
-            sys.meta_path.append(
-                ShimImporter(src=src, mirror=self._mirror)
-            )
+            sys.meta_path.append(ShimImporter(src=src, mirror=self._mirror))
 
     @property
     def __path__(self):

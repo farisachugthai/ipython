@@ -53,7 +53,6 @@ class AvoidUNCPath(object):
                 cmd = '"pushd %s &&"%s' % (path, cmd)
             os.system(cmd)
     """
-
     def __enter__(self):
         self.path = os.getcwd()
         self.is_unc_path = self.path.startswith(r"\\")

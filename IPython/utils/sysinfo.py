@@ -59,7 +59,8 @@ def pkg_commit_hash(pkg_path):
     proc = subprocess.Popen('git rev-parse --short HEAD',
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
-                            cwd=pkg_path, shell=True)
+                            cwd=pkg_path,
+                            shell=True)
     repo_commit, _ = proc.communicate()
     if repo_commit:
         return 'repository', repo_commit.strip().decode('ascii')
@@ -153,14 +154,16 @@ def num_cpus():
     # for the names of the keys we needed to look up for this function.  This
     # code was inspired by their equivalent function.
 
-    ncpufuncs = {'Linux': _num_cpus_unix,
-                 'Darwin': _num_cpus_darwin,
-                 'Windows': _num_cpus_windows
-                 }
+    ncpufuncs = {
+        'Linux': _num_cpus_unix,
+        'Darwin': _num_cpus_darwin,
+        'Windows': _num_cpus_windows
+    }
 
-    ncpufunc = ncpufuncs.get(platform.system(),
-                             # default to unix version (Solaris, AIX, etc)
-                             _num_cpus_unix)
+    ncpufunc = ncpufuncs.get(
+        platform.system(),
+        # default to unix version (Solaris, AIX, etc)
+        _num_cpus_unix)
 
     try:
         ncpus = max(1, int(ncpufunc()))

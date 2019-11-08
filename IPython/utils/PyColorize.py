@@ -41,11 +41,9 @@ import os
 import keyword
 _scheme_default = 'Linux'
 
-
 # Imports
 
 generate_tokens = tokenize.generate_tokens
-
 
 #############################################################################
 # Python Source Parser (does Highlighting)
@@ -61,7 +59,8 @@ Colors = TermColors  # just a shorthand
 
 # Build a few color schemes
 NoColor = ColorScheme(
-    'NoColor', {
+    'NoColor',
+    {
         'header': Colors.NoColor,
         token.NUMBER: Colors.NoColor,
         token.OP: Colors.NoColor,
@@ -69,23 +68,20 @@ NoColor = ColorScheme(
         tokenize.COMMENT: Colors.NoColor,
         token.NAME: Colors.NoColor,
         token.ERRORTOKEN: Colors.NoColor,
-
         _KEYWORD: Colors.NoColor,
         _TEXT: Colors.NoColor,
-
         'in_prompt': InputTermColors.NoColor,  # Input prompt
         'in_number': InputTermColors.NoColor,  # Input prompt number
         'in_prompt2': InputTermColors.NoColor,  # Continuation prompt
         'in_normal': InputTermColors.NoColor,  # color off (usu. Colors.Normal)
-
         'out_prompt': Colors.NoColor,  # Output prompt
         'out_number': Colors.NoColor,  # Output prompt number
-
         'normal': Colors.NoColor  # color off (usu. Colors.Normal)
     })
 
 LinuxColors = ColorScheme(
-    'Linux', {
+    'Linux',
+    {
         'header': Colors.LightRed,
         token.NUMBER: Colors.LightCyan,
         token.OP: Colors.Yellow,
@@ -93,23 +89,20 @@ LinuxColors = ColorScheme(
         tokenize.COMMENT: Colors.LightRed,
         token.NAME: Colors.Normal,
         token.ERRORTOKEN: Colors.Red,
-
         _KEYWORD: Colors.LightGreen,
         _TEXT: Colors.Yellow,
-
         'in_prompt': InputTermColors.Green,
         'in_number': InputTermColors.LightGreen,
         'in_prompt2': InputTermColors.Green,
         'in_normal': InputTermColors.Normal,  # color off (usu. Colors.Normal)
-
         'out_prompt': Colors.Red,
         'out_number': Colors.LightRed,
-
         'normal': Colors.Normal  # color off (usu. Colors.Normal)
     })
 
 NeutralColors = ColorScheme(
-    'Neutral', {
+    'Neutral',
+    {
         'header': Colors.Red,
         token.NUMBER: Colors.Cyan,
         token.OP: Colors.Blue,
@@ -117,18 +110,14 @@ NeutralColors = ColorScheme(
         tokenize.COMMENT: Colors.Red,
         token.NAME: Colors.Normal,
         token.ERRORTOKEN: Colors.Red,
-
         _KEYWORD: Colors.Green,
         _TEXT: Colors.Blue,
-
         'in_prompt': InputTermColors.Blue,
         'in_number': InputTermColors.LightBlue,
         'in_prompt2': InputTermColors.Blue,
         'in_normal': InputTermColors.Normal,  # color off (usu. Colors.Normal)
-
         'out_prompt': Colors.Red,
         'out_number': Colors.LightRed,
-
         'normal': Colors.Normal  # color off (usu. Colors.Normal)
     })
 
@@ -143,7 +132,8 @@ if os.name == 'nt':
     NeutralColors = LinuxColors.copy(name='Neutral')
 
 LightBGColors = ColorScheme(
-    'LightBG', {
+    'LightBG',
+    {
         'header': Colors.Red,
         token.NUMBER: Colors.Cyan,
         token.OP: Colors.Blue,
@@ -151,25 +141,20 @@ LightBGColors = ColorScheme(
         tokenize.COMMENT: Colors.Red,
         token.NAME: Colors.Normal,
         token.ERRORTOKEN: Colors.Red,
-
-
         _KEYWORD: Colors.Green,
         _TEXT: Colors.Blue,
-
         'in_prompt': InputTermColors.Blue,
         'in_number': InputTermColors.LightBlue,
         'in_prompt2': InputTermColors.Blue,
         'in_normal': InputTermColors.Normal,  # color off (usu. Colors.Normal)
-
         'out_prompt': Colors.Red,
         'out_number': Colors.LightRed,
-
         'normal': Colors.Normal  # color off (usu. Colors.Normal)
     })
 
 # Build table of color schemes (needed by the parser)
-ANSICodeColors = ColorSchemeTable([NoColor, LinuxColors, LightBGColors, NeutralColors],
-                                  _scheme_default)
+ANSICodeColors = ColorSchemeTable(
+    [NoColor, LinuxColors, LightBGColors, NeutralColors], _scheme_default)
 
 Undefined = object()
 
@@ -177,9 +162,11 @@ Undefined = object()
 class Parser(Colorable):
     """ Format colored Python source.
     """
-
-    def __init__(self, color_table=None, out=sys.stdout,
-                 parent=None, style=None):
+    def __init__(self,
+                 color_table=None,
+                 out=sys.stdout,
+                 parent=None,
+                 style=None):
         """ Create a parser with a specified color table and output channel.
 
         Call format() to process code.
@@ -202,7 +189,8 @@ class Parser(Colorable):
         if scheme is not Undefined:
             warnings.warn(
                 'The `scheme` argument of IPython.utils.PyColorize:Parser.format is deprecated since IPython 6.0.'
-                'It will have no effect. Set the parser `style` directly.', stacklevel=2)
+                'It will have no effect. Set the parser `style` directly.',
+                stacklevel=2)
         return self.format2(raw, out)[0]
 
     def format2(self, raw, out=None):
@@ -270,10 +258,8 @@ class Parser(Colorable):
             msg = ex.args[0]
             line = ex.args[1][0]
             self.out.write("%s\n\n*** ERROR: %s%s%s\n" %
-                           (colors[token.ERRORTOKEN],
-                            msg, self.raw[self.lines[line]:],
-                            colors.normal)
-                           )
+                           (colors[token.ERRORTOKEN], msg,
+                            self.raw[self.lines[line]:], colors.normal))
             error = True
         self.out.write(colors.normal + '\n')
         if string_output:
@@ -317,8 +303,8 @@ class Parser(Colorable):
         # Triple quoted strings must be handled carefully so that backtracking
         # in pagers works correctly. We need color terminators on _each_ line.
         if linesep in toktext:
-            toktext = toktext.replace(linesep, '%s%s%s' %
-                                      (colors.normal, linesep, color))
+            toktext = toktext.replace(
+                linesep, '%s%s%s' % (colors.normal, linesep, color))
 
         # send text
         owrite('%s%s%s' % (color, toktext, colors.normal))
@@ -327,5 +313,4 @@ class Parser(Colorable):
 
     def __call__(self, toktype, toktext, start_pos, end_pos, line):
         """ Token handler, with syntax highlighting."""
-        self.out.write(
-            self._inner_call_(toktype, toktext, start_pos))
+        self.out.write(self._inner_call_(toktype, toktext, start_pos))

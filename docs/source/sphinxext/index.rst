@@ -4,6 +4,12 @@
 Sphinx extensions
 =================
 
+Simply wanted to drop this command as the explanation for why all the
+autogen scripts are getting deleted.::
+
+   sphinx-apidoc -o source/api/generated/ -fe --tocfile index ../IPython
+
+Isn't that easier?
 
 Table of Contents
 =================

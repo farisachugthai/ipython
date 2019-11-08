@@ -33,7 +33,6 @@ class preserve_keys(object):
     >>> print(sorted(d.items()))
     [('b', 2), ('c', 3), ('e', 5)]
     """
-
     def __init__(self, dictionary, *keys):
         self.dictionary = dictionary
         self.keys = keys
@@ -66,10 +65,13 @@ class NoOpContext(object):
     Deprecated
 
     Context manager that does nothing."""
-
     def __init__(self):
         warnings.warn("""NoOpContext is deprecated since IPython 5.0 """,
-                      DeprecationWarning, stacklevel=2)
+                      DeprecationWarning,
+                      stacklevel=2)
 
-    def __enter__(self): pass
-    def __exit__(self, type, value, traceback): pass
+    def __enter__(self):
+        pass
+
+    def __exit__(self, type, value, traceback):
+        pass

@@ -9,7 +9,6 @@ from keyword import iskeyword
 
 import tokenize
 
-
 Token = namedtuple('Token', ['token', 'text', 'start', 'end', 'line'])
 
 
@@ -103,7 +102,8 @@ def token_at_cursor(cell, cursor_pos=0):
             break
 
         if tok.token == tokenize.NAME and not iskeyword(tok.text):
-            if names and tokens and tokens[-1].token == tokenize.OP and tokens[-1].text == '.':
+            if names and tokens and tokens[-1].token == tokenize.OP and tokens[
+                    -1].text == '.':
                 names[-1] = "%s.%s" % (names[-1], tok.text)
             else:
                 names.append(tok.text)

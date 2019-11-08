@@ -33,7 +33,8 @@ def source_to_unicode(txt, errors='replace', skip_encoding_cookie=True):
     except SyntaxError:
         encoding = "ascii"
     buffer.seek(0)
-    with TextIOWrapper(buffer, encoding, errors=errors, line_buffering=True) as text:
+    with TextIOWrapper(buffer, encoding, errors=errors,
+                       line_buffering=True) as text:
         text.mode = 'r'
         if skip_encoding_cookie:
             return u"".join(strip_encoding_cookie(text))
@@ -76,7 +77,7 @@ def read_py_file(filename, skip_encoding_cookie=True):
     -------
     A unicode string containing the contents of the file.
     """
-    with open(filename) as f:   # the open function defined in this module.
+    with open(filename) as f:  # the open function defined in this module.
         if skip_encoding_cookie:
             return "".join(strip_encoding_cookie(f))
         else:

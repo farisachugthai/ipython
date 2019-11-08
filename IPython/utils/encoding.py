@@ -33,6 +33,7 @@ def get_stream_enc(stream, default=None):
     else:
         return stream.encoding
 
+
 # Less conservative replacement for sys.getdefaultencoding, that will try
 # to match the environment.
 # Defined here as central function, so if we find better choices, we

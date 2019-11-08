@@ -4,7 +4,6 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import io as stdlib_io
 import os.path
 import stat
@@ -31,7 +30,6 @@ def test_tee_simple():
 
 
 class TeeTestCase(unittest.TestCase):
-
     def tchan(self, channel):
         trap = StringIO()
         chan = StringIO()
@@ -69,15 +67,16 @@ def test_io_init():
 
 
 class TestIOStream(unittest.TestCase):
-
     def test_IOStream_init(self):
         """IOStream initializes from a file-like object missing attributes. """
+
         # Cause a failure from getattr and dir(). (Issue #6386)
         class BadStringIO(StringIO):
             def __dir__(self):
                 attrs = super().__dir__()
                 attrs.append('name')
                 return attrs
+
         with self.assertWarns(DeprecationWarning):
             iostream = IOStream(BadStringIO())
             iostream.write('hi, bad iostream\n')
