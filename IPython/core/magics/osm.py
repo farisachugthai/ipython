@@ -525,24 +525,24 @@ class OSMagics(Magics):
     def dhist(self, parameter_s=''):
         """Print your history of visited directories.
 
-        %dhist       -> print full history\\
-        %dhist n     -> print last n entries only\\
-        %dhist n1 n2 -> print entries between n1 and n2 (n2 not included)\\
-
-        This history is automatically maintained by the %cd command, and
-        always available as the global list variable _dh. You can use %cd -<n>
+        .. tip:: Note that most of time, you should view directory history by entering `%cd` :kbd:`-` :kbd:`TAB`.
+        Notes
+        -----
+        This history is automatically maintained by the `%cd` magic, and
+        is always available as the global list variable _dh. You can use %cd -<n>
         to go to directory number <n>.
-
-        Note that most of time, you should view directory history by entering
-        cd -<TAB>.
+        Examples
+        --------
+            %dhist       -> print full history\\
+            %dhist n     -> print last n entries only\\
+            %dhist n1 n2 -> print entries between n1 and n2 (n2 not included)\\
 
         """
-
         dh = self.shell.user_ns['_dh']
         if parameter_s:
             try:
                 args = map(int, parameter_s.split())
-            except BaseException:
+            except Exception:
                 self.arg_err(self.dhist)
                 return
             if len(args) == 1:
@@ -797,16 +797,22 @@ class OSMagics(Magics):
     def pycat(self, parameter_s=''):
         """Show a syntax-highlighted file through a pager.
 
-        This magic is similar to the cat utility, but it will assume the file
-        to be Python source and will show it with syntax highlighting.
+        This magic is similar to the :command:`cat` utility,
+        but it will assume the file to be Python source and will show it
+        with syntax highlighting.
 
         This magic command can either take a local filename, an url,
-        an history range (see %history) or a macro as argument ::
+        an history range (see `%history`) or a `%macro` as argument.::
 
-        %pycat myscript.py
-        %pycat 7-27
-        %pycat myMacro
-        %pycat http://www.example.com/myscript.py
+        Examples
+        --------
+        ::
+
+            %pycat myscript.py
+            %pycat 7-27
+            %pycat myMacro
+            %pycat http://www.example.com/myscript.py
+
         """
         if not parameter_s:
             raise UsageError('Missing filename, URL, input history range, '

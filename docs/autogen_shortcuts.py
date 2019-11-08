@@ -1,35 +1,41 @@
 """Generate the key bindings for Sphinx documentation.
 
-So this code is outrageously difficult to understand for no reason at all.
-
-I'm running it through the debugger and piece by piece gonna document what you need to know.
-
-Start with the ifmain.
-
-here is the current directory. ipython/docs
+Good to knows:
 
 dest is ipython/docs/source/config/shortcuts and it's where we store
 csv files of shortcuts.
 
 first defined var is single filter.
 
-it's a dict. that's odd.
 
-it's a dict but its always gonna be a single item dict. nah i guess it makes sense that it's a mapping.
+todo:: double check that passing an actual instance to
+       create_ipython_shortcuts() wasn't the fix because then we won't need to rewrite this.
 
-reasonably it makes more sense than all those fucking list of tuples we have all over here.
 
-NICE! I recovered a handful of the keybindings without trying
-because **THIS MODULE IS SO FUCKED UP IT ACCIDENTALLY SHAVES A BUNCH OFF**.
+Changing this scripts output destination
+========================================
 
-todo:: double check that passing an actual instance to create_ipython_shortcuts() wasn't the fix because then we won't need to rewrite this.
+Nov 01, 2019:
+Remember that this script creates 2 csv files.
 
-I kinda want to just to get rid of this debaucle anyway though....
+They're now going to be placed in source/api and I've already changed the location
+that sphinx expects them to be at.
+
+If you change the destination var in here, make sure it corresponds to the locations
+sphinx is expecting in the doc :doc:`source/api/shortcuts`.
+
+Frustratingly I think you also have to change it in the Makefile.
+Check the files pointed to by the target for the autogen_shortcuts.
 
 """
+from collections import Counter
 import json
+import logging
 from os.path import abspath, dirname, join
+from pathlib import Path
 import sys
+
+logging.basicConfig(level=logging.DEBUG)
 
 from IPython.core.getipython import get_ipython
 from IPython.terminal.shortcuts import create_ipython_shortcuts
@@ -45,20 +51,8 @@ def name(c):
     return log_filters[s] if s in log_filters.keys() else s
 
 
-def sentencize(s):
-    """Extract first sentence."""
-    s = s.replace('\n', ' ').strip().split('.')
-    s = s[0] if len(s) else s
-    try:
-        return " ".join(s.split())
-    except AttributeError:
-        return s
-
-
 def most_common(lst, n=3):
     """Most common elements occurring more then `n` times."""
-    from collections import Counter
-
     c = Counter(lst)
     return [k for (k, v) in c.items() if k and v > n]
 
@@ -80,39 +74,34 @@ class _DummyTerminal:
     display_completions = None
 
 
-# Wait i confued myself and i know this is dumb but how od you make a generator?
 def common_docs(bindings=None):
     """Generate common docs for :class:`prompt_toolkit.key_binding.bindings`."""
-    return [kb.handler.__doc__ for kb in bindings]
+    yield [kb.handler.__doc__ for kb in bindings]
 
 
-def needs_refactoring(ipy_bindings=None):
+def filter_shortcuts(ipy_bindings=None):
     """Yeah we shouldn't leave it like this."""
-    single_filter = {}
-    multi_filter = {}
-    for kb in ipy_bindings:
-        doc = kb.handler.__doc__
-        if not doc or doc in dummy_docs:
-            continue
+    for kb in common_docs(ipy_bindings):
 
+        logging.debug('kb is: {}\ndir(kb) is: {}\n'.format(kb, dir(kb)))
         shortcut = ' '.join(
             [k if isinstance(k, str) else k.name for k in kb.keys])
         shortcut += shortcut.endswith('\\') and '\\' or ''
         if hasattr(kb.filter, 'filters'):
             flt = ' '.join(multi_filter_str(kb.filter))
-            multi_filter[(shortcut, flt)] = sentencize(doc)
-        else:
-            # This one line of code.
-            # 1) Run doc through the sentencize function
-            # 2) Unpack the output into the LHS
-            # 3) The output gets unpacked into a dict named single_filter
-            # 4) The keys of single filter? A list. As usual.
-            # 5) Lol no. The list is a tuple of a str and the output of
-            # 6) kb.filter as input to the name() function.
-            # 7) kb is the element in the iterable of ipy_bindings and filter is a prompt_toolkit non-data descriptor.
-            # Point being? WHY THE FUCK IS THIS ONLY ONE LINE OF CODE I HAVE NO IDEA WHAT'S GOING ON???
-            # HOW DO YOU DEBUG THIS????
-            single_filter[(shortcut, name(kb.filter))] = sentencize(doc)
+        # else:
+        # This one line of code.
+        # 1) Run doc through the sentencize function
+        # 2) Unpack the output into the LHS
+        # 3) The output gets unpacked into a dict named single_filter
+        # 4) The keys of single filter? A list. As usual.
+        # 5) Lol no. The list is a tuple of a str and the output of
+        # 6) kb.filter as input to the name() function.
+        # 7) kb is the element in the iterable of ipy_bindings and filter is a prompt_toolkit non-data descriptor.
+        # Point being? WHY THE FUCK IS THIS ONLY ONE LINE OF CODE I HAVE NO IDEA WHAT'S GOING ON???
+        # HOW DO YOU DEBUG THIS????
+        # single_filter[(shortcut, name(kb.filter))] = sentencize(doc)
+    yield shortcut
 
 
 def sort_key(dictionary):
@@ -168,23 +157,38 @@ def generate_output():
             csv.write(':kbd:`{}`\t{}\t{}\n'.format(k[0], k[1], v))
 
 
+def dict_to_file(dictionary=None, filename=None, path_to_file=None):
+    """Accepts Path objects for filename. Everythings optional."""
+    if filename:
+        if hasattr(filename, '__fspath__'):
+            filename = filename.__fspath__
+    else:
+        return
+
+    with open(filename, 'wt') as f:
+        for k, v in dictionary.items():
+            f.write(':kbd:`{}`\t\t{}\n'.format(k, v))
+
+
 def running_in_ipython():
     ipython_keybindings = create_ipython_shortcuts(get_ipython())
 
     ipy_bindings = ipython_keybindings.bindings
 
-    needs_refactoring(ipy_bindings)
-
+    for i in ipy_bindings:
+        shortcuts = filter_shortcuts(ipy_bindings)
+    logging.debug(shortcuts)
+    # honestly we won't need dict to file anymore. the generate output functions
+    # pretty unnecessary too.
 
 
 def main():
-    """Like why did so much of this HAVE to be executed in the global namespace?"""
-    # I think vscode just changed the lambda to a def.
-    # def sort_key(k): return (str(k[0][1]), str(k[0][0]))
-    # I got something better
+    here = Path(__file__)
+    dest = Path('source', 'api', 'shortcuts')
+    if not dest.is_dir():
+        dest.mkdir()
+        logging.debug('Creating dir: {}'.format(dest))
 
-    here = abspath(dirname(__file__))
-    dest = join(here, 'source', 'shortcuts')
     shell = get_ipython()
 
     if shell is None:
@@ -207,8 +211,11 @@ def main():
 
     # Uh yeah this fix only works if get_ipython() returns anything.
 
-    if get_ipython() is not None:
+    if shell is not None:
         running_in_ipython()
+        logging.debug('shell is : {}'.format(shell))
+    else:
+        sys.exit('you embedded a shell and it still came up none')
 
     # else:
     #     error_message = 'Are you running this in Jupyter? Please switch over to IPython to auto-generate the prompt_toolkit keybindings correctly.'

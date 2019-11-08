@@ -2,13 +2,22 @@
 """
 Context managers for adding things to sys.path temporarily.
 
-appended_to_syspath wasn't used anywhere in the repo bt prepended_to_syspath
+'appended_to_syspath' wasn't used anywhere in the repo but 'prepended_to_syspath'
 is used in the ExtensionManager so now we're really screwing with the heavy
 machinery.
+
+Nov 07, 2019:
+
+Wanna hear something neat?
+Check this out! ``_pytest.monkeypatch.syspath_prepend``.
+
+Make sure the APIs line up but this module is almost as good as deleted.
+
 
 Authors:
 
 * Brian Granger
+
 """
 # -----------------------------------------------------------------------------
 #  Copyright (C) 2008-2011  The IPython Development Team

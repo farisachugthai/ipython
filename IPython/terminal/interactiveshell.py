@@ -58,6 +58,17 @@ _style_overrides_linux = {
 
 
 def get_default_editor():
+    """Check user environment for the editor.
+
+    If :envvar:`EDITOR` doesn't exist, it returns vi on POSIX systems and
+    notepad on Windows.
+
+    Returns
+    -------
+    environ_key : str
+        os.environ.EDITOR
+
+    """
     try:
         return os.environ['EDITOR']
     except KeyError:
@@ -256,7 +267,8 @@ class TerminalInteractiveShell(InteractiveShell):
             restore_term_title()
 
     def init_display_formatter(self):
-        super(TerminalInteractiveShell, self).init_display_formatter()
+        """We don't need to keep making weird ass super calls."""
+        super().init_display_formatter()
         # terminal only supports plain text
         self.display_formatter.active_types = ['text/plain']
         # disable `_ipython_display_`
@@ -355,16 +367,6 @@ class TerminalInteractiveShell(InteractiveShell):
                     '#ansibrightred bold',
                 })
 
-                # Hack: Due to limited color support on the Windows console
-                # the prompt colors will be wrong without this
-                # cmd is now 24 bit....
-                # if os.name == 'nt':
-                #     style_overrides.update({
-                #         Token.Prompt: '#ansidarkgreen',
-                #         Token.PromptNum: '#ansigreen bold',
-                #         Token.OutPrompt: '#ansidarkred',
-                #         Token.OutPromptNum: '#ansired bold',
-                #     })
             elif legacy == 'nocolor':
                 style_cls = _NoStyle
                 style_overrides = {}
@@ -375,6 +377,7 @@ class TerminalInteractiveShell(InteractiveShell):
                 style_cls = get_style_by_name(name_or_cls)
             else:
                 style_cls = name_or_cls
+
             style_overrides = {
                 Token.Prompt: '#009900',
                 Token.PromptNum: '#ansibrightgreen bold',
@@ -453,14 +456,6 @@ class TerminalInteractiveShell(InteractiveShell):
                 **self._extra_prompt_options())
         return text
 
-    def enable_win_unicode_console(self):
-        if sys.version_info >= (3, 6):
-            # Since PEP 528, Python uses the unicode APIs for the Windows
-            # console by default, so WUC shouldn't be needed.
-            return
-
-        import win_unicode_console
-        win_unicode_console.enable()
 
     def init_io(self):
         if sys.platform not in {'win32', 'cli'}:

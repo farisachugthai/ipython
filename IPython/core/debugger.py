@@ -39,7 +39,7 @@ import re
 from IPython.core.getipython import get_ipython
 from IPython.utils import PyColorize
 from IPython.utils import coloransi, py3compat
-# from IPython.core.excolors import exception_colors
+from IPython.core.excolors import exception_colors
 from IPython.testing.skipdoctest import skip_doctest
 
 prompt = 'IPdb> '

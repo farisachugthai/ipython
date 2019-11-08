@@ -92,11 +92,6 @@ See IPython `README.rst` file for more information:
 
 """)
 
-# Make it easy to import extensions - they are always directly on pythonpath.
-# Therefore, non-IPython modules can be added to extensions directory.
-# This should probably be in ipapp.py.
-sys.path.append(os.path.join(os.path.dirname(__file__), "extensions"))
-
 # -----------------------------------------------------------------------------
 # Setup the top level names
 # -----------------------------------------------------------------------------
@@ -142,7 +137,7 @@ def embed_kernel(module=None, local_ns=None, **kwargs):
 
 
 def start_ipython(argv=None, **kwargs):
-    """Launch a normal IPython instance (as opposed to embedded)
+    """Launch an interactive IPython instance (as opposed to embedded).
 
     `IPython.embed` puts a shell in a particular calling scope,
     such as a function or method for debugging purposes,
@@ -154,9 +149,10 @@ def start_ipython(argv=None, **kwargs):
 
     This is a public API method, and will survive implementation changes.
 
+    However can I just change the part where it relies on an alias FFS?
+
     Parameters
     ----------
-
     argv : list or None, optional
         If unspecified or None, IPython will parse command-line options
         from sys.argv.
@@ -164,12 +160,15 @@ def start_ipython(argv=None, **kwargs):
     user_ns : dict, optional
         Specify this dictionary to initialize the IPython user namespace
         with particular values.
-    \*\*kwargs : dict, optional
+    ``**kwargs`` : dict, optional
         Any other kwargs will be passed to the Application constructor,
         such as `config`.
+
     """
-    from IPython.terminal.ipapp import launch_new_instance
-    return launch_new_instance(argv=argv, **kwargs)
+    # from IPython.terminal.ipapp import launch_new_instance
+    from IPython.terminal.ipapp import TerminalIPythonApp  # noqa
+
+    return TerminalIPythonApp.start(argv, **kwargs)
 
 
 def start_kernel(argv=None, **kwargs):
@@ -185,7 +184,6 @@ def start_kernel(argv=None, **kwargs):
 
     Parameters
     ----------
-
     argv : list, optional
         If unspecified or `None`, IPython will parse command-line options
         from `sys.argv`.
@@ -193,7 +191,7 @@ def start_kernel(argv=None, **kwargs):
     user_ns : dict, optional
         Specify this dictionary to initialize the IPython user namespace
         with particular values.
-    \*\*kwargs : dict, optional
+    ``**kwargs`` : dict, optional
         Any other kwargs will be passed to the Application constructor,
         such as `config`.
 

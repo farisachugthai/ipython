@@ -10,6 +10,19 @@ Authors:
 
 Notes
 -----
+
+Nov 01, 2019:
+
+So this was previously in `./magics/basic` inside of the `%colors` magic.
+Why would you not simply make it an error that subclasses
+`UsageError` so nothing crashes?::
+
+    def color_switch_err(name):
+        warn('Error changing %s color schemes.\n%s' %
+                (name, sys.exc_info()[1]),
+                stacklevel=2)
+
+
 """
 
 # -----------------------------------------------------------------------------
@@ -38,6 +51,7 @@ class TryNext(IPythonCoreError):
     Raise this in your hook function to indicate that the next hook handler
     should be used to handle the operation.
     """
+    pass
 
 
 class UsageError(IPythonCoreError):
@@ -46,6 +60,7 @@ class UsageError(IPythonCoreError):
     Something that probably won't warrant a full traceback, but should
     nevertheless interrupt a macro / batch file.
     """
+    pass
 
 
 class StdinNotImplementedError(IPythonCoreError, NotImplementedError):
@@ -76,3 +91,15 @@ class InvalidAliasError(AliasError):
 class KillEmbedded(Exception):
     """This one's from `IPython.terminal.embed`."""
     pass
+
+
+class ColorSwitchErr(UsageError):
+    """Nov 01, 2019: From ./magics/basic"""
+    def __call__(self):
+        if sys.exc_info:
+            return ''.format(sys.exc_info())
+
+    def warn(self, name):
+        return 'Error changing {} color schemes.\n{}'.format(
+            name,
+            sys.exc_info()[1])

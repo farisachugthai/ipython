@@ -18,13 +18,11 @@ IPython lives.
 
 It includes every option that the ipython shell accepts on
 the command line, every parameter that the ``ipython_config.py``
-and ``ipython_kernel_config.py`` files accept, all of the
-shortcuts that come built-in and all of the core magics.
+and ``ipython_kernel_config.py`` files accept, and all of the core magics.
 
 .. toctree::
    :caption: Table of Contents
 
-   shortcuts
    terminal
    kernel
 
@@ -35,4 +33,4 @@ shortcuts that come built-in and all of the core magics.
    generated/*
 
 
-.. include:: generated/gen.txt
+.. include:: generated/gen.rst

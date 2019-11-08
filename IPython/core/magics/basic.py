@@ -1,7 +1,7 @@
 """Implementation of basic magic functions."""
 
 import argparse
-from logging import error
+import logging
 import io
 from pprint import pformat
 import textwrap
@@ -17,14 +17,38 @@ from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.ipstruct import Struct
 
 
-class MagicsDisplay(object):
+class MagicsDisplay:
+    """MagicsDisplay. Admittedly confused how this doesn't need to be wrapped.
 
+    You know that error you get when you don't wrap a class with:
+
+    @magic_class
+
+    Or the other one when you don't inherit from Magics?
+    Why don't we need it?
+    """
     def __init__(self, magics_manager, ignore=None):
+        """Initialize the magics class that displays other magics.
+
+        Parameters
+        ----------
+        magics_manager : uh
+            Container class for magics right?
+
+        Notes
+        -----
+        >>> self.ignore = ignore if ignore else []
+
+        THAT'S HOW YOU DO THAT IN 1 line!
+        """
         self.ignore = ignore if ignore else []
         self.magics_manager = magics_manager
 
     def _lsmagic(self):
-        """The main implementation of the %lsmagic"""
+        """The main implementation of the `%lsmagic`.
+
+        And dude what a fucking magic. The whole thing is basically one line.
+        """
         mesc = magic_escapes['line']
         cesc = magic_escapes['cell']
         mman = self.magics_manager
@@ -79,7 +103,6 @@ class BasicMagics(Magics):
 
     These are various magics that don't fit into specific categories but that
     are all part of the base 'IPython experience'."""
-
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-l',
                               '--line',
@@ -157,8 +180,8 @@ class BasicMagics(Magics):
         # that are available.
         if not args.line and not args.cell:
             if not m_line and not m_cell:
-                raise UsageError('No line or cell magic with name `%s` found.' %
-                                 target)
+                raise UsageError(
+                    'No line or cell magic with name `%s` found.' % target)
             args.line = bool(m_line)
             args.cell = bool(m_cell)
 
@@ -319,45 +342,46 @@ Currently the magic system has the following functions:""",
 
         Color scheme names are not case-sensitive.
 
+        .. todo:: Every single executed line in this method is wrapped in a try/except
+                  where we catch BaseException. Is this code THAT fragile???
+
         Examples
         --------
         To get a plain black and white terminal::
 
           %colors nocolor
+
         """
-
-        def color_switch_err(name):
-            warn('Error changing %s color schemes.\n%s' %
-                 (name, sys.exc_info()[1]),
-                 stacklevel=2)
-
-        new_scheme = parameter_s.strip()
-        if not new_scheme:
+        if not parameter_s:
             raise UsageError(
                 "%colors: you must specify a color scheme. See '%colors?'")
-        # local shortcut
-        shell = self.shell
-
         # Set shell colour scheme
         try:
-            shell.colors = new_scheme
-            shell.refresh_style()
-        except BaseException:
-            color_switch_err('shell')
+            self.shell.colors = parameter_s.strip()
+        except AttributeError as e:  # we should REALLY stop catching baseexception like wtf?
+            # color_switch_err('shell')
+            print(e)
+            return
+
+        self.shell.refresh_style()
 
         # Set exception colors
         try:
-            shell.InteractiveTB.set_colors(scheme=new_scheme)
-            shell.SyntaxTB.set_colors(scheme=new_scheme)
-        except BaseException:
-            color_switch_err('exception')
+            self.shell.InteractiveTB.set_colors(scheme=new_scheme)
+            self.shell.SyntaxTB.set_colors(scheme=new_scheme)
+        except Exception as e:
+            # color_switch_err('exception')
+            print(e)
+            return
 
         # Set info (for 'object?') colors
-        if shell.color_info:
-            try:
-                shell.inspector.set_active_scheme(new_scheme)
-            except BaseException:
-                color_switch_err('object inspector')
+        if hasattr(self.shell, 'color_info'):
+            if hasattr(self.shell, 'inspector.set_active_scheme'):
+                self.shell.inspector.set_active_scheme(new_scheme)
+            else:
+                logging
+            # except BaseException:
+            #     color_switch_err('object inspector')
         else:
             shell.inspector.set_active_scheme('NoColor')
 
@@ -368,7 +392,6 @@ Currently the magic system has the following functions:""",
         Valid modes: Plain, Context, Verbose, and Minimal.
 
         If called without arguments, acts as a toggle."""
-
         def xmode_switch_err(name):
             warn('Error changing %s exception modes.\n%s' %
                  (name, sys.exc_info()[1]))
@@ -488,9 +511,12 @@ Currently the magic system has the following functions:""",
                          # (requires %matplotlib 1.1)
             %gui         # disable all event loop integration
 
-        WARNING:  after any of these has been called you can simply create
-        an application object, but DO NOT start the event loop yourself, as
-        we have already handled that.
+        .. warning::
+
+            After any of these has been called you can simply create
+            an application object, but DO NOT start the event loop yourself, as
+            we have already handled that.
+
         """
         opts, arg = self.parse_options(parameter_s, '')
         if arg == '':
@@ -500,7 +526,7 @@ Currently the magic system has the following functions:""",
         except Exception as e:
             # print simple error message, rather than traceback if we can't
             # hook up the GUI
-            error(str(e))
+            logging.error(str(e))
 
     @skip_doctest
     @line_magic
@@ -543,6 +569,7 @@ Currently the magic system has the following functions:""",
 
             In [9]: pi**10
             Out[9]: 93648.047476082982
+
         """
         ptformatter = self.shell.display_formatter.formatters['text/plain']
         ptformatter.float_precision = s
@@ -561,15 +588,28 @@ Currently the magic system has the following functions:""",
     def notebook(self, s):
         """Export and convert IPython notebooks.
 
-        This function can export the current IPython history to a notebook file.
-        For example, to export the history to "foo.ipynb" do "%notebook foo.ipynb".
+        This function can export the current IPython history to a .ipynb file.
 
-        The -e or --export flag is deprecated in IPython 5.2, and will be
-        removed in the future.
+        .. deprecated:: The -e or --export flag is deprecated in IPython 5.2, and will be
+                        removed in the future.
+
+        .. note:: This function implicitly depends on nbformat. Just added a try/except
+
+        For example, to export the history to "foo.ipynb":
+
+        Examples
+        --------
+        >>> %notebook foo.ipynb
+
         """
         args = magic_arguments.parse_argstring(self.notebook, s)
 
-        from nbformat import write, v4
+        try:
+            from nbformat import write, v4
+        except ImportError:
+            raise UsageError(
+                'This needs the nbformat package so ensure that that is installed.'
+            )
 
         cells = []
         hist = list(self.shell.history_manager.get_range())
@@ -586,7 +626,6 @@ Currently the magic system has the following functions:""",
 
 @magics_class
 class AsyncMagics(BasicMagics):
-
     @line_magic
     def autoawait(self, parameter_s):
         """
@@ -597,8 +636,10 @@ class AsyncMagics(BasicMagics):
         If no value is passed, print the currently used asynchronous integration
         and whether it is activated.
 
-        It can take a number of value evaluated in the following order:
+        It can take a number of values evaluated in the following order:
 
+        Parameters
+        ----------
         - False/false/off deactivate autoawait integration
         - True/true/on activate autoawait integration using configured default
           loop
@@ -610,13 +651,14 @@ class AsyncMagics(BasicMagics):
           deactivate running asynchronous code. Turning on Asynchronous code with
           the pseudo sync loop is undefined behavior and may lead IPython to crash.
 
+        Notes
+        -----
         If the passed parameter does not match any of the above and is a python
         identifier, get said object from user namespace and set it as the
-        runner, and activate autoawait.
+        runner, and activate `%autoawait`.
 
         If the object is a fully qualified object name, attempt to import it and
         set it as the runner, and activate autoawait.
-
 
         The exact behavior of autoawait is experimental and subject to change
         across version of IPython and Python.

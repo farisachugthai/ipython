@@ -6,6 +6,8 @@
 TODO
 ====
 
+.. highlight:: ipython
+
 
 :date: Oct 27, 2019
 
@@ -39,19 +41,54 @@ Oct 29, 2019:
 
 Did I do something wrong or does the quick option still execute startup files?
 
-.. sourcecode:: bash
+.. code-block:: bash
 
    * $: ipython --quick
-
    Python 3.7.3 (default, Apr  3 2019, 19:16:38)
    Type 'copyright', 'credits' or 'license' for more information
-
    IPython 7.10.0.dev -- An enhanced Interactive Python. Type '?' for help.
    [TerminalIPythonApp] WARNING | Unknown error in handling startup files:
 
-The old inputhook doc.
 
-=========================
+Oh I should write something so it stops the bash highlighting.
+
+
+Documentation Additions
+=======================
+
+.. important:: Create docs that explain how to build the docs and why
+               they're setup the way they are.
+
+Because unfortunately I can't explain it. Dude it's insane. We execute the
+``autogen_*`` files in the root of the docs dir, in addition to
+ipython/docs/sphinxext/apigen.py, which {btw why is it in the sphinxext dir?}
+is a literal AST parser.
+
+
+Like wtf we wrote our own parser? Was this made before Sphinx? I don't understand.
+
+So to avoid all that non-sense, use this command:
+
+``sphinx-build -b html -a -j auto -c source source build --color -P -w sphinx.log``
+
+It runs the command using sphinx's API because why would we generate our own
+doctree?
+
+
+Also a similar idea where we document how to run and make additions
+wouldn't be a bad idea for the tests.
+
+Deprecations
+============
+
+Probably gonna wanna deprecate utils.tz
+
+
+
+The old inputhook doc.
+----------------------
+
+
 IPython GUI Support Notes
 =========================
 

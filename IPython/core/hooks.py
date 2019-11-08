@@ -261,8 +261,8 @@ def pre_run_code_hook(self):
 def clipboard_get(self):
     """ Get text from the clipboard.
     """
-    from IPython.lib.clipboard import (osx_clipboard_get, tkinter_clipboard_get,
-                                       win32_clipboard_get)
+    from IPython.lib.clipboard import (
+        osx_clipboard_get, tkinter_clipboard_get, win32_clipboard_get)
     if sys.platform == 'win32':
         chain = [win32_clipboard_get, tkinter_clipboard_get]
     elif sys.platform == 'darwin':

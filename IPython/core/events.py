@@ -8,36 +8,51 @@ can be registered for the same event without needing to be aware of one another.
 The functions defined in this module are no-ops indicating the names of available
 events and the arguments which will be passed to them.
 
-.. note::
+...So those are abc methods right?
 
-   This API is experimental in IPython 2.0, and may be revised in future versions.
+As an aside...wth is backcall?
+
+We import it but if it's required it's not in the requirements and if it's in
+this directory we didn't import it explicitly.
+
 """
+from IPython.core.getipython import get_ipython
 
 from backcall import callback_prototype
 
 
-class EventManager(object):
+
+# event_name -> prototype mapping
+available_events = {}
+
+
+def _define_event(callback_function):
+    callback_proto = callback_prototype(callback_function)
+    available_events[callback_function.__name__] = callback_proto
+    return callback_proto
+
+class EventManager:
     """Manage a collection of events and a sequence of callbacks for each.
 
     This is attached to :class:`~IPython.core.interactiveshell.InteractiveShell`
     instances as an ``events`` attribute.
 
-    .. note::
-
-       This API is experimental in IPython 2.0, and may be revised in future versions.
     """
 
-    def __init__(self, shell, available_events):
+    def __init__(self, available_events, shell=None):
         """Initialise the :class:`CallbackManager`.
+
+        .. error:: lol whyyyy you renamed the class but not the docstring??
 
         Parameters
         ----------
-        shell
-          The :class:`~IPython.core.interactiveshell.InteractiveShell` instance
-        available_callbacks
+        shell : :class:`~IPython.core.interactiveshell.InteractiveShell`, optional
+          :class:`~IPython.core.interactiveshell.InteractiveShell` instance
+        available_callbacks : iterable
           An iterable of names for callback events.
+
         """
-        self.shell = shell
+        self.shell = shell or get_ipython()
         self.callbacks = {n: [] for n in available_events}
 
     def register(self, event, function):
@@ -53,10 +68,11 @@ class EventManager(object):
 
         Raises
         ------
-        TypeError
+        :exc:`TypeError`
           If ``function`` is not callable.
-        KeyError
+        :exc:`KeyError`
           If ``event`` is not one of the known events.
+
         """
         if not callable(function):
             raise TypeError('Need a callable, got %r' % function)
@@ -94,15 +110,6 @@ class EventManager(object):
                 self.shell.showtraceback()
 
 
-# event_name -> prototype mapping
-available_events = {}
-
-
-def _define_event(callback_function):
-    callback_proto = callback_prototype(callback_function)
-    available_events[callback_function.__name__] = callback_proto
-    return callback_proto
-
 
 # ------------------------------------------------------------------------------
 # Callback prototypes
@@ -110,6 +117,7 @@ def _define_event(callback_function):
 # No-op functions which describe the names of available events and the
 # signatures of callbacks for those events.
 # ------------------------------------------------------------------------------
+
 
 
 @_define_event

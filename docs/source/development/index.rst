@@ -18,7 +18,6 @@ Developer's guide for third party tools and libraries
    how_ipython_works
    wrapperkernels
    execution
-   config
 
 .. note::
    inputhook_app got removed because it was so obviously unfinished.

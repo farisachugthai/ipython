@@ -192,6 +192,9 @@ default_role = 'py:obj'
 # Options for HTML output
 # -----------------------
 
+# Use our syntax highlighting by default
+highlight_language = 'ipython'
+
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
@@ -250,19 +253,6 @@ html_additional_pages = {
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'ipythondoc'
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
-                       'rpy2': ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
-                       'jupyterclient': ('https://jupyter-client.readthedocs.io/en/latest/', None),
-                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/latest/', None),
-                       'jupyter': ('https://jupyter.readthedocs.io/en/latest/', None),
-                       'jedi': ('https://jedi.readthedocs.io/en/latest/', None),
-                       'traitlets': ('https://traitlets.readthedocs.io/en/latest/', None),
-                       'ipykernel': ('https://ipykernel.readthedocs.io/en/latest/', None),
-                       'prompt_toolkit': ('https://python-prompt-toolkit.readthedocs.io/en/stable/', None),
-                       'ipywidgets': ('https://ipywidgets.readthedocs.io/en/stable/', None),
-                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/stable/', None),
-                       'pip': ('https://pip.pypa.io/en/stable/', None)
-                       }
 
 # Options for LaTeX output
 # ------------------------
@@ -276,13 +266,13 @@ latex_font_size = '11pt'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 
-latex_documents = [
-    ('index', 'ipython.tex', 'IPython Documentation',
-     u"""The IPython Development Team""", 'manual', True),
-    ('parallel/winhpc_index', 'winhpc_whitepaper.tex',
-     'Using IPython on Windows HPC Server 2008',
-     u"Brian E. Granger", 'manual', True)
-]
+# latex_documents = [
+#     ('index', 'ipython.tex', 'IPython Documentation',
+#      u"""The IPython Development Team""", 'manual', True),
+#     ('parallel/winhpc_index', 'winhpc_whitepaper.tex',
+#      'Using IPython on Windows HPC Server 2008',
+#      u"Brian E. Granger", 'manual', True)
+# ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -305,16 +295,66 @@ latex_use_modindex = True
 # Options for texinfo output
 # --------------------------
 
-texinfo_documents = [
-    (master_doc, 'ipython', 'IPython Documentation',
-     'The IPython Development Team',
-     'IPython',
-     'IPython Documentation',
-     'Programming',
-     1),
+# texinfo_documents = [
+#     (master_doc, 'ipython', 'IPython Documentation',
+#      'The IPython Development Team',
+#      'IPython',
+#      'IPython Documentation',
+#      'Programming',
+#      1),
+# ]
+
+# -- Options for manual page output ------------------------------------------
+
+# One entry per manual page. List of tuples
+# (source start file, name, description, authors, manual section).
+manpages_url = 'https://linux.die.net/man/'
+
+man_show_urls = True
+
+
+# -- Extension configuration -------------------------------------------------
+
+# -- Options for intersphinx extension ---------------------------------------
+intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
+                       'rpy2': ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
+                       'jupyterclient': ('https://jupyter-client.readthedocs.io/en/latest/', None),
+                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/latest/', None),
+                       'jupyter': ('https://jupyter.readthedocs.io/en/latest/', None),
+                       'jedi': ('https://jedi.readthedocs.io/en/latest/', None),
+                       'traitlets': ('https://traitlets.readthedocs.io/en/latest/', None),
+                       'ipykernel': ('https://ipykernel.readthedocs.io/en/latest/', None),
+                       'prompt_toolkit': ('https://python-prompt-toolkit.readthedocs.io/en/stable/', None),
+                       'ipywidgets': ('https://ipywidgets.readthedocs.io/en/stable/', None),
+                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/stable/', None),
+                       'pip': ('https://pip.pypa.io/en/stable/', None)
+                       }
+
+# -- IPython directive -------------------------------------------------------
+
+ipython_warning_is_error = False
+
+ipython_execlines = [
+    'import numpy',
+    'import IPython',
+    'import matplotlib as mpl',
+    'import matplotlib.pyplot',
 ]
 
+# -------------------------------------------------------------------
+# Autosummary
+# -------------------------------------------------------------------
+
 modindex_common_prefix = ['IPython.']
+
+autosummary_generate = True
+
+autosummary_imported_members = False
+
+autoclass_content = u'both'
+autodoc_member_order = u'bysource'
+
+autodoc_docstring_signature = True
 
 
 if sphinx.version_info < (1, 8):

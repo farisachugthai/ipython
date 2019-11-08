@@ -3,6 +3,9 @@
 """
 The :class:`~IPython.core.application.Application` object for the command
 line :command:`ipython` program.
+
+.. tip:: I guess this is the main entry point.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -32,6 +35,12 @@ from IPython.core.shellapp import (InteractiveShellApp, shell_flags,
 from .interactiveshell import TerminalInteractiveShell
 from IPython.paths import get_ipython_dir
 from traitlets import (Bool, List, default, observe, Type)
+
+# Make it easy to import extensions - they are always directly on pythonpath.
+# Therefore, non-IPython modules can be added to extensions directory.
+# This should probably be in ipapp.py.
+# From IPython/__init__
+sys.path.append(os.path.join(os.path.dirname(__file__), "extensions"))
 
 # -----------------------------------------------------------------------------
 # Globals, utilities and helpers
@@ -66,22 +75,23 @@ class IPAppCrashHandler(CrashHandler):
                                                 contact_email, bug_tracker)
 
     def make_report(self, traceback):
-        """Return a string containing a crash report."""
+        """Return a string containing a crash report.
 
+        But fucking seriously stop catching **BaseException**
+        """
         sec_sep = self.section_sep
         # Start with parent report
         report = [super(IPAppCrashHandler, self).make_report(traceback)]
         # Add interactive-specific info we may have
         rpt_add = report.append
-        try:
-            rpt_add(sec_sep + "History of session input:")
-            for line in self.app.shell.user_ns['_ih']:
-                rpt_add(line)
-            rpt_add(
-                '\n*** Last line of input (may not be in above history):\n')
-            rpt_add(self.app.shell._last_input_line + '\n')
-        except BaseException:
-            pass
+        # try:
+        rpt_add(sec_sep + "History of session input:")
+        for line in self.app.shell.user_ns['_ih']:
+            rpt_add(line)
+        rpt_add(
+            '\n*** Last line of input (may not be in above history):\n')
+        rpt_add(self.app.shell._last_input_line + '\n')
+        # except BaseException:
 
         return ''.join(report)
 
@@ -289,7 +299,6 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         if self.subapp is not None:
             # don't bother initializing further, starting subapp
             return
-        # print self.extra_args
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]
         self.init_path()
@@ -318,13 +327,13 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             user_ns=self.user_ns)
         self.shell.configurables.append(self)
 
-    def init_banner(self):
-        """Optionally display the banner."""
-        if self.display_banner and self.interact:
-            self.shell.show_banner()
-        # Make sure there is a space below the banner.
-        if self.log_level <= logging.INFO:
-            print()
+    # def init_banner(self):
+    #     """Optionally display the banner."""
+    #     if self.display_banner and self.interact:
+    #         self.shell.show_banner()
+    #     # Make sure there is a space below the banner.
+    #     if self.log_level <= logging.INFO:
+    #         print()
 
     def _pylab_changed(self, name, old, new):
         """Replace --pylab='inline' with --pylab='auto'"""
@@ -373,7 +382,6 @@ def load_default_config(ipython_dir=None):
     return app.config
 
 
-launch_new_instance = TerminalIPythonApp.launch_instance
 
 if __name__ == '__main__':
-    launch_new_instance()
+    TerminalIPythonApp.launch_instance()

@@ -46,7 +46,7 @@ class FuncClsScanner(ast.NodeVisitor):
     """
 
     def __init__(self, classes=None, classes_seen=None, functions=None):
-        """The oddest __init__ I've ever seen.
+        """The oddest ``__init__`` I've ever seen.
 
         I think he tried homebrewing his own `super` by literally calling the
         superclasses init with self as the only arg.
@@ -57,17 +57,30 @@ class FuncClsScanner(ast.NodeVisitor):
 
         Could refactor so they're actually used but for now I just want them
         visible.
+
+        .. note::
+            Don't add starargs and kwargs for the super() call as the superclass
+            can only take the instance as a parameter.
+
+
         """
-        ast.NodeVisitor.__init__(self)
         if classes is None: self.classes = []
         if classes_seen is None: self.classes_seen = set()
         if functions is None: self.functions = []
+        super().__init__()
 
     @staticmethod
     def has_undoc_decorator(node):
         return any(isinstance(d, ast.Name) and d.id == 'undoc' for d in node.decorator_list)
 
     def visit_If(self, node):
+        """Literally what does this method do?
+
+        It checks if the node we're at is an instance of something but all it
+        does is return if it is. ...But even if it's not don't we ``return``
+        anyways? Like this method doesn't seem to do anything.
+
+        """
         if isinstance(node.test, ast.Compare) \
                 and isinstance(node.test.left, ast.Name) \
                 and node.test.left.id == '__name__':
@@ -481,7 +494,7 @@ class ApiDocWriter:
         modules = self.discover_modules()
         self.write_modules_api(modules, outdir)
 
-    def write_index(self, outdir, path='gen.rst', relative_to=None):
+    def write_index(self, outdir, path='gen', relative_to=None):
         """Make a reST API index file from written files
 
         Parameters

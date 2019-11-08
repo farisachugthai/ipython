@@ -4,14 +4,10 @@
 Configuration and customization
 ===============================
 
-.. toctree::
-   :maxdepth: 2
+.. module:: configuration
+   :synopsis: Configure the shell and introduce profiles.
 
-   intro
-   details
-   eventloops
-   integrating
-
+.. highlight:: ipython
 
 
 .. _setting_config:
@@ -20,7 +16,7 @@ Setting configurable options
 ============================
 
 Many of IPython's classes have configurable attributes (see
-:doc:`../options/index` for the list). These can be
+:doc:`../api/index` for the list). These can be
 configured in several ways.
 
 Python config files
@@ -48,10 +44,21 @@ Be careful with spelling--incorrect names will simply be ignored, with
 no error.
 
 To add to a collection which may have already been defined elsewhere,
-you can use methods like those found on lists, dicts and sets: append,
-extend, :meth:`~traitlets.config.LazyConfigValue.prepend` (like
-extend, but at the front), add and update (which works both for dicts
-and sets)::
+you can use methods like those found on:
+
+* lists
+
+* dicts and sets
+
+   - append
+   - extend
+   - :meth:`~traitlets.config.LazyConfigValue.prepend` (like extend, but at the front)
+   - add
+   - update (which works both for dicts and sets)
+
+.. todo:: So I just formatted that but we should also check if that's still true.
+
+::
 
     c.InteractiveShellApp.extensions.append('Cython')
 
@@ -125,9 +132,24 @@ You can also modify config from inside IPython, using a magic command::
 
     %config IPCompleter.greedy = True
 
+Running `%config` with no arguments will list all of the different
+`traitlets.traitlets.Configurable` classes bound to the shell.
+
+This will allow you to see what choices you have, and rerun the `%config`
+command with your desired arguments.
+
+In addition, the :kbd:`Tab` key can be used for autocompletion, and the shell
+will automatically know how to only display valid configuration options.
+
+For example::
+
+   >>> In [36]: %config TerminalInteractiveShell
+   >>> In [37]: %config TerminalInteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
+
 At present, this only affects the current session - changes you make to
 config are not saved anywhere. Also, some options are only read when
 IPython starts, so they can't be changed like this.
+
 
 .. _configure_start_ipython:
 
@@ -140,6 +162,7 @@ config file by creating a traitlets config object and passing it to
 :func:`~IPython.start_ipython` like in the example below.
 
 .. error:: Where is the example?
+
 
 .. _profiles:
 
@@ -159,9 +182,12 @@ To use a new profile::
 
 Profiles are typically stored in :ref:`ipythondir`, but you can also keep
 a profile in the current working directory, for example to distribute it
-with a project. To find a profile directory on the filesystem::
+with a project.
+
+To find a profile directory on the filesystem::
 
     ipython locate profile foo
+
 
 .. _ipythondir:
 
@@ -187,7 +213,7 @@ To see where IPython is looking for the IPython directory, use the command
 
 .. seealso::
 
-   :doc:`/development/config`
+   :doc:`../development/index`
       Technical details of the config system.
 
 Extending and integrating with IPython
@@ -196,9 +222,7 @@ Extending and integrating with IPython
 .. toctree::
    :maxdepth: 2
 
-   extensions/index
-   integrating
-   custommagics
-   inputtransforms
-   callbacks
+   intro
+   details
    eventloops
+   integrating
