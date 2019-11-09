@@ -9,7 +9,7 @@
 # *****************************************************************************
 
 __all__ = ['TermColors', 'InputTermColors', 'ColorScheme', 'ColorSchemeTable']
-
+import copy
 import os
 
 from IPython.utils.ipstruct import Struct
@@ -117,9 +117,10 @@ for name, value in color_templates:
 
 class ColorScheme:
     """Generic color scheme class. Just a name and a Struct."""
-    def __init__(self, name, colordict=None, **colormap):
+
+    def __init__(self, colordict=None, **colormap):
         """Idk if my use of or here is correct."""
-        self.name = name
+        self.name = self.__class__.__name__
         self.colors = Struct(colordict) or Struct(**colormap)
 
     def copy(self, name=None):
@@ -131,6 +132,9 @@ class ColorScheme:
             name = self.name
         return ColorScheme(name, self.colors.dict())
 
+    def __copy__(self):
+        return copy.copy(self.colors)
+
 
 class ColorSchemeTable(dict):
     """General class to handle tables of color schemes.
@@ -140,13 +144,17 @@ class ColorSchemeTable(dict):
 
     active_scheme_name -> obvious
     active_colors -> actual color table of the active scheme
+
     """
+
     def __init__(self, scheme_list=None, default_scheme=None):
         """Create a table of color schemes.
 
         The table can be created empty and manually filled or it can be
         created with a list of valid color schemes AND the specification for
         the default active scheme.
+
+        Since we subclass dict does it make sense to make a super call?
         """
         # create object attributes to be set later
         self.active_scheme_name = ''
@@ -157,12 +165,24 @@ class ColorSchemeTable(dict):
                 default_scheme = 'LightBG'
             for scheme in scheme_list:
                 self.add_scheme(scheme)
-            self.set_active_scheme(default_scheme)
+            # self.set_active_scheme(default_scheme)
         scheme_names = list(self.keys())
+
+    @property
+    def active_scheme_name_prop(self):
+        pass
+
+    @active_scheme_name_prop_setter
+    def uhh(self):
+        """Idk how to do this."""
 
     def copy(self):
         """Return full copy of object"""
         return ColorSchemeTable(self.values(), self.active_scheme_name)
+
+    def __copy__(self):
+        """Seriously can we not just make these dunders?"""
+        return copy.copy(self.values())
 
     def add_scheme(self, new_scheme):
         """Add a new color scheme to the table."""
@@ -176,21 +196,24 @@ class ColorSchemeTable(dict):
 
         Names are by default compared in a case-insensitive way, but this can
         be changed by setting the parameter case_sensitive to true.
+
+        What the hell is this code?? Don't even know how to debug it.
         """
-        if case_sensitive:
-            valid_schemes = scheme_names
-            scheme_test = scheme
-        else:
-            valid_schemes = [s.lower() for s in scheme_names]
-            scheme_test = scheme.lower()
-        # try:
-        scheme_idx = valid_schemes.index(scheme_test)
-        # except ValueError:
-        #     raise ValueError('Unrecognized color scheme: ' + scheme +
-        #                      '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
+        pass
+        # if case_sensitive:
+        #     valid_schemes = scheme_names
+        #     scheme_test = scheme
         # else:
-        active = scheme_names[scheme_idx]
-        self.active_scheme_name = active
-        self.active_colors = self[active].colors
-        # Now allow using '' as an index for the current active scheme
-        self[''] = self[active]
+        #     valid_schemes = [s.lower() for s in scheme_names]
+        #     scheme_test = scheme.lower()
+        # # try:
+        # scheme_idx = valid_schemes.index(scheme_test)
+        # # except ValueError:
+        # #     raise ValueError('Unrecognized color scheme: ' + scheme +
+        # #                      '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
+        # # else:
+        # active = scheme_names[scheme_idx]
+        # self.active_scheme_name = active
+        # self.active_colors = self[active].colors
+        # # Now allow using '' as an index for the current active scheme
+        # self[''] = self[active]

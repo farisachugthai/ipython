@@ -25,16 +25,20 @@ import os
 import shutil
 import sys
 
+from traitlets.config import Configurable, ConfigurableError
 from traitlets.config.application import Application, catch_config_error
 from traitlets.config.loader import ConfigFileNotFound, PyFileConfigLoader
+
 from IPython.core import release, crashhandler
 from IPython.core.profiledir import ProfileDir, ProfileDirError
 from IPython.paths import get_ipython_dir, get_ipython_package_dir
 from IPython.utils.path import ensure_dir_exists
+
 from traitlets import (
     List,
     Unicode,
     Type,
+    Dict,
     Bool,
     Set,
     Instance,
@@ -43,46 +47,69 @@ from traitlets import (
     observe,
 )
 
-if os.name == 'nt':
-    programdata = os.environ.get('PROGRAMDATA', None)
-    if programdata:
-        SYSTEM_CONFIG_DIRS = [os.path.join(programdata, 'ipython')]
-    else:  # PROGRAMDATA is not defined by default on XP.
-        SYSTEM_CONFIG_DIRS = []
-else:
-    SYSTEM_CONFIG_DIRS = [
-        "/usr/local/etc/ipython",
-        "/etc/ipython",
-    ]
 
-ENV_CONFIG_DIRS = []
-_env_config_dir = os.path.join(sys.prefix, 'etc', 'ipython')
-if _env_config_dir not in SYSTEM_CONFIG_DIRS:
-    # only add ENV_CONFIG if sys.prefix is not already included
-    ENV_CONFIG_DIRS.append(_env_config_dir)
-
-_envvar = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS')
-if _envvar in {None, ''}:
-    IPYTHON_SUPPRESS_CONFIG_ERRORS = None
-else:
-    if _envvar.lower() in {'1', 'true'}:
-        IPYTHON_SUPPRESS_CONFIG_ERRORS = True
-    elif _envvar.lower() in {'0', 'false'}:
-        IPYTHON_SUPPRESS_CONFIG_ERRORS = False
+class ConfigLocations(Configurable):
+    """Moved some globals into a class because seriously what is with the globals???"""
+    if os.name == 'nt':
+        programdata = os.environ.get('PROGRAMDATA', None)
+        if programdata:
+            SYSTEM_CONFIG_DIRS = [os.path.join(programdata, 'ipython')]
+        else:  # PROGRAMDATA is not defined by default on XP.
+            SYSTEM_CONFIG_DIRS = []
     else:
-        sys.exit(
-            "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}." %
-            _envvar)
+        SYSTEM_CONFIG_DIRS = [
+            "/usr/local/etc/ipython",
+            "/etc/ipython",
+        ]
+
+    ENV_CONFIG_DIRS = []
+    _env_config_dir = os.path.join(sys.prefix, 'etc', 'ipython')
+    if _env_config_dir not in SYSTEM_CONFIG_DIRS:
+        # only add ENV_CONFIG if sys.prefix is not already included
+        ENV_CONFIG_DIRS.append(_env_config_dir)
+
+    _envvar = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS')
+    if _envvar in {None, ''}:
+        IPYTHON_SUPPRESS_CONFIG_ERRORS = None
+    else:
+        if _envvar.lower() in {'1', 'true'}:
+            IPYTHON_SUPPRESS_CONFIG_ERRORS = True
+        elif _envvar.lower() in {'0', 'false'}:
+            IPYTHON_SUPPRESS_CONFIG_ERRORS = False
+        else:
+            sys.exit(
+                "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}." %
+                _envvar)
+
 
 # aliases and flags
+class BaseAliases(Configurable):
+    """Globals into a configurable. Actually don't traitlets are very odd to work with.
 
-base_aliases = {
-    'profile-dir': 'ProfileDir.location',
-    'profile': 'BaseIPythonApplication.profile',
-    'ipython-dir': 'BaseIPythonApplication.ipython_dir',
-    'log-level': 'Application.log_level',
-    'config': 'BaseIPythonApplication.extra_config_file',
-}
+    Examples
+    --------
+    If you do this:
+
+    base_aliases = Dict({
+        'profile-dir': 'ProfileDir.location',
+        'profile': 'BaseIPythonApplication.profile',
+        'ipython-dir': 'BaseIPythonApplication.ipython_dir',
+        'log-level': 'Application.log_level',
+        'config': 'BaseIPythonApplication.extra_config_file',
+    }, allow_none=True).tag(config=None)
+
+    It'll complain that 'Dict' objects have no attribute update.
+    """
+    base_aliases = dict({
+        'profile-dir': 'ProfileDir.location',
+        'profile': 'BaseIPythonApplication.profile',
+        'ipython-dir': 'BaseIPythonApplication.ipython_dir',
+        'log-level': 'Application.log_level',
+        'config': 'BaseIPythonApplication.extra_config_file',
+    })
+
+# Make it still available up until I can delete this.
+base_aliases = BaseAliases.base_aliases
 
 base_flags = dict(
     debug=({
@@ -123,6 +150,25 @@ class ProfileAwareConfigLoader(PyFileConfigLoader):
 
 
 class BaseIPythonApplication(Application):
+    """The Base IPython application.
+
+    This implementation strives to be agnostic of any platform specific
+    details or unaware of whether the user is using IPython in
+    the terminal, in a web browser, in a GUI application or in
+    any other manner.
+
+    .. todo:: What is this _in_init_profile_dir thing?
+
+        They're doing down in init_profile_dir?
+
+    Attributes
+    ----------
+    name : str
+        The name of the application
+
+    ...
+        Many more to come.
+    """
 
     name = u'ipython'
     description = Unicode(u'IPython: an enhanced interactive Python shell.')
@@ -249,11 +295,11 @@ class BaseIPythonApplication(Application):
 
     @catch_config_error
     def __init__(self, **kwargs):
-        super(BaseIPythonApplication, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         # ensure current working directory exists
         try:
             os.getcwd()
-        except BaseException:
+        except OSError:  # guys don't catch baseexception on an OS call...
             # exit if cwd doesn't exist
             self.log.error("Current working directory doesn't exist.")
             self.exit(1)
@@ -285,12 +331,11 @@ class BaseIPythonApplication(Application):
         atexit.register(unset_crashhandler)
 
     def excepthook(self, etype, evalue, tb):
-        """this is sys.excepthook after init_crashhandler
+        """This is `sys.excepthook` after 'init_crash_handler'.
 
-        set self.verbose_crash=True to use our full crashhandler, instead of
-        a regular traceback with a short message (crash_handler_lite)
+        Set 'self.verbose_crash=True' to use our full crashhandler, instead of
+        a regular traceback with a short message (crash_handler_lite).
         """
-
         if self.verbose_crash:
             return self.crash_handler(etype, evalue, tb)
         else:
@@ -321,7 +366,7 @@ class BaseIPythonApplication(Application):
                 self.log.error("couldn't create path %s: %s", path, e)
         self.log.debug("IPYTHONDIR set to: %s" % new)
 
-    def load_config_file(self, suppress_errors=IPYTHON_SUPPRESS_CONFIG_ERRORS):
+    def load_config_file(self, suppress_errors=None, base_config=None):
         """Load the config file.
 
         By default, errors in loading config are handled, and a warning
@@ -338,11 +383,18 @@ class BaseIPythonApplication(Application):
 
         Any other value are invalid, and will make IPython exit with a non-zero return code.
         """
+        if suppress_errors is None:
+            suppress_env = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS', None)
+            if suppress_env is not None:
+                suppress_errors = True
 
-        self.log.debug("Searching path %s for config files",
-                       self.config_file_paths)
-        base_config = 'ipython_config.py'
-        self.log.debug("Attempting to load config file: %s" % base_config)
+        self.log.info('Search path {} for config files'.format(
+                       self.config_file_paths))
+
+        if base_config is None:
+            base_config = 'ipython_config.py'
+        self.log.info('Trying to load config file: %s' % base_config)
+
         try:
             if suppress_errors is not None:
                 old_value = Application.raise_config_file_errors
@@ -382,7 +434,8 @@ class BaseIPythonApplication(Application):
                                  exc_info=True)
 
     def init_profile_dir(self):
-        """initialize the profile dir"""
+        """Initialize the profile dir."""
+
         self._in_init_profile_dir = True
         if self.profile_dir is not None:
             # already ran
@@ -419,7 +472,8 @@ class BaseIPythonApplication(Application):
                 # not found, maybe create it
                 if self.auto_create:
                     try:
-                        p = ProfileDir.create_profile_dir(location, self.config)
+                        p = ProfileDir.create_profile_dir(
+                            location, self.config)
                     except ProfileDirError:
                         self.log.fatal(
                             "Could not create profile directory: %r" % location)
@@ -428,7 +482,8 @@ class BaseIPythonApplication(Application):
                         self.log.debug("Creating new profile dir: %r" %
                                        location)
                 else:
-                    self.log.fatal("Profile directory %r not found." % location)
+                    self.log.fatal(
+                        "Profile directory %r not found." % location)
                     self.exit(1)
             else:
                 self.log.info("Using existing profile dir: %r" % location)

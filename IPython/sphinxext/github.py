@@ -9,19 +9,19 @@ https://bitbucket.org/birkenfeld/sphinx-contrib/src/tip/bitbucket/sphinxcontrib/
 
 Authors
 -------
-
 * Doug Hellmann
 * Min RK
-"""
-#
-# Original Copyright (c) 2010 Doug Hellmann.  All rights reserved.
-#
 
+
+# Original Copyright (c) 2010 Doug Hellmann.  All rights reserved.
+
+"""
 from docutils import nodes, utils
 from docutils.parsers.rst.roles import set_classes
 from sphinx.util.logging import getLogger
 
 info = getLogger(__name__).info
+
 
 def make_link_node(rawtext, app, type, slug, options):
     """Create a link to a github resource.
@@ -32,7 +32,6 @@ def make_link_node(rawtext, app, type, slug, options):
     :param slug: ID of the thing to link to
     :param options: Options dictionary passed to role func.
     """
-
     try:
         base = app.config.github_project_url
         if not base:
@@ -51,7 +50,8 @@ def make_link_node(rawtext, app, type, slug, options):
                            **options)
     return node
 
-def ghissue_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+
+def ghissue_role(name, rawtext, text, lineno, inliner, options=None, content=None):
     """Link to a GitHub issue.
 
     Returns 2 part tuple containing list of nodes to insert into the
@@ -66,7 +66,10 @@ def ghissue_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     :param options: Directive options for customization.
     :param content: The directive content for customization.
     """
-
+    if options is None:
+        options = {}
+    if context = None:
+        context = []
     try:
         issue_num = int(text)
         if issue_num <= 0:

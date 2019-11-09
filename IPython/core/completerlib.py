@@ -194,8 +194,13 @@ def try_import(mod: str, only_modules=False) -> List[str]:
 def quick_completer(cmd, completions):
     r"""Easily create a trivial completer for a command.
 
-    Takes either a list of completions, or all completions in string (that will
-    be split on whitespace).
+    Parameters
+    ----------
+    cmd : str
+        Command to complete
+    completions : list or str
+        Takes either a list of completions, or all completions in string (that will
+        be split on whitespace).
 
     Examples
     --------
@@ -264,7 +269,9 @@ def module_completion(line):
 
 
 def module_completer(self, event):
-    """Give completions after user has typed 'import ...' or 'from ...'"""
+    """Give completions after user has typed 'import ...' or 'from ...'.
+
+    This completer is still stupid slow.
 
     # This works in all versions of python.  While 2.5 has
     # pkgutil.walk_packages(), that particular routine is fairly dangerous,
@@ -272,6 +279,7 @@ def module_completer(self, event):
     # of possibly problematic side effects.
     # This search the folders in the sys.path for available modules.
 
+    """
     return module_completion(event.line)
 
 
@@ -304,7 +312,13 @@ def magic_run_completer(self, event):
     if any(magic_run_re.match(c) for c in comps):
         matches = [
             f.replace('\\', '/') + ('/' if isdir(f) else '')
-            for f in lglob(relpath + '*')
+
+    # This works in all versions of python.  While 2.5 has
+    # pkgutil.walk_packages(), that particular routine is fairly dangerous,
+    # since it imports *EVERYTHING* on sys.path.  That is: a) very slow b) full
+    # of possibly problematic side effects.
+    # This search the folders in the sys.path for available modules.
+for f in lglob(relpath + '*')
         ]
     else:
         dirs = [

@@ -1,7 +1,7 @@
-.. _console_lexer:
+.. _lexers:
 
 =========================
-New IPython Console Lexer
+IPython Console Lexer
 =========================
 .. module:: lexer
   :synopsis: Cover the IPyLexer classes.
@@ -10,10 +10,22 @@ New IPython Console Lexer
 
 .. highlight:: ipython
 
+Introduction
+-------------
+IPython ships with a few library utilities that allow for users
+of the Pygments package to colorize and syntax highlight any valid IPython code
+by using the package.
+
+This can be used in Sphinx
+
+Syntax Highlighting and Tracebacks
+----------------------------------
+
 The :mod:`IPython` console lexer has been rewritten and now supports
-syntax highglighting and documentation builds for a :mod:`traceback`
+syntax highlighting and documentation builds for a :mod:`traceback`
 with customized input/output prompts. An entire suite of lexers is now
 available at :mod:`IPython.lib.lexers`. These include:
+
 
 .. py:class:: IPythonLexer
 
@@ -25,25 +37,27 @@ available at :mod:`IPython.lib.lexers`. These include:
 
 .. py:class:: IPythonPartialTracebackLexer
 
-  Supports 2.x and 3.x via the keyword `python3`. The partial traceback
-  lexer reads everything but the Python code appearing in a traceback.
+  The partial traceback lexer reads everything but the Python code appearing in a traceback.
 
 .. py:class:: IPythonTracebackLexer
 
-  Supports 2.x and 3.x via the keyword `python3`.
   The full lexer combines the partial lexer with an IPython lexer.
 
 .. py:class:: IPythonConsoleLexer
 
   A lexer for IPython console sessions, with support for tracebacks.
-  Supports 2.x and 3.x via the keyword `python3`.
 
 .. py:class:: IPyLexer
 
   A friendly lexer which examines the first line of text and from it,
   decides whether to use an IPython lexer or an IPython console lexer.
-  Supports 2.x and 3.x via the keyword `python3`.
+  This is probably the only lexer that needs to be explicitly added
+  to Pygments.
 
+.. note:: All Lexers support 2.x and 3.x via the keyword `python3`.
+
+
+.. _lexer-console-highlighting:
 
 IPython Console Highlighting
 ============================

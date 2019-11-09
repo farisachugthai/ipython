@@ -21,7 +21,6 @@ from IPython.core.getipython import get_ipython
 from backcall import callback_prototype
 
 
-
 # event_name -> prototype mapping
 available_events = {}
 
@@ -31,6 +30,7 @@ def _define_event(callback_function):
     available_events[callback_function.__name__] = callback_proto
     return callback_proto
 
+
 class EventManager:
     """Manage a collection of events and a sequence of callbacks for each.
 
@@ -39,7 +39,7 @@ class EventManager:
 
     """
 
-    def __init__(self, available_events, shell=None):
+    def __init__(self, shell=None, available_events=None):
         """Initialise the :class:`CallbackManager`.
 
         .. error:: lol whyyyy you renamed the class but not the docstring??
@@ -52,6 +52,8 @@ class EventManager:
           An iterable of names for callback events.
 
         """
+        if available_events is None:
+            available_events = {}
         self.shell = shell or get_ipython()
         self.callbacks = {n: [] for n in available_events}
 
@@ -110,14 +112,12 @@ class EventManager:
                 self.shell.showtraceback()
 
 
-
 # ------------------------------------------------------------------------------
 # Callback prototypes
 #
 # No-op functions which describe the names of available events and the
 # signatures of callbacks for those events.
 # ------------------------------------------------------------------------------
-
 
 
 @_define_event

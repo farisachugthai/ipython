@@ -26,8 +26,8 @@ from pprint import pformat
 
 from IPython.core import ultratb
 from IPython.core.release import author_email
-from IPython.utils.sysinfo import sys_info
-from IPython.utils.py3compat import input
+# from IPython.utils.sysinfo import sys_info
+# from IPython.utils.py3compat import input
 
 # -----------------------------------------------------------------------------
 # Code
@@ -200,7 +200,7 @@ class CrashHandler(object):
 
         report = ['*' * 75 + '\n\n' + 'IPython post-mortem report\n\n']
         rpt_add = report.append
-        rpt_add(sys_info())
+        # rpt_add(sys_info())
 
         try:
             config = pformat(self.app.config)

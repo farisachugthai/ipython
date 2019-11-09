@@ -1,5 +1,14 @@
 IPython/.git_commit_info.ini export-subst
-* text=auto
+
+* text=auto eol=lf
+
 *.py diff=python
 *.js diff=javascript
 *.html diff=html
+
+*.png binary
+
+
+# *.png diff=exif
+# uncomment then run
+# $ git config diff.exif.textconv exiftool

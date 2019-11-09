@@ -1,3 +1,4 @@
+sphinx
 backcall==0.1.0
 decorator==4.4.1
 ipython-genutils==0.2.0

@@ -682,8 +682,21 @@ class InteractiveShell(SingletonConfigurable):
         self.init_builtins()
 
         # The following was in post_config_initialization
-        self.init_inspector()
+
+        # I realize that this one line represents a pretty large swatch of code
+        # but man is it fucked up
+        # self.init_inspector()
+
+        # self.inspector needs to be defined
+        try:
+            from xonsh.inspectors import Inspector
+        except ImportError:
+            pass
+        else:
+            self.inspector = Inspector()
+
         self.raw_input_original = input
+
         self.init_completer()
         # TODO: init_io() needs to happen before init_traceback handlers
         # because the traceback handlers hardcode the stdout/stderr streams.
@@ -845,7 +858,6 @@ class InteractiveShell(SingletonConfigurable):
                                             PyColorize.ANSICodeColors,
                                             self.colors,
                                             self.object_info_string_level)
-        pass
 
     def init_io(self):
         # This will just use sys.stdout and sys.stderr. If you want to
@@ -1221,85 +1233,93 @@ class InteractiveShell(SingletonConfigurable):
     default_user_namespaces = True
 
     def init_create_namespaces(self, user_module=None, user_ns=None):
-        # Create the namespace where the user will operate.  user_ns is
-        # normally the only one used, and it is passed to the exec calls as
-        # the locals argument.  But we do carry a user_global_ns namespace
-        # given as the exec 'globals' argument,  This is useful in embedding
-        # situations where the ipython shell opens in a context where the
-        # distinction between locals and globals is meaningful.  For
-        # non-embedded contexts, it is just the same object as the user_ns
-        # dict.
+        """One of those classic 50 line comments that could've just as easily
+        been a docstring.
 
-        # FIXME. For some strange reason, __builtins__ is showing up at user
-        # level as a dict instead of a module. This is a manual fix, but I
-        # should really track down where the problem is coming from. Alex
-        # Schmolck reported this problem first.
+        Create the namespace where the user will operate.  user_ns is
+        normally the only one used, and it is passed to the exec calls as
+        the locals argument.  But we do carry a user_global_ns namespace
+        given as the exec 'globals' argument,  This is useful in embedding
+        situations where the ipython shell opens in a context where the
+        distinction between locals and globals is meaningful.  For
+        non-embedded contexts, it is just the same object as the user_ns
+        dict.
 
-        # A useful post by Alex Martelli on this topic:
-        # Re: inconsistent value from __builtins__
-        # Von: Alex Martelli <aleaxit@yahoo.com>
-        # Datum: Freitag 01 Oktober 2004 04:45:34 nachmittags/abends
-        # Gruppen: comp.lang.python
+        FIXME. For some strange reason, __builtins__ is showing up at user
+        level as a dict instead of a module. This is a manual fix, but I
+        should really track down where the problem is coming from. Alex
+        Schmolck reported this problem first.
 
-        # Michael Hohn <hohn@hooknose.lbl.gov> wrote:
-        # > >>> print type(builtin_check.get_global_binding('__builtins__'))
-        # > <type 'dict'>
-        # > >>> print type(__builtins__)
-        # > <type 'module'>
-        # > Is this difference in return value intentional?
+        A useful post by Alex Martelli on this topic:
+        Re: inconsistent value from __builtins__
+        Von: Alex Martelli <aleaxit@yahoo.com>
+        Datum: Freitag 01 Oktober 2004 04:45:34 nachmittags/abends
+        Gruppen: comp.lang.python
 
-        # Well, it's documented that '__builtins__' can be either a dictionary
-        # or a module, and it's been that way for a long time. Whether it's
-        # intentional (or sensible), I don't know. In any case, the idea is
-        # that if you need to access the built-in namespace directly, you
-        # should start with "import __builtin__" (note, no 's') which will
-        # definitely give you a module. Yeah, it's somewhat confusing:-(.
+        Michael Hohn <hohn@hooknose.lbl.gov> wrote:
 
-        # These routines return a properly built module and dict as needed by
-        # the rest of the code, and can also be used by extension writers to
-        # generate properly initialized namespaces.
-        if (user_ns is not None) or (user_module is not None):
-            self.default_user_namespaces = False
-        self.user_module, self.user_ns = self.prepare_user_module(
-            user_module, user_ns)
+        >>> print(type(builtin_check.get_global_binding('__builtins__')))
+        <type 'dict'>
+        >>> print(type(__builtins__))
+        <type 'module'>
 
-        # A record of hidden variables we have added to the user namespace, so
-        # we can list later only variables defined in actual interactive use.
+        Is this difference in return value intentional?
+
+        Well, it's documented that '__builtins__' can be either a dictionary
+        or a module, and it's been that way for a long time. Whether it's
+        intentional (or sensible), I don't know. In any case, the idea is
+        that if you need to access the built-in namespace directly, you
+        should start with "import __builtin__" (note, no 's') which will
+        definitely give you a module. Yeah, it's somewhat confusing :-(.
+
+        These routines return a properly built module and dict as needed by
+        the rest of the code, and can also be used by extension writers to
+        generate properly initialized namespaces.
+
+        A record of hidden variables we have added to the user namespace, so
+        we can list later only variables defined in actual interactive use.
+
+        Now that FakeModule produces a real module, we've run into a nasty
+        problem: after script execution (via %run), the module where the user
+        code ran is deleted.  Now that this object is a true module (needed
+        so doctest and other tools work correctly), the Python module
+        teardown mechanism runs over it, and sets to None every variable
+        present in that module.  Top-level references to objects from the
+        script survive, because the user_ns is updated with them.  However,
+        calling functions defined in the script that use other things from
+        the script will fail, because the function's closure had references
+        to the original objects, which are now all None.  So we must protect
+        these modules from deletion by keeping a cache.
+
+        To avoid keeping stale modules around (we only need the one from the
+        last run), we use a dict keyed with the full path to the script, so
+        only the last version of the module is held in the cache.  Note,
+        however, that we must cache the module *namespace contents* (their
+        __dict__).  Because if we try to cache the actual modules, old ones
+        (uncached) could be destroyed while still holding references (such as
+        those held by GUI objects that tend to be long-lived)>
+
+        The %reset command will flush this cache.  See the cache_main_mod()
+        and clear_main_mod_cache() methods for details on use.
+
+        This is the cache used for 'main' namespaces
+        """
         self.user_ns_hidden = {}
-
-        # Now that FakeModule produces a real module, we've run into a nasty
-        # problem: after script execution (via %run), the module where the user
-        # code ran is deleted.  Now that this object is a true module (needed
-        # so doctest and other tools work correctly), the Python module
-        # teardown mechanism runs over it, and sets to None every variable
-        # present in that module.  Top-level references to objects from the
-        # script survive, because the user_ns is updated with them.  However,
-        # calling functions defined in the script that use other things from
-        # the script will fail, because the function's closure had references
-        # to the original objects, which are now all None.  So we must protect
-        # these modules from deletion by keeping a cache.
-        #
-        # To avoid keeping stale modules around (we only need the one from the
-        # last run), we use a dict keyed with the full path to the script, so
-        # only the last version of the module is held in the cache.  Note,
-        # however, that we must cache the module *namespace contents* (their
-        # __dict__).  Because if we try to cache the actual modules, old ones
-        # (uncached) could be destroyed while still holding references (such as
-        # those held by GUI objects that tend to be long-lived)>
-        #
-        # The %reset command will flush this cache.  See the cache_main_mod()
-        # and clear_main_mod_cache() methods for details on use.
-
-        # This is the cache used for 'main' namespaces
+        if user_ns is not None or user_module is not None:
+            self.default_user_namespaces = False
+        self.user_module, self.user_ns = self.prepare_user_module(user_module, user_ns)
         self._main_mod_cache = {}
 
         # A table holding all the namespaces IPython deals with, so that
         # introspection facilities can search easily.
-        self.ns_table = {
-            'user_global': self.user_module.__dict__,
-            'user_local': self.user_ns,
-            'builtin': builtin_mod.__dict__
-        }
+        self.ns_table = {}
+        if hasattr(self, 'user_module'):
+            self.ns_table['user_global'] = self.user_module.__dict__
+        else:
+            self.prepare_user_module()
+
+        self.ns_table['user_local'] = self.user_ns
+        self.ns_table['builtin'] = builtin_mod.__dict__
 
     @property
     def user_global_ns(self):

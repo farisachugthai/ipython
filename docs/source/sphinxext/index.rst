@@ -18,6 +18,7 @@ Table of Contents
    :maxdepth: 2
 
    ipython_sphinx_directive
+   doctest_handlers
    lexer
    developers_notes
 
@@ -27,4 +28,12 @@ Table of Contents
    custom_doctests
    configtraits
    magics
-   make
+
+Actually that might not prove too urgent.
+
+See Also
+--------
+:mod:`IPython.sphinxext.custom_doctests`
+:mod:`IPython.sphinxext.configtraits`
+:mod:`IPython.sphinxext.magics`
+

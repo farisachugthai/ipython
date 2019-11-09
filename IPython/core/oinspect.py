@@ -21,11 +21,13 @@ __all__ = ['Inspector', 'InspectColors']
 
 import ast
 import inspect
-from inspect import signature, getsource, getfullargspec, getabsfile as find_file
+from inspect import (signature, getsource, getfullargspec,
+                     getabsfile as find_file, formatargspec)
 import linecache
 import warnings
 import os
-from textwrap import dedent
+from textwrap import dedent, indent
+# from IPython.utils.text import indent
 import types
 import io as stdlib_io
 from itertools import zip_longest
@@ -36,14 +38,12 @@ from IPython.lib.pretty import pretty
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils import PyColorize
 from IPython.utils import openpy
-from IPython.utils import py3compat
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
-from IPython.utils.text import indent
 from IPython.utils.wildcard import list_namespace
 from IPython.utils.wildcard import typestr2type
 from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
-from IPython.utils.colorable import Colorable
+from IPython.utils.PyColorize import Colorable
 from IPython.utils.decorators import undoc
 
 from pygments import highlight
@@ -118,17 +118,6 @@ def is_simple_callable(obj):
             isinstance(obj, _builtin_meth_type))
 
 
-def format_argspec(argspec):
-    """Format argspect, convenience wrapper around inspect's.
-
-    This takes a dict instead of ordered arguments and calls
-    inspect.format_argspec with the arguments in the necessary order.
-    """
-    return inspect.formatargspec(argspec['args'], argspec['varargs'],
-                                 argspec['varkw'], argspec['defaults'])
-
-
-
 def _get_wrapped(obj):
     """Get the original object if wrapped in one or more @decorators
 
@@ -147,8 +136,6 @@ def _get_wrapped(obj):
             # with
             return orig_obj
     return obj
-
-
 
 
 def find_source_lines(obj):
@@ -259,7 +246,7 @@ class Inspector(Colorable):
 
         Parameters
         -----------
-        formatter : 
+        formatter :
         a function to run the docstring through for specially
         formatted docstrings.
 
@@ -518,7 +505,8 @@ class Inspector(Colorable):
             else:
                 append_field(_mime, 'Docstring', 'docstring', formatter)
 
-            append_field(_mime, 'Class docstring', 'class_docstring', formatter)
+            append_field(_mime, 'Class docstring',
+                         'class_docstring', formatter)
             append_field(_mime, 'Init docstring', 'init_docstring', formatter)
             append_field(_mime, 'Call docstring', 'call_docstring', formatter)
 
@@ -557,26 +545,13 @@ class Inspector(Colorable):
             del info['text/html']
         page.page(info)
 
-    def info(self, obj, oname='', formatter=None, info=None, detail_level=0):
-        """DEPRECATED. Compute a dict with detailed information about an object.
-        """
-        if formatter is not None:
-            warnings.warn(
-                'The `formatter` keyword argument to `Inspector.info`'
-                'is deprecated as of IPython 5.0 and will have no effects.',
-                DeprecationWarning,
-                stacklevel=2)
-        return self._info(obj,
-                          oname=oname,
-                          info=info,
-                          detail_level=detail_level)
-
     def _info(self, obj, oname='', info=None, detail_level=0) -> dict:
         """Compute a dict with detailed information about an object.
 
-        Parameters
-        ==========
+        Jesus Christ this method is like 200 lines long! Needs to be refactored badly.
 
+        Parameters
+        ----------
         obj: any
             An object to find information about
         oname: str (default: ''):
@@ -588,9 +563,9 @@ class Inspector(Colorable):
             If set to 1, more information is given.
 
         Returns
-        =======
-
+        -------
         An object info dict with known fields from `info_fields`.
+
         """
 
         if info is None:
@@ -842,6 +817,7 @@ class Inspector(Colorable):
         """Search namespaces with wildcards for objects.
 
         Arguments:
+        ----------
 
         - pattern: string containing shell-like wildcards to use in namespace
           searches and optionally a type specification to narrow the search to
@@ -849,20 +825,20 @@ class Inspector(Colorable):
 
         - ns_table: dict of name->namespaces for search.
 
+
         Optional arguments:
+        -------------------
 
-          - ns_search: list of namespace names to include in search.
+        - ns_search: list of namespace names to include in search.
 
-          - ignore_case(False): make the search case-insensitive.
+        - ignore_case(False): make the search case-insensitive.
 
-          - show_all(False): show all names, including those starting with
-            underscores.
+        - show_all(False): show all names, including those starting with
+          underscores.
 
-          - list_types(False): list all available object types for object matching.
+        - list_types(False): list all available object types for object matching.
+
         """
-        # print 'ps pattern:<%r>' % pattern # dbg
-
-        # defaults
         type_pattern = 'all'
 
         # list all object types

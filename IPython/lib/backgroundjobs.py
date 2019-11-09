@@ -1,21 +1,20 @@
-# -*- coding: utf-8 -*-
-"""Manage background (threaded) jobs conveniently from an interactive shell.
+"""Manage background jobs conveniently from an interactive shell.
 
-This module provides a BackgroundJobManager class.  This is the main class
-meant for public usage, it implements an object which can create and manage
-new background jobs.
+This module provides a `BackgroundJobManager` class that manages the separate
+threads that a user may need to start.
 
-It also provides the actual job classes managed by these BackgroundJobManager
+It implements an object which can create and manage new background jobs.
+
+It also provides the actual job classes managed by these `BackgroundJobManager`
 objects, see their docstrings below.
 
-
 This system was inspired by discussions with B. Granger and the
-BackgroundCommand class described in the book Python Scripting for
-Computational Science, by H. P. Langtangen:
+BackgroundCommand class described in the book `Python Scripting for
+Computational Science`__, by H. P. Langtangen:
 
-http://folk.uio.no/hpl/scripting
+__`http://folk.uio.no/hpl/scripting`
 
-(although ultimately no code from this text was used, as IPython's system is a
+(Although ultimately no code from this text was used, as IPython's system is a
 separate implementation).
 
 An example notebook is provided in our documentation illustrating interactive
@@ -38,21 +37,24 @@ from IPython.core.ultratb import AutoFormattedTB
 from logging import error, debug
 
 
-class BackgroundJobManager(object):
+class BackgroundJobManager:
     """Class to manage a pool of backgrounded threaded jobs.
 
-    Below, we assume that 'jobs' is a BackgroundJobManager instance.
+    Examples
+    --------
+    >>> jobs = BackgroundJobManager()
 
-    Usage summary (see the method docstrings for details):
+    >>>  # -> start a new job
+    >>> jobs.new(...) # +DOCTEST-ELLIPSIS-OK
+    >>> # Print status summary of all jobs
+    >>> jobs() or jobs.status()
+    >>> # Returns job number N.
+    >>> jobs[N]
+    >>> # Assign to variable foo the result of job N
+    >>> foo = jobs[N].result
 
-      jobs.new(...) -> start a new job
-
-      jobs() or jobs.status() -> print status summary of all jobs
-
-      jobs[N] -> returns job number N.
-
-      foo = jobs[N].result -> assign to variable foo the result of job N
-
+    Methods
+    -------
       jobs[N].traceback() -> print the traceback of dead job N
 
       jobs.remove(N) -> remove (finished) job N
@@ -70,14 +72,24 @@ class BackgroundJobManager(object):
     interactively on the job manager instance.
     """
 
-    def __init__(self):
+    def __init__(self, _running=None, _completed=None, _dead=None, all_jobs=None):
+        """Fuck. Let's add in all the parameters.....
+
+        Oh my god there's so many! I don't feel like adding all of them right now.
+
+        **todo:**
+
+        Parameters
+        ----------
+        like 8 unlisted ones
+        """
         # Lists for job management, accessed via a property to ensure they're
-        # up to date.x
-        self._running = []
-        self._completed = []
-        self._dead = []
+        # up to date.
+        self._running = _running or []
+        self._completed = _completed or []
+        self._dead = _dead or []
         # A dict of all jobs, so users can easily access any of them
-        self.all = {}
+        self.all = all_jobs or {}
         # For reporting
         self._comp_report = []
         self._dead_report = []
@@ -166,8 +178,8 @@ class BackgroundJobManager(object):
         simply wait unless the extension module releases the GIL.
 
         4. There is no way, due to limitations in the Python threads library,
-        to kill a thread once it has started."""
-
+        to kill a thread once it has started.
+        """
         if callable(func_or_exp):
             kw = kwargs.get('kw', {})
             job = BackgroundJobFunc(func_or_exp, *args, **kw)
@@ -204,8 +216,8 @@ class BackgroundJobManager(object):
         """An alias to self.status(),
 
         This allows you to simply call a job manager instance much like the
-        Unix `jobs` shell command."""
-
+        Unix `jobs` shell command.
+        """
         return self.status()
 
     def _update_status(self):
@@ -282,8 +294,10 @@ class BackgroundJobManager(object):
         return new_comp or new_dead
 
     def status(self, verbose=0):
-        """Print a status of all jobs currently being managed."""
+        """Print a status of all jobs currently being managed.
 
+        Does it use the parameter verbose at all?
+        """
         self._update_status()
         self._group_report(self.running, 'Running')
         self._group_report(self.completed, 'Completed')
@@ -294,7 +308,6 @@ class BackgroundJobManager(object):
 
     def remove(self, num):
         """Remove a finished (completed or dead) job."""
-
         try:
             job = self.all[num]
         except KeyError:
@@ -316,8 +329,8 @@ class BackgroundJobManager(object):
 
         It first calls _status_new(), to update info. If any jobs have
         completed since the last _status_new() call, the flush operation
-        aborts."""
-
+        aborts.
+        """
         # Remove the finished jobs from the master dict
         alljobs = self.all
         for job in self.completed + self.dead:

@@ -102,10 +102,7 @@ import time
 import tokenize
 import traceback
 
-try:  # Python 2
-    generate_tokens = tokenize.generate_tokens
-except AttributeError:  # Python 3
-    generate_tokens = tokenize.tokenize
+generate_tokens = tokenize.tokenize
 
 # For purposes of monkeypatching inspect to fix a bug in it.
 from inspect import (getsourcefile, getfile, getmodule, ismodule, isclass,
@@ -117,12 +114,11 @@ from IPython.core import debugger
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.excolors import exception_colors
 from IPython.utils import PyColorize
+from IPython.utils.PyColorize import Colorable
 
 # How easily can we get rid of these 3 imports
 from IPython.utils import path as util_path
-from IPython.utils import py3compat
 from IPython.utils.data import uniq_stable
-import IPython.utils.colorable as colorable
 
 # Globals
 # amount of space to put line numbers before verbose tracebacks
@@ -404,7 +400,6 @@ def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
     res = []
 
     for i, line in enumerate(lines, lnum - index):
-        line = py3compat.cast_unicode(line)
 
         new_line, err = _line_format(line, 'str')
         if not err:
@@ -482,7 +477,7 @@ def find_recursion(etype, value, records):
 
 # ---------------------------------------------------------------------------
 # Module classes
-class TBTools(colorable.Colorable):
+class TBTools(Colorable):
     """Basic tools used by all traceback printer classes.
 
     Jesus Christ. Dude I love when people leave 10 line long comments but
@@ -734,8 +729,7 @@ class ListTB(TBTools):
         have_filedata = False
         Colors = self.Colors
         list = []
-        stype = py3compat.cast_unicode(Colors.excName + etype.__name__ +
-                                       Colors.Normal)
+        stype = Colors.excName + etype.__name__ + Colors.Normal
         if value is None:
             # Not sure if this can still happen in Python 2.6 and above
             list.append(stype + '\n')
@@ -753,10 +747,10 @@ class ListTB(TBTools):
                 list.append(
                     '%s  File %s"%s"%s, line %s%s%s\n' %
                     (Colors.normalEm, Colors.filenameEm,
-                     py3compat.cast_unicode(value.filename), Colors.normalEm,
+                     value.filename, Colors.normalEm,
                      Colors.linenoEm, lineno, Colors.Normal))
                 if textline == '':
-                    textline = py3compat.cast_unicode(value.text, "utf-8")
+                    textline = value.text
 
                 if textline is not None:
                     i = 0

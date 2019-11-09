@@ -29,21 +29,27 @@ scan Python source code and re-emit it with no changes to its original
 formatting (which is the hard part).
 """
 
-__all__ = ['ANSICodeColors', 'Parser']
+__all__ = ['ANSICodeColors', 'Parser', 'Colorable', 'available_themes']
 
 from io import StringIO
-from .colorable import Colorable
 from IPython.utils.coloransi import TermColors, InputTermColors, ColorScheme, ColorSchemeTable
 import tokenize
 import token
 import sys
 import os
 import keyword
-_scheme_default = 'Linux'
+
+import pygments
+
+from traitlets.config import Configurable
+from traitlets import Unicode
+
 
 # Imports
 
 generate_tokens = tokenize.generate_tokens
+
+_scheme_default = 'Linux'
 
 #############################################################################
 # Python Source Parser (does Highlighting)
@@ -158,6 +164,15 @@ ANSICodeColors = ColorSchemeTable(
 
 Undefined = object()
 
+def available_themes():
+    return [s for s in pygments.styles.get_all_styles()
+            ] + ['NoColor', 'LightBG', 'Linux', 'Neutral']
+
+
+class Colorable(Configurable):
+    """A subclass of configurable for all the classes that have a `default_scheme`.
+    """
+    default_style = Unicode('LightBG').tag(config=True)
 
 class Parser(Colorable):
     """ Format colored Python source.

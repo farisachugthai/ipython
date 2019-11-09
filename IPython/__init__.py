@@ -60,7 +60,6 @@ sys.exit(1)
 # -----------------------------------------------------------------------------
 
 from .utils.frame import extract_module_locals
-from .utils.sysinfo import sys_info  # noqa F0401
 # this forced a nose dependency on startup IME
 # from .testing import test  # noqa F0401
 from .core.interactiveshell import InteractiveShell  # noqa F0401
@@ -168,7 +167,7 @@ def start_ipython(argv=None, **kwargs):
     # from IPython.terminal.ipapp import launch_new_instance
     from IPython.terminal.ipapp import TerminalIPythonApp  # noqa
 
-    return TerminalIPythonApp.start(argv, **kwargs)
+    return TerminalIPythonApp().start(argv, **kwargs)
 
 
 def start_kernel(argv=None, **kwargs):

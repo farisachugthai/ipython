@@ -126,7 +126,6 @@ if len(sys.argv) >= 2 and sys.argv[1] in ('sdist', 'bdist_rpm'):
 # Find all the packages, package data, and data_files
 # ---------------------------------------------------------------------------
 
-packages = find_packages()
 # package_data = find_package_data()
 
 # data_files = find_data_files()
@@ -153,7 +152,7 @@ setup_args = dict(
         'Tracker': 'https://github.com/ipython/ipython/issues',
     })
 
-setup_args['packages'] = packages
+setup_args['packages'] = find_packages()
 
 # setup_args['package_data'] = package_data
 # TODO: use resourcemanager API

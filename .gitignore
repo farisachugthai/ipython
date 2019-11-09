@@ -1,3 +1,4 @@
+*.log
 docs/searchindex.js
 docs/_static
 docs/_sources

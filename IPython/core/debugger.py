@@ -6,19 +6,16 @@ Modified from the standard pdb.Pdb class to avoid including readline, so that
 the command line completion of other programs which include this isn't
 damaged.
 
-In the future, this class will be expanded with improvements over the standard
-pdb.
-
 The code in this file is mainly lifted out of cmd.py in Python 2.2, with minor
 changes. Licensing should therefore be under the standard Python terms.  For
 details on the PSF (Python Software Foundation) standard license, see:
 
 https://docs.python.org/2/license.html
 
-Or:
-https://docs.python.org/2/license.html
-
 https://docs.python.org/3/license.html
+
+This code should really go into terminal though like people won't
+be using this code in the browser.
 
 """
 # *****************************************************************************
@@ -27,7 +24,8 @@ https://docs.python.org/3/license.html
 #       Copyright (C) 2001 Python Software Foundation, www.python.org
 #       Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
 # *****************************************************************************
-from pdb import Pdb as OldPdb
+import reprlib
+from pdb import Pdb
 import bdb
 import functools
 import inspect
@@ -37,12 +35,12 @@ import warnings
 import re
 
 from IPython.core.getipython import get_ipython
+from IPython.core.error import UsageError
+
 from IPython.utils import PyColorize
 from IPython.utils import coloransi, py3compat
 from IPython.core.excolors import exception_colors
 from IPython.testing.skipdoctest import skip_doctest
-
-prompt = 'IPdb> '
 
 # We have to check this directly from sys.argv, config struct not yet available
 
@@ -60,36 +58,8 @@ def make_arrow(pad):
     return ''
 
 
-def BdbQuit_excepthook(et, ev, tb, excepthook=None):
-    """Exception hook which handles `BdbQuit` exceptions.
-
-    All other exceptions are processed using the `excepthook`
-    parameter.
-    """
-    warnings.warn("`BdbQuit_excepthook` is deprecated since version 5.1",
-                  DeprecationWarning,
-                  stacklevel=2)
-    if et == bdb.BdbQuit:
-        print('Exiting Debugger.')
-    elif excepthook is not None:
-        excepthook(et, ev, tb)
-    else:
-        # Backwards compatibility. Raise deprecation warning?
-        BdbQuit_excepthook.excepthook_ori(et, ev, tb)
-
-
-def BdbQuit_IPython_excepthook(self, et, ev, tb, tb_offset=None):
-    warnings.warn(
-        "`BdbQuit_IPython_excepthook` is deprecated since version 5.1",
-        DeprecationWarning,
-        stacklevel=2)
-    print('Exiting Debugger.')
-
-
-RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')
-
-
 def strip_indentation(multiline_string):
+    RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')
     return RGX_EXTRA_INDENT.sub('', multiline_string)
 
 
@@ -99,7 +69,9 @@ def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     Adapted from from a comp.lang.python posting
     by Duncan Booth.
 
-    uhhh so what the hell does this do that functools.wraps() doesn't?
+    Uhhh so what the hell does this do that functools.wraps() doesn't?
+
+    Still can't tell and it's used 3 different times in this mod.
     """
 
     def wrapper(*args, **kw):
@@ -110,12 +82,17 @@ def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     return wrapper
 
 
-class Pdb(OldPdb):
+class CorePdb(Pdb):
     """Modified Pdb class, does not load readline.
 
-    for a standalone version that uses prompt_toolkit, see
+    For a standalone version that uses prompt_toolkit, see
     `IPython.terminal.debugger.TerminalPdb` and
     `IPython.terminal.debugger.set_trace()`
+
+    Comments from the constructor.:
+
+        # Create color table: we copy the default one from the traceback
+        # module and add a few attributes needed for debugging
     """
 
     def __init__(self,
@@ -124,6 +101,8 @@ class Pdb(OldPdb):
                  stdin=None,
                  stdout=None,
                  context=5,
+                 aliases=None,
+                 prompt = 'IPdb> ',
                  **kwargs):
         """Create a new IPython debugger.
 
@@ -146,7 +125,7 @@ class Pdb(OldPdb):
             raise ValueError("Context must be a positive integer")
 
         # `kwargs` ensures full compatibility with stdlib's `pdb.Pdb`.
-        OldPdb.__init__(self, completekey, stdin, stdout, **kwargs)
+        super().__init__(self, completekey, stdin, stdout, **kwargs)
 
         # IPython changes...
         self.shell = get_ipython()
@@ -161,18 +140,19 @@ class Pdb(OldPdb):
             # the debugger was entered. See also #9941.
             sys.modules['__main__'] = save_main
 
-        if color_scheme is not None:
-            warnings.warn(
-                "The `color_scheme` argument is deprecated since version 5.1",
-                DeprecationWarning,
-                stacklevel=2)
-        else:
-            color_scheme = self.shell.colors
+        self.aliases = aliases or {}
 
-        self.aliases = {}
+        # Set the prompt - the default prompt is '(Pdb)'
+        self.prompt = prompt
 
-        # Create color table: we copy the default one from the traceback
-        # module and add a few attributes needed for debugging
+
+    def debug_colors(self):
+        """Ah the plethora of meaning here.
+
+        Both this method and set_colors need some heavy debugging.
+
+        The modules they import from are the problem children of this repo.
+        """
         self.color_scheme_table = exception_colors()
 
         # shorthands
@@ -200,9 +180,6 @@ class Pdb(OldPdb):
         self.parser = PyColorize.Parser(style=color_scheme)
         self.set_colors(color_scheme)
 
-        # Set the prompt - the default prompt is '(Pdb)'
-        self.prompt = prompt
-
     def set_colors(self, scheme):
         """Shorthand access to the color table scheme selector method."""
         self.color_scheme_table.set_active_scheme(scheme)
@@ -210,31 +187,32 @@ class Pdb(OldPdb):
 
     def interaction(self, frame, traceback):
         try:
-            OldPdb.interaction(self, frame, traceback)
+            Pdb.interaction(self, frame, traceback)
         except KeyboardInterrupt:
             self.stdout.write('\n' + self.shell.get_exception_only())
 
     def new_do_up(self, arg):
-        OldPdb.do_up(self, arg)
+        """So this calls the superclasses method directly. Should we turn into a super call? How do we handle this?"""
+        Pdb.do_up(self, arg)
 
-    do_u = do_up = decorate_fn_with_doc(new_do_up, OldPdb.do_up)
+    do_u = do_up = decorate_fn_with_doc(new_do_up, Pdb.do_up)
 
     def new_do_down(self, arg):
-        OldPdb.do_down(self, arg)
+        Pdb.do_down(self, arg)
 
-    do_d = do_down = decorate_fn_with_doc(new_do_down, OldPdb.do_down)
+    do_d = do_down = decorate_fn_with_doc(new_do_down, Pdb.do_down)
 
     def new_do_frame(self, arg):
-        OldPdb.do_frame(self, arg)
+        Pdb.do_frame(self, arg)
 
     def new_do_quit(self, arg):
 
         if hasattr(self, 'old_all_completions'):
             self.shell.Completer.all_completions = self.old_all_completions
 
-        return OldPdb.do_quit(self, arg)
+        return Pdb.do_quit(self, arg)
 
-    do_q = do_quit = decorate_fn_with_doc(new_do_quit, OldPdb.do_quit)
+    do_q = do_quit = decorate_fn_with_doc(new_do_quit, Pdb.do_quit)
 
     def new_do_restart(self, arg):
         """Restart command. In the context of ipython this is exactly the same
@@ -279,18 +257,10 @@ class Pdb(OldPdb):
         # vds: <<
 
     def format_stack_entry(self, frame_lineno, lprefix=': ', context=None):
-        if context is None:
-            context = self.context
         try:
-            context = int(context)
-            if context <= 0:
-                print("Context must be a positive integer", file=self.stdout)
+            which_frame = abs(self.context)
         except (TypeError, ValueError):
-            print("Context must be a positive integer", file=self.stdout)
-        try:
-            import reprlib  # Py 3
-        except ImportError:
-            import repr as reprlib  # Py 2
+            raise UsageError('context must be a positive integer.')
 
         ret = []
 

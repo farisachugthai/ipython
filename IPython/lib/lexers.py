@@ -1,25 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Defines a variety of Pygments lexers for highlighting IPython code.
 
-This includes:
-
-    IPythonLexer, IPython3Lexer
-        Lexers for pure IPython (python + magic/shell commands)
-
-    IPythonPartialTracebackLexer, IPythonTracebackLexer
-        Supports 2.x and 3.x via keyword `python3`.  The partial traceback
-        lexer reads everything but the Python code appearing in a traceback.
-        The full lexer combines the partial lexer with an IPython lexer.
-
-    IPythonConsoleLexer
-        A lexer for IPython console sessions, with support for tracebacks.
-
-    IPyLexer
-        A friendly lexer which examines the first line of text and from it,
-        decides whether to use an IPython lexer or an IPython console lexer.
-        This is probably the only lexer that needs to be explicitly added
-        to Pygments.
+.. note:: IPyLexer is the main API class for end-users.
 
 """
 # -----------------------------------------------------------------------------

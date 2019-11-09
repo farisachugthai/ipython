@@ -460,21 +460,9 @@ class TerminalInteractiveShell(InteractiveShell):
     def init_io(self):
         if sys.platform not in {'win32', 'cli'}:
             return
-
-        self.enable_win_unicode_console()
-
         import colorama
         colorama.init()
 
-        # For some reason we make these wrappers around stdout/stderr.
-        # For now, we need to reset them so all output gets coloured.
-        # https://github.com/ipython/ipython/issues/8669
-        # io.std* are deprecated, but don't show our own deprecation warnings
-        # during initialization of the deprecated API.
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', DeprecationWarning)
-            io.stdout = io.IOStream(sys.stdout)
-            io.stderr = io.IOStream(sys.stderr)
 
     def init_magics(self):
         super(TerminalInteractiveShell, self).init_magics()

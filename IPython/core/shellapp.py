@@ -15,7 +15,10 @@ import sys
 from traitlets.config.application import boolean_flag
 from traitlets.config.configurable import Configurable
 from traitlets.config.loader import Config
-from IPython.core.application import SYSTEM_CONFIG_DIRS, ENV_CONFIG_DIRS
+
+# Both globals are only used 1 time in the whole application...
+# Let's not do it that way.
+#from IPython.core.application import SYSTEM_CONFIG_DIRS, ENV_CONFIG_DIRS
 from IPython.core import pylabtools
 from IPython.utils.contexts import preserve_keys
 from IPython.utils.path import filefind
@@ -61,6 +64,7 @@ addflag(
     source code and various other elements. This is on by default, but can cause
     problems with some pagers. If you see such problems, you can disable the
     colours.""", "Disable using colors for info related things.")
+
 nosep_config = Config()
 nosep_config.InteractiveShell.separate_in = ''
 nosep_config.InteractiveShell.separate_out = ''
@@ -179,10 +183,28 @@ class InteractiveShellApp(Configurable):
         """).tag(config=True)
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
                      allow_none=True)
+
     # whether interact-loop should start
     interact = Bool(True)
 
     user_ns = Instance(dict, args=None, allow_none=True)
+
+    def __init__(self, *args, **kwargs):
+        """So wait are we seriously not supposed to have an init defined?"""
+        super().__init__(self, *args, **kwargs)
+
+    def _get_system_config_dirs(self, SYSTEM_CONFIG_DIRS=None):
+        """Moved globals out of core.application to the place it was being used."""
+        programdata = os.environ.get('PROGRAMDATA', None)
+        if programdata:
+            SYSTEM_CONFIG_DIRS = [os.path.join(programdata, 'ipython')]
+        else:  # PROGRAMDATA is not defined by default on XP.
+            if Path('/etc/ipython').is_dir():
+                SYSTEM_CONFIG_DIRS.append('/etc/ipython')
+            if Path("/usr/local/etc/ipython").is_dir():
+                SYSTEM_CONFIG_DIRS.append('etc/ipython')
+
+        return SYSTEM_CONFIG_DIRS
 
     @observe('user_ns')
     def _user_ns_changed(self, change):
@@ -213,6 +235,7 @@ class InteractiveShellApp(Configurable):
         sys.path.insert(idx, '')
 
     def init_shell(self):
+        """This may be an ABC method. Only line is to raise NotImplementedError."""
         raise NotImplementedError("Override in subclasses")
 
     def init_gui_pylab(self):
@@ -358,7 +381,14 @@ class InteractiveShellApp(Configurable):
             sys.argv = save_argv
 
     def _run_startup_files(self):
-        """Run files from profile startup directory"""
+        """Run files from profile startup directory.
+
+        Attributes
+        ----------
+        :envvar:`PYTHONSTARTUP` : str
+            Checks envvar for startup files.
+        """
+        SYSTEM_CONFIG_DIRS = self._get_system_config_dirs()
         startup_dirs = [self.profile_dir.startup_dir] + [
             os.path.join(p, 'startup')
             for p in chain(ENV_CONFIG_DIRS, SYSTEM_CONFIG_DIRS)

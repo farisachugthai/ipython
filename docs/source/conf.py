@@ -18,20 +18,16 @@ serve to show the default value.
 import logging
 import os
 import shutil
-import sys
 
 import sphinx
-from sphinx.ext.autodoc import cut_lines
 from sphinx.util.docfields import GroupedField
-from sphinx.domains.rst import ReSTDomain
 from sphinx.util.logging import getLogger
 
+import IPython  # noqa F401
 from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 
 logger = getLogger(__name__)
 logger.setLevel(logging.INFO)
-# logger.addHandler(logging.StreamHandler().setLevel(logging.INFO))
-# logger.addFilter(logging.Filter())
 
 
 # http://read-the-docs.readthedocs.io/en/latest/faq.html
@@ -40,24 +36,10 @@ ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
 if ON_RTD:
     tags.add('rtd')
 
-    # RTD doesn't use the Makefile, so re-run autogen_{things}.py here.
-    for name in ('config', 'api', 'magics', 'shortcuts'):
-        fname = 'autogen_{}.py'.format(name)
-        fpath = os.path.abspath(os.path.join('..', fname))
-        with open(fpath) as f:
-            exec(compile(f.read(), fname, 'exec'), {
-                '__file__': fpath,
-                '__name__': '__main__',
-            })
 else:
     import sphinx_rtd_theme
     html_theme = "sphinx_rtd_theme"
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
-# If your extensions are in another directory, add it here. If the directory
-# is relative to the documentation root, use os.path.abspath to make it
-# absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../sphinxext'))
 
 # We load the ipython release info into a dict by explicit execution
 iprelease = {}
@@ -79,9 +61,9 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'sphinx.ext.napoleon',  # to preprocess docstrings
-    'github',  # for easy GitHub links
-    'magics',
-    'configtraits',
+    # 'IPython.sphinxext.github',  # for easy GitHub links
+    # 'IPython.sphinxext.magics',
+    # 'IPython.sphinxext.configtraits',
 ]
 
 if shutil.which('dot'):
