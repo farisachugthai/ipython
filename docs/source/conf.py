@@ -17,7 +17,9 @@ serve to show the default value.
 """
 import logging
 import os
+from pathlib import Path
 import shutil
+import sys
 
 import sphinx
 from sphinx.util.docfields import GroupedField
@@ -27,7 +29,15 @@ import IPython  # noqa F401
 from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 
 logger = getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
+
+root = Path('../..').resolve()
+logging.debug('root dir is: {}'.format(root))
+
+ipython_package = root.joinpath('IPython')
+sphinxext = ipython_package.joinpath('sphinxext')
+if sphinxext is not None:
+    sys.path.append(sphinxext.__fspath__())
 
 
 # http://read-the-docs.readthedocs.io/en/latest/faq.html
@@ -61,9 +71,9 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'sphinx.ext.napoleon',  # to preprocess docstrings
-    # 'IPython.sphinxext.github',  # for easy GitHub links
-    # 'IPython.sphinxext.magics',
-    # 'IPython.sphinxext.configtraits',
+    'github',  # for easy GitHub links
+    'magics',
+    'configtraits',
 ]
 
 if shutil.which('dot'):
