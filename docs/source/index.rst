@@ -93,7 +93,7 @@ repository <http://github.com/ipython/ipython>`_.
 
    overview
    install/index
-   interactive/index
+   tutorial/index
    config/index
    magics
    extending/index
