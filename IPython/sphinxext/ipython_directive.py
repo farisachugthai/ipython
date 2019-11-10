@@ -163,12 +163,6 @@ or :okwarning: options:
         In [1]: 1/0
         In [2]: # raise warning.
 
-To Do
-=====
-
-- Turn the ad-hoc test() function into a real test suite.
-- Break up ipython-specific functionality from matplotlib stuff into better
-  separated code.
 
 """
 
@@ -192,6 +186,7 @@ import pathlib
 import re
 import sys
 import tempfile
+from typing import Dict, AnyStr, Any
 import ast
 import warnings
 import shutil
@@ -200,19 +195,26 @@ from io import StringIO
 # Third-party
 from docutils.parsers.rst import directives
 from docutils.parsers.rst import Directive
+from sphinx.application import Sphinx
+from sphinx.util.logging import getLogger
+from sphinx.util.docutils import SphinxDirective
+from sphinx import highlighting
+from traitlets.config import Config
 
 # Our own
-from traitlets.config import Config
-from IPython import InteractiveShell
-from IPython.core.profiledir import ProfileDir
 
-use_matplotlib = False
+from IPython import InteractiveShell
+from IPython import version_info
+from IPython.core.profiledir import ProfileDir
+from IPython.lib.lexers import IPyLexer
+from . import configtraits, magics
+
 try:
     import matplotlib
-    use_matplotlib = True
-except Exception:
-    pass
+except ImportError:
+    matplotlib = None
 
+logger = getLogger(name=__name__)
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
@@ -329,11 +331,49 @@ def block_parser(part, rgxin, rgxout, fmtin, fmtout):
     return block
 
 
-class EmbeddedSphinxShell(object):
-    """An embedded IPython instance to run inside Sphinx"""
+class EmbeddedSphinxShell:
+    """An embedded IPython instance to run inside Sphinx.
+
+    Attributes
+    ----------
+    cout : :class:`io.StringIO`
+        Idk.
+
+    IP : :class:`IPython.InteractiveShell`
+        Global IPython instance.
+
+    user_ns : dict
+        I think it's a dict
+
+    user_global_ns : dict
+
+    tmp_profile_dir : str
+        Return value of :func:`tempfile.mkdtemp`.
+        Why not use a :class:`tempfile.TemporaryDirectory`.
+
+    directive : ?
+        Optionally, provide more detailed information to shell.
+        this is assigned by the setup method of the IPython Directive
+        to point at itself.
+        So, you can access handy things at self.directive.state.
+
+    _pyplot_imported = False
+        On the first call to the `@savefig` decorator, we'll import
+        `matplotlib.pyplot` as plt so we can make a call to the
+        plt.gcf().savefig.
+
+    """
 
     def __init__(self, exec_lines=None):
 
+        """Initialize the *EmbeddedSphinxShell*.
+
+        Parameters
+        ----------
+        exec_lines : list, Optional
+            Lines to execute on startup.
+
+        """
         self.cout = StringIO()
 
         if exec_lines is None:
@@ -406,13 +446,16 @@ class EmbeddedSphinxShell(object):
             sys.stdout = stdout
 
     def process_image(self, decorator):
-        """
-        # build out an image directive like
-        # .. image:: somefile.png
-        #    :width 4in
-        #
-        # from an input like
-        # savefig somefile.png width=4in
+        """Build out an image directive like.
+
+        .. code-block:: rst
+
+            .. image:: somefile.png
+               :width 4in
+
+        From an input like
+        savefig somefile.png width=4in
+
         """
         savefig_dir = self.savefig_dir
         source_dir = self.source_dir
@@ -436,10 +479,60 @@ class EmbeddedSphinxShell(object):
         image_directive = '\n'.join(imagerows)
         return image_file, image_directive
 
-    # Callbacks for each type of token
     def process_input(self, data, input_prompt, lineno):
-        """
-        Process data block for INPUT token.
+        """Process data block for INPUT token.
+
+        Callbacks for each type of token.
+
+        Parameters
+        ----------
+        data : list?
+            Unpacked to decorator, input, rest. Note no star?
+
+            # The "rest" is the standard output of the input. This needs to be
+            # added when in verbatim mode. If there is no "rest", then we don't
+            # add it, as the new line will be added by the processed output.
+
+        input_prompt : str
+            Wasn't this bound to ipython_rgxin or something? I can't even
+            begin with how complicated this is for no reason.
+
+        In IPythonDirective.run, the elements of `ret` are eventually
+        combined such that '' entries correspond to newlines. So if
+        `processed_output` is equal to '', then the adding it to `ret`
+        ensures that there is a blank line between consecutive inputs
+        that have no outputs, as in::
+
+            In [1]: x = 4
+            In [2]: x = 5
+
+        When there is processed output, it has a '\n' at the tail end. So
+        adding the output to `ret` will provide the necessary spacing
+        between consecutive input/output blocks, as in::
+
+            In [1]: x
+            Out[1]: 5
+            In [2]: x
+            Out[2]: 5
+
+        When there is stdout from the input, it also has a '\n' at the
+        tail end, and so this ensures proper spacing as well. E.g.::
+
+            In [1]: print(x)
+            5
+
+            In [2]: x = 5
+
+        When in verbatim mode, `processed_output` is empty (because
+        nothing was passed to IP. Sometimes the submitted code block has
+        an Out[] portion and sometimes it does not. When it does not, we
+        need to ensure proper spacing, so we have to add '' to `ret`.
+        However, if there is an Out[] in the submitted code, then we do
+        not want to add a newline as `process_output` has stuff to add.
+        The difficulty is that `process_input` doesn't know if
+        `process_output` will be called---so it doesn't know if there is
+         Out[] in the code block. The requires that we include a hack in
+        `process_block`. See the comments there.
 
         """
         decorator, input, rest = data
@@ -508,46 +601,6 @@ class EmbeddedSphinxShell(object):
         self.cout.seek(0)
         processed_output = self.cout.read()
         if not is_suppress and not is_semicolon:
-            #
-            # In IPythonDirective.run, the elements of `ret` are eventually
-            # combined such that '' entries correspond to newlines. So if
-            # `processed_output` is equal to '', then the adding it to `ret`
-            # ensures that there is a blank line between consecutive inputs
-            # that have no outputs, as in:
-            #
-            #    In [1]: x = 4
-            #
-            #    In [2]: x = 5
-            #
-            # When there is processed output, it has a '\n' at the tail end. So
-            # adding the output to `ret` will provide the necessary spacing
-            # between consecutive input/output blocks, as in:
-            #
-            #   In [1]: x
-            #   Out[1]: 5
-            #
-            #   In [2]: x
-            #   Out[2]: 5
-            #
-            # When there is stdout from the input, it also has a '\n' at the
-            # tail end, and so this ensures proper spacing as well. E.g.:
-            #
-            #   In [1]: print x
-            #   5
-            #
-            #   In [2]: x = 5
-            #
-            # When in verbatim mode, `processed_output` is empty (because
-            # nothing was passed to IP. Sometimes the submitted code block has
-            # an Out[] portion and sometimes it does not. When it does not, we
-            # need to ensure proper spacing, so we have to add '' to `ret`.
-            # However, if there is an Out[] in the submitted code, then we do
-            # not want to add a newline as `process_output` has stuff to add.
-            # The difficulty is that `process_input` doesn't know if
-            # `process_output` will be called---so it doesn't know if there is
-            # Out[] in the code block. The requires that we include a hack in
-            # `process_block`. See the comments there.
-            #
             ret.append(processed_output)
         elif is_semicolon:
             # Make sure there is a newline after the semicolon.
@@ -891,7 +944,7 @@ class IPythonDirective(Directive):
 
     has_content = True
     required_arguments = 0
-    optional_arguments = 4  # python, suppress, verbatim, doctest
+    optional_arguments = 4
     final_argumuent_whitespace = True
     option_spec = {'python': directives.unchanged,
                    'suppress': directives.flag,
@@ -943,7 +996,7 @@ class IPythonDirective(Directive):
             # EmbeddedSphinxShell is created, its interactive shell member
             # is the same for each instance.
 
-            if mplbackend and 'matplotlib.backends' not in sys.modules and use_matplotlib:
+            if mplbackend and 'matplotlib.backends' not in sys.modules and matplotlib:
                 import matplotlib
                 matplotlib.use(mplbackend)
 
@@ -1054,7 +1107,16 @@ class IPythonDirective(Directive):
 # Enable as a proper Sphinx directive
 
 
-def setup(app):
+def setup(app: "Sphinx") -> Dict[str, Any]:
+    """Enable as a proper Sphinx directive.
+
+    Add config values using the Sphinx api. Alternatively,
+    I think we can add these into the namespace using docutils and their
+    `directives`.
+
+    Also add typing support.
+    """
+
     setup.app = app
 
     app.add_directive('ipython', IPythonDirective)
@@ -1076,190 +1138,24 @@ def setup(app):
     # If the user sets this config value to `None`, then EmbeddedSphinxShell's
     # __init__ method will treat it as [].
     execlines = ['import numpy as np']
-    if use_matplotlib:
+    if matplotlib:
         execlines.append('import matplotlib.pyplot as plt')
     app.add_config_value('ipython_execlines', execlines, 'env')
 
     app.add_config_value('ipython_holdcount', True, 'env')
 
-    metadata = {'parallel_read_safe': True, 'parallel_write_safe': True}
+    # Let's see if i can get rid of ipython_console_highlighting as an extension by adding this in
+    ipy2 = IPyLexer(python3=False)
+    ipy3 = IPyLexer(python3=True)
+
+    highlighting.lexers['ipython'] = ipy2
+    highlighting.lexers['ipython2'] = ipy2
+    highlighting.lexers['ipython3'] = ipy3
+
+    metadata = {
+        'parallel_read_safe': True,
+        'parallel_write_safe': True,
+        'version': version_info,
+    }
     return metadata
 
-# Simple smoke test, needs to be converted to a proper automatic test.
-
-
-def test():
-
-    examples = [
-        r"""
-In [9]: pwd
-Out[9]: '/home/jdhunter/py4science/book'
-
-In [10]: cd bookdata/
-/home/jdhunter/py4science/book/bookdata
-
-In [2]: from pylab import *
-
-In [2]: ion()
-
-In [3]: im = imread('stinkbug.png')
-
-@savefig mystinkbug.png width=4in
-In [4]: imshow(im)
-Out[4]: <matplotlib.image.AxesImage object at 0x39ea850>
-
-""",
-        r"""
-
-In [1]: x = 'hello world'
-
-# string methods can be
-# used to alter the string
-@doctest
-In [2]: x.upper()
-Out[2]: 'HELLO WORLD'
-
-@verbatim
-In [3]: x.st<TAB>
-x.startswith  x.strip
-""",
-        r"""
-
-In [130]: url = 'http://ichart.finance.yahoo.com/table.csv?s=CROX\
-   .....: &d=9&e=22&f=2009&g=d&a=1&br=8&c=2006&ignore=.csv'
-
-In [131]: print url.split('&')
-['http://ichart.finance.yahoo.com/table.csv?s=CROX', 'd=9', 'e=22', 'f=2009', 'g=d', 'a=1', 'b=8', 'c=2006', 'ignore=.csv']
-
-In [60]: import urllib
-
-""",
-        r"""\
-
-In [133]: import numpy.random
-
-@suppress
-In [134]: numpy.random.seed(2358)
-
-@doctest
-In [135]: numpy.random.rand(10,2)
-Out[135]:
-array([[ 0.64524308,  0.59943846],
-       [ 0.47102322,  0.8715456 ],
-       [ 0.29370834,  0.74776844],
-       [ 0.99539577,  0.1313423 ],
-       [ 0.16250302,  0.21103583],
-       [ 0.81626524,  0.1312433 ],
-       [ 0.67338089,  0.72302393],
-       [ 0.7566368 ,  0.07033696],
-       [ 0.22591016,  0.77731835],
-       [ 0.0072729 ,  0.34273127]])
-
-""",
-
-        r"""
-In [106]: print x
-jdh
-
-In [109]: for i in range(10):
-   .....:     print i
-   .....:
-   .....:
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-""",
-
-        r"""
-
-In [144]: from pylab import *
-
-In [145]: ion()
-
-# use a semicolon to suppress the output
-@savefig test_hist.png width=4in
-In [151]: hist(np.random.randn(10000), 100);
-
-
-@savefig test_plot.png width=4in
-In [151]: plot(np.random.randn(10000), 'o');
-   """,
-
-        r"""
-# use a semicolon to suppress the output
-In [151]: plt.clf()
-
-@savefig plot_simple.png width=4in
-In [151]: plot([1,2,3])
-
-@savefig hist_simple.png width=4in
-In [151]: hist(np.random.randn(10000), 100);
-
-""",
-        r"""
-# update the current fig
-In [151]: ylabel('number')
-
-In [152]: title('normal distribution')
-
-
-@savefig hist_with_text.png
-In [153]: grid(True)
-
-@doctest float
-In [154]: 0.1 + 0.2
-Out[154]: 0.3
-
-@doctest float
-In [155]: np.arange(16).reshape(4,4)
-Out[155]:
-array([[ 0,  1,  2,  3],
-       [ 4,  5,  6,  7],
-       [ 8,  9, 10, 11],
-       [12, 13, 14, 15]])
-
-In [1]: x = np.arange(16, dtype=float).reshape(4,4)
-
-In [2]: x[0,0] = np.inf
-
-In [3]: x[0,1] = np.nan
-
-@doctest float
-In [4]: x
-Out[4]:
-array([[ inf,  nan,   2.,   3.],
-       [  4.,   5.,   6.,   7.],
-       [  8.,   9.,  10.,  11.],
-       [ 12.,  13.,  14.,  15.]])
-
-
-        """,
-    ]
-    # skip local-file depending first example:
-    examples = examples[1:]
-
-    # ipython_directive.DEBUG = True  # dbg
-    # options = dict(suppress=True)  # dbg
-    options = {}
-    for example in examples:
-        content = example.split('\n')
-        IPythonDirective('debug', arguments=None, options=options,
-                         content=content, lineno=0,
-                         content_offset=None, block_text=None,
-                         state=None, state_machine=None,
-                         )
-
-
-# Run test suite as a script
-if __name__ == '__main__':
-    if not os.path.isdir('_static'):
-        os.mkdir('_static')
-    test()
-    print('All OK? Check figures in _static/')

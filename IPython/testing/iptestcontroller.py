@@ -115,7 +115,7 @@ class TestController:
             print('... failed. Manual cleanup may be required.')
 
     def cleanup(self):
-        "Kill process if it's still alive, and clean up temporary directories"
+        """Kill process if it's still alive, and clean up temporary directories"""
         self.cleanup_process()
         for td in self.dirs:
             td.cleanup()

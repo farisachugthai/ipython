@@ -83,7 +83,7 @@ class InteractiveShellTestCase(unittest.TestCase):
         self.assertEqual(res.result, None)
 
     def test_multiline_string_cells(self):
-        "Code sprinkled with multiline strings should execute (GH-306)"
+        """Code sprinkled with multiline strings should execute (GH-306)"""
         ip.run_cell('tmp=0')
         self.assertEqual(ip.user_ns['tmp'], 0)
         res = ip.run_cell('tmp=1;"""a\nb"""\n')
@@ -92,7 +92,7 @@ class InteractiveShellTestCase(unittest.TestCase):
         self.assertEqual(res.result, "a\nb")
 
     def test_dont_cache_with_semicolon(self):
-        "Ending a line with semicolon should not cache the returned object (GH-307)"
+        """Ending a line with semicolon should not cache the returned object (GH-307)"""
         oldlen = len(ip.user_ns['Out'])
         for cell in ['1;', '1;1;']:
             res = ip.run_cell(cell, store_history=True)
@@ -112,7 +112,7 @@ class InteractiveShellTestCase(unittest.TestCase):
         self.assertIsInstance(res.error_before_exec, SyntaxError)
 
     def test_In_variable(self):
-        "Verify that In variable grows with user input (GH-284)"
+        """Verify that In variable grows with user input (GH-284)"""
         oldlen = len(ip.user_ns['In'])
         ip.run_cell('1;', store_history=True)
         newlen = len(ip.user_ns['In'])
@@ -150,7 +150,7 @@ class InteractiveShellTestCase(unittest.TestCase):
             ip.compile.reset_compiler_flags()
 
     def test_can_pickle(self):
-        "Can we pickle objects defined interactively (GH-29)"
+        """Can we pickle objects defined interactively (GH-29)"""
         ip = get_ipython()
         ip.reset()
         ip.run_cell(("class Mylist(list):\n"
@@ -172,7 +172,7 @@ class InteractiveShellTestCase(unittest.TestCase):
         self.assertTrue(isinstance(res, bytes))
 
     def test_global_ns(self):
-        "Code in functions must be able to access variables outside them."
+        """Code in functions must be able to access variables outside them."""
         ip = get_ipython()
         ip.run_cell("a = 10")
         ip.run_cell(("def f(x):\n" "    return x + a"))
@@ -346,7 +346,7 @@ class InteractiveShellTestCase(unittest.TestCase):
 
         @register_line_magic
         def lmagic(line):
-            "A line magic"
+            """A line magic"""
 
         # Get info on line magic
         lfind = ip._ofind('lmagic')
@@ -363,7 +363,7 @@ class InteractiveShellTestCase(unittest.TestCase):
 
         @register_cell_magic
         def cmagic(line, cell):
-            "A cell magic"
+            """A cell magic"""
 
         # Get info on cell magic
         find = ip._ofind('cmagic')

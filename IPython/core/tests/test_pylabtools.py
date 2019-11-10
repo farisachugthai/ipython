@@ -221,7 +221,7 @@ class TestPylabSwitch(object):
         nt.assert_equal(s.pylab_gui_select, 'qt')
 
     def test_inline_twice(self):
-        "Using '%matplotlib inline' twice should not reset formatters"
+        """Using '%matplotlib inline' twice should not reset formatters"""
 
         ip = self.Shell()
         gui, backend = ip.enable_matplotlib('inline')

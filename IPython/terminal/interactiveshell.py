@@ -1,4 +1,18 @@
-"""IPython terminal interface using prompt_toolkit"""
+"""IPython terminal interface using prompt_toolkit.
+
+As you can imagine this module is not exactly the most straightforward.
+
+One thing that immediately jumped out at me was...
+
+What's up with all the methods that take 'change' as a parameter and never use
+it?
+
+It happens like 5 times...
+
+Also I'm shifting imports in this module farther down into the methods they're
+called in to reduce interdependencies because I keep having shit crash for
+unrelated bugs.
+"""
 
 import os
 import sys
@@ -7,7 +21,6 @@ from warnings import warn
 
 from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
 from IPython.utils import io
-from IPython.utils.py3compat import input
 from IPython.utils.terminal import toggle_set_term_title, set_term_title, restore_term_title
 from IPython.utils.process import abbrev_cwd
 from traitlets import (Bool, Unicode, Dict, Integer, observe, Instance, Type,
@@ -28,11 +41,9 @@ from pygments.styles import get_style_by_name
 from pygments.style import Style
 from pygments.token import Token
 
-from .debugger import TerminalPdb, Pdb
 from .magics import TerminalMagics
 from .pt_inputhooks import get_inputhook_name_and_func
 from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
-from .ptutils import IPythonPTCompleter, IPythonPTLexer
 from .shortcuts import create_ipython_shortcuts
 
 DISPLAY_BANNER_DEPRECATED = object()
@@ -62,6 +73,8 @@ def get_default_editor():
 
     If :envvar:`EDITOR` doesn't exist, it returns vi on POSIX systems and
     notepad on Windows.
+
+    .. todo:: Why don't we use something in IPython.lib.editorhooks?
 
     Returns
     -------
@@ -120,6 +133,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     @property
     def debugger_cls(self):
+        from .debugger import TerminalPdb, Pdb
         return Pdb if self.simple_prompt else TerminalPdb
 
     confirm_exit = Bool(
@@ -275,6 +289,11 @@ class TerminalInteractiveShell(InteractiveShell):
         self.display_formatter.ipython_display_formatter.enabled = False
 
     def init_prompt_toolkit_cli(self):
+        """The entry point for prompt_toolkit!
+
+        Originally didn't have a docstring so easy to over look but this is a
+        really important method here.
+        """
         if self.simple_prompt:
             # Fall back to plain non-interactive output for tests.
             # This is very limited.
@@ -310,6 +329,8 @@ class TerminalInteractiveShell(InteractiveShell):
         self.style = DynamicStyle(lambda: self._style)
 
         editing_mode = getattr(EditingMode, self.editing_mode.upper())
+
+        from .ptutils import IPythonPTCompleter
 
         self.pt_app = PromptSession(
             editing_mode=editing_mode,
@@ -402,16 +423,17 @@ class TerminalInteractiveShell(InteractiveShell):
 
     @property
     def color_depth(self):
+        """ return (ColorDepth.TRUE_COLOR if self.true_color else None)."""
         return (ColorDepth.TRUE_COLOR if self.true_color else None)
 
     def _extra_prompt_options(self):
-        """
-        Return the current layout option for the current Terminal InteractiveShell
-        """
+        """Return the current layout option for the current InteractiveShell."""
 
         def get_message():
+            """return PygmentsTokens(self.prompts.in_prompt_tokens())."""
             return PygmentsTokens(self.prompts.in_prompt_tokens())
 
+        from .ptutils import IPythonPTLexer
         return {
             'complete_in_thread':
             False,
@@ -456,32 +478,43 @@ class TerminalInteractiveShell(InteractiveShell):
                 **self._extra_prompt_options())
         return text
 
-
     def init_io(self):
+        """Literally only imports colorama if sys.platform==win32 or cli."""
         if sys.platform not in {'win32', 'cli'}:
             return
         import colorama
         colorama.init()
 
-
     def init_magics(self):
-        super(TerminalInteractiveShell, self).init_magics()
+        """Calls the super method and then register_magics(TerminalMagics)."""
+        super().init_magics()
         self.register_magics(TerminalMagics)
 
     def init_alias(self):
-        # The parent class defines aliases that can be safely used with any
-        # frontend.
-        super(TerminalInteractiveShell, self).init_alias()
+        """The parent class defines aliases that can be safely used with any
+        frontend.
 
-        # Now define aliases that only make sense on the terminal, because they
-        # need direct access to the console in a way that we can't emulate in
-        # GUI or web frontend
+        After calling the super method.
+
+        Now define aliases that only make sense on the terminal, because they
+        need direct access to the console in a way that we can't emulate in
+        GUI or web frontend.
+
+        Gotta admit I'm very confused why this code exists at all though.::
+
+            if os.name == 'posix':
+                for cmd in ('clear', 'more', 'less', 'man'):
+                    self.alias_manager.soft_define_alias(cmd, cmd)
+
+        """
+        super().init_alias()
+
         if os.name == 'posix':
             for cmd in ('clear', 'more', 'less', 'man'):
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
     def __init__(self, *args, **kwargs):
-        super(TerminalInteractiveShell, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.init_prompt_toolkit_cli()
         self.init_term_title()
         self.keep_running = True
@@ -540,7 +573,6 @@ class TerminalInteractiveShell(InteractiveShell):
 
                 self.restore_term_title()
 
-
     _inputhook = None
 
     def inputhook(self, context):
@@ -587,9 +619,8 @@ class TerminalInteractiveShell(InteractiveShell):
             self._prompts_before = None
 
 
-#        self._update_layout()
-
 InteractiveShellABC.register(TerminalInteractiveShell)
+
 
 if __name__ == '__main__':
     TerminalInteractiveShell.instance().interact()

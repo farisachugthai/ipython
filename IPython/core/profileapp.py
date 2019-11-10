@@ -43,15 +43,17 @@ Authors:
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-
+from importlib import import_module
 import os
 
 from traitlets.config.application import Application
+from traitlets import Unicode, Bool, Dict, observe
+
+# TODO: fuck that base_flags thing is gonna be a problem
 from IPython.core.application import (BaseIPythonApplication, base_flags)
 from IPython.core.profiledir import ProfileDir
-from IPython.utils.importstring import import_item
+# from IPython.utils.importstring import import_item
 from IPython.paths import get_ipython_dir, get_ipython_package_dir
-from traitlets import Unicode, Bool, Dict, observe
 
 # -----------------------------------------------------------------------------
 # Constants
@@ -322,20 +324,21 @@ class ProfileCreate(BaseIPythonApplication):
 
     def _import_app(self, app_path):
         """import an app class"""
-        app = None
         name = app_path.rsplit('.', 1)[-1]
         try:
-            app = import_item(app_path)
+            app = import_module(app_path)
         except ImportError:
             self.log.info("Couldn't import %s, config file will be excluded",
                           name)
-        except Exception:
-            self.log.warning('Unexpected error importing %s',
-                             name,
-                             exc_info=True)
+        # why catch this?
+        # except Exception:
+        #     self.log.warning('Unexpected error importing %s',
+        #                      name,
+        #                      exc_info=True)
         return app
 
     def init_config_files(self):
+        """Calls super().init_config_files so maybe a good candidate for a classmethod decorator?"""
         super(ProfileCreate, self).init_config_files()
         # use local imports, since these classes may import from here
         from IPython.terminal.ipapp import TerminalIPythonApp

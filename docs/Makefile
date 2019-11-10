@@ -5,17 +5,19 @@
 # from the environment for the first two.
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
+SPHINXAPIDOC   ?= sphinx-apidoc
 SOURCEDIR     = source
 BUILDDIR      = build
 
 # Put it first so that "make" without argument is like "make help".
-.PHONY: help clean html htmlhelp changes linkcheck api
+.PHONY: help clean html html_noapi htmlhelp changes linkcheck api
 
 default: help
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html        standalone HTML files"
+	@echo "  html_noapi  HTML files with no API"
 	@echo "  htmlhelp    HTML files and a HTML help project"
 	@echo "  changes     an overview over all changed/added/deprecated items"
 	@echo "  linkcheck   check all external links for integrity (takes a long time)"
@@ -49,33 +51,19 @@ dist: html
 	cp -al build/html .
 	@echo "Build finished.  Final docs are in html/"
 
-html: api  automagic autogen_shortcuts
-html_noapi: clean_api autoconfig automagic autogen_shortcuts
+html:
+	$(SPHINXAPIDOC) -e -o source/api/generated ../IPython --tocfile index
+	mkdir -p build/html build/doctrees
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) -d build/doctrees -aE -w sphinx.log source build/html
+	@echo
+	@echo "Build finished. The HTML pages are in build/html."
 
-html html_noapi:
+
+html_noapi:
 	mkdir -p build/html build/doctrees
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
-
-automagic: source/interactive/magics-generated.txt
-
-source/interactive/magics-generated.txt: autogen_magics.py
-	$(PYTHON) autogen_magics.py
-	@echo "Created docs for line & cell magics"
-
-api: source/api/generated/gen.txt
-
-source/api/generated/gen.txt:
-	$(PYTHON) autogen_api.py
-	# TODO:
-	# $(PYTHON) autogen_api_numpy.py
-	@echo "Build API docs finished."
-
-autogen_shortcuts: autogen_shortcuts.py ../IPython/terminal/interactiveshell.py source/api/shortcuts.rst
-	$(PYTHON) autogen_shortcuts.py
-	@echo "Created docs for shortcuts"
-
 
 htmlhelp:
 	mkdir -p build/htmlhelp build/doctrees

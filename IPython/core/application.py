@@ -108,6 +108,7 @@ class BaseAliases(Configurable):
         'config': 'BaseIPythonApplication.extra_config_file',
     })
 
+
 # Make it still available up until I can delete this.
 base_aliases = BaseAliases.base_aliases
 
@@ -552,6 +553,7 @@ class BaseIPythonApplication(Application):
 
     @catch_config_error
     def initialize(self, argv=None):
+        """All these initialize methods seem like great candidates to become class methods."""
         # don't hook up crash handler before parsing command-line
         self.parse_command_line(argv)
         self.init_crash_handler()

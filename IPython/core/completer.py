@@ -140,7 +140,9 @@ from importlib import import_module
 from typing import Iterator, List, Tuple, Iterable, Union
 from types import SimpleNamespace
 
+from traitlets import Bool, Enum, observe, Int
 from traitlets.config.configurable import Configurable
+
 from IPython.core.error import TryNext
 from IPython.core.inputtransformer2 import ESC_MAGIC
 from IPython.core.latex_symbols import latex_symbols, reverse_latex_symbol
@@ -148,20 +150,14 @@ from IPython.core.oinspect import InspectColors
 from IPython.utils import generics
 from IPython.utils.dir2 import dir2, get_real_method
 from IPython.utils.process import arg_split
-from traitlets import Bool, Enum, observe, Int
 
 # skip module docstests
 skip_doctest = True
 
-try:
-    import jedi
-except ImportError:
-    JEDI_INSTALLED = False
-else:
-    jedi.settings.case_insensitive_completion = False
-    import jedi.api.helpers
-    import jedi.api.classes
-    JEDI_INSTALLED = True
+import jedi
+jedi.settings.case_insensitive_completion = False
+import jedi.api.helpers
+import jedi.api.classes
 
 # -----------------------------------------------------------------------------
 # Globals
@@ -991,7 +987,7 @@ def _formatparamchildren(parameter) -> str:
     Jedi does not expose a simple way to get `param=value` from its API.
 
     Parameter
-    =========
+    ---------
 
     parameter:
         Jedi's function `Param`
@@ -1296,7 +1292,30 @@ class IPCompleter(Completer):
         return [x + '/' if os.path.isdir(x) else x for x in matches]
 
     def magic_matches(self, text):
-        """Match magics"""
+        """Match magics.
+
+        Completion logic:
+
+        - user gives %%: only do cell magics
+        - user gives %: do both line and cell magics
+        - no prefix: do both
+
+        In other words, line magics are skipped if the user gives %% explicitly.
+        We also exclude magics that match any currently visible names.
+
+        See Also
+        --------
+        https://github.com/ipython/ipython/issues/4877
+            However, with no prefix we consolidate `%lsmagic` and get everything.
+
+        https://github.com/ipython/ipython/issues/10754
+            Unless the user has typed a :kbd:`%`:
+
+        Parameters
+        ----------
+        text
+
+        """
         # Get all shell magics now rather than statically, so magics loaded at
         # runtime show up too.
         lsm = self.shell.magics_manager.lsmagic()
@@ -1307,16 +1326,6 @@ class IPCompleter(Completer):
 
         explicit_magic = text.startswith(pre)
 
-        # Completion logic:
-        # - user gives %%: only do cell magics
-        # - user gives %: do both line and cell magics
-        # - no prefix: do both
-        # In other words, line magics are skipped if the user gives %% explicitly
-        #
-        # We also exclude magics that match any currently visible names:
-        # https://github.com/ipython/ipython/issues/4877, unless the user has
-        # typed a %:
-        # https://github.com/ipython/ipython/issues/10754
         bare_text = text.lstrip(pre)
         global_matches = self.global_matches(bare_text)
         if not explicit_magic:
@@ -1393,7 +1402,6 @@ class IPCompleter(Completer):
                 color for color in InspectColors.keys()
                 if color.startswith(prefix)
             ]
-        return []
 
     def _jedi_matches(self, cursor_column: int, cursor_line: int, text: str):
         """
@@ -1652,7 +1660,7 @@ class IPCompleter(Completer):
         return argMatches
 
     def dict_key_matches(self, text):
-        "Match string keys in a dictionary, after e.g. 'foo[' "
+        """Match string keys in a dictionary, after e.g. 'foo[' """
 
         def get_keys(obj):
             # Objects can define their own completions by defining an

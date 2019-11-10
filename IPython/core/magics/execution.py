@@ -1489,7 +1489,7 @@ python-profiler package from non-free.""")
 
 
 def parse_breakpoint(text, current_file):
-    '''Returns (file, line) for file:line and (current_file, line) for line'''
+    """Returns (file, line) for file:line and (current_file, line) for line"""
     colon = text.find(':')
     if colon == -1:
         return current_file, int(text)

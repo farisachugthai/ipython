@@ -3,7 +3,7 @@ import sys
 
 
 def div0():
-    "foo"
+    """foo"""
     x = 1
     y = 0
     x / y
@@ -14,7 +14,7 @@ def sysexit(stat, mode):
 
 
 def bar(mode):
-    "bar"
+    """bar"""
     if mode == 'div':
         div0()
     elif mode == 'exit':

@@ -19,6 +19,8 @@ itself from the command line. There are two ways of running this script:
 
 
 import glob
+from importlib import import_module
+
 from io import BytesIO
 import os
 import os.path as path
@@ -34,8 +36,9 @@ from nose.plugins import Plugin
 from nose.util import safe_str
 
 from IPython import version_info
-from IPython.utils.py3compat import decode
-from IPython.utils.importstring import import_item
+# from IPython.utils.py3compat import decode
+# ?
+from codecs import decode
 from IPython.testing.plugin.ipdoctest import IPythonDoctest
 from IPython.external.decorators import KnownFailure, knownfailureif
 
@@ -168,7 +171,7 @@ def test_for(item, min_version=None, callback=extract_version):
 
     """
     try:
-        check = import_item(item)
+        check = import_module(item)
     except (ImportError, RuntimeError):
         # GTK reports Runtime error if it can't be initialized even if it's
         # importable.
@@ -267,7 +270,7 @@ test_sections['terminal'].exclude('console')
 # extensions:
 sec = test_sections['extensions']
 # This is deprecated in favour of rpy2
-sec.exclude('rmagic')
+# sec.exclude('rmagic')
 # autoreload does some strange stuff, so move it to its own test section
 sec.exclude('autoreload')
 sec.exclude('tests.test_autoreload')
@@ -437,6 +440,23 @@ def run_iptest():
     This function is called when this script is **not** called with the form
     `iptest all`.  It simply calls nose with appropriate command line flags
     and accepts all of the standard nose arguments.
+
+    Note
+    ----
+    We need a global ipython running in this process, but the special
+    in-process group spawns its own IPython kernels, so for *that* group we
+    must avoid also opening the global one (otherwise there's a conflict of
+    singletons).  Ultimately the solution to this problem is to refactor our
+    assumptions about what needs to be a singleton and what doesn't (app
+    objects should, individual shells shouldn't).  But for now, this
+    workaround allows the test suite for the inprocess module to complete.
+
+    .. ipython::
+
+        if 'kernel.inprocess' not in section.name:
+            from IPython.testing import globalipapp
+            globalipapp.start_ipython()
+
     """
     # Apply our monkeypatch to Xunit
     if '--with-xunit' in sys.argv and not hasattr(Xunit, 'orig_addError'):
@@ -497,13 +517,6 @@ def run_iptest():
     if 'IPTEST_WORKING_DIR' in os.environ:
         os.chdir(os.environ['IPTEST_WORKING_DIR'])
 
-    # We need a global ipython running in this process, but the special
-    # in-process group spawns its own IPython kernels, so for *that* group we
-    # must avoid also opening the global one (otherwise there's a conflict of
-    # singletons).  Ultimately the solution to this problem is to refactor our
-    # assumptions about what needs to be a singleton and what doesn't (app
-    # objects should, individual shells shouldn't).  But for now, this
-    # workaround allows the test suite for the inprocess module to complete.
     if 'kernel.inprocess' not in section.name:
         from IPython.testing import globalipapp
         globalipapp.start_ipython()

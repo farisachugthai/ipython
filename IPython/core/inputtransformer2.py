@@ -352,25 +352,25 @@ def _tr_help2(content):
 
 
 def _tr_magic(content):
-    "Translate lines escaped with a percent sign: %"
+    """Translate lines escaped with a percent sign: %"""
     name, _, args = content.partition(' ')
     return 'get_ipython().run_line_magic(%r, %r)' % (name, args)
 
 
 def _tr_quote(content):
-    "Translate lines escaped with a comma: ,"
+    """Translate lines escaped with a comma: ,"""
     name, _, args = content.partition(' ')
     return '%s("%s")' % (name, '", "'.join(args.split()))
 
 
 def _tr_quote2(content):
-    "Translate lines escaped with a semicolon: ;"
+    """Translate lines escaped with a semicolon: ;"""
     name, _, args = content.partition(' ')
     return '%s("%s")' % (name, args)
 
 
 def _tr_paren(content):
-    "Translate lines escaped with a slash: /"
+    """Translate lines escaped with a slash: /"""
     name, _, args = content.partition(' ')
     return '%s(%s)' % (name, ", ".join(args.split()))
 

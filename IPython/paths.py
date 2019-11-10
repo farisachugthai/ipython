@@ -3,6 +3,7 @@
 So the todo for this module is that I think the py3compat family of functions
 are pending deprecation.
 """
+from importlib import import_module
 import os.path
 import shutil
 import sys
@@ -10,7 +11,7 @@ import tempfile
 from warnings import warn
 
 import IPython
-from IPython.utils.importstring import import_item
+# from IPython.utils.importstring import import_item
 from IPython.utils.path import (get_home_dir, get_xdg_dir, get_xdg_cache_dir,
                                 compress_user, _writable_dir, ensure_dir_exists)
 from IPython.utils import py3compat
@@ -86,13 +87,13 @@ def get_ipython_cache_dir():
     elif not _writable_dir(xdgdir):
         return get_ipython_dir()
 
-    return py3compat.cast_unicode(ipdir, sys.getfilesystemencoding())
+    return ipdir
 
 
 def get_ipython_package_dir():
     """Get the base directory where IPython itself is installed."""
     ipdir = os.path.dirname(IPython.__file__)
-    return py3compat.cast_unicode(ipdir, sys.getfilesystemencoding())
+    return ipdir
 
 
 def get_ipython_module_path(module_str):
@@ -104,10 +105,10 @@ def get_ipython_module_path(module_str):
     """
     if module_str == 'IPython':
         return os.path.join(get_ipython_package_dir(), '__init__.py')
-    mod = import_item(module_str)
+    mod = import_module(module_str)
     the_path = mod.__file__.replace('.pyc', '.py')
     the_path = the_path.replace('.pyo', '.py')
-    return py3compat.cast_unicode(the_path, sys.getfilesystemencoding())
+    return the_path
 
 
 def locate_profile(profile='default'):

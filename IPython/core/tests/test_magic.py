@@ -330,7 +330,7 @@ def test_magic_magic():
 
 @dec.skipif_not_numpy
 def test_numpy_reset_array_undec():
-    "Test '%reset array' functionality"
+    """Test '%reset array' functionality"""
     _ip.ex('import numpy as np')
     _ip.ex('a = np.empty(2)')
     nt.assert_in('a', _ip.user_ns)
@@ -339,7 +339,7 @@ def test_numpy_reset_array_undec():
 
 
 def test_reset_out():
-    "Test '%reset out' magic"
+    """Test '%reset out' magic"""
     _ip.run_cell("parrot = 'dead'", store_history=True)
     # test '%reset -f out', make an Out prompt
     _ip.run_cell("parrot", store_history=True)
@@ -350,7 +350,7 @@ def test_reset_out():
 
 
 def test_reset_in():
-    "Test '%reset in' magic"
+    """Test '%reset in' magic"""
     # test '%reset -f in'
     _ip.run_cell("parrot", store_history=True)
     nt.assert_true('parrot' in [_ip.user_ns[x] for x in ('_i', '_ii', '_iii')])
@@ -361,7 +361,7 @@ def test_reset_in():
 
 
 def test_reset_dhist():
-    "Test '%reset dhist' magic"
+    """Test '%reset dhist' magic"""
     _ip.run_cell("tmp = [d for d in _dh]")  # copy before clearing
     _ip.magic('cd ' + os.path.dirname(nt.__file__))
     _ip.magic('cd -')
@@ -372,7 +372,7 @@ def test_reset_dhist():
 
 
 def test_reset_in_length():
-    "Test that '%reset in' preserves In[] length"
+    """Test that '%reset in' preserves In[] length"""
     _ip.run_cell("print 'foo'")
     _ip.run_cell("reset -f in")
     nt.assert_equal(len(_ip.user_ns['In']), _ip.displayhook.prompt_count + 1)
@@ -485,7 +485,7 @@ def test_time_local_ns():
 
 
 def test_doctest_mode():
-    "Toggle doctest_mode twice, it should be a no-op and run without error"
+    """Toggle doctest_mode twice, it should be a no-op and run without error"""
     _ip.magic('doctest_mode')
     _ip.magic('doctest_mode')
 
@@ -656,7 +656,7 @@ def test_timeit_shlex():
 
 
 def test_timeit_special_syntax():
-    "Test %%timeit with IPython special syntax"
+    """Test %%timeit with IPython special syntax"""
 
     @register_line_magic
     def lmagic(line):
@@ -701,7 +701,7 @@ def test_timeit_invalid_return():
 
 @dec.skipif(execution.profile is None)
 def test_prun_special_syntax():
-    "Test %%prun with IPython special syntax"
+    """Test %%prun with IPython special syntax"""
 
     @register_line_magic
     def lmagic(line):
@@ -718,7 +718,7 @@ def test_prun_special_syntax():
 
 @dec.skipif(execution.profile is None)
 def test_prun_quotes():
-    "Test that prun does not clobber string escapes (GH #1302)"
+    """Test that prun does not clobber string escapes (GH #1302)"""
     _ip.magic(r"prun -q x = '\t'")
     nt.assert_equal(_ip.user_ns['x'], '\t')
 
@@ -811,7 +811,7 @@ class CellMagicTestCase(TestCase):
         nt.assert_equal(_ip.user_ns['_'], ('c', 'd\n'))
 
     def test_cell_magic_func_deco(self):
-        "Cell magic using simple decorator"
+        """Cell magic using simple decorator"""
 
         @register_cell_magic
         def cellm(line, cell):
@@ -820,7 +820,7 @@ class CellMagicTestCase(TestCase):
         self.check_ident('cellm')
 
     def test_cell_magic_reg(self):
-        "Cell magic manually registered"
+        """Cell magic manually registered"""
 
         def cellm(line, cell):
             return line, cell
@@ -829,7 +829,7 @@ class CellMagicTestCase(TestCase):
         self.check_ident('cellm2')
 
     def test_cell_magic_class(self):
-        "Cell magics declared via a class"
+        """Cell magics declared via a class"""
 
         @magics_class
         class MyMagics(Magics):
@@ -841,7 +841,7 @@ class CellMagicTestCase(TestCase):
         self.check_ident('cellm3')
 
     def test_cell_magic_class2(self):
-        "Cell magics declared via a class, #2"
+        """Cell magics declared via a class, #2"""
 
         @magics_class
         class MyMagics2(Magics):
@@ -1042,12 +1042,12 @@ class FooFoo(Magics):
     """class with both %foo and %%foo magics"""
     @line_magic('foo')
     def line_foo(self, line):
-        "I am line foo"
+        """I am line foo"""
         pass
 
     @cell_magic("foo")
     def cell_foo(self, line, cell):
-        "I am cell foo, not line foo"
+        """I am cell foo, not line foo"""
         pass
 
 
@@ -1267,7 +1267,7 @@ def test_time_no_var_expand():
 
 # this is slow, put at the end for local testing.
 def test_timeit_arguments():
-    "Test valid timeit arguments, should not cause SyntaxError (GH #1269)"
+    """Test valid timeit arguments, should not cause SyntaxError (GH #1269)"""
     if sys.version_info < (3, 7):
         _ip.magic("timeit -n1 -r1 ('#')")
     else:

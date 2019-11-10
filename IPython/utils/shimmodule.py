@@ -26,7 +26,6 @@ class ShimImporter(object):
 
     def _mirror_name(self, fullname):
         """get the name of the mirrored module"""
-
         return self.mirror + fullname[len(self.src):]
 
     def find_module(self, fullname, path=None):
@@ -34,7 +33,7 @@ class ShimImporter(object):
         if fullname.startswith(self.src + '.'):
             mirror_name = self._mirror_name(fullname)
             try:
-                mod = import_item(mirror_name)
+                mod = import_module(mirror_name)
             except ImportError:
                 return
             else:
@@ -46,12 +45,18 @@ class ShimImporter(object):
     def load_module(self, fullname):
         """Import the mirrored module, and insert it into sys.modules"""
         mirror_name = self._mirror_name(fullname)
-        mod = import_item(mirror_name)
+        mod = import_module(mirror_name)
         sys.modules[fullname] = mod
         return mod
 
 
 class ShimModule(types.ModuleType):
+    """Subclasses types.ModuleType.
+
+    Also messes around with sys.meta_path. Be aware of that.
+
+    Also note that the :attr:`path` it has simply returns an empty list.
+    """
     def __init__(self, *args, **kwargs):
         self._mirror = kwargs.pop("mirror")
         src = kwargs.pop("src", None)
@@ -87,6 +92,6 @@ class ShimModule(types.ModuleType):
         # Use the equivalent of import_item(name), see below
         name = "%s.%s" % (self._mirror, key)
         try:
-            return import_item(name)
+            return import_module(name)
         except ImportError:
             raise AttributeError(key)

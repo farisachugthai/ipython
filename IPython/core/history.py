@@ -73,11 +73,11 @@ else:
 
     @undoc
     class DatabaseError(Exception):
-        "Dummy exception when sqlite could not be imported. Should never occur."
+        """Dummy exception when sqlite could not be imported. Should never occur."""
 
     @undoc
     class OperationalError(Exception):
-        "Dummy exception when sqlite could not be imported. Should never occur."
+        """Dummy exception when sqlite could not be imported. Should never occur."""
 
 
 # use 16kB as threshold for whether a corrupt history db should be saved

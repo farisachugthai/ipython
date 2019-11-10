@@ -30,7 +30,14 @@ def cursor_in_leading_ws():
 
 
 def create_ipython_shortcuts(shell):
-    """Set up the prompt_toolkit keyboard shortcuts for IPython"""
+    """Set up the prompt_toolkit keyboard shortcuts for IPython.
+
+    It's kinda frustrating that this isn't configurable at all. It's left as
+    an exercise for the user to figure out how to override this and even then
+    it's a pretty manual and brute-force approach.
+
+    Should really figure something out for this.
+    """
 
     kb = KeyBindings()
     insert_mode = vi_insert_mode | emacs_insert_mode
@@ -176,40 +183,12 @@ def suspend_to_bg(event):
 
 
 def force_exit(event):
-    """
-    Force exit (with a non-zero return value)
-    """
+    """Force exit (with a non-zero return value)."""
     sys.exit("Quit")
 
 
 def indent_buffer(event):
     event.current_buffer.insert_text(' ' * 4)
-
-
-@undoc
-def newline_with_copy_margin(event):
-    """
-    DEPRECATED since IPython 6.0
-
-    See :any:`newline_autoindent_outer` for a replacement.
-
-    Preserve margin and cursor position when using
-    Control-O to insert a newline in EMACS mode
-    """
-    warnings.warn(
-        "`newline_with_copy_margin(event)` is deprecated since IPython 6.0. "
-        "see `newline_autoindent_outer(shell)(event)` for a replacement.",
-        DeprecationWarning,
-        stacklevel=2)
-
-    b = event.current_buffer
-    cursor_start_pos = b.document.cursor_position_col
-    b.newline(copy_margin=True)
-    b.cursor_up(count=1)
-    cursor_end_pos = b.document.cursor_position_col
-    if cursor_start_pos != cursor_end_pos:
-        pos_diff = cursor_start_pos - cursor_end_pos
-        b.cursor_right(count=pos_diff)
 
 
 def newline_autoindent_outer(inputsplitter) -> Callable[..., None]:

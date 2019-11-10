@@ -120,7 +120,7 @@ class PasteTestCase(TestCase):
         nt.assert_equal(ip.user_ns['y'], [1, 4, 9])
 
     def test_paste_py_multi_r(self):
-        "Now, test that self.paste -r works"
+        """Now, test that self.paste -r works"""
         self.test_paste_py_multi()
         nt.assert_equal(ip.user_ns.pop('x'), [1, 2, 3])
         nt.assert_equal(ip.user_ns.pop('y'), [1, 4, 9])
@@ -130,7 +130,7 @@ class PasteTestCase(TestCase):
         nt.assert_equal(ip.user_ns['y'], [1, 4, 9])
 
     def test_paste_email(self):
-        "Test pasting of email-quoted contents"
+        """Test pasting of email-quoted contents"""
         self.paste("""\
         >> def foo(x):
         >>     return x + 1
@@ -138,7 +138,7 @@ class PasteTestCase(TestCase):
         nt.assert_equal(ip.user_ns['xx'], 2.1)
 
     def test_paste_email2(self):
-        "Email again; some programs add a space also at each quoting level"
+        """Email again; some programs add a space also at each quoting level"""
         self.paste("""\
         > > def foo(x):
         > >     return x + 1
@@ -146,7 +146,7 @@ class PasteTestCase(TestCase):
         nt.assert_equal(ip.user_ns['yy'], 3.1)
 
     def test_paste_email_py(self):
-        "Email quoting of interactive input"
+        """Email quoting of interactive input"""
         self.paste("""\
         >> >>> def f(x):
         >> ...   return x+1
@@ -155,7 +155,7 @@ class PasteTestCase(TestCase):
         nt.assert_equal(ip.user_ns['zz'], 3.5)
 
     def test_paste_echo(self):
-        "Also test self.paste echoing, by temporarily faking the writer"
+        """Also test self.paste echoing, by temporarily faking the writer"""
         w = StringIO()
         writer = ip.write
         ip.write = w.write
@@ -172,7 +172,7 @@ class PasteTestCase(TestCase):
         assert out == code + "\n## -- End pasted text --\n"
 
     def test_paste_leading_commas(self):
-        "Test multiline strings with leading commas"
+        """Test multiline strings with leading commas"""
         tm = ip.magics_manager.registry['TerminalMagics']
         s = '''\
 a = """
@@ -183,7 +183,7 @@ a = """
         nt.assert_in('foo', ip.user_ns)
 
     def test_paste_trailing_question(self):
-        "Test pasting sources with trailing question marks"
+        """Test pasting sources with trailing question marks"""
         tm = ip.magics_manager.registry['TerminalMagics']
         s = '''\
 def funcfoo():

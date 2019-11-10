@@ -860,20 +860,22 @@ class InteractiveShell(SingletonConfigurable):
                                             self.object_info_string_level)
 
     def init_io(self):
-        # This will just use sys.stdout and sys.stderr. If you want to
-        # override sys.stdout and sys.stderr themselves, you need to do that
-        # *before* instantiating this class, because io holds onto
-        # references to the underlying streams.
-        # io.std* are deprecated, but don't show our own deprecation warnings
-        # during initialization of the deprecated API.
+        """Redirects io.IOStreams(sys.stdout) and sys.stderr.
+
+        This will just use sys.stdout and sys.stderr. If you want to
+        override sys.stdout and sys.stderr themselves, you need to do that
+        *before* instantiating this class, because io holds onto
+        references to the underlying streams.
+        io.std* are deprecated, but don't show our own deprecation warnings
+        during initialization of the deprecated API.
+        """
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', DeprecationWarning)
             io.stdout = io.IOStream(sys.stdout)
             io.stderr = io.IOStream(sys.stderr)
 
     def init_prompts(self):
-        # Set system prompts, so that scripts can decide if they are running
-        # interactively.
+        """Set system prompts, so that scripts can decide if they're interactive."""
         sys.ps1 = 'In : '
         sys.ps2 = '...: '
         sys.ps3 = 'Out: '
@@ -894,7 +896,7 @@ class InteractiveShell(SingletonConfigurable):
         self.configurables.append(self.data_pub)
 
     def init_displayhook(self):
-        # Initialize displayhook, set in/out prompts and printing system
+        """Initialize displayhook, set in/out prompts and printing system."""
         self.displayhook = self.displayhook_class(
             parent=self,
             shell=self,
@@ -1049,8 +1051,8 @@ class InteractiveShell(SingletonConfigurable):
 
         IPython exposes some of its internal API as user-modifiable hooks.  By
         adding your function to one of these hooks, you can modify IPython's
-        behavior to call at runtime your own routines."""
-
+        behavior to call at runtime your own routines.
+        """
         # At some point in the future, this should validate the hook before it
         # accepts it.  Probably at least check that the hook takes the number
         # of args it's supposed to.
@@ -1178,6 +1180,7 @@ class InteractiveShell(SingletonConfigurable):
 
         In [19]: len(_ip._main_mod_cache) == 0
         Out[19]: True
+
         """
         self._main_mod_cache.clear()
 
@@ -1186,7 +1189,7 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
 
     def init_pdb(self):
-        # Set calling of pdb on exceptions
+        """Set calling of pdb on exceptions."""
         # self.call_pdb is a property
         self.call_pdb = self.pdb
 
@@ -1210,14 +1213,15 @@ class InteractiveShell(SingletonConfigurable):
     def debugger(self, force=False):
         """Call the pdb debugger.
 
-        Keywords:
-
-          - force(False): by default, this routine checks the instance call_pdb
+        Parameters
+        ----------
+        force : bool
+            By default, this routine checks the instance call_pdb
             flag and does not actually invoke the debugger if the flag is false.
             The 'force' option forces the debugger to activate even if the flag
             is false.
-        """
 
+        """
         if not (force or self.call_pdb):
             return
 
@@ -1372,22 +1376,27 @@ class InteractiveShell(SingletonConfigurable):
         return user_module, user_ns
 
     def init_sys_modules(self):
-        # We need to insert into sys.modules something that looks like a
-        # module but which accesses the IPython namespace, for shelve and
-        # pickle to work interactively. Normally they rely on getting
-        # everything out of __main__, but for embedding purposes each IPython
-        # instance has its own private namespace, so we can't go shoving
-        # everything into __main__.
+        """Allow IPython's overrides for sys.modules.
 
-        # note, however, that we should only do this for non-embedded
-        # ipythons, which really mimic the __main__.__dict__ with their own
-        # namespace.  Embedded instances, on the other hand, should not do
-        # this because they need to manage the user local/global namespaces
-        # only, but they live within a 'normal' __main__ (meaning, they
-        # shouldn't overtake the execution environment of the script they're
-        # embedded in).
+        Once again another 20 line comment like guys why.....
 
-        # This is overridden in the InteractiveShellEmbed subclass to a no-op.
+        We need to insert into sys.modules something that looks like a
+        module but which accesses the IPython namespace, for shelve and
+        pickle to work interactively. Normally they rely on getting
+        everything out of __main__, but for embedding purposes each IPython
+        instance has its own private namespace, so we can't go shoving
+        everything into __main__.
+
+        note, however, that we should only do this for non-embedded
+        ipythons, which really mimic the __main__.__dict__ with their own
+        namespace.  Embedded instances, on the other hand, should not do
+        this because they need to manage the user local/global namespaces
+        only, but they live within a 'normal' __main__ (meaning, they
+        shouldn't overtake the execution environment of the script they're
+        embedded in).
+
+        This is overridden in the InteractiveShellEmbed subclass to a no-op.
+        """
         main_name = self.user_module.__name__
         sys.modules[main_name] = self.user_module
 

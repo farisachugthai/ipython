@@ -444,7 +444,7 @@ def test_pretty_environ():
 
 
 def test_function_pretty():
-    "Test pretty print of function"
+    """Test pretty print of function"""
     # posixpath is a pure python module, its interface is consistent
     # across Python distributions
     import posixpath
@@ -462,7 +462,7 @@ def test_function_pretty():
 
 
 class OrderedCounter(Counter, OrderedDict):
-    'Counter that remembers the order elements are first encountered'
+    """Counter that remembers the order elements are first encountered"""
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, OrderedDict(self))

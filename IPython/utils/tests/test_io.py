@@ -21,7 +21,7 @@ from IPython.utils.tempdir import TemporaryDirectory
 
 
 def test_tee_simple():
-    "Very simple check with stdout only"
+    """Very simple check with stdout only"""
     chan = StringIO()
     text = 'Hello'
     tee = Tee(chan, channel='stdout')

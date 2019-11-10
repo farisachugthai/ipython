@@ -73,7 +73,7 @@ def test_find_file_decorated1():
 
     @noop1
     def f(x):
-        "My docstring"
+        """My docstring"""
 
     match_pyfiles(oinspect.find_file(f), os.path.abspath(__file__))
     nt.assert_equal(f.__doc__, "My docstring")
@@ -88,7 +88,7 @@ def test_find_file_decorated2():
     @noop2
     @noop2
     def f(x):
-        "My docstring 2"
+        """My docstring 2"""
 
     match_pyfiles(oinspect.find_file(f), os.path.abspath(__file__))
     nt.assert_equal(f.__doc__, "My docstring 2")
@@ -167,7 +167,7 @@ class SerialLiar(object):
 
 
 def test_info():
-    "Check that Inspector.info fills out various fields as expected."
+    """Check that Inspector.info fills out various fields as expected."""
     i = inspector.info(Call, oname='Call')
     nt.assert_equal(i['type_name'], 'type')
     # <class 'type'> (Python 3) or <type 'type'>
@@ -284,7 +284,7 @@ def test_property_sources():
     # the same across Python distributions
 
     def simple_add(a, b):
-        "Adds two numbers"
+        """Adds two numbers"""
         return a + b
 
     class A(object):

@@ -14,7 +14,7 @@ from IPython.lib.deepreload import reload as dreload
 
 
 def test_deepreload():
-    "Test that dreload does deep reloads and skips excluded modules."
+    """Test that dreload does deep reloads and skips excluded modules."""
     with TemporaryDirectory() as tmpdir:
         with prepended_to_syspath(tmpdir):
             with open(os.path.join(tmpdir, 'A.py'), 'w') as f:

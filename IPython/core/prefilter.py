@@ -493,7 +493,7 @@ class AutocallChecker(PrefilterChecker):
             config=True)
 
     def check(self, line_info):
-        "Check if the initial word/function is callable and autocall is on."
+        """Check if the initial word/function is callable and autocall is on."""
         if not self.shell.autocall:
             return None
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Tools for coloring text in ANSI terminals."""
 
 # *****************************************************************************
@@ -9,6 +8,8 @@
 # *****************************************************************************
 
 __all__ = ['TermColors', 'InputTermColors', 'ColorScheme', 'ColorSchemeTable']
+
+# from abc import Mapping
 import copy
 import os
 
@@ -118,9 +119,9 @@ for name, value in color_templates:
 class ColorScheme:
     """Generic color scheme class. Just a name and a Struct."""
 
-    def __init__(self, colordict=None, **colormap):
+    def __init__(self, name=None, colordict=None, **colormap):
         """Idk if my use of or here is correct."""
-        self.name = self.__class__.__name__
+        self.name = name or self.__class__.__name__
         self.colors = Struct(colordict) or Struct(**colormap)
 
     def copy(self, name=None):
@@ -172,9 +173,9 @@ class ColorSchemeTable(dict):
     def active_scheme_name_prop(self):
         pass
 
-    @active_scheme_name_prop_setter
-    def uhh(self):
-        """Idk how to do this."""
+    # @active_scheme_name_prop_setter
+    # def uhh(self):
+    #     """Idk how to do this."""
 
     def copy(self):
         """Return full copy of object"""

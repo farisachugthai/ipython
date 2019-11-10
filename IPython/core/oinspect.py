@@ -17,37 +17,38 @@ use it as a drop-in replacement.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-__all__ = ['Inspector', 'InspectColors']
+__all__ = ['Inspector']
 
 import ast
+import collections
 import inspect
 from inspect import (signature, getsource, getfullargspec,
-                     getabsfile as find_file, formatargspec)
+                     getabsfile as find_file, formatargspec, getdoc)
+from itertools import zip_longest
 import linecache
+import sys
 import warnings
 import os
 from textwrap import dedent, indent
 # from IPython.utils.text import indent
 import types
-import io as stdlib_io
-from itertools import zip_longest
 
 # IPython's own
 from IPython.core import page
 from IPython.lib.pretty import pretty
 from IPython.testing.skipdoctest import skip_doctest
-from IPython.utils import PyColorize
+# from IPython.utils import PyColorize
 from IPython.utils import openpy
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
-from IPython.utils.wildcard import list_namespace
-from IPython.utils.wildcard import typestr2type
-from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
-from IPython.utils.PyColorize import Colorable
+from IPython.utils.wildcard import list_namespace, typestr2type
+# from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
+# from IPython.utils.PyColorize import Colorable
 from IPython.utils.decorators import undoc
 
 from pygments import highlight
-from pygments.lexers import PythonLexer
+# from pygments.lexers import PythonLexer
+from IPython.lib.lexers import IPyLexer as PythonLexer
 from pygments.formatters import HtmlFormatter
 
 
@@ -69,9 +70,9 @@ _builtin_meth_type = type(
 # ****************************************************************************
 # Builtin color schemes
 
-Colors = TermColors  # just a shorthand
+# Colors = TermColors  # just a shorthand
 
-InspectColors = PyColorize.ANSICodeColors
+# InspectColors = PyColorize.ANSICodeColors
 
 # ****************************************************************************
 # Auxiliary functions and objects
@@ -153,64 +154,71 @@ def find_source_lines(obj):
     -------
     lineno : int
       The line number where the object definition starts.
+
     """
     obj = _get_wrapped(obj)
 
     try:
-        try:
-            lineno = inspect.getsourcelines(obj)[1]
-        except TypeError:
-            # For instances, try the class object like getsource() does
-            if hasattr(obj, '__class__'):
-                lineno = inspect.getsourcelines(obj.__class__)[1]
-            else:
-                lineno = None
-    except BaseException:
-        return None
-
-    return lineno
+        lineno = inspect.getsourcelines(obj)[1]
+    except TypeError:
+        # For instances, try the class object like getsource() does
+        if hasattr(obj, '__class__'):
+            return inspect.getsourcelines(obj.__class__)[1]
 
 
-class Inspector(Colorable):
+if sys.version_info < (3, 5, 0):
+    FrameInfo = collections.namedtuple(
+        "FrameInfo",
+        ["frame", "filename", "lineno", "function", "code_context", "index"],
+    )
+
+    def getouterframes(frame, context=1):
+        """Wrapper for getouterframes so that it acts like the Python v3.5 version."""
+        return [FrameInfo(*f) for f in inspect.getouterframes(frame, context=context)]
+
+
+else:
+    getouterframes = inspect.getouterframes
+
+
+class Inspector:
     """Whew. Wth?
 
     Parameters
     ----------
     scheme :
         colorscheme
+
+    Note
+    ----
+    The Xonsh guy made it stop inheriting from Colorable!!!
     """
 
     def __init__(self,
-                 color_table=InspectColors,
-                 scheme=None,
+                 # color_table=InspectColors,
+                 # scheme=None,
                  str_detail_level=0,
-                 parent=None,
-                 config=None):
-        self.color_table = color_table
-        self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
-        self.format = self.parser.format
+                 # parent=None,
+                 ):
+        # self.color_table = color_table
+        # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
+        # self.format = self.parser.format
         self.str_detail_level = str_detail_level
-        self.set_active_scheme(scheme)
-        super().__init__(parent=parent, config=config)
+        # self.set_active_scheme(scheme)
+        # super().__init__(parent=parent, config=config)
 
     def _getdef(self, obj, oname=''):
         """Return the call signature for any callable object.
 
         If any exception is generated, None is returned instead and the
         exception is suppressed.
+
+        .. todo:: Sub out the call to _render_signature for something with
+                  inspect.Signature.
+
         """
         hdef = _render_signature(signature(obj), oname)
         return hdef
-
-    def __head(self, h):
-        """Return a header string with proper colors."""
-        return '%s%s%s' % (self.color_table.active_colors.header, h,
-                           self.color_table.active_colors.normal)
-
-    def set_active_scheme(self, scheme):
-        if scheme is not None:
-            self.color_table.set_active_scheme(scheme)
-            self.parser.color_table.set_active_scheme(scheme)
 
     def noinfo(self, msg, oname):
         """Generic message when no information is found."""
@@ -223,7 +231,8 @@ class Inspector(Colorable):
     def pdef(self, obj, oname=''):
         """Print the call signature for any callable object.
 
-        If the object is a class, print the constructor information."""
+        If the object is a class, print the constructor information.
+        """
 
         if not callable(obj):
             print('Object is not callable.')
@@ -232,26 +241,27 @@ class Inspector(Colorable):
         header = ''
 
         if inspect.isclass(obj):
-            header = self.__head('Class constructor information:\n')
+            header = self.__head("Class constructor information:\n")
+            obj = obj.__init__
 
         output = self._getdef(obj, oname)
         if output is None:
             self.noinfo('definition header', oname)
         else:
-            print(header, self.format(output), end=' ')
+            print(header, output, end=" ", file=sys.stdout)
 
-    # In Python 3, all classes are new-style, so they all have __init__.q
-    def pdoc(self, obj, oname='', formatter=None):
+    def pdoc(self, obj, oname=""):
         """Print the docstring for any object.
 
         Parameters
         -----------
-        formatter :
-        a function to run the docstring through for specially
-        formatted docstrings.
+        formatter : function
+            A function to run the docstring through for specially
+            formatted docstrings.
 
         Examples
         --------
+        ::
 
         In [1]: class NoInit:
            ...:     pass
@@ -279,26 +289,24 @@ class Inspector(Colorable):
         head = self.__head  # For convenience
         lines = []
         ds = getdoc(obj)
-        if formatter:
-            ds = formatter(ds).get('plain/text', ds)
         if ds:
             lines.append(head("Class docstring:"))
             lines.append(indent(ds))
-        if inspect.isclass(obj) and hasattr(obj, '__init__'):
+        if inspect.isclass(obj) and hasattr(obj, "__init__"):
             init_ds = getdoc(obj.__init__)
             if init_ds is not None:
                 lines.append(head("Init docstring:"))
                 lines.append(indent(init_ds))
-        elif hasattr(obj, '__call__'):
+        elif hasattr(obj, "__call__"):
             call_ds = getdoc(obj.__call__)
             if call_ds:
                 lines.append(head("Call docstring:"))
                 lines.append(indent(call_ds))
 
         if not lines:
-            self.noinfo('documentation', oname)
+            self.noinfo("documentation", oname)
         else:
-            page.page('\n'.join(lines))
+            print("\n".join(lines))
 
     def psource(self, obj, oname=''):
         """Print the source code for an object."""
@@ -307,12 +315,9 @@ class Inspector(Colorable):
         try:
             src = getsource(obj, oname=oname)
         except Exception:
-            src = None
-
-        if src is None:
-            self.noinfo('source', oname)
+            self.noinfo("source", oname)
         else:
-            page.page(self.format(src))
+            print(src)
 
     def pfile(self, obj, oname=''):
         """Show the whole file where an object was defined."""
@@ -358,7 +363,7 @@ class Inspector(Colorable):
                 title = header(title + ':') + '\n'
             else:
                 title = header((title + ':').ljust(title_width))
-            out.append((title) + cast_unicode(content))
+            out.append((title) + content)
         return "\n".join(out)
 
     def _mime_format(self, text, formatter=None):
@@ -774,7 +779,7 @@ class Inspector(Colorable):
 
         if callable_obj is not None:
             try:
-                argspec = getargspec(callable_obj)
+                argspec = inspect.getargspec(callable_obj)
             except Exception:
                 # For extensions/builtins we can't retrieve the argspec
                 pass
@@ -801,10 +806,7 @@ class Inspector(Colorable):
             def_node, = ast.parse(dedent(src)).body
             return ast.get_docstring(def_node) == doc
         except Exception:
-            # The source can become invalid or even non-existent (because it
-            # is re-fetched from the source file) so the above code fail in
-            # arbitrary ways.
-            return False
+            pass
 
     def psearch(self,
                 pattern,

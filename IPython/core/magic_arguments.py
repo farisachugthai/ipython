@@ -1,4 +1,4 @@
-''' A decorator-based method of constructing IPython magics with `argparse`
+""" A decorator-based method of constructing IPython magics with `argparse`
 option handling.
 
 New magic functions can be defined like so::
@@ -10,39 +10,7 @@ New magic functions can be defined like so::
     @argument('-o', '--option', help='An optional argument.')
     @argument('arg', type=int, help='An integer positional argument.')
     def magic_cool(self, arg):
-        """ A really cool magic command.
-
-    """
-        args = parse_argstring(magic_cool, arg)
-        ...
-
-The `@magic_arguments` decorator marks the function as having argparse arguments.
-The `@argument` decorator adds an argument using the same syntax as argparse's
-`add_argument()` method. More sophisticated uses may also require the
-`@argument_group` or `@kwds` decorator to customize the formatting and the
-parsing.
-
-Help text for the magic is automatically generated from the docstring and the
-arguments::
-
-    In[1]: %cool?
-        %cool [-o OPTION] arg
-
-        A really cool magic command.
-
-        positional arguments:
-          arg                   An integer positional argument.
-
-        optional arguments:
-          -o OPTION, --option OPTION
-                                An optional argument.
-
-Inheritance diagram:
-
-.. inheritance-diagram:: IPython.core.magic_arguments
-   :parts: 3
-
-'''
+        """
 # -----------------------------------------------------------------------------
 # Copyright (C) 2010-2011, IPython Development Team.
 #

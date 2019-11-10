@@ -1,15 +1,17 @@
-"""Terminal input and output prompts."""
+"""Terminal input and output prompts.
 
-from pygments.token import Token
+TMK this is made configurable in the .ipapp module.
+"""
 import sys
 
-from IPython.core.displayhook import DisplayHook
-
+from pygments.token import Token
 from prompt_toolkit.formatted_text import fragment_list_width, PygmentsTokens
 from prompt_toolkit.shortcuts import print_formatted_text
 
+from IPython.core.displayhook import DisplayHook
 
-class Prompts(object):
+
+class Prompts:
     def __init__(self, shell):
         self.shell = shell
 

@@ -25,6 +25,9 @@ import sphinx
 from sphinx.util.docfields import GroupedField
 from sphinx.util.logging import getLogger
 
+import numpydoc  # noqa F401
+from matplotlib.sphinxext.plot_directive import PlotDirective
+
 import IPython  # noqa F401
 from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 
@@ -71,6 +74,7 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'sphinx.ext.napoleon',  # to preprocess docstrings
+    'numpydoc.numpydoc',
     'github',  # for easy GitHub links
     'magics',
     'configtraits',

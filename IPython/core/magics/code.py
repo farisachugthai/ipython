@@ -395,7 +395,7 @@ class CodeMagics(Magics):
         """Utility method used by magic_edit to find what to edit."""
 
         def make_filename(arg):
-            "Make a filename from the given args"
+            """Make a filename from the given args"""
             try:
                 filename = get_py_filename(arg)
             except IOError:

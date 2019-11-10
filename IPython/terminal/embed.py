@@ -1,4 +1,3 @@
-# encoding: utf-8
 """An embedded IPython shell."""
 
 # Copyright (c) IPython Development Team.
@@ -15,7 +14,6 @@ from IPython.core.error import KillEmbedded
 from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.core.interactiveshell import DummyMod, InteractiveShell
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
-from IPython.terminal.ipapp import load_default_config
 from IPython.utils.io import ask_yes_no
 
 # kept for backward compatibility as IPython 6 was released with
@@ -27,6 +25,11 @@ from IPython.utils.io import ask_yes_no
 # This is an additional magic that is exposed in embedded shells.
 @magics_class
 class EmbeddedMagics(Magics):
+    """The embedded magics for IPython.
+
+    Honestly where are these documented? kill_embedded???
+    """
+
     @line_magic
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-i',
@@ -41,6 +44,7 @@ class EmbeddedMagics(Magics):
                               '--yes',
                               action='store_true',
                               help='Do not ask confirmation')
+
     def kill_embedded(self, parameter_s=''):
         """%kill_embedded : deactivate for good the current embedded IPython
 
@@ -103,9 +107,6 @@ class EmbeddedMagics(Magics):
     @line_magic
     def exit_raise(self, parameter_s=''):
         """Make the current embedded kernel exit and raise an exception.
-
-        .. used to have a magic directive here. suspected it was killing the doc build
-        ..  %exit_raise
 
         This function sets an internal flag so that an embedded IPython will
         raise a `IPython.terminal.embed.KillEmbedded` Exception on exit, and
@@ -174,13 +175,11 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
                                              call_pdb=self.pdb)
 
     def init_sys_modules(self):
-        """
-        Explicitly overwrite :mod:`IPython.core.interactiveshell` to do nothing.
-        """
+        """Explicitly overwrite :mod:`IPython.core.interactiveshell` to do nothing."""
         pass
 
     def init_magics(self):
-        super(InteractiveShellEmbed, self).init_magics()
+        super().init_magics()
         self.register_magics(EmbeddedMagics)
 
     def __call__(self,
@@ -207,7 +206,6 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
         example, if you set dummy mode on with IPShell.dummy_mode = True, you
         can still have a specific call work by making it as IPShell(dummy=False).
         """
-
         # we are called, set the underlying interactiveshell not to exit.
         self.keep_running = True
 
@@ -396,6 +394,7 @@ def embed(**kwargs):
     Full customization can be done by passing a :class:`Config` in as the
     config argument.
     """
+    from IPython.terminal.ipapp import load_default_config
     config = kwargs.get('config')
     header = kwargs.pop('header', u'')
     compile_flags = kwargs.pop('compile_flags', None)
