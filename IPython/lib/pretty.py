@@ -86,7 +86,7 @@ import sys
 import types
 from collections import deque
 from inspect import signature
-from io import StringIO
+from utils_io import StringIO
 from warnings import warn
 
 from IPython.utils.decorators import undoc

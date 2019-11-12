@@ -4,7 +4,7 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from io import BytesIO
+from utils_io import BytesIO
 
 from IPython.core.display import _pngxy
 from IPython.utils.decorators import flag_calls

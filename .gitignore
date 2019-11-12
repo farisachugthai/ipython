@@ -1,3 +1,4 @@
+.idea/**
 *.log
 docs/searchindex.js
 docs/_static
@@ -42,3 +43,5 @@ venv*/
 .idea/
 
 # Vim: set ft=git:
+
+!.idea/

@@ -22,7 +22,7 @@ except ImportError:
 from unittest import TestCase, mock
 import struct
 import wave
-from io import BytesIO
+from utils_io import BytesIO
 
 # Third-party imports
 import nose.tools as nt

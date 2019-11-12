@@ -47,7 +47,7 @@ from IPython.utils.path import get_py_filename, shellglob
 from IPython.utils.timing import clock, clock2
 from warnings import warn
 from logging import error
-from io import StringIO
+from utils_io import StringIO
 
 if sys.version_info > (3, 8):
     from ast import Module

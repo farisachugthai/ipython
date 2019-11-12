@@ -16,7 +16,7 @@ import tempfile
 import unittest
 
 from contextlib import contextmanager
-from io import StringIO
+from utils_io import StringIO
 from subprocess import Popen, PIPE
 from unittest.mock import patch
 
@@ -32,7 +32,7 @@ except ImportError:
 from traitlets.config.loader import Config
 from IPython.utils.process import get_output_error_code
 from IPython.utils.text import list_strings
-from IPython.utils.io import temp_pyfile, Tee
+from IPython.utils.utils_io import temp_pyfile, Tee
 from IPython.utils import py3compat
 
 from . import decorators as dec

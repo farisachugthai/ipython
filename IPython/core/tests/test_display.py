@@ -11,7 +11,7 @@ import nose.tools as nt
 
 from IPython.core import display
 from IPython.core.getipython import get_ipython
-from IPython.utils.io import capture_output
+from IPython.utils.utils_io import capture_output
 from IPython.utils.tempdir import NamedFileInTemporaryDirectory
 from IPython import paths as ipath
 from IPython.testing.tools import AssertPrints, AssertNotPrints

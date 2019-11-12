@@ -144,7 +144,7 @@ class Audio(DisplayObject):
     def _make_wav(data, rate, normalize):
         """ Transform a numpy array to a PCM bytestring """
         import struct
-        from io import BytesIO
+        from utils_io import BytesIO
         import wave
 
         try:

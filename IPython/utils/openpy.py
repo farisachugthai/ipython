@@ -5,8 +5,8 @@ as per PEP 263.
 Much of the code is taken from the tokenize module in Python 3.2.
 """
 
-import io
-from io import TextIOWrapper, BytesIO
+import utils_io
+from utils_io import TextIOWrapper, BytesIO
 import re
 from tokenize import open, detect_encoding
 
@@ -106,5 +106,5 @@ def read_py_url(url, errors='replace', skip_encoding_cookie=True):
     # Deferred import for faster start
     from urllib.request import urlopen
     response = urlopen(url)
-    buffer = io.BytesIO(response.read())
+    buffer = utils_io.BytesIO(response.read())
     return source_to_unicode(buffer, errors, skip_encoding_cookie)

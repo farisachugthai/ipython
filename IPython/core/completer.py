@@ -143,10 +143,11 @@ from types import SimpleNamespace
 from traitlets import Bool, Enum, observe, Int
 from traitlets.config.configurable import Configurable
 
+from .error import ProvisionalCompleterWarning
 from IPython.core.error import TryNext
 from IPython.core.inputtransformer2 import ESC_MAGIC
 from IPython.core.latex_symbols import latex_symbols, reverse_latex_symbol
-from IPython.core.oinspect import InspectColors
+
 from IPython.utils import generics
 from IPython.utils.dir2 import dir2, get_real_method
 from IPython.utils.process import arg_split
@@ -154,7 +155,8 @@ from IPython.utils.process import arg_split
 # skip module docstests
 skip_doctest = True
 
-import jedi
+import jedi  # This is a dependency now so we don't need a try/except
+JEDI_INSTALLED = True
 jedi.settings.case_insensitive_completion = False
 import jedi.api.helpers
 import jedi.api.classes
@@ -176,16 +178,6 @@ else:
 MATCHES_LIMIT = 500
 
 _deprecation_readline_sentinel = object()
-
-
-class ProvisionalCompleterWarning(FutureWarning):
-    """
-    Exception raise by an experimental feature in this module.
-
-    Wrap code in :any:`provisionalcompleter` context manager if you
-    are certain you want to use an unstable feature.
-    """
-    pass
 
 
 warnings.filterwarnings('error', category=ProvisionalCompleterWarning)
@@ -1389,7 +1381,10 @@ class IPCompleter(Completer):
         return []
 
     def magic_color_matches(self, text: str) -> List[str]:
-        """ Match color schemes for %colors magic"""
+        """Match color schemes for %colors magic."""
+        # This used to be in oinspect at the global level but this is the only
+        # place where it was invoked like that. That and oinspect itself.
+        InspectColors = PyColorize.ANSICodeColors
         texts = text.split()
         if text.endswith(' '):
             # .split() strips off the trailing whitespace. Add '' back

@@ -19,7 +19,7 @@ import textwrap
 import shutil
 import random
 import time
-from io import StringIO
+from utils_io import StringIO
 
 import nose.tools as nt
 import IPython.testing.tools as tt

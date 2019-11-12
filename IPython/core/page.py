@@ -19,7 +19,7 @@ from shutil import get_terminal_size
 import sys
 import tempfile
 
-from io import UnsupportedOperation
+from utils_io import UnsupportedOperation
 
 from IPython.core.getipython import get_ipython
 from IPython.core.display import display

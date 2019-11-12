@@ -2,16 +2,8 @@
 """IO related utilities."""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-import atexit
-from io import *
-import os
 import sys
 import tempfile
-import warnings
-from warnings import warn
-
-from .decorators import undoc
-from .capture import CapturedIO, capture_output
 
 
 class Tee(object):

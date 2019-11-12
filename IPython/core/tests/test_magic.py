@@ -10,7 +10,7 @@ code duplication like wth.
 
 """
 
-import io
+import utils_io
 import os
 import re
 import sys
@@ -19,7 +19,7 @@ from textwrap import dedent
 from unittest import TestCase
 from unittest import mock
 from importlib import invalidate_caches
-from io import StringIO
+from utils_io import StringIO
 
 import nose.tools as nt
 from nose.tools.nontrivial import nottest
@@ -33,7 +33,7 @@ from IPython.core.magic import (Magics, magics_class, line_magic, cell_magic,
 from IPython.core.magics import execution, script, code, logging, osm
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
-from IPython.utils.io import capture_output
+from IPython.utils.utils_io import capture_output
 from IPython.utils.tempdir import (TemporaryDirectory,
                                    TemporaryWorkingDirectory)
 from IPython.utils.process import find_cmd
@@ -928,7 +928,7 @@ def test_file_unicode():
             u'liné1',
             u'liné2',
         ]))
-        with io.open(fname, encoding='utf-8') as f:
+        with utils_io.open(fname, encoding='utf-8') as f:
             s = f.read()
         nt.assert_in(u'liné1\n', s)
         nt.assert_in(u'liné2', s)
@@ -1162,7 +1162,7 @@ def _run_edit_test(arg_s,
     if exp_filename is not None:
         nt.assert_equal(exp_filename, filename)
     if exp_contents is not None:
-        with io.open(filename, 'r', encoding='utf-8') as f:
+        with utils_io.open(filename, 'r', encoding='utf-8') as f:
             contents = f.read()
         nt.assert_equal(exp_contents, contents)
     if exp_lineno != -1:

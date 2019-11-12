@@ -190,7 +190,7 @@ from typing import Dict, AnyStr, Any
 import ast
 import warnings
 import shutil
-from io import StringIO
+from utils_io import StringIO
 
 # Third-party
 from docutils.parsers.rst import directives

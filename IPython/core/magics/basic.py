@@ -2,7 +2,7 @@
 
 import argparse
 import logging
-import io
+import utils_io
 from pprint import pformat
 import textwrap
 import sys
@@ -620,7 +620,7 @@ Currently the magic system has the following functions:""",
                 v4.new_code_cell(execution_count=execution_count,
                                  source=source))
         nb = v4.new_notebook(cells=cells)
-        with io.open(args.filename, 'w', encoding='utf-8') as f:
+        with utils_io.open(args.filename, 'w', encoding='utf-8') as f:
             write(nb, f, version=4)
 
 

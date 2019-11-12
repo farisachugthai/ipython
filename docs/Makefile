@@ -51,10 +51,13 @@ dist: html
 	cp -al build/html .
 	@echo "Build finished.  Final docs are in html/"
 
-html:
+api:
 	$(SPHINXAPIDOC) -e -o source/api/generated ../IPython --tocfile index
 	mkdir -p build/html build/doctrees
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) -d build/doctrees -aE -w sphinx.log source build/html
+
+
+html:
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) --keep-going -w sphinx.log source build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 

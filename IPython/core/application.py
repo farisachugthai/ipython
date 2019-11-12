@@ -1,4 +1,3 @@
-# encoding: utf-8
 """
 An application for IPython.
 
@@ -48,39 +47,56 @@ from traitlets import (
 )
 
 
-class ConfigLocations(Configurable):
+class ConfigLocations:
     """Moved some globals into a class because seriously what is with the globals???"""
-    if os.name == 'nt':
-        programdata = os.environ.get('PROGRAMDATA', None)
-        if programdata:
-            SYSTEM_CONFIG_DIRS = [os.path.join(programdata, 'ipython')]
-        else:  # PROGRAMDATA is not defined by default on XP.
-            SYSTEM_CONFIG_DIRS = []
-    else:
-        SYSTEM_CONFIG_DIRS = [
-            "/usr/local/etc/ipython",
-            "/etc/ipython",
-        ]
+    def __init__(self, SYSTEM_CONFIG_DIRS=None, ENV_CONFIG_DIRS=None):
+        self.SYSTEM_CONFIG_DIRS = SYSTEM_CONFIG_DIRS
+        self.ENV_CONFIG_DIRS = ENV_CONFIG_DIRS
 
-    ENV_CONFIG_DIRS = []
-    _env_config_dir = os.path.join(sys.prefix, 'etc', 'ipython')
-    if _env_config_dir not in SYSTEM_CONFIG_DIRS:
-        # only add ENV_CONFIG if sys.prefix is not already included
-        ENV_CONFIG_DIRS.append(_env_config_dir)
+    @property
+    def get_system(self):
+        return self.SYSTEM_CONFIG_DIRS
 
-    _envvar = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS')
-    if _envvar in {None, ''}:
-        IPYTHON_SUPPRESS_CONFIG_ERRORS = None
-    else:
-        if _envvar.lower() in {'1', 'true'}:
-            IPYTHON_SUPPRESS_CONFIG_ERRORS = True
-        elif _envvar.lower() in {'0', 'false'}:
-            IPYTHON_SUPPRESS_CONFIG_ERRORS = False
+    @get_system.setter
+    def set_system(self):
+        if os.name == 'nt':
+            programdata = os.environ.get('PROGRAMDATA', None)
+            if programdata:
+                self.SYSTEM_CONFIG_DIRS = [os.path.join(programdata, 'ipython')]
+            else:  # PROGRAMDATA is not defined by default on XP.
+                self.SYSTEM_CONFIG_DIRS = []
         else:
-            sys.exit(
-                "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}." %
-                _envvar)
+            self.SYSTEM_CONFIG_DIRS = [
+                "/usr/local/etc/ipython",
+                "/etc/ipython",
+            ]
 
+    @property
+    def get_env_config(self):
+        return self.ENV_CONFIG_DIRS
+
+    @get_env_config.setter
+    def set_env_config(self):
+        _env_config_dir = os.path.join(sys.prefix, 'etc', 'ipython')
+        if _env_config_dir not in self.SYSTEM_CONFIG_DIRS:
+            # only add ENV_CONFIG if sys.prefix is not already included
+            ENV_CONFIG_DIRS.append(_env_config_dir)
+
+    def suppress_errors(self):
+        _envvar = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS')
+        if _envvar in {None, ''}:
+            IPYTHON_SUPPRESS_CONFIG_ERRORS = None
+        else:
+            if _envvar.lower() in {'1', 'true'}:
+                IPYTHON_SUPPRESS_CONFIG_ERRORS = True
+            elif _envvar.lower() in {'0', 'false'}:
+                IPYTHON_SUPPRESS_CONFIG_ERRORS = False
+            else:
+                sys.exit(
+                    "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}." %
+                    _envvar)
+
+ENV_CONFIG_DIRS = ConfigLocations().ENV_CONFIG_DIRS
 
 # aliases and flags
 class BaseAliases(Configurable):
@@ -206,6 +222,12 @@ class BaseIPythonApplication(Application):
 
     @default('config_file_paths')
     def _config_file_paths_default(self):
+        """Wait the only thing here is this.
+
+        >>> return [os.getcwd()]
+
+        Shouldn't there be more things that get returned for config_file_paths?
+        """
         return [os.getcwd()]
 
     extra_config_file = Unicode(help="""Path to an extra config file to load.

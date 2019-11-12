@@ -42,12 +42,13 @@ class NamespaceMagics(Magics):
     def pinfo(self, parameter_s='', namespaces=None):
         """Provide detailed information about an object.
 
-        .. magic:: pinfo
-
         `%pinfo` *object* is just a synonym for
         object :kbd:`?` or :kbd:`?` object.
-        """
 
+        Parameters
+        ----------
+        todo
+        """
         # print 'pinfo par: <%s>' % parameter_s  # dbg
         # detail_level: 0 -> obj? , 1 -> obj??
         detail_level = 0
@@ -69,9 +70,8 @@ class NamespaceMagics(Magics):
     def pinfo2(self, parameter_s='', namespaces=None):
         """Provide extra detailed information about an object.
 
-        .. magic:: pinfo2
+        '%pinfo2 object' is just a synonym for ``object??`` or ``??object``.
 
-        '%pinfo2 object' is just a synonym for object?? or ??object.
         """
         self.shell._inspect('pinfo',
                             parameter_s,
@@ -83,8 +83,6 @@ class NamespaceMagics(Magics):
     def pdef(self, parameter_s='', namespaces=None):
         """Print the call signature for any callable object.
 
-        .. magic:: pdef
-
         If the object is a class, print the constructor information.
 
         Examples
@@ -93,6 +91,7 @@ class NamespaceMagics(Magics):
 
           In [3]: %pdef urllib.urlopen
           urllib.urlopen(url, data=None, proxies=None)
+
         """
         self.shell._inspect('pdef', parameter_s, namespaces)
 
@@ -101,7 +100,9 @@ class NamespaceMagics(Magics):
         """Print the docstring for an object.
 
         If the given object is a class, it will print both the class and the
-        constructor docstrings."""
+        constructor docstrings.
+
+        """
         self.shell._inspect('pdoc', parameter_s, namespaces)
 
     @line_magic
@@ -115,11 +116,9 @@ class NamespaceMagics(Magics):
     def pfile(self, parameter_s='', namespaces=None):
         """Print (or run through pager) the file where an object is defined.
 
-        .. magic:: pfile
-
         The file opens at the line where the object definition begins. IPython
-        will honor the environment variable :envvar:`PAGER` if set, and otherwise will
-        do its best to print the file in a convenient form.
+        will honor the environment variable :envvar:`PAGER` if set, and
+        otherwise will do its best to print the file in a convenient form.
 
         .. note:: This implementation *I think* is based off of pydoc.
 
@@ -130,7 +129,6 @@ class NamespaceMagics(Magics):
         if needed). You can thus use `%pfile` as a syntax highlighting code
         viewer.
         """
-
         # first interpret argument as an object name
         out = self.shell._inspect('pfile', parameter_s, namespaces)
         # if not, try the input as a filename
@@ -148,41 +146,37 @@ class NamespaceMagics(Magics):
     def psearch(self, parameter_s=''):
         """Search for object in namespaces by wildcard.
 
-        .. magic:: psearch
-
         .. program:: %psearch [options] PATTERN [OBJECT TYPE]
 
-        Note: :kbd:`?` can be used as a synonym for %psearch, at the beginning or at
-        the end: both a*? and ?a* are equivalent to '%psearch a*'.  Still, the
-        rest of the command line must be unchanged (options come first), so
-        for example the following forms are equivalent
+        Note: :kbd:`?` can be used as a synonym for %psearch, at the beginning
+        or at the end: both a*? and ?a* are equivalent to '%psearch a*'.
+        Still, the rest of the command line must be unchanged (options
+        come first), so for example the following forms are equivalent.:
 
-        %psearch -i a* function
-        -i a* function?
-        ?-i a* function
+            %psearch -i a* function
+            -i a* function?
+            ?-i a* function
 
-        Arguments:
+        Arguments
+        ---------
+        PATTERN
+            where PATTERN is a string containing * as a wildcard similar to its
+            use in a shell.  The pattern is matched in all namespaces on the
+            search path. By default objects starting with a single _ are not
+            matched, many IPython generated objects have a single
+            underscore. The default is case insensitive matching. Matching is
+            also done on the attributes of objects and not only on the objects
+            in a module.
 
-          PATTERN
+        [OBJECT TYPE]
+            Is the name of a python type from the types module. The name is
+            given in lowercase without the ending type, ex. StringType is
+            written string. By adding a type here only objects matching the
+            given type are matched. Using all here makes the pattern match all
+            types (this is the default).
 
-          where PATTERN is a string containing * as a wildcard similar to its
-          use in a shell.  The pattern is matched in all namespaces on the
-          search path. By default objects starting with a single _ are not
-          matched, many IPython generated objects have a single
-          underscore. The default is case insensitive matching. Matching is
-          also done on the attributes of objects and not only on the objects
-          in a module.
-
-          [OBJECT TYPE]
-
-          Is the name of a python type from the types module. The name is
-          given in lowercase without the ending type, ex. StringType is
-          written string. By adding a type here only objects matching the
-          given type are matched. Using all here makes the pattern match all
-          types (this is the default).
-
-        Options:
-
+        Options
+        -------
           -a: makes the pattern match even objects whose names start with a
           single underscore.  These names are normally omitted from the
           search.
@@ -223,15 +217,16 @@ class NamespaceMagics(Magics):
 
         Case sensitive search::
 
-          %psearch -c a*         list all object beginning with lower case a
+            %psearch -c a*         list all object beginning with lower case a
 
         Show objects beginning with a single _::
 
-          %psearch -a _*         list objects beginning with a single underscore
+            %psearch -a _*         list objects beginning with a single underscore
 
         List available objects::
 
-          %psearch -l            list all available object types
+            %psearch -l            list all available object types
+
         """
         try:
             parameter_s.encode('ascii')
@@ -282,30 +277,27 @@ class NamespaceMagics(Magics):
     def who_ls(self, parameter_s=''):
         """Return a sorted list of all interactive variables.
 
-        .. magic:: who_ls
-
         If arguments are given, only variables of types matching these
         arguments are returned.
 
         Examples
         --------
+        Define two variables and list them with `%who_ls`::
 
-        Define two variables and list them with who_ls::
+            In [1]: alpha = 123
 
-          In [1]: alpha = 123
+            In [2]: beta = 'test'
 
-          In [2]: beta = 'test'
+            In [3]: %who_ls
+            Out[3]: ['alpha', 'beta']
 
-          In [3]: %who_ls
-          Out[3]: ['alpha', 'beta']
+            In [4]: %who_ls int
+            Out[4]: ['alpha']
 
-          In [4]: %who_ls int
-          Out[4]: ['alpha']
+            In [5]: %who_ls str
+            Out[5]: ['beta']
 
-          In [5]: %who_ls str
-          Out[5]: ['beta']
         """
-
         user_ns = self.shell.user_ns
         user_ns_hidden = self.shell.user_ns_hidden
         nonmatching = object()  # This can never be in user_ns
@@ -326,8 +318,6 @@ class NamespaceMagics(Magics):
     @line_magic
     def who(self, parameter_s=''):
         """Print all interactive variables, with some minimal formatting.
-
-        .. magic:: who
 
         If any arguments are given, only variables whose type matches one of
         these are printed. For example::
@@ -352,7 +342,6 @@ class NamespaceMagics(Magics):
 
         Examples
         --------
-
         Define two variables and list them with who::
 
           In [1]: alpha = 123
@@ -393,10 +382,7 @@ class NamespaceMagics(Magics):
     def whos(self, parameter_s=''):
         """Like `%who`, but gives some extra information about each variable.
 
-        .. magic:: whos
-
         The same type filtering of %who can be applied here.
-
         For all variables, the type is printed. Additionally it prints:
 
           - For {},[],(): their length.
@@ -409,7 +395,6 @@ class NamespaceMagics(Magics):
 
         Examples
         --------
-
         Define two variables and list them with `%whos`::
 
           In [1]: alpha = 123
@@ -496,7 +481,8 @@ class NamespaceMagics(Magics):
             if vtype in seq_types:
                 print("n=" + str(len(var)))
             elif vtype == ndarray_type:
-                vshape = str(var.shape).replace(',', '').replace(' ', 'x')[1:-1]
+                vshape = str(var.shape).replace(
+                    ',', '').replace(' ', 'x')[1:-1]
                 if vtype == ndarray_type:
                     # numpy
                     vsize = var.size
@@ -528,13 +514,11 @@ class NamespaceMagics(Magics):
     def reset(self, parameter_s=''):
         """Resets the namespace by removing all names defined by the user.
 
-        .. magic:: reset
+        If called without arguments, this magic will remove all the variables
+        defined in the user's namespace, such that everything currently
+        in IPython's ``In[]`` and ``Out[]`` containers will be removed.
 
-        If called without arguments will remove, all the variables defined
-        in the user's namespace, such that everything currently in IPython's
-        In[] and Out[] containers will be removed.
-
-        Parameters
+        Options
         ----------
         -f : force reset without asking for confirmation.
 
@@ -543,6 +527,8 @@ class NamespaceMagics(Magics):
             we do a 'hard' reset, giving you a new session and removing all
             references to objects from the current session.
 
+        Parameters
+        ----------
         in : reset input history
 
         out : reset output history
@@ -579,7 +565,7 @@ class NamespaceMagics(Magics):
           Flushing directory history
           Flushing input history
 
-        Notes
+        Note
         -----
         Calling this magic from clients that do not implement standard input,
         such as the IPython notebook interface, will `%reset` the namespace
@@ -659,20 +645,20 @@ class NamespaceMagics(Magics):
     def reset_selective(self, parameter_s=''):
         """Resets the namespace by removing names defined by the user.
 
-        .. magic:: reset_selecive
-
         Input/Output history are left around in case you need them.
 
         .. program:: %reset_selective [-f] regex
 
-            Reset variables as specified by the user.
-            No action is taken if *regex* is not included
+        Reset variables as specified by the user.
+        No action is taken if *regex* is not included
 
-        .. program:option:: -f : force reset without asking for confirmation.
+        .. option:: -f, --force
+
+        Reset without asking for confirmation.
 
         See Also
         --------
-        .. seealso:: `%reset`
+        `%reset`
 
         Examples
         --------
@@ -715,8 +701,12 @@ class NamespaceMagics(Magics):
         Calling this magic from clients that do not implement standard input,
         such as the ipython notebook interface, will reset the namespace
         without confirmation.
-        """
 
+        Raises
+        ------
+        :exc:`TypeError`
+
+        """
         opts, regex = self.parse_options(parameter_s, 'f')
 
         if 'f' in opts:
@@ -753,8 +743,16 @@ class NamespaceMagics(Magics):
         from the output history.
 
         Options
-          -n : Delete the specified name from all namespaces, without
-          checking their identity.
+        -------
+        .. program:: %xdel
+
+        Delete references in the namespace.
+
+        .. option:: -n
+
+        Delete the specified name from all namespaces, without checking
+        their identity.
+
         """
         opts, varname = self.parse_options(parameter_s, 'n')
         try:

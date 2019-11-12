@@ -15,7 +15,7 @@
 # Stdlib
 import os
 import sys
-from io import open as io_open
+from utils_io import open as io_open
 
 # Our own packages
 from IPython.core.error import StdinNotImplementedError
@@ -23,7 +23,7 @@ from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.core.magic_arguments import (argument, magic_arguments,
                                           parse_argstring)
 from IPython.testing.skipdoctest import skip_doctest
-from IPython.utils import io
+from IPython.utils import utils_io
 
 # -----------------------------------------------------------------------------
 # Magics class implementation
@@ -165,7 +165,7 @@ class HistoryMagics(Magics):
         else:
             if os.path.exists(outfname):
                 try:
-                    ans = io.ask_yes_no("File %r exists. Overwrite?" % outfname)
+                    ans = utils_io.ask_yes_no("File %r exists. Overwrite?" % outfname)
                 except StdinNotImplementedError:
                     ans = True
                 if not ans:

@@ -5,7 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from base64 import encodebytes
-from io import BytesIO, open
+from utils_io import BytesIO, open
 import os
 import shutil
 import subprocess

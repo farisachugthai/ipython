@@ -37,8 +37,56 @@ if sys.version_info > (3, 5):
         def _get_top_level_cases(self):
             # These are test cases that should be valid in a function
             # but invalid outside of a function.
-            test_cases = []
-            test_cases.append(('basic', "{val}"))
+            test_cases = [('basic', "{val}"), ('if',
+                                               dedent("""
+            if True:
+                {val}
+            """)), ('while',
+                    dedent("""
+            while True:
+                {val}
+                break
+            """)), ('try',
+                    dedent("""
+            try:
+                {val}
+            except:
+                pass
+            """)), ('except',
+                    dedent("""
+            try:
+                pass
+            except:
+                {val}
+            """)), ('finally',
+                    dedent("""
+            try:
+                pass
+            except:
+                pass
+            finally:
+                {val}
+            """)), ('for',
+                    dedent("""
+            for _ in range(4):
+                {val}
+            """)), ('nested',
+                    dedent("""
+            if True:
+                while True:
+                    {val}
+                    break
+            """)), ('deep-nested',
+                    dedent("""
+            if True:
+                while True:
+                    break
+                    for x in range(3):
+                        if True:
+                            while True:
+                                for x in range(3):
+                                    {val}
+            """))]
 
             # Note, in all conditional cases, I use True instead of
             # False so that the peephole optimizer won't optimize away
@@ -55,91 +103,22 @@ if sys.version_info > (3, 5):
             #
             # See https://bugs.python.org/issue1875
 
-            test_cases.append(('if',
-                               dedent("""
-            if True:
-                {val}
-            """)))
-
-            test_cases.append(('while',
-                               dedent("""
-            while True:
-                {val}
-                break
-            """)))
-
-            test_cases.append(('try',
-                               dedent("""
-            try:
-                {val}
-            except:
-                pass
-            """)))
-
-            test_cases.append(('except',
-                               dedent("""
-            try:
-                pass
-            except:
-                {val}
-            """)))
-
-            test_cases.append(('finally',
-                               dedent("""
-            try:
-                pass
-            except:
-                pass
-            finally:
-                {val}
-            """)))
-
-            test_cases.append(('for',
-                               dedent("""
-            for _ in range(4):
-                {val}
-            """)))
-
-            test_cases.append(('nested',
-                               dedent("""
-            if True:
-                while True:
-                    {val}
-                    break
-            """)))
-
-            test_cases.append(('deep-nested',
-                               dedent("""
-            if True:
-                while True:
-                    break
-                    for x in range(3):
-                        if True:
-                            while True:
-                                for x in range(3):
-                                    {val}
-            """)))
-
             return test_cases
 
         def _get_ry_syntax_errors(self):
             # This is a mix of tests that should be a syntax error if
             # return or yield whether or not they are in a function
 
-            test_cases = []
-
-            test_cases.append(('class',
-                               dedent("""
+            test_cases = [('class',
+                           dedent("""
             class V:
                 {val}
-            """)))
-
-            test_cases.append(('nested-class',
-                               dedent("""
+            """)), ('nested-class',
+                    dedent("""
             class V:
                 class C:
                     {val}
-            """)))
+            """))]
 
             return test_cases
 
@@ -174,32 +153,20 @@ if sys.version_info > (3, 5):
         def test_in_func_no_error(self):
             # Test that the implementation of top-level return/yield
             # detection isn't *too* aggressive, and works inside a function
-            func_contexts = []
-
-            func_contexts.append(
-                ('func', False, dedent("""
-            def f():""")))
-
-            func_contexts.append(('method', False,
-                                  dedent("""
+            func_contexts = [('func', False, dedent("""
+            def f():""")), ('method', False,
+                            dedent("""
             class MyClass:
                 def __init__(self):
-            """)))
-
-            func_contexts.append(
-                ('async-func', True, dedent("""
-            async def f():""")))
-
-            func_contexts.append(('async-method', True,
+            """)), ('async-func', True, dedent("""
+            async def f():""")), ('async-method', True,
                                   dedent("""
             class MyClass:
-                async def f(self):""")))
-
-            func_contexts.append(('closure', False,
-                                  dedent("""
+                async def f(self):""")), ('closure', False,
+                                          dedent("""
             def f():
                 def g():
-            """)))
+            """))]
 
             def nest_case(context, case):
                 # Detect indentation

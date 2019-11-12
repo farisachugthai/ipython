@@ -14,7 +14,7 @@ from IPython.core.error import KillEmbedded
 from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.core.interactiveshell import DummyMod, InteractiveShell
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
-from IPython.utils.io import ask_yes_no
+from IPython.utils.utils_io import ask_yes_no
 
 # kept for backward compatibility as IPython 6 was released with
 # the typo. See https://github.com/ipython/ipython/pull/10706

@@ -25,7 +25,7 @@ import sphinx
 from sphinx.util.docfields import GroupedField
 from sphinx.util.logging import getLogger
 
-import numpydoc  # noqa F401
+# import numpydoc  # noqa F401
 from matplotlib.sphinxext.plot_directive import PlotDirective
 
 import IPython  # noqa F401
@@ -74,11 +74,16 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'sphinx.ext.napoleon',  # to preprocess docstrings
-    'numpydoc.numpydoc',
+    # 'numpydoc.numpydoc',
+    'autoapi.extension',
     'github',  # for easy GitHub links
     'magics',
     'configtraits',
 ]
+
+autoapi_type = 'python'
+autoapi_dirs = ['../../IPython']
+autoapi_generate_api_docs = False
 
 if shutil.which('dot'):
     extensions.append('sphinx.ext.graphviz')
@@ -137,8 +142,8 @@ github_project_url = "https://github.com/ipython/ipython"
 
 # numpydoc config
 # Otherwise Sphinx emits thousands of warnings
-numpydoc_show_class_members = False
-numpydoc_class_members_toctree = False
+# numpydoc_show_class_members = False
+# numpydoc_class_members_toctree = False
 
 highlight_language = 'ipython'
 # warning_is_error = True
@@ -164,7 +169,7 @@ today_fmt = '%B %d, %Y'
 
 # Exclude these glob-style patterns when looking for source files. They are
 # relative to the source/ directory.
-exclude_patterns = []
+exclude_patterns = ['**test**']
 
 
 # If true, '()' will be appended to :func: etc. cross-reference text.

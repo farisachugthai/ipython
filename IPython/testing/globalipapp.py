@@ -17,11 +17,11 @@ import warnings
 from . import tools
 
 from IPython.core import page
-from IPython.utils import io
+from IPython.utils import utils_io
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
 
-class StreamProxy(io.IOStream):
+class StreamProxy(utils_io.IOStream):
     """Proxy for sys.stdout/err.  This will request the stream *at call time*
     allowing for nose's Capture plugin's redirection of sys.stdout/err.
 

@@ -5,7 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 import sys
-from io import StringIO
+from utils_io import StringIO
 
 # -----------------------------------------------------------------------------
 # Classes and functions

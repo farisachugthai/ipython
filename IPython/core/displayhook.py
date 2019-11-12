@@ -9,7 +9,7 @@ This defines a callable class that IPython uses for `sys.displayhook`.
 
 import builtins as builtin_mod
 import sys
-import io as _io
+import utils_io as _io
 import tokenize
 from warnings import warn
 

@@ -4,7 +4,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from collections import namedtuple
-from io import StringIO
+from utils_io import StringIO
 from keyword import iskeyword
 
 import tokenize

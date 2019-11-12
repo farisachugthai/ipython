@@ -31,7 +31,7 @@ formatting (which is the hard part).
 
 __all__ = ['ANSICodeColors', 'Parser', 'Colorable', 'available_themes']
 
-from io import StringIO
+from utils_io import StringIO
 from IPython.utils.coloransi import TermColors, InputTermColors, ColorScheme, ColorSchemeTable
 import tokenize
 import token

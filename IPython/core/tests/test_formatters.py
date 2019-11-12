@@ -19,7 +19,7 @@ from IPython.core.formatters import (
     DisplayFormatter,
     JSONFormatter,
 )
-from IPython.utils.io import capture_output
+from IPython.utils.utils_io import capture_output
 
 
 class A(object):

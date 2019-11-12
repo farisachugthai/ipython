@@ -22,6 +22,7 @@ from os.path import join
 
 import nose.tools as nt
 
+from IPython import get_ipython
 from IPython.core.error import InputRejected
 from IPython.core.inputtransformer import InputTransformer
 from IPython.core import interactiveshell
@@ -38,6 +39,8 @@ from IPython.utils.process import find_cmd
 # Globals
 # -----------------------------------------------------------------------------
 # This is used by every single test, no point repeating it ad nauseam
+
+ip = get_ipython()
 
 # -----------------------------------------------------------------------------
 # Tests

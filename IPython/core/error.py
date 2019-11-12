@@ -36,6 +36,8 @@ Why would you not simply make it an error that subclasses
 # Imports
 # -----------------------------------------------------------------------------
 
+import sys
+
 # -----------------------------------------------------------------------------
 # Exception classes
 # -----------------------------------------------------------------------------
@@ -103,3 +105,25 @@ class ColorSwitchErr(UsageError):
         return 'Error changing {} color schemes.\n{}'.format(
             name,
             sys.exc_info()[1])
+
+
+class ProvisionalWarning(DeprecationWarning):
+    """Warning class for unstable features. Moved out of ./interactiveshell.py"""
+    pass
+
+
+
+class SpaceInInput(Exception):
+    """Interactiveshell."""
+    pass
+
+
+class ProvisionalCompleterWarning(FutureWarning):
+    """Exception raise by an experimental feature in this module.
+
+    Wrap code in :any:`provisionalcompleter` context manager if you
+    are certain you want to use an unstable feature.
+
+    From completerlib.
+    """
+    pass

@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 import nose.tools as nt
 from nose import SkipTest
 from matplotlib.figure import Figure
-from io import UnsupportedOperation, BytesIO
+from utils_io import UnsupportedOperation, BytesIO
 
 import matplotlib
 matplotlib.use('Agg')

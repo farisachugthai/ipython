@@ -14,7 +14,7 @@
 
 # Stdlib
 import inspect
-import io
+import utils_io
 import os
 import re
 import sys
@@ -244,7 +244,7 @@ class CodeMagics(Magics):
             print(e.args[0])
             return
         out = py3compat.cast_unicode(cmds)
-        with io.open(fname, mode, encoding="utf-8") as f:
+        with utils_io.open(fname, mode, encoding="utf-8") as f:
             if not file_exists or not append:
                 f.write(u"# coding: utf-8\n")
             f.write(out)

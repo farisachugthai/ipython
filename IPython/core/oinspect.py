@@ -27,27 +27,18 @@ from inspect import (signature, getsource, getfullargspec,
 from itertools import zip_longest
 import linecache
 import sys
-import warnings
 import os
 from textwrap import dedent, indent
-# from IPython.utils.text import indent
 import types
 
 # IPython's own
 from IPython.core import page
-from IPython.lib.pretty import pretty
-from IPython.testing.skipdoctest import skip_doctest
-# from IPython.utils import PyColorize
 from IPython.utils import openpy
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
 from IPython.utils.wildcard import list_namespace, typestr2type
-# from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
-# from IPython.utils.PyColorize import Colorable
-from IPython.utils.decorators import undoc
 
 from pygments import highlight
-# from pygments.lexers import PythonLexer
 from IPython.lib.lexers import IPyLexer as PythonLexer
 from pygments.formatters import HtmlFormatter
 
@@ -181,6 +172,41 @@ else:
     getouterframes = inspect.getouterframes
 
 
+def _mime_format(text, formatter=None):
+    """Return a mime bundle representation of the input text.
+
+    - if `formatter` is None, the returned mime bundle has
+       a `text/plain` field, with the input text.
+       a `text/html` field with a `<pre>` tag containing the input text.
+
+    - if `formatter` is not None, it must be a callable transforming the
+      input text into a mime bundle. Default values for `text/plain` and
+      `text/html` representations are the ones described above.
+
+    Note:
+
+    Formatters returning strings are supported but this behavior is deprecated.
+
+    """
+    defaults = {'text/plain': text, 'text/html': '<pre>' + text + '</pre>'}
+
+    if formatter is None:
+        return defaults
+    else:
+        formatted = formatter(text)
+
+        if not isinstance(formatted, dict):
+            # Handle the deprecated behavior of a formatter returning
+            # a string instead of a mime bundle.
+            return {
+                'text/plain': formatted,
+                'text/html': '<pre>' + formatted + '</pre>'
+            }
+
+        else:
+            return dict(defaults, **formatted)
+
+
 class Inspector:
     """Whew. Wth?
 
@@ -203,6 +229,7 @@ class Inspector:
         # self.color_table = color_table
         # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         # self.format = self.parser.format
+        self.__head = None
         self.str_detail_level = str_detail_level
         # self.set_active_scheme(scheme)
         # super().__init__(parent=parent, config=config)
@@ -255,6 +282,8 @@ class Inspector:
 
         Parameters
         -----------
+        obj :
+        oname :
         formatter : function
             A function to run the docstring through for specially
             formatted docstrings.
@@ -363,43 +392,8 @@ class Inspector:
                 title = header(title + ':') + '\n'
             else:
                 title = header((title + ':').ljust(title_width))
-            out.append((title) + content)
+            out.append(title + content)
         return "\n".join(out)
-
-    def _mime_format(self, text, formatter=None):
-        """Return a mime bundle representation of the input text.
-
-        - if `formatter` is None, the returned mime bundle has
-           a `text/plain` field, with the input text.
-           a `text/html` field with a `<pre>` tag containing the input text.
-
-        - if `formatter` is not None, it must be a callable transforming the
-          input text into a mime bundle. Default values for `text/plain` and
-          `text/html` representations are the ones described above.
-
-        Note:
-
-        Formatters returning strings are supported but this behavior is deprecated.
-
-        """
-        text = (text)
-        defaults = {'text/plain': text, 'text/html': '<pre>' + text + '</pre>'}
-
-        if formatter is None:
-            return defaults
-        else:
-            formatted = formatter(text)
-
-            if not isinstance(formatted, dict):
-                # Handle the deprecated behavior of a formatter returning
-                # a string instead of a mime bundle.
-                return {
-                    'text/plain': formatted,
-                    'text/html': '<pre>' + formatted + '</pre>'
-                }
-
-            else:
-                return dict(defaults, **formatted)
 
     def format_mime(self, bundle):
 
@@ -453,7 +447,7 @@ class Inspector:
         def append_field(bundle, title, key, formatter=None):
             field = info[key]
             if field is not None:
-                formatted_field = self._mime_format(field, formatter)
+                formatted_field = _mime_format(field, formatter)
                 bundle['text/plain'].append(
                     (title, formatted_field['text/plain']))
                 bundle[
@@ -811,7 +805,7 @@ class Inspector:
     def psearch(self,
                 pattern,
                 ns_table,
-                ns_search=[],
+                ns_search=None,
                 ignore_case=False,
                 show_all=False,
                 *,
@@ -841,6 +835,8 @@ class Inspector:
         - list_types(False): list all available object types for object matching.
 
         """
+        if ns_search is None:
+            ns_search = []
         type_pattern = 'all'
 
         # list all object types

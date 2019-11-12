@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Main IPython class."""
 
 # -----------------------------------------------------------------------------
@@ -10,50 +9,59 @@
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 
-from . import async_helpers
-from .async_helpers import (_asyncio_runner, _asyncify, _pseudo_sync_runner)
+
+# -----------------------------------------------------------------------------
+# Imports
+# -----------------------------------------------------------------------------
+
 import abc
 import ast
-from ast import AST
 # import asyncio
 import atexit
 import builtins as builtin_mod
-# import code
+import code
+import codecs
 import functools
-from io import open as io_open
 import inspect
-from logging import error
 import os
 import re
 import runpy
+import subprocess
 import sys
 import tempfile
 import traceback
 import types
-from typing import List as ListType, Tuple
-import subprocess
 import warnings
+from ast import AST, Await, Expr, Return
+from importlib import import_module
+from logging import error
+from pathlib import Path
+from types import CodeType, FunctionType
+from typing import List as ListType
+from typing import Tuple
 from warnings import warn
 
+# Like where is this in the required dependencies?
 from pickleshare import PickleShareDB
-
+from traitlets import (Any, Bool, CaselessStrEnum, Dict, Enum, Instance,
+                       Integer, List, Type, Unicode, default, observe,
+                       validate)
 from traitlets.config.configurable import SingletonConfigurable
-from traitlets.utils.importstring import import_item
-from IPython.core import oinspect
-from IPython.core import magic
-from IPython.core import page
-from IPython.core import prefilter
-from IPython.core import ultratb
+
+from IPython.core import hooks, magic, oinspect, page, prefilter, ultratb
 from IPython.core.alias import Alias, AliasManager
 from IPython.core.autocall import ExitAutocall
 from IPython.core.builtin_trap import BuiltinTrap
-from IPython.core.events import EventManager, available_events
 from IPython.core.compilerop import CachingCompiler, check_linecache_ipython
-from IPython.core.debugger import Pdb
+from IPython.core.debugger import CorePdb
+from IPython.core.display import display
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.displayhook import DisplayHook
 from IPython.core.displaypub import DisplayPublisher
+from .error import ProvisionalWarning, SpaceInInput
 from IPython.core.error import InputRejected, UsageError
+
+from IPython.core.events import EventManager, available_events
 from IPython.core.extensions import ExtensionManager
 from IPython.core.formatters import DisplayFormatter
 from IPython.core.history import HistoryManager
@@ -64,36 +72,27 @@ from IPython.core.payload import PayloadManager
 from IPython.core.prefilter import PrefilterManager
 from IPython.core.profiledir import ProfileDir
 from IPython.core.usage import default_banner
-from IPython.core.display import display
-from IPython.testing.skipdoctest import skip_doctest
-from IPython.utils import PyColorize
-from IPython.utils import io
-from IPython.utils import py3compat
-from IPython.utils import openpy
-from IPython.utils.decorators import undoc
-from IPython.utils.io import ask_yes_no
-from IPython.utils.ipstruct import Struct
 from IPython.paths import get_ipython_dir
-from IPython.utils.path import get_home_dir, get_py_filename, ensure_dir_exists
-from IPython.utils.process import system, getoutput
+from IPython.testing.skipdoctest import skip_doctest
+from IPython.utils import PyColorize, utils_io, openpy, py3compat
+from IPython.utils.contexts import NoOpContext
+from IPython.utils.decorators import undoc
+from IPython.utils.utils_io import ask_yes_no
+from IPython.utils.ipstruct import Struct
+# from IPython.utils.path import get_home_dir
+from IPython.utils.path import ensure_dir_exists, get_py_filename
+from IPython.utils.process import getoutput, system
 from IPython.utils.strdispatch import StrDispatch
 from IPython.utils.syspathcontext import prepended_to_syspath
-from IPython.utils.text import format_screen, LSString, SList, DollarFormatter
-
 # Are we deliberately clobbering the stdlib.
 from IPython.utils.tempdir import TemporaryDirectory
+from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
 
-# In addition to the fact that we having a magic module called logging,
-# have a traitlets class called Enum and Any?
-from traitlets import (Integer, Bool, CaselessStrEnum, Enum, List, Dict,
-                       Unicode, Instance, Type, observe, default, validate, Any)
-import IPython.core.hooks
+from . import async_helpers
+from .async_helpers import _asyncify, _asyncio_runner, _pseudo_sync_runner
 
 # NoOpContext is deprecated, but ipykernel imports it from here.
 # See https://github.com/ipython/ipykernel/issues/157
-
-# Uhhh who do we need to get on the line to fix that then?
-from IPython.utils.contexts import NoOpContext
 
 try:
     import docrepr
@@ -106,13 +105,6 @@ try:
             }
 except ImportError:
     sphinxify = None
-
-
-class ProvisionalWarning(DeprecationWarning):
-    """
-    Warning class for unstable features
-    """
-    pass
 
 
 if sys.version_info > (3, 8):
@@ -133,6 +125,15 @@ else:
     _assign_nodes = (ast.AugAssign, ast.Assign)
     _single_targets_nodes = (ast.AugAssign,)
 
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+
+# compiled regexps for autoindent management
+dedent_re = re.compile(r'^\s+raise|^\s+return|^\s+pass')
+
+
 # -----------------------------------------------------------------------------
 # Await Helpers
 # -----------------------------------------------------------------------------
@@ -147,7 +148,6 @@ def removed_co_newlocals(function: types.FunctionType) -> types.FunctionType:
 
     We need this in order to run asynchronous code in user level namespace.
     """
-    from types import CodeType, FunctionType
     CO_NEWLOCALS = 0x0002
     code = function.__code__
     new_co_flags = code.co_flags & ~CO_NEWLOCALS
@@ -182,23 +182,26 @@ else:
         return False
 
 
+# -----------------------------------------------------------------------------
+# Utilities
+# -----------------------------------------------------------------------------
+
+
 def _ast_asyncify(cell: str, wrapper_name: str) -> ast.Module:
     """
     Parse a cell with top-level await and modify the AST to be able to run it later.
 
-    Parameter
-    ---------
-
-    cell: str
+    Parameters
+    ----------
+    cell : str
         The code cell to asyncronify
-    wrapper_name: str
+    wrapper_name : str
         The name of the function to be used to wrap the passed `cell`. It is
         advised to **not** use a python identifier in order to not pollute the
         global namespace in which the function will be ran.
 
-    Return
-    ------
-
+    Returns
+    -------
     A module object AST containing **one** function named `wrapper_name`.
 
     The given code is wrapped in a async-def function, parsed into an AST, and
@@ -219,8 +222,6 @@ def _ast_asyncify(cell: str, wrapper_name: str) -> ast.Module:
     global dict is updated as python function work with a local fast cache which
     is updated only on `local()` calls.
     """
-
-    from ast import Expr, Await, Return
     if sys.version_info >= (3, 8):
         return ast.parse(cell)
     tree = ast.parse(_asyncify(cell))
@@ -235,22 +236,9 @@ def _ast_asyncify(cell: str, wrapper_name: str) -> ast.Module:
     return tree
 
 
-# -----------------------------------------------------------------------------
-# Globals
-# -----------------------------------------------------------------------------
-
-# compiled regexps for autoindent management
-dedent_re = re.compile(r'^\s+raise|^\s+return|^\s+pass')
-
-# -----------------------------------------------------------------------------
-# Utilities
-# -----------------------------------------------------------------------------
-
-
 @undoc
 def softspace(file, newvalue):
     """Copied from code.py, to remove the dependency"""
-
     oldvalue = 0
     try:
         oldvalue = file.softspace
@@ -269,10 +257,6 @@ def no_op(*a, **kw):
     pass
 
 
-class SpaceInInput(Exception):
-    pass
-
-
 class SeparateUnicode(Unicode):
     r"""A Unicode subclass to validate separate_in, separate_out, etc.
 
@@ -287,13 +271,13 @@ class SeparateUnicode(Unicode):
 
 
 @undoc
-class DummyMod(object):
+class DummyMod:
     """A dummy module used for IPython's interactive module when
     a namespace must be assigned to the module's __dict__."""
     __spec__ = None
 
 
-class ExecutionInfo(object):
+class ExecutionInfo:
     """The arguments used for a call to :meth:`InteractiveShell.run_cell`
 
     Stores information about what is going to happen.
@@ -318,10 +302,25 @@ class ExecutionInfo(object):
                 self.silent, self.shell_futures)
 
 
-class ExecutionResult(object):
+class ExecutionResult:
     """The result of a call to :meth:`InteractiveShell.run_cell`
 
     Stores information about what took place.
+
+    .. todo:: Check out if this wouldn't be better implemented as a dataclass.
+
+    Attributes
+    ----------
+    execution_count = None
+    error_before_exec = None
+    error_in_exec = None
+    info = None
+    result = None
+
+    Parameters
+    ----------
+    info
+
     """
     execution_count = None
     error_before_exec = None
@@ -397,7 +396,7 @@ class InteractiveShell(SingletonConfigurable):
 
     @default('loop_runner')
     def _default_loop_runner(self):
-        return import_item("IPython.core.interactiveshell._asyncio_runner")
+        return import_module("IPython.core.interactiveshell._asyncio_runner")
 
     @validate('loop_runner')
     def _import_runner(self, proposal):
@@ -437,24 +436,31 @@ class InteractiveShell(SingletonConfigurable):
         issued).  This limit is defined because otherwise you'll spend more
         time re-flushing a too small cache than working
         """).tag(config=True)
+
     color_info = Bool(True,
                       help="""
         Use colors for displaying information about objects. Because this
         information is passed through a pager (like 'less'), and some pagers
         get confused with color codes, this capability can be turned off.
         """).tag(config=True)
+
     colors = CaselessStrEnum(
         ('Neutral', 'NoColor', 'LightBG', 'Linux'),
         default_value='Neutral',
         help="Set the color scheme (NoColor, Neutral, Linux, or LightBG).").tag(
             config=True)
+
     debug = Bool(False).tag(config=True)
+
     disable_failing_post_execute = Bool(
         False,
         help="Don't call post-execute functions that have failed in the past."
     ).tag(config=True)
+
     display_formatter = Instance(DisplayFormatter, allow_none=True)
+
     displayhook_class = Type(DisplayHook)
+
     display_pub_class = Type(DisplayPublisher)
 
     sphinxify_docstring = Bool(False,
@@ -495,6 +501,7 @@ class InteractiveShell(SingletonConfigurable):
     # Monotonically increasing execution counter
     execution_count = Integer(1)
     filename = Unicode("<ipython console>")
+
     ipython_dir = Unicode('').tag(
         config=True)  # Set to get_ipython_dir() in __init__
 
@@ -512,41 +519,33 @@ class InteractiveShell(SingletonConfigurable):
         help="A list of string input transformers, to be applied after IPython's "
         "own input transformations.")
 
-    @property
-    def input_splitter(self):
-        """Make this available for backward compatibility (pre-7.0 release) with existing code.
-
-        For example, ipykernel currently uses `shell.input_splitter.check_complete`
-        """
-        from warnings import warn
-        warn(
-            "`input_splitter` is deprecated since IPython 7.0, prefer `input_transformer_manager`.",
-            DeprecationWarning,
-            stacklevel=2)
-        return self.input_transformer_manager
-
     logstart = Bool(False,
                     help="""
         Start logging to the default log file in overwrite mode.
         Use `logappend` to specify a log file to **append** logs to.
         """).tag(config=True)
+
     logfile = Unicode('',
                       help="""
         The name of the logfile to use.
         """).tag(config=True)
+
     logappend = Unicode('',
                         help="""
         Start logging to the given file in append mode.
         Use `logfile` to specify a log file to **overwrite** logs to.
         """).tag(config=True)
+
     object_info_string_level = Enum(
         (0, 1, 2),
         default_value=0,
     ).tag(config=True)
+
     pdb = Bool(False,
                help="""
         Automatically call the pdb debugger after every exception.
         """).tag(config=True)
+
     display_page = Bool(
         False,
         help="""If True, anything that would be passed to the pager
@@ -608,6 +607,7 @@ class InteractiveShell(SingletonConfigurable):
 
     @property
     def profile(self):
+        """Property that returns self.profile_dir.location."""
         if self.profile_dir is not None:
             name = os.path.basename(self.profile_dir.location)
             return name.replace('profile_', '')
@@ -633,10 +633,16 @@ class InteractiveShell(SingletonConfigurable):
                  user_ns=None,
                  custom_exceptions=((), None),
                  **kwargs):
+        """This is where traits with a config_key argument are updated
 
-        # This is where traits with a config_key argument are updated
-        # from the values on config.
-        super(InteractiveShell, self).__init__(**kwargs)
+        This is done from the values on config.
+
+        Parameters
+        ----------
+        todo
+
+        """
+        super().__init__(**kwargs)
         if 'PromptManager' in self.config:
             warn(
                 'As of IPython 5.0 `PromptManager` config will have no effect'
@@ -702,7 +708,10 @@ class InteractiveShell(SingletonConfigurable):
         # because the traceback handlers hardcode the stdout/stderr streams.
         # This logic in in debugger.Pdb and should eventually be changed.
         self.init_io()
-        self.init_traceback_handlers(custom_exceptions)
+
+        # also this one is a massive source of headaches for me.
+        # self.init_traceback_handlers(custom_exceptions)
+
         self.init_prompts()
         self.init_display_formatter()
         self.init_display_pub()
@@ -711,7 +720,9 @@ class InteractiveShell(SingletonConfigurable):
         self.init_magics()
         self.init_alias()
         self.init_logstart()
-        self.init_pdb()
+
+        # self.init_pdb()
+
         self.init_extension_manager()
         self.init_payload()
         self.init_deprecation_warnings()
@@ -809,7 +820,7 @@ class InteractiveShell(SingletonConfigurable):
 
     def init_pushd_popd_magic(self):
         # for pushd/popd management
-        self.home_dir = get_home_dir()
+        self.home_dir = Path.home().__fspath__()
 
         self.dir_stack = []
 
@@ -871,8 +882,8 @@ class InteractiveShell(SingletonConfigurable):
         """
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', DeprecationWarning)
-            io.stdout = io.IOStream(sys.stdout)
-            io.stderr = io.IOStream(sys.stderr)
+            utils_io.stdout = utils_io.IOStream(sys.stdout)
+            utils_io.stderr = utils_io.IOStream(sys.stderr)
 
     def init_prompts(self):
         """Set system prompts, so that scripts can decide if they're interactive."""
@@ -1028,7 +1039,6 @@ class InteractiveShell(SingletonConfigurable):
         self.strdispatchers = {}
 
         # Set all default hooks, defined in the IPython.hooks module.
-        hooks = IPython.core.hooks
         for hook_name in hooks.__all__:
             # default hooks have priority 100, i.e. low; user hooks should have
             # 0-100 priority
@@ -1072,18 +1082,18 @@ class InteractiveShell(SingletonConfigurable):
             return
 
         dp = getattr(self.hooks, name, None)
-        if name not in IPython.core.hooks.__all__:
+        if name not in hooks.__all__:
             print("Warning! Hook '%s' is not one of %s" %
-                  (name, IPython.core.hooks.__all__))
+                  (name, hooks.__all__))
 
-        if _warn_deprecated and (name in IPython.core.hooks.deprecated):
-            alternative = IPython.core.hooks.deprecated[name]
+        if _warn_deprecated and (name in hooks.deprecated):
+            alternative = hooks.deprecated[name]
             warn("Hook {} is deprecated. Use {} instead.".format(
                 name, alternative),
                 stacklevel=2)
 
         if not dp:
-            dp = IPython.core.hooks.CommandChainDispatcher()
+            dp = hooks.CommandChainDispatcher()
 
         try:
             dp.add(f, priority)
@@ -1099,24 +1109,15 @@ class InteractiveShell(SingletonConfigurable):
 
     def init_events(self):
         self.events = EventManager(self, available_events)
-
         self.events.register("pre_execute", self._clear_warning_registry)
 
-    def register_post_execute(self, func):
-        """DEPRECATED: Use ip.events.register('post_run_cell', func)
-
-        Register a function for calling after code execution.
-        """
-        warn(
-            "ip.register_post_execute is deprecated, use "
-            "ip.events.register('post_run_cell', func) instead.",
-            stacklevel=2)
-        self.events.register('post_run_cell', func)
-
     def _clear_warning_registry(self):
-        # clear the warning registry, so that different code blocks with
-        # overlapping line number ranges don't cause spurious suppression of
-        # warnings (see gh-6611 for details)
+        """Clear the warning registry.
+
+        This is done so that different code blocks with
+        overlapping line number ranges don't cause spurious suppression of
+        warnings (see gh-6611 for details).
+        """
         if "__warningregistry__" in self.user_global_ns:
             del self.user_global_ns["__warningregistry__"]
 
@@ -1229,7 +1230,7 @@ class InteractiveShell(SingletonConfigurable):
             error('No traceback has been produced, nothing to debug.')
             return
 
-        self.InteractiveTB.debugger(force=True)
+        # self.InteractiveTB.debugger(force=True)
 
     # -------------------------------------------------------------------------
     # Things related to IPython's various namespaces
@@ -1871,7 +1872,7 @@ class InteractiveShell(SingletonConfigurable):
     # Things related to exception handling and tracebacks (not debugging)
     # -------------------------------------------------------------------------
 
-    debugger_cls = Pdb
+    debugger_cls = CorePdb
 
     def init_traceback_handlers(self, custom_exceptions):
         """Syntax error handler.
@@ -1891,14 +1892,15 @@ class InteractiveShell(SingletonConfigurable):
             We should really consider offloading this. Debugger?
 
         """
-        self.SyntaxTB = ultratb.SyntaxTB(color_scheme='NoColor', parent=self)
-        self.InteractiveTB = ultratb.AutoFormattedTB(
-            mode='Plain',
-            color_scheme='NoColor',
-            tb_offset=1,
-            check_cache=check_linecache_ipython,
-            debugger_cls=self.debugger_cls,
-            parent=self)
+        # self.SyntaxTB = ultratb.SyntaxTB()
+                # color_scheme='NoColor', call_pdb=False, ostream=None, parent=self, config=self.config)
+        # self.InteractiveTB = ultratb.AutoFormattedTB(
+        #     mode='Plain',
+        #     color_scheme='NoColor',
+        #     tb_offset=1,
+        #     check_cache=check_linecache_ipython,
+        #     debugger_cls=self.debugger_cls,
+        #     parent=self)
 
         # The instance will store a pointer to the system-wide exception hook,
         # so that runtime code (such as magics) can access it.  This is because
@@ -1909,7 +1911,7 @@ class InteractiveShell(SingletonConfigurable):
         self.set_custom_exc(*custom_exceptions)
 
         # Set the exception mode
-        self.InteractiveTB.set_mode(mode=self.xmode)
+        # self.InteractiveTB.set_mode(mode=self.xmode)
 
     def set_custom_exc(self, exc_tuple, handler):
         """Set a handler if self.run_code() raises an error.
@@ -2086,6 +2088,9 @@ class InteractiveShell(SingletonConfigurable):
         """Show a short message for UsageErrors
 
         These are special exceptions that shouldn't show a traceback.
+
+        Yo I get that they don't need a full traceback but we have a UsageError
+        exception read to go why not use that.
         """
         print("UsageError: %s" % exc, file=sys.stderr)
 
@@ -2734,7 +2739,7 @@ class InteractiveShell(SingletonConfigurable):
             u'status': 'error',
             u'traceback': stb,
             u'ename': etype.__name__,
-            u'evalue': py3compat.safe_unicode(evalue),
+            u'evalue': evalue,
         }
 
         return exc_info
@@ -2846,7 +2851,7 @@ class InteractiveShell(SingletonConfigurable):
         with prepended_to_syspath(dname), self.builtin_trap:
             try:
                 glob, loc = (where + (None,))[:2]
-                py3compat.execfile(fname, glob, loc,
+                exec(fname, glob, loc,
                                    self.compile if shell_futures else None)
             except SystemExit as status:
                 # If the call was made with 0 or None exit status (sys.exit(0)
@@ -2887,6 +2892,11 @@ class InteractiveShell(SingletonConfigurable):
             __future__ imports are not shared in either direction.
         raise_exceptions : bool (False)
             If True raise exceptions everywhere.  Meant for testing.
+
+        Note
+        ----
+        This function really quietly depends on nbformat.
+
         """
         fname = os.path.abspath(os.path.expanduser(fname))
 
@@ -3441,8 +3451,7 @@ class InteractiveShell(SingletonConfigurable):
         return False
 
     def _async_exec(self, code_obj: types.CodeType, user_ns: dict):
-        """
-        Evaluate an asynchronous code object using a code runner
+        """Evaluate an asynchronous code object using a code runner.
 
         Fake asynchronous execution of code_object in a namespace via a proxy namespace.
 
@@ -3452,7 +3461,6 @@ class InteractiveShell(SingletonConfigurable):
         in particular you can only pass a single namespace. It also return a
         handle to the value of the last things returned by code_object.
         """
-
         return eval(code_obj, user_ns)
 
     async def run_code(self, code_obj, result=None, *, async_=False):
@@ -3472,8 +3480,9 @@ class InteractiveShell(SingletonConfigurable):
 
         Returns
         -------
-        False : successful execution.
-        True : an error occurred.
+        bool
+            False : successful execution.
+            True : an error occurred.
         """
         # Set our own excepthook in case the user code tries to call it
         # directly, so that the IPython crash handler doesn't get triggered
@@ -3519,21 +3528,23 @@ class InteractiveShell(SingletonConfigurable):
     runcode = run_code
 
     def check_complete(self, code: str) -> Tuple[str, str]:
-        """Return whether a block of code is ready to execute, or should be continued
+        """Return whether a block of code is ready to execute, or should
+        be continued.
 
         Parameters
         ----------
         source : string
-          Python input code, which can be multiline.
+            Python input code, which can be multiline.
 
         Returns
         -------
         status : str
-          One of 'complete', 'incomplete', or 'invalid' if source is not a
-          prefix of valid code.
+            One of 'complete', 'incomplete', or 'invalid' if source is not a
+            prefix of valid code.
         indent : str
-          When status is 'incomplete', this is some whitespace to insert on
-          the next line of the prompt.
+            When status is 'incomplete', this is some whitespace to insert on
+            the next line of the prompt.
+
         """
         status, nspaces = self.input_transformer_manager.check_complete(code)
         return status, ' ' * (nspaces or 0)
@@ -3553,20 +3564,24 @@ class InteractiveShell(SingletonConfigurable):
         This takes the following steps:
 
         1. select the appropriate eventloop and matplotlib backend
+
         2. set up matplotlib for interactive use with that backend
+
         3. configure formatters for inline figure display
+
         4. enable the selected gui eventloop
 
         Parameters
         ----------
         gui : optional, string
-          If given, dictates the choice of matplotlib GUI backend to use
-          (should be one of IPython's supported backends, 'qt', 'osx', 'tk',
-          'gtk', 'wx' or 'inline'), otherwise we use the default chosen by
-          matplotlib (as dictated by the matplotlib build-time options plus the
-          user's matplotlibrc configuration file).  Note that not all backends
-          make sense in all contexts, for example a terminal ipython can't
-          display figures inline.
+            If given, dictates the choice of matplotlib GUI backend to use
+            (should be one of IPython's supported backends, 'qt', 'osx', 'tk',
+            'gtk', 'wx' or 'inline'), otherwise we use the default chosen by
+            matplotlib (as dictated by the matplotlib build-time options plus the
+            user's matplotlibrc configuration file).  Note that not all backends
+            make sense in all contexts, for example a terminal ipython can't
+            display figures inline.
+
         """
         from IPython.core import pylabtools as pt
         gui, backend = pt.find_gui_and_backend(gui, self.pylab_gui_select)
@@ -3600,23 +3615,25 @@ class InteractiveShell(SingletonConfigurable):
         interact with the GUI event loop.  The GUI backend to be used can be
         optionally selected with the optional ``gui`` argument.
 
-        This method only adds preloading the namespace to InteractiveShell.enable_matplotlib.
+        This method only adds preloading the namespace to
+        InteractiveShell.enable_matplotlib.
 
         Parameters
         ----------
         gui : optional, string
-          If given, dictates the choice of matplotlib GUI backend to use
-          (should be one of IPython's supported backends, 'qt', 'osx', 'tk',
-          'gtk', 'wx' or 'inline'), otherwise we use the default chosen by
-          matplotlib (as dictated by the matplotlib build-time options plus the
-          user's matplotlibrc configuration file).  Note that not all backends
-          make sense in all contexts, for example a terminal ipython can't
-          display figures inline.
+            If given, dictates the choice of matplotlib GUI backend to use
+            (should be one of IPython's supported backends, 'qt', 'osx', 'tk',
+            'gtk', 'wx' or 'inline'), otherwise we use the default chosen by
+            matplotlib (as dictated by the matplotlib build-time options plus the
+            user's matplotlibrc configuration file).  Note that not all backends
+            make sense in all contexts, for example a terminal ipython can't
+            display figures inline.
         import_all : optional, bool, default: True
-          Whether to do `from numpy import *` and `from pylab import *`
-          in addition to module imports.
+            Whether to do `from numpy import *` and `from pylab import *`
+            in addition to module imports.
         welcome_message : deprecated
-          This argument is ignored, no welcome message will be displayed.
+            This argument is ignored, no welcome message will be displayed.
+
         """
         from IPython.core.pylabtools import import_pylab
 
@@ -3799,7 +3816,7 @@ class InteractiveShell(SingletonConfigurable):
                         tgt, skip_encoding_cookie=skip_encoding_cookie)
                 except UnicodeDecodeError:
                     if not py_only:
-                        with io_open(tgt, 'r', encoding='latin1') as f:
+                        with codecs.open(tgt, 'r', encoding='latin1') as f:
                             return f.read()
                     raise ValueError(("'%s' seem to be unreadable.") % target)
             elif os.path.isdir(os.path.expanduser(tgt)):

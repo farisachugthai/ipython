@@ -50,12 +50,11 @@ def osx_clipboard_get():
     text, stderr = p.communicate()
     # Text comes in with old Mac \r line endings. Change them to \n.
     text = text.replace(b'\r', b'\n')
-    text = py3compat.cast_unicode(text, py3compat.DEFAULT_ENCODING)
     return text
 
 
 def tkinter_clipboard_get():
-    """ Get the clipboard's text using Tkinter.
+    """Get the clipboard's text using Tkinter.
 
     This is the default on systems that are not Windows or OS X. It may
     interfere with other UI toolkits and should be replaced with an
@@ -76,5 +75,4 @@ def tkinter_clipboard_get():
         raise ClipboardEmpty
     finally:
         root.destroy()
-    text = py3compat.cast_unicode(text, py3compat.DEFAULT_ENCODING)
     return text

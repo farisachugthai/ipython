@@ -9,7 +9,9 @@
 
 __all__ = ['TermColors', 'InputTermColors', 'ColorScheme', 'ColorSchemeTable']
 
-# from abc import Mapping
+# As a better way to subclass Dict
+# from collections.abc import Mapping
+from collections import UserDict
 import copy
 import os
 
@@ -218,3 +220,10 @@ class ColorSchemeTable(dict):
         # self.active_colors = self[active].colors
         # # Now allow using '' as an index for the current active scheme
         # self[''] = self[active]
+
+
+class ColorSchemeUserTable(UserDict, ColorSchemeTable):
+    """Attempt #1."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)

@@ -1,14 +1,14 @@
 # encoding: utf-8
-"""Tests for io.py"""
+"""Tests for utils_io.py"""
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-import io as stdlib_io
+import utils_io as stdlib_io
 import os.path
 import stat
 import sys
-from io import StringIO
+from utils_io import StringIO
 
 from subprocess import Popen, PIPE
 import unittest
@@ -16,7 +16,7 @@ import unittest
 import nose.tools as nt
 
 from IPython.testing.decorators import skipif, skip_win32
-from IPython.utils.io import IOStream, Tee, capture_output
+from IPython.utils.utils_io import IOStream, Tee, capture_output
 from IPython.utils.tempdir import TemporaryDirectory
 
 

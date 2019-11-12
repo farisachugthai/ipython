@@ -242,8 +242,10 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         # create the shell
         self.init_shell()
         # and draw the banner
-        self.init_banner()
+        # self.init_banner()
+
         # Now a variety of things that happen after the banner is printed.
+
         self.init_gui_pylab()
         self.init_extensions()
         self.init_code()
