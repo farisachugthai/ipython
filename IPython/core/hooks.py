@@ -80,7 +80,7 @@ import subprocess
 import warnings
 import sys
 
-from IPython.core.error import TryNext
+from .error import TryNext
 
 # List here all the default hooks.  For now it's just the editor functions
 # but over time we'll move here all the public API for user-accessible things.

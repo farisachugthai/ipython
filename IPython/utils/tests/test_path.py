@@ -29,6 +29,7 @@ from IPython.testing.tools import make_tempfile, AssertPrints
 from IPython.utils import path
 from IPython.utils.tempdir import TemporaryDirectory
 
+
 # Platform-dependent imports
 try:
     import winreg as wreg
@@ -141,6 +142,7 @@ def test_get_home_dir_2():
     nt.assert_equal(home_dir, unfrozen)
 
 
+@skip_win32_py38
 @with_environment
 def test_get_home_dir_3():
     """get_home_dir() uses $HOME if set"""

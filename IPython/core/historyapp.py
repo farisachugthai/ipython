@@ -9,7 +9,7 @@ import os
 import sqlite3
 
 from traitlets.config.application import Application
-from IPython.core.application import BaseIPythonApplication
+from .application import BaseIPythonApplication
 from traitlets import Bool, Int, Dict
 from IPython.utils.utils_io import ask_yes_no
 

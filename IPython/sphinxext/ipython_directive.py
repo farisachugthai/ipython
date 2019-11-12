@@ -648,7 +648,7 @@ class EmbeddedSphinxShell:
                         'Non Expected warning in `{}` line {}'.format(
                             filename, lineno))
 
-        self.cout.truncate(0)
+        self.clear_cout()
         return (ret, input_lines, processed_output,
                 is_doctest, decorator, image_file, image_directive)
 
