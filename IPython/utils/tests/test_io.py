@@ -4,11 +4,11 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-import utils_io as stdlib_io
+import io as stdlib_io
 import os.path
 import stat
 import sys
-from utils_io import StringIO
+from io import StringIO
 
 from subprocess import Popen, PIPE
 import unittest

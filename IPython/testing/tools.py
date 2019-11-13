@@ -16,7 +16,7 @@ import tempfile
 import unittest
 
 from contextlib import contextmanager
-from utils_io import StringIO
+from io import StringIO
 from subprocess import Popen, PIPE
 from unittest.mock import patch
 
@@ -33,7 +33,6 @@ from traitlets.config.loader import Config
 from IPython.utils.process import get_output_error_code
 from IPython.utils.text import list_strings
 from IPython.utils.utils_io import temp_pyfile, Tee
-from IPython.utils import py3compat
 
 from . import decorators as dec
 from . import skipdoctest
@@ -233,9 +232,7 @@ def ipexec(fname, options=None, commands=()):
               stdin=PIPE, env=os.environ.copy())
 
     out, err = p.communicate(
-        input=py3compat.encode('\n'.join(commands)) or None)
-
-    out, err = py3compat.decode(out), py3compat.decode(err)
+        input=('\n'.join(commands)) or None)
 
     # `import readline` causes 'ESC[?1034h' to be output sometimes,
     # so strip that out before doing comparisons

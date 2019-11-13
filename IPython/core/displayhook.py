@@ -9,7 +9,7 @@ This defines a callable class that IPython uses for `sys.displayhook`.
 
 import builtins as builtin_mod
 import sys
-import utils_io as _io
+import io
 import tokenize
 from warnings import warn
 
@@ -92,7 +92,7 @@ class DisplayHook(Configurable):
             # some uses of ipshellembed may fail here
             return False
 
-        sio = _io.StringIO(cell)
+        sio = io.StringIO(cell)
         tokens = list(tokenize.generate_tokens(sio.readline))
 
         for token in reversed(tokens):

@@ -6,7 +6,8 @@
 # -----------------------------------------------------------------------------
 
 # stdlib
-import utils_io
+import codecs
+import io
 import os
 import sys
 import tempfile
@@ -128,7 +129,7 @@ def test_history():
             # Cross testing: check that magic %save can get previous session.
             testfilename = os.path.realpath(os.path.join(tmpdir, "test.py"))
             ip.magic("save " + testfilename + " ~1/1-3")
-            with utils_io.open(testfilename, encoding='utf-8') as testfile:
+            with codecs.open(testfilename, encoding='utf-8') as testfile:
                 nt.assert_equal(
                     testfile.read(),
                     u"# coding: utf-8\n" + u"\n".join(hist) + u"\n")

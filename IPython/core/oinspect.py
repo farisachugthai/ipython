@@ -33,7 +33,7 @@ import types
 
 # IPython's own
 from IPython.core import page
-from IPython.utils import openpy
+from IPython.utils import openpy, PyColorize
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
 from IPython.utils.wildcard import list_namespace, typestr2type
@@ -63,7 +63,7 @@ _builtin_meth_type = type(
 
 # Colors = TermColors  # just a shorthand
 
-# InspectColors = PyColorize.ANSICodeColors
+InspectColors = PyColorize.ANSICodeColors
 
 # ****************************************************************************
 # Auxiliary functions and objects

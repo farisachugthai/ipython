@@ -4,7 +4,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from collections import namedtuple
-from utils_io import StringIO
+from io import StringIO
 from keyword import iskeyword
 
 import tokenize
@@ -13,7 +13,21 @@ Token = namedtuple('Token', ['token', 'text', 'start', 'end', 'line'])
 
 
 def generate_tokens(readline):
-    """wrap generate_tokens to catch EOF errors"""
+    """wrap generate_tokens to catch :exc:`tokenize.TokenError` errors.
+
+    .. todo::
+
+        I mean the exception could return the dunder methods ``__cause__``,
+        ``__context__``, 'args'. We don't HAVE to catch it silently if we don't
+        want to.
+
+    Parameters
+    ----------
+    readline : str
+        A string as read by the tokenizer. Used to determine encoding before
+        any parsing is undertaken.
+
+    """
     try:
         for token in tokenize.generate_tokens(readline):
             yield token
@@ -68,11 +82,22 @@ def token_at_cursor(cell, cursor_pos=0):
 
     Parameters
     ----------
-
     cell : unicode
         A block of Python code
     cursor_pos : int
         The location of the cursor in the block where the token should be found
+
+    Attributes
+    ----------
+    names = []
+    tokens = []
+    call_names = []
+
+    3 undeclared vars.
+
+    Returns
+    --------
+    todo
     """
     names = []
     tokens = []

@@ -15,7 +15,7 @@ import json
 import sys
 import traceback
 import warnings
-from utils_io import StringIO
+from io import StringIO
 
 from decorator import decorator
 

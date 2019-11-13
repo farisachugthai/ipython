@@ -5,8 +5,8 @@ builtin.
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
-import utils_io
+import codecs
+import io
 import os
 import re
 import sys
@@ -857,5 +857,5 @@ class OSMagics(Magics):
             print("Writing %s" % filename)
 
         mode = 'a' if args.append else 'w'
-        with utils_io.open(filename, mode, encoding='utf-8') as f:
+        with codecs.open(filename, mode, encoding='utf-8') as f:
             f.write(cell)

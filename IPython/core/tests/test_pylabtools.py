@@ -3,6 +3,7 @@
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
+from io import UnsupportedOperation, BytesIO
 
 from IPython.testing import decorators as dec
 from .. import pylabtools as pt
@@ -14,7 +15,6 @@ from matplotlib import pyplot as plt
 import nose.tools as nt
 from nose import SkipTest
 from matplotlib.figure import Figure
-from utils_io import UnsupportedOperation, BytesIO
 
 import matplotlib
 matplotlib.use('Agg')
@@ -151,7 +151,7 @@ def test_import_pylab():
     nt.assert_equal(ns['np'], np)
 
 
-class TestPylabSwitch(object):
+class TestPylabSwitch:
     class Shell(InteractiveShell):
         def enable_gui(self, gui):
             pass

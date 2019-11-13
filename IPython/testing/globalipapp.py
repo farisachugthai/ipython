@@ -10,6 +10,7 @@ done.
 # Distributed under the terms of the Modified BSD License.
 
 import builtins as builtin_mod
+import io
 import sys
 import types
 import warnings
@@ -21,7 +22,7 @@ from IPython.utils import utils_io
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
 
-class StreamProxy(utils_io.IOStream):
+class StreamProxy(io.IOStream):
     """Proxy for sys.stdout/err.  This will request the stream *at call time*
     allowing for nose's Capture plugin's redirection of sys.stdout/err.
 

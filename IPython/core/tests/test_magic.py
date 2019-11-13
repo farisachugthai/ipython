@@ -9,21 +9,21 @@ Dude holy fuck. There are FORTY different calls to ip = get_ipython()
 code duplication like wth.
 
 """
-
-import utils_io
+import codecs
+import io
 import os
 import re
 import sys
+import shlex
 import warnings
 from textwrap import dedent
 from unittest import TestCase
 from unittest import mock
 from importlib import invalidate_caches
-from utils_io import StringIO
+from io import StringIO
 
 import nose.tools as nt
 from nose.tools.nontrivial import nottest
-import shlex
 
 from IPython import get_ipython
 from IPython.core import magic
@@ -191,6 +191,8 @@ def doctest_hist_f():
 
     In [13]: import os; os.unlink(tfile)
     """
+
+
 @dec.skip_without('sqlite3')
 def doctest_hist_r():
     """Test %hist -r
@@ -208,6 +210,8 @@ def doctest_hist_r():
     x=1 # random
     %hist -r 2
     """
+
+
 @dec.skip_without('sqlite3')
 def doctest_hist_op():
     """Test %hist -op
@@ -928,7 +932,7 @@ def test_file_unicode():
             u'liné1',
             u'liné2',
         ]))
-        with utils_io.open(fname, encoding='utf-8') as f:
+        with codecs.open(fname, encoding='utf-8') as f:
             s = f.read()
         nt.assert_in(u'liné1\n', s)
         nt.assert_in(u'liné2', s)
@@ -1162,7 +1166,7 @@ def _run_edit_test(arg_s,
     if exp_filename is not None:
         nt.assert_equal(exp_filename, filename)
     if exp_contents is not None:
-        with utils_io.open(filename, 'r', encoding='utf-8') as f:
+        with codecs.open(filename, 'r', encoding='utf-8') as f:
             contents = f.read()
         nt.assert_equal(exp_contents, contents)
     if exp_lineno != -1:

@@ -1,4 +1,5 @@
 .idea/**
+cscope.out
 *.log
 docs/searchindex.js
 docs/_static

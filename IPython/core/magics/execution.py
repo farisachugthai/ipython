@@ -8,6 +8,8 @@ import ast
 import bdb
 import builtins as builtin_mod
 import gc
+import inspect
+from io import StringIO
 import itertools
 import os
 import shlex
@@ -30,7 +32,7 @@ except ImportError:
     except ImportError:
         profile = pstats = None
 
-from IPython.core import oinspect
+# from IPython.core import oinspect
 from IPython.core import magic_arguments
 from IPython.core import page
 from IPython.core.error import UsageError
@@ -47,7 +49,6 @@ from IPython.utils.path import get_py_filename, shellglob
 from IPython.utils.timing import clock, clock2
 from warnings import warn
 from logging import error
-from utils_io import StringIO
 
 if sys.version_info > (3, 8):
     from ast import Module
@@ -65,7 +66,7 @@ else:
 # -----------------------------------------------------------------------------
 
 
-class TimeitResult(object):
+class TimeitResult:
     """
     Object returned by the timeit magic with info about the run.
 
@@ -706,7 +707,7 @@ python-profiler package from non-free.""")
             filename = file_finder(fpath)
         except IndexError:
             warn('you must provide at least a filename.')
-            print('\n%run:\n', oinspect.getdoc(self.run))
+            print('\n%run:\n', inspect.getdoc(self.run))
             return
         except IOError as e:
             try:

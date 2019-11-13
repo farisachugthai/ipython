@@ -11,10 +11,8 @@ import tempfile
 from warnings import warn
 
 import IPython
-# from IPython.utils.importstring import import_item
 from IPython.utils.path import (get_home_dir, get_xdg_dir, get_xdg_cache_dir,
                                 compress_user, _writable_dir, ensure_dir_exists)
-from IPython.utils import py3compat
 
 
 def get_ipython_dir():
@@ -23,7 +21,7 @@ def get_ipython_dir():
     This uses the logic in `get_home_dir` to find the home directory
     and then adds .ipython to the end of the path.
     """
-    env = os.environ
+    env = os.environ.copy()
     pjoin = os.path.join
 
     ipdir_def = '.ipython'
@@ -31,7 +29,6 @@ def get_ipython_dir():
     home_dir = get_home_dir()
     xdg_dir = get_xdg_dir()
 
-    # import pdb; pdb.set_trace()  # dbg
     if 'IPYTHON_DIR' in env:
         warn('The environment variable IPYTHON_DIR is deprecated. '
              'Please use IPYTHONDIR instead.')
@@ -53,15 +50,19 @@ def get_ipython_dir():
                 elif os.path.islink(xdg_ipdir):
                     warn(('{0} is deprecated. Move link to {1} to '
                           'get rid of this message').format(
+                              # Dude look at this line of code.
+                              # Are your abbreviations really helping or is it
+                              # a shoddy way of circumventing how deeply
+                              # nested the logic in these methods is???
                               cu(xdg_ipdir), cu(ipdir)))
                 else:
                     warn('Moving {0} to {1}'.format(cu(xdg_ipdir), cu(ipdir)))
                     shutil.move(xdg_ipdir, ipdir)
 
     ipdir = os.path.normpath(os.path.expanduser(ipdir))
-
     if os.path.exists(ipdir) and not _writable_dir(ipdir):
         # ipdir exists, but is not writable
+        # So wouldn't it be more logical to raise a PermissionsError?
         warn("IPython dir '{0}' is not a writable location,"
              " using a temp directory.".format(ipdir))
         ipdir = tempfile.mkdtemp()
@@ -73,7 +74,7 @@ def get_ipython_dir():
                  " using a temp directory.".format(parent))
             ipdir = tempfile.mkdtemp()
 
-    return py3compat.cast_unicode(ipdir, sys.getfilesystemencoding())
+    return ipdir
 
 
 def get_ipython_cache_dir():
@@ -92,8 +93,11 @@ def get_ipython_cache_dir():
 
 def get_ipython_package_dir():
     """Get the base directory where IPython itself is installed."""
-    ipdir = os.path.dirname(IPython.__file__)
-    return ipdir
+    # This was a weird time to not bother catching exceptions. check if IPython
+    # has the file attr before working with it!
+    if hasattr(IPython, '__file__'):
+        return os.path.dirname(IPython.__file__)
+    # else:
 
 
 def get_ipython_module_path(module_str):
@@ -105,6 +109,8 @@ def get_ipython_module_path(module_str):
     """
     if module_str == 'IPython':
         return os.path.join(get_ipython_package_dir(), '__init__.py')
+    # I feel like the 3 lines below would do nicely in a function sprinkled
+    # throughout a lot of this repo
     mod = import_module(module_str)
     the_path = mod.__file__.replace('.pyc', '.py')
     the_path = the_path.replace('.pyo', '.py')
@@ -115,6 +121,11 @@ def locate_profile(profile='default'):
     """Find the path to the folder associated with a given profile.
 
     I.E. find :envvar:`IPYTHONDIR`/profile_*.
+
+    Raises
+    ------
+    :exc:`IOError`
+        Why an IOError?
     """
     from IPython.core.profiledir import ProfileDir, ProfileDirError
     try:

@@ -16,6 +16,7 @@ import sqlite3
 import threading
 
 from traitlets.config.configurable import LoggingConfigurable
+# Excuse me? What is the line below?
 from decorator import decorator
 from IPython.utils.decorators import undoc
 from IPython.paths import locate_profile
@@ -37,12 +38,11 @@ from warnings import warn
 # Classes and functions
 # -----------------------------------------------------------------------------
 
-
-@undoc
-class DummyDB(object):
+class DummyDB:
     """Dummy DB that will act as a black hole for history.
 
-    Only used in the absence of sqlite"""
+    Only used in the absence of sqlite.
+    """
 
     def execute(*args, **kwargs):
         return []
@@ -87,12 +87,13 @@ _SAVE_DB_SIZE = 16384
 
 @decorator
 def catch_corrupt_db(f, self, *a, **kw):
-    """A decorator which wraps HistoryAccessor method calls to catch errors from
-    a corrupt SQLite database, move the old database out of the way, and create
-    a new one.
+    """A decorator which wraps HistoryAccessor method calls to catch errors.
 
-    We avoid clobbering larger databases because this may be triggered due to filesystem issues,
-    not just a corrupt file.
+    These errors may arise from a corrupt SQLite database, move the old
+    database out of the way, and create a new one.
+
+    We avoid clobbering larger databases because this may be triggered
+    due to filesystem issues, not just a corrupt file.
     """
     try:
         return f(self, *a, **kw)

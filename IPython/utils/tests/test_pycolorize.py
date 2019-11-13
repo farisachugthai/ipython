@@ -22,7 +22,7 @@ import nose.tools as nt
 
 # our own
 from IPython.utils.PyColorize import Parser
-import utils_io
+import io
 
 # -----------------------------------------------------------------------------
 # Test functions
@@ -60,7 +60,7 @@ def test_loop_colors():
 
         def test_parse_sample():
             """and test writing to a buffer"""
-            buf = utils_io.StringIO()
+            buf = io.StringIO()
             p = Parser(style=style)
             p.format(sample, buf)
             buf.seek(0)

@@ -8,7 +8,7 @@ Needs to be run by nose (to make ipython session available).
 # -----------------------------------------------------------------------------
 
 import sys
-from utils_io import StringIO
+from io import StringIO
 from unittest import TestCase
 
 import nose.tools as nt

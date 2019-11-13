@@ -97,6 +97,7 @@ class KillEmbedded(Exception):
 
 class ColorSwitchErr(UsageError):
     """Nov 01, 2019: From ./magics/basic"""
+
     def __call__(self):
         if sys.exc_info:
             return ''.format(sys.exc_info())
@@ -110,7 +111,6 @@ class ColorSwitchErr(UsageError):
 class ProvisionalWarning(DeprecationWarning):
     """Warning class for unstable features. Moved out of ./interactiveshell.py"""
     pass
-
 
 
 class SpaceInInput(Exception):
@@ -127,3 +127,15 @@ class ProvisionalCompleterWarning(FutureWarning):
     From completerlib.
     """
     pass
+
+
+class MacroToEdit(ValueError):
+    """Used for exception handling in magic_edit. Nov 13, 2019: ./magics/code.py"""
+    pass
+
+
+class InteractivelyDefined(Exception):
+    """Exception for interactively defined variable in magic_edit"""
+
+    def __init__(self, index):
+        self.index = index

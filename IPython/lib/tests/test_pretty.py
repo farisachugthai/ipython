@@ -15,7 +15,7 @@ import nose.tools as nt
 from IPython.lib import pretty
 from IPython.testing.decorators import skip_without
 
-from utils_io import StringIO
+from io import StringIO
 
 
 class MyList(object):

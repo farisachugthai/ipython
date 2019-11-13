@@ -15,14 +15,11 @@
 from tempfile import NamedTemporaryFile, mkdtemp
 from os.path import split, join as pjoin, dirname
 import sys
-try:
-    import pathlib
-except ImportError:
-    pass
+import pathlib
 from unittest import TestCase, mock
 import struct
 import wave
-from utils_io import BytesIO
+from io import BytesIO
 
 # Third-party imports
 import nose.tools as nt

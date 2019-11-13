@@ -1,4 +1,3 @@
-# encoding: utf-8
 """
 Paging capabilities for IPython.core
 
@@ -9,24 +8,23 @@ For now this uses IPython hooks, so it can't be in IPython.utils.  If we can get
 rid of that dependency, we could move it there.
 
 """
-
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+from io import UnsupportedOperation
 import os
 import re
 from shutil import get_terminal_size
 import sys
 import tempfile
 
-from utils_io import UnsupportedOperation
-
 from IPython.core.getipython import get_ipython
 from IPython.core.display import display
 from IPython.core.error import TryNext
 from IPython.utils.data import chop
 from IPython.utils.process import system
-from IPython.utils import py3compat
+
+esc_re = re.compile(r"(\x1b[^m]+m)")
 
 
 def display_page(strng, start=0):
@@ -44,9 +42,6 @@ def as_hook(page_func):
     """Wrap a pager func to strip the `self` arg so it can be called as a hook.
     """
     return lambda self, *args, **kwargs: page_func(*args, **kwargs)
-
-
-esc_re = re.compile(r"(\x1b[^m]+m)")
 
 
 def page_dumb(strng, start=0, screen_lines=25):
@@ -85,7 +80,6 @@ def _detect_screen_size(screen_lines_def):
 
     Notes
     -----
-
     There is a bug in curses, where *sometimes* it fails to properly
     initialize, and then after the endwin() call is made, the
     terminal is left in an unusable state.  Rather than trying to
@@ -93,6 +87,8 @@ def _detect_screen_size(screen_lines_def):
     flags each time), we just save the initial terminal state and
     unconditionally reset it every time.  It's cheaper than making
     the checks.
+
+    .. tip:: shutil.get_terminal_size
 
     """
     TERM = os.environ.get('TERM', None)
@@ -180,7 +176,7 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
     if screen_lines <= 0:
         try:
             screen_lines += _detect_screen_size(screen_lines_def)
-        except (TypeError, UnsupportedOperation):
+        except TypeError:
             print(str_toprint)
             return
 
@@ -254,7 +250,8 @@ def page(data, start=0, screen_lines=0, pager_cmd=None):
     ip = get_ipython()
     if ip:
         try:
-            ip.hooks.show_in_pager(data, start=start, screen_lines=screen_lines)
+            ip.hooks.show_in_pager(
+                data, start=start, screen_lines=screen_lines)
             return
         except TryNext:
             pass
@@ -263,11 +260,15 @@ def page(data, start=0, screen_lines=0, pager_cmd=None):
     return pager_page(data, start, screen_lines, pager_cmd)
 
 
-
 def get_pager_cmd(pager_cmd=None):
     """Return a pager command.
 
     Makes some attempts at finding an OS-correct one.
+
+    .. note:: Doesn't catch BaseException anymore.
+
+        Catch an OSError on an os.environ call.
+
     """
     if os.name == 'posix':
         default_pager_cmd = 'less -R'  # -R for color control sequences
@@ -277,7 +278,7 @@ def get_pager_cmd(pager_cmd=None):
     if pager_cmd is None:
         try:
             pager_cmd = os.environ['PAGER']
-        except BaseException:
+        except OSError:
             pager_cmd = default_pager_cmd
 
     if pager_cmd == 'less' and '-r' not in os.environ.get('LESS', '').lower():
@@ -291,7 +292,6 @@ def get_pager_start(pager, start):
 
     This is the '+N' argument which less and more (under Unix) accept.
     """
-
     if pager in ['less', 'more']:
         if start:
             start_string = '+' + str(start)
@@ -307,9 +307,13 @@ if os.name == 'nt' and os.environ.get('TERM', 'dumb') != 'emacs':
     import msvcrt
 
     def page_more():
-        """ Smart pausing between pages
+        """Smart pausing between pages.
 
-        @return:    True if need print more lines, False if quit
+        Returns
+        -------
+        bool
+            True if need print more lines, False if quit.
+
         """
         sys.stdout.write('---Return to continue, q to quit--- ')
         ans = msvcrt.getwch()
@@ -322,7 +326,8 @@ if os.name == 'nt' and os.environ.get('TERM', 'dumb') != 'emacs':
 else:
 
     def page_more():
-        ans = py3compat.input('---Return to continue, q to quit--- ')
+        """Definitely needs a more thorough implementation. Waits for 'q' to quit."""
+        ans = input('---Return to continue, q to quit--- ')
         if ans.lower().startswith('q'):
             return False
         else:

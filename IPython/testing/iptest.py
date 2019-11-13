@@ -21,7 +21,7 @@ itself from the command line. There are two ways of running this script:
 import glob
 from importlib import import_module
 
-from utils_io import BytesIO
+from io import BytesIO
 import os
 import os.path as path
 import sys

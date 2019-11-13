@@ -190,7 +190,7 @@ from typing import Dict, AnyStr, Any
 import ast
 import warnings
 import shutil
-from utils_io import StringIO
+from io import StringIO
 
 # Third-party
 from docutils.parsers.rst import directives
@@ -365,7 +365,6 @@ class EmbeddedSphinxShell:
     """
 
     def __init__(self, exec_lines=None):
-
         """Initialize the *EmbeddedSphinxShell*.
 
         Parameters
@@ -1158,4 +1157,3 @@ def setup(app: "Sphinx") -> Dict[str, Any]:
         'version': version_info,
     }
     return metadata
-

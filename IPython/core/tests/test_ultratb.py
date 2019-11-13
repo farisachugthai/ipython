@@ -2,7 +2,8 @@
 """Tests for IPython.core.ultratb
 """
 from IPython.testing.decorators import skipif
-import utils_io
+import codecs
+import io
 import logging
 import sys
 import os.path
@@ -11,7 +12,9 @@ import traceback
 import unittest
 from unittest import mock
 
-import IPython.core.ultratb as ultratb
+# import IPython.core.ultratb as ultratb
+# ....
+from IPython.core import ultratb
 from IPython.core.ultratb import ColorTB, VerboseTB, find_recursion
 
 from IPython.testing import tools as tt
@@ -110,7 +113,7 @@ class NonAsciiTest(unittest.TestCase):
         with TemporaryDirectory() as td:
             fname = os.path.join(td, 'dfghjkl.py')
 
-            with utils_io.open(fname, 'w', encoding='iso-8859-5') as f:
+            with codecs.open(fname, 'w', encoding='iso-8859-5') as f:
                 f.write(iso_8859_5_file)
 
             with prepended_to_syspath(td):
@@ -390,7 +393,7 @@ def test_handlers():
         i = f - g
         return h / i
 
-    buff = utils_io.StringIO()
+    buff = io.StringIO()
 
     buff.write('')
     buff.write('*** Before ***')
@@ -428,7 +431,7 @@ class TokenizeFailureTest(unittest.TestCase):
         message = "An unexpected error occurred while tokenizing input"
         cell = 'raise ValueError("""a\nb""")'
 
-        stream = utils_io.StringIO()
+        stream = io.StringIO()
         handler = logging.StreamHandler(stream)
         logger = logging.getLogger()
         loglevel = logger.level

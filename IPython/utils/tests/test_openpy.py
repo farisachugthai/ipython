@@ -1,5 +1,7 @@
-import utils_io
+import codecs
+import io
 import os.path
+
 import nose.tools as nt
 
 from IPython.utils import openpy
@@ -15,7 +17,7 @@ def test_detect_encoding():
 
 
 def test_read_file():
-    with utils_io.open(nonascii_path, encoding="iso-8859-5") as f:
+    with codecs.open(nonascii_path, encoding="iso-8859-5") as f:
         read_specified_enc = f.read()
     read_detected_enc = openpy.read_py_file(nonascii_path,
                                             skip_encoding_cookie=False)
@@ -28,7 +30,7 @@ def test_read_file():
 
 
 def test_source_to_unicode():
-    with utils_io.open(nonascii_path, "rb") as f:
+    with codecs.open(nonascii_path, "rb") as f:
         source_bytes = f.read()
     nt.assert_equal(
         openpy.source_to_unicode(source_bytes,

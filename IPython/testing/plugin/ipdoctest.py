@@ -27,7 +27,7 @@ import os
 import re
 import sys
 from importlib import import_module
-from utils_io import StringIO
+from io import StringIO
 
 from testpath import modified_env
 

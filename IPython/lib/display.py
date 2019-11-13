@@ -1,6 +1,8 @@
 """Various display related classes.
 
 Authors : MinRK, gregcaporaso, dannystaple
+
+This module would really benefit from pathlib.
 """
 from html import escape as html_escape
 from os.path import exists, isfile, splitext, abspath, join, isdir
@@ -144,7 +146,7 @@ class Audio(DisplayObject):
     def _make_wav(data, rate, normalize):
         """ Transform a numpy array to a PCM bytestring """
         import struct
-        from utils_io import BytesIO
+        from io import BytesIO
         import wave
 
         try:
@@ -256,10 +258,8 @@ class Audio(DisplayObject):
             return ''
 
 
-class IFrame(object):
-    """
-    Generic class to embed an iframe in an IPython notebook
-    """
+class IFrame:
+    """Generic class to embed an iframe in an IPython notebook."""
 
     iframe = """
         <iframe
@@ -363,7 +363,7 @@ class ScribdDocument(IFrame):
         super(ScribdDocument, self).__init__(src, width, height, **kwargs)
 
 
-class FileLink(object):
+class FileLink:
     """Class for embedding a local file link in an IPython session, based on path
 
     e.g. to embed a link that was generated in the IPython notebook as my/data.txt

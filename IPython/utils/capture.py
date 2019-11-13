@@ -5,14 +5,14 @@
 # Distributed under the terms of the Modified BSD License.
 
 import sys
-from utils_io import StringIO
+from io import StringIO
 
 # -----------------------------------------------------------------------------
 # Classes and functions
 # -----------------------------------------------------------------------------
 
 
-class RichOutput(object):
+class RichOutput:
     def __init__(self, data=None, metadata=None, transient=None, update=False):
         self.data = data or {}
         self.metadata = metadata or {}
@@ -60,7 +60,7 @@ class RichOutput(object):
         return self._repr_mime_("image/svg+xml")
 
 
-class CapturedIO(object):
+class CapturedIO:
     """Simple object for containing captured stdout/err and rich display StringIO objects
 
     Each instance `c` has three attributes:
@@ -121,7 +121,7 @@ class CapturedIO(object):
     __call__ = show
 
 
-class capture_output(object):
+class capture_output:
     """context manager for capturing stdout/err"""
     stdout = True
     stderr = True

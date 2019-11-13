@@ -91,6 +91,15 @@ possible inclusion in future releases.
         as detecting recursion is one of our slowest test
 
 
+Notes
+-----
+Even though it seems like a large part of why the module exists,
+is there any way to factor out all color considerations?
+
+This is quite a difficult module to work with, so limiting the
+responsibliity of the classes to returning formatted tracebacks should
+still be plenty of work.
+
 Inheritance diagram:
 
 .. inheritance-diagram:: IPython.core.ultratb

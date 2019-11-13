@@ -1,8 +1,6 @@
-# encoding: utf-8
-"""
-An application for managing IPython profiles.
+"""An application for managing IPython profiles.
 
-To be invoked as the `ipython profile` subcommand.
+To be invoked as the ``ipython profile`` subcommand.
 
 .. note:: For developers looking to extend the profile subcommand!
 
@@ -49,10 +47,8 @@ import os
 from traitlets.config.application import Application
 from traitlets import Unicode, Bool, Dict, observe
 
-# TODO: fuck that base_flags thing is gonna be a problem
-from IPython.core.application import (BaseIPythonApplication, base_flags)
+from IPython.core.application import BaseIPythonApplication, base_flags
 from IPython.core.profiledir import ProfileDir
-# from IPython.utils.importstring import import_item
 from IPython.paths import get_ipython_dir, get_ipython_package_dir
 
 # -----------------------------------------------------------------------------
@@ -251,6 +247,10 @@ class ProfileCreate(BaseIPythonApplication):
 
     Attributes
     ----------
+    parallel : :class:`~traitlets.Bool`
+        Didn't realize you could implicitly create an ipyparallel from right
+        here. Kinda hints that IPyParallel i a dependency thought right?
+
     A handful. Thankfully they're not grouped together at the top so I'll
     document it when I'm done fishing through this whole file to reorganize
     this classes attributes and put them together! :D
@@ -268,7 +268,8 @@ class ProfileCreate(BaseIPythonApplication):
 
         Like ffs we should encourage people to subclass this and overwrite it.
         """
-        return "[%(name)s] %(message)s"
+        return "[ %(created)f : %(name)s : %(highlevel)s : %(message)s : ]"
+        # return "[%(name)s] %(message)s"
 
     def _copy_config_files_default(self):
         """A method that returns True. I don't understand why it exists."""
@@ -310,10 +311,11 @@ class ProfileCreate(BaseIPythonApplication):
         >>> if self.extra_args:
             >>> self.profile = self.extra_args[0]
 
-        Kinda dumb you say? I'd agree.
+        What's the point of doing that if you can just
+        unpack the args as a tuple? Kinda dumb you say? I'd agree.
 
         """
-        super(ProfileCreate, self).parse_command_line(argv)
+        super().parse_command_line(argv)
         # accept positional arg as profile name
         if self.extra_args:
             self.profile = self.extra_args[0]
@@ -323,13 +325,13 @@ class ProfileCreate(BaseIPythonApplication):
     classes = [ProfileDir]
 
     def _import_app(self, app_path):
-        """import an app class"""
+        """Import an app class."""
         name = app_path.rsplit('.', 1)[-1]
         try:
             app = import_module(app_path)
-        except ImportError:
-            self.log.info("Couldn't import %s, config file will be excluded",
-                          name)
+        except ImportError as e:
+            self.log.info("Couldn't import %s, config file will be excluded"
+                          "The cause of the ImportError was %s", % e, e.__cause__())
         # why catch this?
         # except Exception:
         #     self.log.warning('Unexpected error importing %s',
@@ -339,7 +341,7 @@ class ProfileCreate(BaseIPythonApplication):
 
     def init_config_files(self):
         """Calls super().init_config_files so maybe a good candidate for a classmethod decorator?"""
-        super(ProfileCreate, self).init_config_files()
+        super().init_config_files()
         # use local imports, since these classes may import from here
         from IPython.terminal.ipapp import TerminalIPythonApp
         apps = [TerminalIPythonApp]
@@ -367,10 +369,16 @@ class ProfileCreate(BaseIPythonApplication):
             app.init_config_files()
 
     def stage_default_config_file(self):
+        """Does a subclass implement this? We only ``pass`` here."""
         pass
 
 
 class ProfileApp(Application):
+    """An example of an Application. Should probably refer to that.
+
+    The object in this file doesn't define any attributes it uses in it's
+    ow methods.o
+    """
     name = u'ipython profile'
     description = profile_help
     examples = _main_examples

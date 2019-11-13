@@ -13,37 +13,29 @@
 # -----------------------------------------------------------------------------
 
 # Stdlib
-import inspect
-import utils_io
-import os
-import re
-import sys
 import ast
+import codecs
+import io
+import re
+from logging import error
+from urllib.parse import urlencode
+import sys
+from warnings import warn
 from itertools import chain
 from urllib.request import urlopen
-from urllib.parse import urlencode
 
-# Our own packages
-from IPython.core.error import TryNext, StdinNotImplementedError, UsageError
+from IPython.core.error import (StdinNotImplementedError, TryNext, UsageError,
+                                MacroToEdit, InteractivelyDefined)
 from IPython.core.macro import Macro
 from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.core.oinspect import find_file, find_source_lines
 from IPython.testing.skipdoctest import skip_doctest
-from IPython.utils import py3compat
-from IPython.utils.contexts import preserve_keys
-from IPython.utils.path import get_py_filename
-from warnings import warn
-from logging import error
 from IPython.utils.text import get_text_list
+
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes
 # -----------------------------------------------------------------------------
-
-
-# Used for exception handling in magic_edit
-class MacroToEdit(ValueError):
-    pass
 
 
 ipython_input_pat = re.compile(r"<ipython\-input\-(\d+)-[a-z\d]+>$")
@@ -170,13 +162,6 @@ def strip_initial_indent(lines):
         yield line
 
 
-class InteractivelyDefined(Exception):
-    """Exception for interactively defined variable in magic_edit"""
-
-    def __init__(self, index):
-        self.index = index
-
-
 @magics_class
 class CodeMagics(Magics):
     """Magics related to code management (loading, saving, editing, ...)."""
@@ -189,30 +174,37 @@ class CodeMagics(Magics):
     def save(self, parameter_s=''):
         """Save a set of lines or a macro to a given filename.
 
-        Usage:\\
-          %save [options] filename n1-n2 n3-n4 ... n5 .. n6 ...
+        Usage:
+        ------
+        %save [options] filename n1-n2 n3-n4 ... n5 .. n6 ...
 
-        Options:
+        Options
+        -------
+        .. option:: -r
 
-          -r: use 'raw' input.  By default, the 'processed' history is used,
-          so that magics are loaded in their transformed version to valid
-          Python.  If this option is given, the raw input as typed as the
-          command line is used instead.
+        Use 'raw' input.  By default, the 'processed' history is used,
+        so that magics are loaded in their transformed version to valid
+        Python.  If this option is given, the raw input as typed as the
+        command line is used instead.
 
-          -f: force overwrite.  If file exists, %save will prompt for overwrite
-          unless -f is given.
+        .. option::  -f
 
-          -a: append to the file instead of overwriting it.
+        Force overwrite.  If file exists, %save will prompt for overwrite
+        unless -f is given.
 
-        This function uses the same syntax as %history for input ranges,
+        .. option::  -a
+
+        Append to the file instead of overwriting it.
+
+        This function uses the same syntax as `%history` for input ranges,
         then saves the lines to the filename you specify.
 
         It adds a '.py' extension to the file if you don't do so yourself, and
         it asks for confirmation before overwriting existing files.
 
-        If `-r` option is used, the default extension is `.ipy`.
-        """
+        If `-r` option is used, the default extension is '.ipy'.
 
+        """
         opts, args = self.parse_options(parameter_s, 'fra', mode='list')
         if not args:
             raise UsageError('Missing filename.')
@@ -243,8 +235,8 @@ class CodeMagics(Magics):
         except (TypeError, ValueError) as e:
             print(e.args[0])
             return
-        out = py3compat.cast_unicode(cmds)
-        with utils_io.open(fname, mode, encoding="utf-8") as f:
+        out = cmds
+        with codecs.open(fname, mode, encoding="utf-8") as f:
             if not file_exists or not append:
                 f.write(u"# coding: utf-8\n")
             f.write(out)
@@ -538,7 +530,8 @@ class CodeMagics(Magics):
         """Bring up an editor and execute the resulting code.
 
         Usage:
-          %edit [options] [args]
+
+            %edit [options] [args]
 
         %edit runs IPython's editor hook. The default version of this hook is
         set to call the editor specified by your $EDITOR environment variable.
@@ -625,48 +618,48 @@ class CodeMagics(Magics):
         This is an example of creating a simple function inside the editor and
         then modifying it. First, start up the editor::
 
-          In [1]: edit
-          Editing... done. Executing edited code...
-          Out[1]: 'def foo():\\n    print "foo() was defined in an editing
-          session"\\n'
+            In [1]: edit
+            Editing... done. Executing edited code...
+            Out[1]: 'def foo():\n    print "foo() was defined in an editing
+            session"\n'
 
         We can then call the function foo()::
 
-          In [2]: foo()
-          foo() was defined in an editing session
+            In [2]: foo()
+            foo() was defined in an editing session
 
         Now we edit foo.  IPython automatically loads the editor with the
         (temporary) file where foo() was previously defined::
 
-          In [3]: edit foo
-          Editing... done. Executing edited code...
+            In [3]: edit foo
+            Editing... done. Executing edited code...
 
         And if we call foo() again we get the modified version::
 
-          In [4]: foo()
-          foo() has now been changed!
+            In [4]: foo()
+            foo() has now been changed!
 
         Here is an example of how to edit a code snippet successive
         times. First we call the editor::
 
-          In [5]: edit
-          Editing... done. Executing edited code...
-          hello
-          Out[5]: "print 'hello'\\n"
+            In [5]: edit
+            Editing... done. Executing edited code...
+            hello
+            Out[5]: "print 'hello'\n"
 
         Now we call it again with the previous output (stored in _)::
 
-          In [6]: edit _
-          Editing... done. Executing edited code...
-          hello world
-          Out[6]: "print 'hello world'\\n"
+            In [6]: edit _
+            Editing... done. Executing edited code...
+            hello world
+            Out[6]: "print 'hello world'\\n"
 
         Now we call it with the output #8 (stored in _8, also as Out[8])::
 
-          In [7]: edit _8
-          Editing... done. Executing edited code...
-          hello again
-          Out[7]: "print 'hello again'\\n"
+            In [7]: edit _8
+            Editing... done. Executing edited code...
+            hello again
+            Out[7]: "print 'hello again'\\n"
 
 
         Changing the default editor hook:
@@ -676,7 +669,8 @@ class CodeMagics(Magics):
         is defined in the IPython.core.hooks module, and you can use that as a
         starting example for further modifications.  That file also has
         general instructions on how to set a new hook for use once you've
-        defined it."""
+        defined it.
+        """
         opts, args = self.parse_options(parameter_s, 'prxn:')
 
         try:

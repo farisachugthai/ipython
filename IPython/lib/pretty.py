@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Python advanced pretty printer.  This pretty printer is intended to
 replace the old `pprint` python module which does not allow developers
@@ -86,7 +85,7 @@ import sys
 import types
 from collections import deque
 from inspect import signature
-from utils_io import StringIO
+from io import StringIO
 from warnings import warn
 
 from IPython.utils.decorators import undoc

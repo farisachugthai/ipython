@@ -5,7 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from base64 import encodebytes
-from utils_io import BytesIO, open
+from io import BytesIO, open
 import os
 import shutil
 import subprocess
@@ -17,7 +17,6 @@ from traitlets.config import get_config
 from traitlets.config.configurable import SingletonConfigurable
 
 from IPython.utils.process import find_cmd, FindCmdError
-from IPython.utils.py3compat import cast_unicode
 
 
 class LaTeXTool(SingletonConfigurable):
@@ -81,7 +80,6 @@ def latex_to_png(s, encode=False, backend=None, wrap=False, color='Black',
     None is returned when the backend cannot be used.
 
     """
-    s = cast_unicode(s)
     allowed_backends = LaTeXTool.instance().backends
     if backend is None:
         backend = allowed_backends[0]

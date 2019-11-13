@@ -15,7 +15,7 @@
 # Stdlib
 import os
 import sys
-from utils_io import open as io_open
+from io import open as io_open
 
 # Our own packages
 from IPython.core.error import StdinNotImplementedError

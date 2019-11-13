@@ -1,18 +1,22 @@
 """Implementation of basic magic functions."""
 
 import argparse
+import codecs
 import logging
-import utils_io
+import io
+from importlib import import_module
 from pprint import pformat
 import textwrap
+from textwrap import dedent, indent
 import sys
 from warnings import warn
 
-from traitlets.utils.importstring import import_item
+# from traitlets.utils.importstring import import_item
+
 from IPython.core import magic_arguments, page
 from IPython.core.error import UsageError
 from IPython.core.magic import Magics, magics_class, line_magic, magic_escapes
-from IPython.utils.text import format_screen, dedent, indent
+from IPython.utils.text import format_screen # , dedent, indent
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.ipstruct import Struct
 
@@ -620,7 +624,7 @@ Currently the magic system has the following functions:""",
                 v4.new_code_cell(execution_count=execution_count,
                                  source=source))
         nb = v4.new_notebook(cells=cells)
-        with utils_io.open(args.filename, 'w', encoding='utf-8') as f:
+        with codecs.open(args.filename, 'w', encoding='utf-8') as f:
             write(nb, f, version=4)
 
 
@@ -689,7 +693,7 @@ class AsyncMagics(BasicMagics):
             self.shell.autoawait = True
             return None
 
-        runner = import_item(param)
+        runner = import_module(param)
 
         self.shell.loop_runner = runner
         self.shell.autoawait = True
