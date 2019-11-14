@@ -164,10 +164,10 @@ def start_ipython(argv=None, **kwargs):
         such as `config`.
 
     """
-    # from IPython.terminal.ipapp import launch_new_instance
-    from IPython.terminal.ipapp import TerminalIPythonApp  # noqa
+    from IPython.terminal.ipapp import launch_new_instance
+    # from IPython.terminal.ipapp import TerminalIPythonApp  # noqa
 
-    return TerminalIPythonApp().start(argv, **kwargs)
+    return launch_new_instance(argv, **kwargs)
 
 
 def start_kernel(argv=None, **kwargs):

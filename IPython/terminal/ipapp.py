@@ -19,17 +19,15 @@ import warnings
 from traitlets.config.loader import Config
 from traitlets.config.application import boolean_flag, catch_config_error
 
-from IPython.core import release
-from IPython.core import usage
+from IPython.core import release, usage
 from IPython.core.crashhandler import CrashHandler
 from IPython.core.formatters import PlainTextFormatter
 from IPython.core.history import HistoryManager
 
 # I feel like we should grab this from where ProfileDir was defined
 # from IPython.core.application import (ProfileDir, BaseIPythonApplication,
-# base_flags, base_aliases)
 
-from ..core.application import BaseAliases, BaseIPythonApplication
+from ..core.application import BaseAliases, BaseIPythonApplication, base_flags, base_aliases
 from ..core.profiledir import ProfileDir, ProfileDirError
 
 from IPython.core.magics import ScriptMagics, LoggingMagics
@@ -82,6 +80,8 @@ class IPAppCrashHandler(CrashHandler):
         report.append(self.section_sep + "History of session input:")
         for line in self.app.shell.user_ns['_ih']:
             report.append(line)
+        report.append(
+            '\n*** Last line of input (may not be in above history):\n')
         report.append(self.app.shell._last_input_line + '\n')
 
         return ''.join(report)
@@ -91,11 +91,8 @@ class IPAppCrashHandler(CrashHandler):
 # Aliases and Flags
 # -----------------------------------------------------------------------------
 
-def ipython_options():
-    """The globals are gonna make me sick. Also this code is weirdly redundant. """
-    flags = dict(base_flags)
-    flags.update(shell_flags)
-    return flags
+flags = dict(base_flags)
+flags.update(shell_flags)
 
 
 def addflag(*args, dictionary=None):
@@ -105,32 +102,25 @@ def addflag(*args, dictionary=None):
     return dictionary.update(boolean_flag(*args))
 
 
-class IPythonFlags:
-    """Gonnna need to maintain state better than some globals or funcs."""
+addflag(
+    'simple-prompt',
+    'TerminalInteractiveShell.simple_prompt',
+    "Force simple minimal prompt using `raw_input`",
+    "Use a rich interactive prompt with prompt_toolkit",
+)
 
-    def __init__(self, flags=None):
-        self.flags = flags or {}
-
-    def run(self):
-        addflag(
-            'simple-prompt',
-            'TerminalInteractiveShell.simple_prompt',
-            "Force simple minimal prompt using `raw_input`",
-            "Use a rich interactive prompt with prompt_toolkit",
-        )
-
-        addflag('banner', 'TerminalIPythonApp.display_banner',
-                "Display a banner upon starting IPython.",
-                "Don't display a banner upon starting IPython.")
-        addflag(
-            'confirm-exit', 'TerminalInteractiveShell.confirm_exit',
-            """Set to confirm when you try to exit IPython with an EOF (Control-D
-            in Unix, Control-Z/Enter in Windows). By typing 'exit' or 'quit',
-            you can force a direct exit without any confirmation.""",
-            "Don't prompt the user when exiting.")
-        addflag('term-title', 'TerminalInteractiveShell.term_title',
-                "Enable auto setting the terminal title.",
-                "Disable auto setting the terminal title.")
+addflag('banner', 'TerminalIPythonApp.display_banner',
+        "Display a banner upon starting IPython.",
+        "Don't display a banner upon starting IPython.")
+addflag(
+    'confirm-exit', 'TerminalInteractiveShell.confirm_exit',
+    """Set to confirm when you try to exit IPython with an EOF (Control-D
+in Unix, Control-Z/Enter in Windows). By typing 'exit' or 'quit',
+you can force a direct exit without any confirmation.""",
+    "Don't prompt the user when exiting.")
+addflag('term-title', 'TerminalInteractiveShell.term_title',
+        "Enable auto setting the terminal title.",
+        "Disable auto setting the terminal title.")
 
 
 classic_config = Config()
@@ -145,38 +135,25 @@ classic_config.InteractiveShell.xmode = 'Plain'
 
 frontend_flags = {}
 frontend_flags['classic'] = (
-    classic_config,
-    "Gives IPython a similar feel to the classic Python prompt.")
+    classic_config, "Gives IPython a similar feel to the classic Python prompt.")
 # # log doesn't make so much sense this way anymore
 # paa('--log','-l',
 #     action='store_true', dest='InteractiveShell.logstart',
 #     help="Start logging to the default log file (./ipython_log.py).")
 #
 # # quick is harder to implement
-frontend_flags['quick'] = ({
-    'TerminalIPythonApp': {
-        'quick': True
-    }
-}, "Enable quick startup with no config files.")
+frontend_flags['quick'] = ({'TerminalIPythonApp': {
+                           'quick': True}}, "Enable quick startup with no config files.")
 
-frontend_flags['i'] = ({
-    'TerminalIPythonApp': {
-        'force_interact': True
-    }
-}, """If running code from the command line, become interactive afterwards.
-    It is often useful to follow this with `--` to treat remaining flags as
-    script arguments.
-    """)
+frontend_flags['i'] = ({'TerminalIPythonApp': {'force_interact': True}},
+                       """If running code from the command line, become interactive afterwards.
+It is often useful to follow this with `--` to treat remaining flags as
+script arguments.
+""")
 
-flags = IPythonFlags().run()
-if flags is None:
-    flags = {}
 flags.update(frontend_flags)
 
-base_aliases = BaseAliases.base_aliases
 aliases = base_aliases
-if aliases is None:
-    aliases = {}
 aliases.update(shell_aliases)
 
 # -----------------------------------------------------------------------------
@@ -198,15 +175,12 @@ class LocateIPythonApp(BaseIPythonApplication):
         else:
             print(self.ipython_dir)
 
-    def __init__(self, *args, **kwargs):
-        """So wait are we seriously not supposed to have an init defined?"""
-        super().__init__(self, *args, **kwargs)
-
 
 class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
-    """The moment you've all been waiting for.
+    """A mixin class similar to the one defined in IPython.core.application.
 
-    Here's the main IPython class.
+    Difference being that this allows more terminal specific configurations.
+    However I still really don't get the difference between apps and shells.
 
     Attributes
     ----------
@@ -235,21 +209,6 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     flags = flags
     aliases = aliases
     classes = List()
-
-    def __init__(self):
-        """So wait are we seriously not supposed to have an init defined?"""
-        self.init_path()
-        # create the shell
-        self.init_shell()
-        # and draw the banner
-        # self.init_banner()
-
-        # Now a variety of things that happen after the banner is printed.
-
-        self.init_gui_pylab()
-        self.init_extensions()
-        self.init_code()
-        self.initialize()
 
     interactive_shell_class = Type(
         klass=object,
@@ -357,12 +316,21 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     @catch_config_error
     def initialize(self, argv=None):
         """Do actions after construct, but before starting the app."""
-        super().initialize(argv)
         if self.subapp is not None:
             # don't bother initializing further, starting subapp
             return
+        # print self.extra_args
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]
+        self.init_path()
+        # create the shell
+        self.init_shell()
+        # and draw the banner
+        self.init_banner()
+        # Now a variety of things that happen after the banner is printed.
+        self.init_gui_pylab()
+        self.init_extensions()
+        self.init_code()
 
     def init_shell(self):
         """Initialize the InteractiveShell instance.
@@ -380,13 +348,13 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             user_ns=self.user_ns)
         self.shell.configurables.append(self)
 
-    # def init_banner(self):
-    #     """Optionally display the banner."""
-    #     if self.display_banner and self.interact:
-    #         self.shell.show_banner()
-    #     # Make sure there is a space below the banner.
-    #     if self.log_level <= logging.INFO:
-    #         print()
+    def init_banner(self):
+        """Optionally display the banner."""
+        if self.display_banner and self.interact:
+            self.shell.show_banner()
+        # Make sure there is a space below the banner.
+        if self.log_level <= logging.INFO:
+            print()
 
     def _pylab_changed(self, name, old, new):
         """Replace --pylab='inline' with --pylab='auto'"""
@@ -401,13 +369,17 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         Relies on self.interact which is defined in the shellapp file and that class.
         """
         if hasattr(self, 'subapp'):
-            return self.subapp.start()
+            if self.subapp is not None:
+                return self.subapp.start()
         # perform any prexec steps:
         if self.interact:
             self.log.debug("Starting IPython's mainloop...")
             self.shell.mainloop()
         else:
-            self.log.debug("IPython not interactive...")
+            # self.log.debug("IPython not interactive...")
+            # we're about to sys.exit don't just mark that as debug
+            self.log.error('IPython not interactive. Here is the last execution; result.\ n{}'.format(
+                self.shell.last_execution_result))
             if not self.shell.last_execution_succeeded:
                 sys.exit(1)
 
@@ -439,5 +411,8 @@ def load_default_config(ipython_dir=None):
     return app.config
 
 
+launch_new_instance = TerminalIPythonApp.launch_instance
+
+
 if __name__ == '__main__':
-    TerminalIPythonApp.launch_instance()
+    launch_new_instance()

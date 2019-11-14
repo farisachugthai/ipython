@@ -46,61 +46,39 @@ from traitlets import (
     observe,
 )
 
+if os.name == 'nt':
+    programdata = os.environ.get('PROGRAMDATA', None)
+    if programdata:
+        SYSTEM_CONFIG_DIRS = [os.path.join(programdata, 'ipython')]
+    else:  # PROGRAMDATA is not defined by default on XP.
+        SYSTEM_CONFIG_DIRS = []
+else:
+    SYSTEM_CONFIG_DIRS = [
+        "/usr/local/etc/ipython",
+        "/etc/ipython",
+    ]
+ENV_CONFIG_DIRS = []
+_env_config_dir = os.path.join(sys.prefix, 'etc', 'ipython')
+if _env_config_dir not in SYSTEM_CONFIG_DIRS:
+    # only add ENV_CONFIG if sys.prefix is not already included
+    ENV_CONFIG_DIRS.append(_env_config_dir)
+_envvar = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS')
+if _envvar in {None, ''}:
+    IPYTHON_SUPPRESS_CONFIG_ERRORS = None
+else:
+    if _envvar.lower() in {'1', 'true'}:
+        IPYTHON_SUPPRESS_CONFIG_ERRORS = True
+    elif _envvar.lower() in {'0', 'false'}:
+        IPYTHON_SUPPRESS_CONFIG_ERRORS = False
+    else:
+        sys.exit(
+            "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}." %
+            _envvar)
 
-class ConfigLocations:
-    """Moved some globals into a class because seriously what is with the globals???"""
-    def __init__(self, SYSTEM_CONFIG_DIRS=None, ENV_CONFIG_DIRS=None):
-        self.SYSTEM_CONFIG_DIRS = SYSTEM_CONFIG_DIRS
-        self.ENV_CONFIG_DIRS = ENV_CONFIG_DIRS
-
-    @property
-    def get_system(self):
-        return self.SYSTEM_CONFIG_DIRS
-
-    @get_system.setter
-    def set_system(self):
-        if os.name == 'nt':
-            programdata = os.environ.get('PROGRAMDATA', None)
-            if programdata:
-                self.SYSTEM_CONFIG_DIRS = [os.path.join(programdata, 'ipython')]
-            else:  # PROGRAMDATA is not defined by default on XP.
-                self.SYSTEM_CONFIG_DIRS = []
-        else:
-            self.SYSTEM_CONFIG_DIRS = [
-                "/usr/local/etc/ipython",
-                "/etc/ipython",
-            ]
-
-    @property
-    def get_env_config(self):
-        return self.ENV_CONFIG_DIRS
-
-    @get_env_config.setter
-    def set_env_config(self):
-        _env_config_dir = os.path.join(sys.prefix, 'etc', 'ipython')
-        if _env_config_dir not in self.SYSTEM_CONFIG_DIRS:
-            # only add ENV_CONFIG if sys.prefix is not already included
-            ENV_CONFIG_DIRS.append(_env_config_dir)
-
-    def suppress_errors(self):
-        _envvar = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS')
-        if _envvar in {None, ''}:
-            IPYTHON_SUPPRESS_CONFIG_ERRORS = None
-        else:
-            if _envvar.lower() in {'1', 'true'}:
-                IPYTHON_SUPPRESS_CONFIG_ERRORS = True
-            elif _envvar.lower() in {'0', 'false'}:
-                IPYTHON_SUPPRESS_CONFIG_ERRORS = False
-            else:
-                sys.exit(
-                    "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}." %
-                    _envvar)
-
-ENV_CONFIG_DIRS = ConfigLocations().ENV_CONFIG_DIRS
 
 # aliases and flags
 class BaseAliases(Configurable):
-    """Globals into a configurable. Actually don't traitlets are very odd to work with.
+    """Globals into a configurable.
 
     Examples
     --------
@@ -126,6 +104,7 @@ class BaseAliases(Configurable):
 
 
 # Make it still available up until I can delete this.
+
 base_aliases = BaseAliases.base_aliases
 
 base_flags = dict(
@@ -407,12 +386,13 @@ class BaseIPythonApplication(Application):
         Any other value are invalid, and will make IPython exit with a non-zero return code.
         """
         if suppress_errors is None:
-            suppress_env = os.environ.get('IPYTHON_SUPPRESS_CONFIG_ERRORS', None)
+            suppress_env = os.environ.get(
+                'IPYTHON_SUPPRESS_CONFIG_ERRORS', None)
             if suppress_env is not None:
                 suppress_errors = True
 
         self.log.info('Search path {} for config files'.format(
-                       self.config_file_paths))
+            self.config_file_paths))
 
         if base_config is None:
             base_config = 'ipython_config.py'
