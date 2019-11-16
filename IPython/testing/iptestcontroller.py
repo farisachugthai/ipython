@@ -4,6 +4,8 @@
 This module runs one or more subprocesses which will actually run the IPython
 test suite.
 
+Also it's really quietly dependant on coverage. Let's add that to the requirements.
+
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -11,20 +13,21 @@ import argparse
 import logging
 import multiprocessing.pool
 import os
-import stat
 import shutil
 import signal
-import sys
+import stat
 import subprocess
+import sys
 import time
 
-from .iptest import (
-    have, test_group_names as py_test_group_names, test_sections, StreamCapturer,
-)
 from IPython.utils.path import compress_user
 from IPython.utils.py3compat import decode
 from IPython.utils.sysinfo import get_sys_info
 from IPython.utils.tempdir import TemporaryDirectory
+
+from .iptest import StreamCapturer, have
+from .iptest import test_group_names as py_test_group_names
+from .iptest import test_sections
 
 
 class TestController:

@@ -75,7 +75,7 @@ extensions = [
     'IPython.sphinxext.ipython_directive',
     'sphinx.ext.napoleon',  # to preprocess docstrings
     # 'numpydoc.numpydoc',
-    'autoapi.extension',
+    # 'autoapi.extension',
     'github',  # for easy GitHub links
     'magics',
     'configtraits',

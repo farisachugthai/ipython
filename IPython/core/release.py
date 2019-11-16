@@ -22,7 +22,8 @@ name = 'ipython'
 _version_major = 7
 _version_minor = 10
 _version_patch = 0
-_version_extra = '.dev'
+# setuptools will complain every single time if you don't
+_version_extra = '.dev0'
 # _version_extra = 'b1'
 # _version_extra = ''  # Uncomment this for full releases
 

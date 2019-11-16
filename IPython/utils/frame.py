@@ -1,6 +1,8 @@
-# encoding: utf-8
-"""
-Utilities for working with stack frames.
+"""Utilities for working with stack frames.
+
+Methods
+--------
+All the functions in this module, *seemingly*, utilize :func:`sys._getframe`.
 """
 
 # -----------------------------------------------------------------------------
@@ -10,16 +12,7 @@ Utilities for working with stack frames.
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------
-# Imports
-# -----------------------------------------------------------------------------
-
 import sys
-from IPython.utils import py3compat
-
-# -----------------------------------------------------------------------------
-# Code
-# -----------------------------------------------------------------------------
 
 
 def extract_vars(*names, **kw):
@@ -63,7 +56,9 @@ def extract_vars_above(*names):
 
     This is simply a convenience function so that the very common case (for us)
     of skipping exactly 1 frame doesn't have to construct a special dict for
-    keyword passing."""
+    keyword passing.
+
+    """
 
     callerNS = sys._getframe(2).f_locals
     return dict((k, callerNS[k]) for k in names)
@@ -78,15 +73,15 @@ def debugx(expr, pre_msg=''):
     suitable for eval().
 
     An optional message can be passed, which will be prepended to the printed
-    expr->value pair."""
-
+    expr->value pair.
+    """
     cf = sys._getframe(1)
     print('[DBG:%s] %s%s -> %r' % (cf.f_code.co_name, pre_msg, expr,
                                    eval(expr, cf.f_globals, cf.f_locals)))
 
 
 # deactivate it by uncommenting the following line, which makes it a no-op
-#def debugx(expr,pre_msg=''): pass
+# def debugx(expr,pre_msg=''): pass
 
 
 def extract_module_locals(depth=0):

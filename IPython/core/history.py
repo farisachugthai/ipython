@@ -507,18 +507,31 @@ class HistoryAccessor(HistoryAccessorBase):
 class HistoryManager(HistoryAccessor):
     """A class to organize all history-related functionality in one place.
 
-    Public interface
-    ----------------
+    Attributes
+    ----------
     shell : traitlets.traitlets.Instance
         An instance of the IPython shell we are attached to.
-    input_hist_parsed
-    input_hist_raw
+
+    input_hist_parsed : list
+
+    input_hist_raw : list
         Lists to hold processed and raw history. These start with a blank entry
         so that we can index them starting from 1
+
     dir_hist
         A list of directories visited during session
 
     TODO: More parameters
+
+    Notes
+    ------
+    The HistoryManager is bound to the InteractiveShell instance as the
+    unsurprisingly named attribute ``history_manager``.
+
+    Usage of the HistoryManager can be observed in the method init_user_ns.
+
+    Take care to use the `psource` magic as there are quite a number of useful
+    comments as well.
 
     """
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',

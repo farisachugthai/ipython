@@ -4,10 +4,14 @@
 IPython as a system shell
 =========================
 
+.. module:: system_shell
+   :synopsis: Describe how to utilize IPython as a system shell.
 
 
 Overview
 ========
+
+.. todo:: The first part isn't true any more. You have to configure prompts differently.
 
 It is possible to adapt IPython for system shell usage. In the past, IPython
 shipped a special 'sh' profile for this purpose, but it had been quarantined
@@ -57,7 +61,7 @@ filesystem (the % is not required with automagic on). It also maintains
 a list of visited directories (use ``%dhist`` to see it) and allows direct
 switching to any of them. Type ``cd?`` for more details.
 
-``%pushd``, ``%popd`` and ``%dirs`` are provided for directory stack handling.
+`%pushd`, `%pop`` and `%dirs` are provided for directory stack handling.
 
 
 Prompt customization
@@ -71,10 +75,10 @@ See :ref:`custom_prompts`.
 String lists
 ============
 
-String lists (IPython.utils.text.SList) are handy way to process output
+String lists (`IPython.utils.text.SList`) are handy way to process output
 from system commands. They are produced by ``var = !cmd`` syntax.
 
-First, we acquire the output of 'ls -l'::
+First, we acquire the output of :command:`ls -l`::
 
     [Q:doc/examples]|2> lines = !ls -l
      ==

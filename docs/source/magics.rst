@@ -1,48 +1,24 @@
-Interactive use
-===============
-
-IPython is meant to work as a drop-in replacement for the standard interactive
-interpreter. As such, any code which is valid python should execute normally
-under IPython (cases where this is not true should be reported as bugs). It
-does, however, offer many features which are not available at a standard python
-prompt. What follows is a list of these.
-
-
-.. Well we didn't choose it. Stop badgering users about things outside of
-their control and present solutions.
-
-.. Caution for Windows users
-.. -------------------------
-
-.. Windows, unfortunately, uses the '\\' character as a path separator. This is a
-.. terrible choice, because '\\' also represents the escape character in most
-.. modern programming languages, including Python. For this reason, using '/'
-.. character is recommended if you have problems with ``\``.  However, in Windows
-.. commands '/' flags options, so you can not use it for the root directory. This
-.. means that paths beginning at the root must be typed in a contrived manner
-.. like: ``%copy \opt/foo/bar.txt \tmp``
-
 .. _magic:
 
 Magic command system
---------------------
+====================
 
 IPython will treat any line whose first character is a :kbd:`%` as a special
 call to a 'magic' function.
 
-These allow you to control the behavior of
-IPython itself, plus a lot of system-type features. All magics are
-prefixed with a :kbd:`%` character, but `magic_parameters` are given without
-parentheses or quotes.
+These allow you to control the behavior of IPython itself, plus a lot of
+system-type features. All magics are prefixed with a :kbd:`%` character, but
+`~IPython.core.magic_parameters` are given without parentheses or quotes.
 
 Lines that begin with :kbd:`%%` signal a `cell_magic`.
 
 They take as arguments not only the rest of the current line, but all lines
 in the current execution block are interpreted as arguments to the magic.
 
-Cell magics can, in fact, make arbitrary modifications
-to the input they receive, which need not even be valid Python code at all.
-They receive the whole block as a single string.
+Cell magics can, in fact, make arbitrary modifications to the input they
+receive, which need not even be valid Python code at all.
+
+They receive the whole block as a single `str`.
 
 As a line magic example, the :magic:`cd` magic works just like the OS command of
 the same name::
@@ -61,6 +37,12 @@ The following uses the builtin :magic:`timeit` in cell mode::
 In this case, ``x = range(10000)`` is called as the line argument, and the
 block with ``min(x)`` and ``max(x)`` is called as the cell body.  The
 :magic:`timeit` magic receives both.
+
+
+Automagic
+---------
+
+.. magic:: automagic
 
 If you have 'automagic' enabled (as it is by default), you don't need to type in
 the single ``%`` explicitly for line magics; IPython will scan its internal
@@ -102,10 +84,12 @@ use it:
     /home/fperez/ipython
 
 Line magics, if they return a value, can be assigned to a variable using the
-syntax ``l = %sx ls`` (which in this particular case returns the result of `ls`
-as a python list). See :ref:`below <manual_capture>` for more information.
+syntax ``l = %sx ls`` (which in this particular case returns the result of
+:command:`ls` as a python `list`).
 
-Type ``%magic`` for more information, including a list of all available magic
+.. see:: :ref:`below <manual_capture>` for more information.
+
+Type `%magic` for more information, including a list of all available magic
 functions at any time and their docstrings. You can also type
 ``%magic_function_name?`` (see :ref:`below <dynamic_object_info>` for
 information on the '?' system) to get information about any particular magic
@@ -123,13 +107,23 @@ docstrings of all currently available magic commands.
      How to define and register additional magic functions
 
 
+Interactive use
+===============
+
+IPython is meant to work as a drop-in replacement for the standard interactive
+interpreter. As such, any code which is valid python should execute normally
+under IPython (cases where this is not true should be reported as bugs). It
+does, however, offer many features which are not available at a standard python
+prompt. What follows is a list of these.
+
 Access to the standard Python help
 ----------------------------------
 
 Simply type ``help()`` to access Python's standard help system. You can
 also type ``help(object)`` for information about a given object, or
 ``help('keyword')`` for information on a keyword. You may need to configure your
-PYTHONDOCS environment variable for this feature to work correctly.
+:envvar:`PYTHONDOCS` environment variable for this feature to work correctly.
+
 
 .. _dynamic_object_info:
 
@@ -153,21 +147,25 @@ information about your working environment:
     * :magic:`pdoc` **<object>**: Print (or run through a pager if too long) the
       docstring for an object. If the given object is a class, it will
       print both the class and the constructor docstrings.
+
     * :magic:`pdef` **<object>**: Print the call signature for any callable
       object. If the object is a class, print the constructor information.
+
     * :magic:`psource` **<object>**: Print (or run through a pager if too long)
       the source code for an object.
+
     * :magic:`pfile` **<object>**: Show the entire source file where an object was
       defined via a pager, opening it at the line where the object
       definition begins.
-    * :magic:`who`/:magic:`whos`: These functions give information about identifiers
+
+    * :magic:`who` / :magic:`whos`: These functions give information about identifiers
       you have defined interactively (not things you loaded or defined
       in your configuration files). %who just prints a list of
-      identifiers and %whos prints a table with some basic details about
+      identifiers and `%whos` prints a table with some basic details about
       each identifier.
 
-The dynamic object information functions (?/??, ``%pdoc``,
-``%pfile``, ``%pdef``, ``%psource``) work on object attributes, as well as
+The dynamic object information functions (:kbd:`?` / :kbd:`??` , `%pdoc`,
+`%pfile`, `%pdef`, `%psource`) work on object attributes, as well as
 directly on variables. For example, after doing ``import os``, you can use
 ``os.path.abspath??``.
 
@@ -175,7 +173,7 @@ directly on variables. For example, after doing ``import os``, you can use
 Command line completion
 +++++++++++++++++++++++
 
-At any time, hitting TAB will complete any available python commands or
+At any time, hitting :kbd:`TAB` will complete any available python commands or
 variable names, and show you a list of the possible completions if
 there's no unambiguous one. It will also complete filenames in the
 current directory if no python names match what you've typed so far.
@@ -201,9 +199,9 @@ time you restart it. By default, the history file is named
 Autoindent
 ++++++++++
 
-Starting with 5.0, IPython uses `prompt_toolkit` in place of ``readline``,
+Starting with 5.0, IPython uses `prompt_toolkit` in place of :mod:`readline`,
 it thus can recognize lines ending in ':' and indent the next line,
-while also un-indenting automatically after 'raise' or 'return',
+while also indenting automatically after `raise` or `return`,
 and support real multi-line editing as well as syntactic coloration
 during edition.
 
@@ -212,17 +210,25 @@ not honor your :file:`~/.inputrc` configuration (or whatever
 file your :envvar:`INPUTRC` environment variable points to).
 
 In particular if you want to change the input mode to ``vi``, you will need to
-set the ``TerminalInteractiveShell.editing_mode`` configuration  option of IPython.
+set the :trait:`TerminalInteractiveShell.editing_mode`
+configuration  option of IPython.
+
 
 Session logging and restoring
 -----------------------------
 
+.. option:: --logfile
+
 You can log all input from a session either by starting IPython with the
-command line switch ``--logfile=foo.py`` (see :ref:`here <command_line_options>`)
-or by activating the logging at any moment with the magic function :magic:`logstart`.
+command line switch ``--logfile=foo.py``.
+
+(See :ref:`here <command_line_options>`)
+
+In addition, this can be initialized at any moment with the magic function
+:magic:`logstart`.
 
 Log files can later be reloaded by running them as scripts and IPython
-will attempt to 'replay' the log by executing all the lines in it, thus
+will attempt to `%replay` the log by executing all the lines in it, thus
 restoring the state of a previous session. This feature is not quite
 perfect, but can still be useful in many cases.
 
@@ -232,30 +238,41 @@ which you can later open in your favorite text editor to extract code or
 to 'clean them up' before using them to replay a session.
 
 The :magic:`logstart` function for activating logging in mid-session is used as
-follows::
+follows:
 
-    %logstart [log_name [log_mode]]
+.. program:: %logstart [log_name [log_mode]]
 
-If no name is given, it defaults to a file named 'ipython_log.py' in your
+.. option:: log_name
+
+If no name is given, 'logname' defaults to a file named 'ipython_log.py' in your
 current working directory, in 'rotate' mode (see below).
 
-'%logstart name' saves to file 'name' in 'backup' mode. It saves your
+'`%logstart` name' saves to file *name* in 'backup' mode. It saves your
 history up to that point and then continues logging.
 
-%logstart takes a second optional parameter: logging mode. This can be
+.. option:: log_mode
+
+`%logstart` takes a second optional parameter: logging mode. This can be
 one of (note that the modes are given unquoted):
 
     * [over:] overwrite existing log_name.
+
     * [backup:] rename (if exists) to log_name~ and start log_name.
+
     * [append:] well, that says it.
+
     * [rotate:] create rotating logs log_name.1~, log_name.2~, etc.
+
+.. option:: -o, --output
 
 Adding the '-o' flag to '%logstart' magic (as in '%logstart -o [log_name [log_mode]]')
 will also include output from iPython in the log file.
 
-The :magic:`logoff` and :magic:`logon` functions allow you to temporarily stop and
-resume logging to a file which had previously been started with
-%logstart. They will fail (with an explanation) if you try to use them
+The :magic:`%logoff` and :magic:`%logon` functions allow you to
+temporarily stop and resume logging to a file which had previously
+been started with `%logstart`.
+
+They will fail (with an explanation) if you try to use them
 before logging has been started.
 
 .. _system_shell_access:
@@ -263,9 +280,10 @@ before logging has been started.
 System shell access
 -------------------
 
-Any input line beginning with a ``!`` character is passed verbatim (minus
-the ``!``, of course) to the underlying operating system. For example,
-typing ``!ls`` will run 'ls' in the current directory.
+Any input line beginning with a :kbd:`!` character is passed verbatim (minus
+the :kbd:`!`) to the underlying operating system. For example,
+typing ``!ls`` will run :command:`ls` in the current directory.
+
 
 .. _manual_capture:
 
@@ -417,7 +435,7 @@ For output that is returned from actions, a system similar to the input
 cache exists but using _ instead of _i. Only actions that produce a
 result (NOT assignments, for example) are cached. If you are familiar
 with Mathematica, IPython's _ variables behave exactly like
-Mathematica's % variables.
+Mathematica's :kbd:`%` variables.
 
 The following variables always exist:
 

@@ -1,10 +1,10 @@
-# encoding: utf-8
 """sys.excepthook for IPython itself, leaves a detailed report on disk.
 
 Authors:
 
 * Fernando Perez
 * Brian E. Granger
+
 """
 
 # -----------------------------------------------------------------------------
@@ -18,7 +18,6 @@ Authors:
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-
 import os
 import sys
 import traceback
@@ -26,8 +25,6 @@ from pprint import pformat
 
 from IPython.core import ultratb
 from IPython.core.release import author_email
-# from IPython.utils.sysinfo import sys_info
-# from IPython.utils.py3compat import input
 
 # -----------------------------------------------------------------------------
 # Code

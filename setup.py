@@ -59,7 +59,8 @@ EntryPoint(name='ipython', value='IPython:start_ipython', group='console_scripts
 EntryPoint(name='ipython3', value='IPython:start_ipython', group='console_scripts'),
 
 """
-from __future__ import print_function
+# haven't been py2 compatible in some time
+# from __future__ import print_function
 
 import os
 import sys
@@ -81,6 +82,9 @@ try:
 except ImportError:
     importlib_metadata = None
 
+# Just checking i'm allowed to make setuptools a hard dependency right?
+# Because everythign we use has it as a dependency so there's no way a user
+# doesn't have it
 from setuptools import find_packages, setup, build_meta
 
 isfile = os.path.isfile
@@ -101,10 +105,11 @@ execfile(pjoin(repo_root, 'IPython', 'core', 'release.py'), globals())
 # Handle OS specific things
 # ------------------------------------------------------------------------------
 
-if os.name in ('nt', 'dos'):
-    os_name = 'windows'
-else:
-    os_name = os.name
+# literally where is this used?
+# if os.name in ('nt', 'dos'):
+#     os_name = 'windows'
+# else:
+#     os_name = os.name
 
 # ------------------------------------------------------------------------------
 # Things related to the IPython documentation
@@ -197,10 +202,13 @@ setuptools_extra_args = {}
 extras_require = dict(
     parallel=['ipyparallel'],
     qtconsole=['qtconsole'],
-    doc=['Sphinx>=1.3'],
+    # Note: matplotlib is a hard dependency to build the docs
+    doc=['Sphinx>=1.3', 'matplotlib'],
+
+    # coverage shows up the iptestcontroller and there's no try/excepts
     test=[
-        'nose>=0.10.1', 'requests', 'testpath', 'pygments', 'nbformat',
-        'ipykernel', 'numpy'
+        'nose>=0.10.1', 'requests', 'testpath', 'nbformat',
+        'ipykernel', 'numpy', 'coverage'
     ],
     terminal=[],
     kernel=['ipykernel'],
@@ -210,7 +218,7 @@ extras_require = dict(
 )
 
 install_requires = [
-    'setuptools>=18.5',
+    'setuptools>=38.5',
     'jedi>=0.10',
     'decorator',
     'pickleshare',

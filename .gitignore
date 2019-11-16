@@ -43,6 +43,7 @@ __pycache__
 venv*/
 .idea/
 
-# Vim: set ft=git:
-
 !.idea/
+.noseids
+.patch
+# Vim: set ft=git:

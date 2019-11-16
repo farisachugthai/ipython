@@ -1,7 +1,14 @@
-# encoding: utf-8
 """Miscellaneous context managers.
-"""
 
+So this is why we don't separate things on abstract unnecessary
+notions like "Is a decorator or not?
+
+I'm inside nvim0.5 and IPython HEAD. This isn't old software.
+
+But I can tell it hasn't been rewriting in like 10 years.
+
+This is now 1 class leave a mental now for when we can ove this to tempdir.
+"""
 import warnings
 
 # Copyright (c) IPython Development Team.
@@ -58,20 +65,3 @@ class preserve_keys(object):
         for k in self.to_delete:
             d.pop(k, None)
         d.update(self.to_update)
-
-
-class NoOpContext(object):
-    """
-    Deprecated
-
-    Context manager that does nothing."""
-    def __init__(self):
-        warnings.warn("""NoOpContext is deprecated since IPython 5.0 """,
-                      DeprecationWarning,
-                      stacklevel=2)
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, type, value, traceback):
-        pass

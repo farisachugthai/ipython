@@ -1,4 +1,3 @@
-# encoding: utf-8
 """IO related utilities."""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -6,7 +5,7 @@ import sys
 import tempfile
 
 
-class Tee(object):
+class Tee:
     """A class to duplicate an output stream to stdout/err.
 
     This works in a manner very similar to the Unix 'tee' command.
@@ -108,15 +107,16 @@ def temp_pyfile(src, ext='.py'):
     Parameters
     ----------
     src : string or list of strings (no need for ending newlines if list)
-      Source code to be written to the file.
+        Source code to be written to the file.
 
     ext : optional, string
-      Extension for the generated file.
+        Extension for the generated file.
 
     Returns
     -------
-    (filename, open filehandle)
-      It is the caller's responsibility to close the open file and unlink it.
+    fname : str (path-like)
+        It is the caller's responsibility to close the open file and unlink it.
+
     """
     fname = tempfile.mkstemp(ext)[1]
     with open(fname, 'w') as f:

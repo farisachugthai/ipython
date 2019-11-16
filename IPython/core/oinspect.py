@@ -221,18 +221,22 @@ class Inspector:
     """
 
     def __init__(self,
-                 # color_table=InspectColors,
-                 # scheme=None,
+                 color_table=InspectColors,
+                 scheme=None,
                  str_detail_level=0,
-                 # parent=None,
+                 parent=None,
+                 config=None,
+                 *args, **kwargs
                  ):
-        # self.color_table = color_table
+        self.color_table = color_table
         # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         # self.format = self.parser.format
         self.__head = None
         self.str_detail_level = str_detail_level
         # self.set_active_scheme(scheme)
-        # super().__init__(parent=parent, config=config)
+        self.parent = parent
+        self.config = config
+        super().__init__()
 
     def _getdef(self, obj, oname=''):
         """Return the call signature for any callable object.

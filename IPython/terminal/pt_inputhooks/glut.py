@@ -1,21 +1,21 @@
 """GLUT Input hook for interactive use with prompt_toolkit
-"""
 
-# GLUT is quite an old library and it is difficult to ensure proper
-# integration within IPython since original GLUT does not allow to handle
-# events one by one. Instead, it requires for the mainloop to be entered
-# and never returned (there is not even a function to exit he
-# mainloop). Fortunately, there are alternatives such as freeglut
-# (available for linux and windows) and the OSX implementation gives
-# access to a glutCheckLoop() function that blocks itself until a new
-# event is received. This means we have to setup the idle callback to
-# ensure we got at least one event that will unblock the function.
-#
-# Furthermore, it is not possible to install these handlers without a window
-# being first created. We choose to make this window invisible. This means that
-# display mode options are set at this level and user won't be able to change
-# them later without modifying the code. This should probably be made available
-# via IPython options system.
+GLUT is quite an old library and it is difficult to ensure proper
+integration within IPython since original GLUT does not allow to handle
+events one by one. Instead, it requires for the mainloop to be entered
+and never returned (there is not even a function to exit he
+mainloop). Fortunately, there are alternatives such as freeglut
+(available for linux and windows) and the OSX implementation gives
+access to a glutCheckLoop() function that blocks itself until a new
+event is received. This means we have to setup the idle callback to
+ensure we got at least one event that will unblock the function.
+
+Furthermore, it is not possible to install these handlers without a window
+being first created. We choose to make this window invisible. This means that
+display mode options are set at this level and user won't be able to change
+them later without modifying the code. This should probably be made available
+via IPython options system.
+"""
 
 import sys
 import time

@@ -1,6 +1,7 @@
 # encoding: utf-8
-"""
-Utilities for getting information about IPython and the system it's running in.
+"""Utilities for getting information about IPython and the system it's running in.
+
+.. versionchanged:: num_cpus replaced with multiprocessing.num_cpus
 """
 
 # -----------------------------------------------------------------------------
@@ -13,7 +14,7 @@ Utilities for getting information about IPython and the system it's running in.
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-
+from multiprocessing import num_cpus
 import os
 import platform
 import pprint
@@ -21,7 +22,7 @@ import sys
 import subprocess
 
 from IPython.core import release
-from IPython.utils import _sysinfo, encoding
+# from IPython.utils import _sysinfo, encoding
 
 # -----------------------------------------------------------------------------
 # Code
@@ -31,9 +32,10 @@ from IPython.utils import _sysinfo, encoding
 def pkg_commit_hash(pkg_path):
     """Get short form of commit hash given directory `pkg_path`
 
-    We get the commit hash from (in order of preference):
+    The SHA-1. He was trying to say SHA1.
 
-    * IPython.utils._sysinfo.commit
+    We get the commit hash from:
+
     * git output, if we are in a git repository
 
     If these fail, we return a not-found placeholder tuple
@@ -91,7 +93,7 @@ def pkg_info(pkg_path):
         sys_platform=sys.platform,
         platform=platform.platform(),
         os_name=os.name,
-        default_encoding=encoding.DEFAULT_ENCODING,
+        # default_encoding=encoding.DEFAULT_ENCODING,
     )
 
 
@@ -121,52 +123,3 @@ def sys_info():
          'sys_version': '2.6.6 (r266:84292, Sep 15 2010, 15:52:39) \\n[GCC 4.4.5]'}
     """
     return pprint.pformat(get_sys_info())
-
-
-def _num_cpus_unix():
-    """Return the number of active CPUs on a Unix system."""
-    return os.sysconf("SC_NPROCESSORS_ONLN")
-
-
-def _num_cpus_darwin():
-    """Return the number of active CPUs on a Darwin system."""
-    p = subprocess.Popen(['sysctl', '-n', 'hw.ncpu'], stdout=subprocess.PIPE)
-    return p.stdout.read()
-
-
-def _num_cpus_windows():
-    """Return the number of active CPUs on a Windows system."""
-    return os.environ.get("NUMBER_OF_PROCESSORS")
-
-
-def num_cpus():
-    """Return the effective number of CPUs in the system as an integer.
-
-    This cross-platform function makes an attempt at finding the total number of
-    available CPUs in the system, as returned by various underlying system and
-    python calls.
-
-    If it can't find a sensible answer, it returns 1 (though an error *may* make
-    it return a large positive number that's actually incorrect).
-    """
-
-    # Many thanks to the Parallel Python project (http://www.parallelpython.com)
-    # for the names of the keys we needed to look up for this function.  This
-    # code was inspired by their equivalent function.
-
-    ncpufuncs = {
-        'Linux': _num_cpus_unix,
-        'Darwin': _num_cpus_darwin,
-        'Windows': _num_cpus_windows
-    }
-
-    ncpufunc = ncpufuncs.get(
-        platform.system(),
-        # default to unix version (Solaris, AIX, etc)
-        _num_cpus_unix)
-
-    try:
-        ncpus = max(1, int(ncpufunc()))
-    except BaseException:
-        ncpus = 1
-    return ncpus

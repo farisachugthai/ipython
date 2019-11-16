@@ -21,7 +21,9 @@ import builtins as builtin_mod
 import code
 import codecs
 import functools
+import logging
 import inspect
+import io
 import os
 import re
 import runpy
@@ -40,26 +42,28 @@ from typing import List as ListType
 from typing import Tuple
 from warnings import warn
 
-# Like where is this in the required dependencies?
+# Like where is this pickleshare nonsense in the required dependencies?
+# fyi it is in the requirements just not anywhere in the docs
 from pickleshare import PickleShareDB
 from traitlets import (Any, Bool, CaselessStrEnum, Dict, Enum, Instance,
                        Integer, List, Type, Unicode, default, observe,
                        validate)
 from traitlets.config.configurable import SingletonConfigurable
 
-from IPython.core import hooks, magic, oinspect, page, prefilter, ultratb
+from IPython.core import (async_helpers, hooks, magic, oinspect, page,
+                          prefilter, ultratb)
 from IPython.core.alias import Alias, AliasManager
+from IPython.core.async_helpers import (_asyncify, _asyncio_runner,
+                                        _pseudo_sync_runner)
 from IPython.core.autocall import ExitAutocall
 from IPython.core.builtin_trap import BuiltinTrap
 from IPython.core.compilerop import CachingCompiler, check_linecache_ipython
-from IPython.core.debugger import CorePdb
 from IPython.core.display import display
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.displayhook import DisplayHook
 from IPython.core.displaypub import DisplayPublisher
-from .error import ProvisionalWarning, SpaceInInput
-from IPython.core.error import InputRejected, UsageError
-
+from IPython.core.error import (InputRejected, ProvisionalWarning,
+                                SpaceInInput, UsageError)
 from IPython.core.events import EventManager, available_events
 from IPython.core.extensions import ExtensionManager
 from IPython.core.formatters import DisplayFormatter
@@ -73,12 +77,9 @@ from IPython.core.profiledir import ProfileDir
 from IPython.core.usage import default_banner
 from IPython.paths import get_ipython_dir
 from IPython.testing.skipdoctest import skip_doctest
-from IPython.utils import PyColorize, utils_io, openpy
-from IPython.utils.contexts import NoOpContext
+from IPython.utils import PyColorize, openpy, utils_io
 from IPython.utils.decorators import undoc
-from IPython.utils.utils_io import ask_yes_no
 from IPython.utils.ipstruct import Struct
-# from IPython.utils.path import get_home_dir
 from IPython.utils.path import ensure_dir_exists, get_py_filename
 from IPython.utils.process import getoutput, system
 from IPython.utils.strdispatch import StrDispatch
@@ -86,10 +87,10 @@ from IPython.utils.syspathcontext import prepended_to_syspath
 # Are we deliberately clobbering the stdlib.
 from IPython.utils.tempdir import TemporaryDirectory
 from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
+import io
+from IPython.utils.utils_io import ask_yes_no
 
-from . import async_helpers
-from .async_helpers import _asyncify, _asyncio_runner, _pseudo_sync_runner
-
+# guys its literally a pass statement. deleted.
 # NoOpContext is deprecated, but ipykernel imports it from here.
 # See https://github.com/ipython/ipykernel/issues/157
 
@@ -258,6 +259,7 @@ class SeparateUnicode(Unicode):
 
     This is a Unicode based trait that converts '0'->'' and ``'\\n'->'\n'``.
     """
+
     def validate(self, obj, value):
         if value == '0':
             value = ''
@@ -387,8 +389,7 @@ class InteractiveShell(SingletonConfigurable):
     loop_runner = Any(
         default_value="IPython.core.interactiveshell._asyncio_runner",
         allow_none=True,
-        help=
-        """Select the loop runner that will be used to execute top-level asynchronous code"""
+        help="""Select the loop runner that will be used to execute top-level asynchronous code"""
     ).tag(config=True)
 
     @default('loop_runner')
@@ -402,7 +403,7 @@ class InteractiveShell(SingletonConfigurable):
                 runner, autoawait = self.loop_runner_map[proposal.value]
                 self.autoawait = autoawait
                 return runner
-            runner = import_item(proposal.value)
+            runner = import_module(proposal.value)
             if not callable(runner):
                 raise ValueError('loop_runner must be callable')
             return runner
@@ -513,8 +514,7 @@ class InteractiveShell(SingletonConfigurable):
 
     input_transformers_post = List(
         [],
-        help=
-        "A list of string input transformers, to be applied after IPython's "
+        help="A list of string input transformers, to be applied after IPython's "
         "own input transformations.")
 
     logstart = Bool(False,
@@ -687,19 +687,7 @@ class InteractiveShell(SingletonConfigurable):
         self.init_builtins()
 
         # The following was in post_config_initialization
-
-        # I realize that this one line represents a pretty large swatch of code
-        # but man is it fucked up
-        # self.init_inspector()
-
-        # self.inspector needs to be defined
-        try:
-            from xonsh.inspectors import Inspector
-        except ImportError:
-            pass
-        else:
-            self.inspector = Inspector()
-
+        self.init_inspector()
         self.raw_input_original = input
 
         self.init_completer()
@@ -709,7 +697,7 @@ class InteractiveShell(SingletonConfigurable):
         self.init_io()
 
         # also this one is a massive source of headaches for me.
-        # self.init_traceback_handlers(custom_exceptions)
+        self.init_traceback_handlers(custom_exceptions)
 
         self.init_prompts()
         self.init_display_formatter()
@@ -743,7 +731,8 @@ class InteractiveShell(SingletonConfigurable):
     def set_autoindent(self, value=None):
         """Set the autoindent flag.
 
-        If called with no arguments, it acts as a toggle."""
+        If called with no arguments, it acts as a toggle.
+        """
         if value is None:
             self.autoindent = not self.autoindent
         else:
@@ -799,9 +788,14 @@ class InteractiveShell(SingletonConfigurable):
         pass
 
     def init_encoding(self):
-        # Get system encoding at startup time.  Certain terminals (like Emacs
-        # under Win32 have it set to None, and we need to have a known valid
-        # encoding to use in the raw_input() method
+        """Get system encoding at startup time.
+
+        Certain terminals (like Emacs under Win32 have it set to None, and we
+        need to have a known valid encoding to use in the raw_input() method
+
+        .. todo:: This should take into account the new PYTHONIO env var.
+
+        """
         try:
             self.stdin_encoding = sys.stdin.encoding or 'ascii'
         except AttributeError:
@@ -809,16 +803,16 @@ class InteractiveShell(SingletonConfigurable):
 
     @observe('colors')
     def init_syntax_highlighting(self, changes=None):
-        # Python source parser/formatter for syntax highlighting
+        """Python source parser/formatter for syntax highlighting."""
         pyformat = PyColorize.Parser(style=self.colors, parent=self).format
         self.pycolorize = lambda src: pyformat(src, 'str')
 
     def refresh_style(self):
-        # No-op here, used in subclass
+        """No-op here, used in subclass. todo: which one?"""
         pass
 
     def init_pushd_popd_magic(self):
-        # for pushd/popd management
+        """For pushd/popd management."""
         self.home_dir = Path.home().__fspath__()
 
         self.dir_stack = []
@@ -829,8 +823,7 @@ class InteractiveShell(SingletonConfigurable):
                              logmode='rotate')
 
     def init_logstart(self):
-        """Initialize logging in case it was requested at the command line.
-        """
+        """Initialize logging in case it was requested at the command line."""
         if self.logappend:
             self.magic('logstart %s append' % self.logappend)
         elif self.logfile:
@@ -843,7 +836,6 @@ class InteractiveShell(SingletonConfigurable):
 
         This will allow deprecation warning of function used interactively to show
         warning to users, and still hide deprecation warning from libraries import.
-
 
         Not gonna lie though, I feel like we just got yelled at by Dad to do
         this.
@@ -1109,7 +1101,7 @@ class InteractiveShell(SingletonConfigurable):
             alternative = hooks.deprecated[name]
             warn("Hook {} is deprecated. Use {} instead.".format(
                 name, alternative),
-                 stacklevel=2)
+                stacklevel=2)
 
         if not dp:
             dp = hooks.CommandChainDispatcher()
@@ -1419,8 +1411,7 @@ class InteractiveShell(SingletonConfigurable):
         if user_module is None:
             user_module = types.ModuleType(
                 "__main__",
-                doc=
-                "Automatically created module for IPython interactive environment"
+                doc="Automatically created module for IPython interactive environment"
             )
 
         # We must ensure that __builtin__ (without the final 's') is always
@@ -1973,6 +1964,7 @@ class InteractiveShell(SingletonConfigurable):
     # Things related to exception handling and tracebacks (not debugging)
     # -------------------------------------------------------------------------
 
+    from .debugger import CorePdb
     debugger_cls = CorePdb
 
     def init_traceback_handlers(self, custom_exceptions):
@@ -1993,15 +1985,19 @@ class InteractiveShell(SingletonConfigurable):
             We should really consider offloading this. Debugger?
 
         """
-        # self.SyntaxTB = ultratb.SyntaxTB()
-        # color_scheme='NoColor', call_pdb=False, ostream=None, parent=self, config=self.config)
-        # self.InteractiveTB = ultratb.AutoFormattedTB(
-        #     mode='Plain',
-        #     color_scheme='NoColor',
-        #     tb_offset=1,
-        #     check_cache=check_linecache_ipython,
-        #     debugger_cls=self.debugger_cls,
-        #     parent=self)
+
+        self.SyntaxTB = ultratb.SyntaxTB(
+            color_scheme='NoColor',
+            parent=self,
+            config=self.config)
+
+        self.InteractiveTB = ultratb.AutoFormattedTB(
+            mode='Plain',
+            color_scheme='NoColor',
+            tb_offset=1,
+            check_cache=check_linecache_ipython,
+            debugger_cls=self.debugger_cls,
+            parent=self)
 
         # The instance will store a pointer to the system-wide exception hook,
         # so that runtime code (such as magics) can access it.  This is because
@@ -2012,7 +2008,7 @@ class InteractiveShell(SingletonConfigurable):
         self.set_custom_exc(*custom_exceptions)
 
         # Set the exception mode
-        # self.InteractiveTB.set_mode(mode=self.xmode)
+        self.InteractiveTB.set_mode(mode=self.xmode)
 
     # Okay so let's not write docstrings like this. The explanation for
     # what the exc_tuple and handler mean to the set_custom_exc function should not
@@ -2076,11 +2072,13 @@ class InteractiveShell(SingletonConfigurable):
         ------
         :exc:`TypeError`
             If 'exc_tuple' is not a `tuple`.
+
         """
         if not isinstance(exc_tuple, tuple):
             raise TypeError("The custom exceptions must be given as a tuple.")
 
         def dummy_handler(self, etype, value, tb, tb_offset=None):
+            """This method 100% seems static. todo: """
             print('*** Simple custom exception handler ***')
             print('Exception type :', etype)
             print('Exception value:', value)

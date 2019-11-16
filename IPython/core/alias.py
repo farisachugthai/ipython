@@ -5,9 +5,9 @@
 
     This is used as the pattern for calls to split_user_input.
 
-It's a compiled regular expression.::
+It's a compiled regular expression.:
 
-    shell_line_split = re.compile(r'^(\s*)()(\S+)(.*$)')
+``shell_line_split = re.compile(r'^(\s*)()(\S+)(.*$)')``
 
 Authors:
 

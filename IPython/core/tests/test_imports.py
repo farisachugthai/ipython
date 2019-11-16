@@ -1,4 +1,14 @@
-# encoding: utf-8
+"""Sanity check for imports.
+
+11/15/2019:
+
+I think I'm also gonna throw a few metadata checks to make sure
+setuptools and us are cool.
+"""
+import sys
+import unittest
+
+import setuptools
 
 
 def test_import_completer():
@@ -67,3 +77,14 @@ def test_import_ultratb():
 
 def test_import_usage():
     from IPython.core import usage
+
+
+class TestMetadata(unittest.TestCase):
+
+    def check_installed(self):
+        """In only 1 attempt please."""
+        self.assertIn('IPython', sys.modules)
+
+    # actually how do we do this?
+    # def check_name(self):
+    #     self.assertIs(setuptools.setup())

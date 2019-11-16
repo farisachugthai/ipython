@@ -74,21 +74,22 @@ You can implement other color schemes easily, the syntax is fairly
 self-explanatory. Please send back new schemes you develop to the author for
 possible inclusion in future releases.
 
-.. data::
+.. data:: INDENT_SIZE = 8
 
-    INDENT_SIZE = 8
-        Amount of space to put line numbers before verbose tracebacks
+    Amount of space to put line numbers before verbose tracebacks
 
-    DEFAULT_SCHEME = 'NoColor'
-        Default color scheme.  This is used, for example, by the traceback
-        formatter.  When running in an actual IPython instance, the user's rc.colors
-        value is used, but having a module global makes this functionality available
-        to users of ultratb who are NOT running inside ipython.
+.. data:: DEFAULT_SCHEME = 'NoColor'
 
-    _FRAME_RECURSION_LIMIT = 500
-        Number of frame above which we are likely to have a recursion and will
-        **attempt** to detect it.  Made modifiable mostly to speedup test suite
-        as detecting recursion is one of our slowest test
+    Default color scheme.  This is used, for example, by the traceback
+    formatter.  When running in an actual IPython instance, the user's rc.colors
+    value is used, but having a module global makes this functionality available
+    to users of ultratb who are NOT running inside ipython.
+
+.. data:: _FRAME_RECURSION_LIMIT = 500
+
+    Number of frame above which we are likely to have a recursion and will
+    **attempt** to detect it.  Made modifiable mostly to speedup test suite
+    as detecting recursion is one of our slowest test
 
 
 Notes
@@ -110,6 +111,11 @@ Inheritance diagram:
 # *****************************************************************************
 # Copyright (C) 2001 Nathaniel Gray <n8gray@caltech.edu>
 # Copyright (C) 2001-2004 Fernando Perez <fperez@colorado.edu>
+#
+# Distributed under the terms of the BSD License.  The full license is in
+# the file COPYING, distributed as part of this software.
+# *****************************************************************************
+
 
 import dis
 import inspect
@@ -131,25 +137,13 @@ from shutil import get_terminal_size
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.excolors import exception_colors
 from IPython.core.getipython import get_ipython
-#
-# Distributed under the terms of the BSD License.  The full license is in
 from IPython.utils import PyColorize
 from IPython.utils import path as util_path
-# the file COPYING, distributed as part of this software.
-# *****************************************************************************
 from IPython.utils.data import uniq_stable
 from IPython.utils.PyColorize import Colorable
 
 generate_tokens = tokenize.tokenize
 
-# For purposes of monkeypatching inspect to fix a bug in it.
-
-# IPython's own modules
-
-# How easily can we get rid of these 3 imports
-
-# Globals
-# amount of space to put line numbers before verbose tracebacks
 INDENT_SIZE = 8
 
 # Default color scheme.  This is used, for example, by the traceback
@@ -174,7 +168,6 @@ def inspect_error():
 
     These are unfortunately quite common.
     """
-
     error('Internal Python error in the inspect module.\n'
           'Below is the traceback from this internal error.\n')
 
@@ -205,7 +198,6 @@ def findsource(object):
 
     FIXED version with which we monkeypatch the stdlib to work around a bug.
     """
-
     file = getsourcefile(object) or getfile(object)
     # If the object is a frame, then trying to get the globals dict from its
     # module won't work. Instead, the frame object itself has the globals
@@ -556,11 +548,10 @@ class TBTools(Colorable):
                  config=None):
         """Whether to call the interactive pdb debugger after printing
         tracebacks or not."""
-        self.Colors = self.color_scheme_table.active_colors
         from IPython.core.debugger import CorePdb
+
         super().__init__(parent=parent, config=config)
         self.call_pdb = call_pdb
-
         self._ostream = ostream
 
         # Create color table
@@ -672,10 +663,16 @@ class ListTB(TBTools):
                  parent=None,
                  config=None):
         """Just modified execution so it calls super() and not the super class directly."""
-        super().__init__(self,
-                         call_pdb=call_pdb,
-                         ostream=ostream,
-                         parent=parent,
+        self.color_scheme = color_scheme
+        self.call_pdb = call_pdb
+        self.ostream = ostream
+        self.parent = parent
+
+        TBTools.__init__(self,
+                         color_scheme=self.color_scheme,
+                         call_pdb=self.call_pdb,
+                         ostream=self.ostream,
+                         parent=self.parent,
                          config=config)
 
     def __call__(self, etype, value, elist):
@@ -898,7 +895,7 @@ class VerboseTB(TBTools):
     """
 
     def __init__(self,
-                 color_scheme='Linux',
+                 color_scheme='NoColor',
                  call_pdb=False,
                  ostream=None,
                  tb_offset=0,
@@ -925,15 +922,18 @@ class VerboseTB(TBTools):
             own code cache.
 
         """
-        super().__init__(self,
-                         call_pdb=call_pdb,
-                         ostream=ostream,
-                         parent=parent,
-                         config=config)
-        self.tb = etb
+
+        self.color_scheme = color_scheme
+        self.call_pdb = call_pdb
+        self.ostream = ostream
+        self.parent = parent
+        self.config = config
+        # self.tb = etb
         self.tb_offset = tb_offset
         self.long_header = long_header
         self.include_vars = include_vars
+        # TODO: refactored this out but bound it just in case
+        self.get_parts_of_chained_exception = get_parts_of_chained_exception
         if check_cache is None:
             check_cache = linecache.checkcache
         self.check_cache = check_cache
@@ -1345,6 +1345,7 @@ class VerboseTB(TBTools):
 
     def handler(self, info=None):
         (etype, evalue, etb) = info or sys.exc_info()
+        self.tb = etb
         ostream = self.ostream
         ostream.flush()
         ostream.write(self.text(etype, evalue, etb))
@@ -1383,61 +1384,45 @@ class FormattedTB(VerboseTB, ListTB):
     one needs to remove a number of topmost frames from the traceback (such as
     occurs with python programs that themselves execute other python code,
     like Python shells).
-
     """
 
-    def __init__(self,
-                 mode='Plain',
-                 color_scheme='Linux',
-                 call_pdb=False,
+    def __init__(self, mode='Plain', color_scheme='NoColor', call_pdb=False,
                  ostream=None,
-                 tb_offset=0,
-                 long_header=False,
-                 include_vars=False,
-                 check_cache=None,
-                 debugger_cls=None,
-                 parent=None,
-                 config=None):
+                 tb_offset=0, long_header=False, include_vars=False,
+                 check_cache=None, debugger_cls=None,
+                 parent=None, config=None):
 
         # NEVER change the order of this list. Put new modes at the end:
-        self.mode = mode
         self.valid_modes = ['Plain', 'Context', 'Verbose', 'Minimal']
         self.verbose_modes = self.valid_modes[1:3]
 
-        super().__init__(self,
-                         color_scheme=color_scheme,
-                         call_pdb=call_pdb,
-                         ostream=ostream,
-                         tb_offset=tb_offset,
-                         long_header=long_header,
-                         include_vars=include_vars,
-                         check_cache=check_cache,
-                         debugger_cls=debugger_cls,
-                         parent=parent,
-                         config=config)
+        VerboseTB.__init__(self, color_scheme=color_scheme, call_pdb=call_pdb,
+                           ostream=ostream, tb_offset=tb_offset,
+                           long_header=long_header, include_vars=include_vars,
+                           check_cache=check_cache, debugger_cls=debugger_cls,
+                           parent=parent, config=config)
 
         # Different types of tracebacks are joined with different separators to
         # form a single string.  They are taken from this dict
-        self._join_chars = dict(Plain='',
-                                Context='\n',
-                                Verbose='\n',
+        self._join_chars = dict(Plain='', Context='\n', Verbose='\n',
                                 Minimal='')
         # set_mode also sets the tb_join_char attribute
         self.set_mode(mode)
 
-    def structured_traceback(self,
-                             etype,
-                             value,
-                             tb,
-                             tb_offset=None,
-                             number_of_lines_of_context=5):
+    def _extract_tb(self, tb):
+        if tb:
+            return traceback.extract_tb(tb)
+        else:
+            return None
+
+    def structured_traceback(self, etype, value, tb, tb_offset=None, number_of_lines_of_context=5):
         tb_offset = self.tb_offset if tb_offset is None else tb_offset
         mode = self.mode
         if mode in self.verbose_modes:
             # Verbose modes need a full traceback
-            return VerboseTB.structured_traceback(self, etype, value, tb,
-                                                  tb_offset,
-                                                  number_of_lines_of_context)
+            return VerboseTB.structured_traceback(
+                self, etype, value, tb, tb_offset, number_of_lines_of_context
+            )
         elif mode == 'Minimal':
             return ListTB.get_exception_only(self, etype, value)
         else:
@@ -1445,8 +1430,10 @@ class FormattedTB(VerboseTB, ListTB):
             # out-of-date source code.
             self.check_cache()
             # Now we can extract and format the exception
-            elist = _extract_tb(tb)
-            return ListTB.structured_traceback(etype, value, elist, tb_offset, number_of_lines_of_context, )
+            elist = self._extract_tb(tb)
+            return ListTB.structured_traceback(
+                self, etype, value, elist, tb_offset, number_of_lines_of_context
+            )
 
     def stb2text(self, stb):
         """Convert a structured traceback (a list) to a string."""
@@ -1462,11 +1449,10 @@ class FormattedTB(VerboseTB, ListTB):
                       len(self.valid_modes)
             self.mode = self.valid_modes[new_idx]
         elif mode not in self.valid_modes:
-            raise ValueError('Unrecognized mode in FormattedTB: <' + mode +
-                             '>\n'
-                             'Valid modes: ' + str(self.valid_modes))
+            raise ValueError('Unrecognized mode in FormattedTB: <' + mode + '>\n'
+                                                                            'Valid modes: ' + str(self.valid_modes))
         else:
-            pass
+            self.mode = mode
         # include variable details only in 'Verbose' mode
         self.include_vars = (self.mode == self.valid_modes[2])
         # Set the join character for generating text tracebacks
@@ -1493,30 +1479,13 @@ class AutoFormattedTB(FormattedTB):
 
     A brief example::
 
-        AutoTB = AutoFormattedTB(mode = 'Verbose',color_scheme='Linux')
+        AutoTB = AutoFormattedTB(mode = 'Verbose',color_scheme='NoColor')
         try:
             raise
         except:
             AutoTB()  # or AutoTB(out=logfile) where logfile is an open file object
 
     """
-
-    def __init__(self,
-                 mode='Plain',
-                 color_scheme='Linux',
-                 call_pdb=False,
-                 ostream=None,
-                 tb_offset=0,
-                 long_header=False,
-                 include_vars=False,
-                 check_cache=None,
-                 debugger_cls=None,
-                 parent=None,
-                 config=None):
-        super().__init__(mode='Plain', color_scheme='Linux', call_pdb=False, ostream=None, tb_offset=0,
-                         long_header=False, include_vars=False, check_cache=None, debugger_cls=None, parent=None,
-                         config=None)
-        self.tb = tb
 
     def __call__(self,
                  etype=None,
@@ -1554,6 +1523,7 @@ class AutoFormattedTB(FormattedTB):
                              number_of_lines_of_context=5):
         if etype is None:
             etype, value, tb = sys.exc_info()
+        self.tb = tb
         return FormattedTB.structured_traceback(self, etype, value, tb,
                                                 tb_offset,
                                                 number_of_lines_of_context)
@@ -1563,11 +1533,14 @@ class AutoFormattedTB(FormattedTB):
 class ColorTB(FormattedTB):
     """Shorthand to initialize a FormattedTB in Linux colors mode."""
 
-    def __init__(self, color_scheme='Linux', call_pdb=0, **kwargs):
-        super().__init__(self,
-                         color_scheme=color_scheme,
-                         call_pdb=call_pdb,
-                         **kwargs)
+    def __init__(self, color_scheme='NoColor', call_pdb=0, **kwargs):
+
+        self.color_scheme = color_scheme
+        self.call_pdb = call_pdb
+        FormattedTB.__init__(self,
+                             self.call_pdb,
+                             color_scheme=self.color_scheme,
+                             **kwargs)
 
 
 class SyntaxTB(ListTB):
@@ -1586,16 +1559,18 @@ class SyntaxTB(ListTB):
 
     """
 
-    def __init__(self):
-        """Had to add the color_scheme_table because of crashes."""
-        # self.color_scheme_table = color_scheme_table
-        # super().__init__(self, color_scheme=color_scheme, call_pdb=call_pdb, ostream=ostream, parent=parent, config=config)
-        super().__init__()
+    def __init__(self, color_scheme=None, parent=None, config=None):
+
+        self.color_scheme = color_scheme or None
+        self.parent = parent
+        # super().__init__(self, color_scheme=color_scheme, call_pdb=call_pdb, ostream=ostream, parent=parent)
         self.last_syntax_error = None
+        self.config = config
+        ListTB.__init__(self, color_scheme=self.color_scheme, parent=self.parent, config=self.config)
+
 
     def __call__(self, etype, value, elist):
         self.last_syntax_error = value
-        super().__call__(self, etype, value)
 
     def structured_traceback(self,
                              etype,
@@ -1634,7 +1609,6 @@ class SyntaxTB(ListTB):
 # some internal-use functions
 def text_repr(value):
     """Hopefully pretty robust repr equivalent."""
-    # this is pretty horrible but should always return *something*
     try:
         return pydoc.text.repr(value)
     except KeyboardInterrupt:

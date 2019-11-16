@@ -226,4 +226,5 @@ class ColorSchemeUserTable(UserDict, ColorSchemeTable):
     """Attempt #1."""
 
     def __init__(self, *args, **kwargs):
+        """Wait now I'm realizing I don't know. How does super work with diamond inheritance?"""
         super().__init__(self, *args, **kwargs)

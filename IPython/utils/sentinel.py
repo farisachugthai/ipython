@@ -1,4 +1,7 @@
-"""Sentinel class for constants with useful reprs"""
+"""Sentinel class for constants with useful reprs.
+
+.. todo:: This is copy pasted into traitlets this should be removed.
+"""
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
