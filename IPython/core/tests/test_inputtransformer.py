@@ -487,7 +487,7 @@ def decistmt(tokens):
                            (tokenize.OP, ')')]:
                 yield newtok
         else:
-            yield (toknum, tokval)
+            yield toknum, tokval
 
 
 def test_token_input_transformer():

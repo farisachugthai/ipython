@@ -224,7 +224,7 @@ class TestMagicRunPass(tt.TempFileMixin):
 class TestMagicRunSimple(tt.TempFileMixin):
     def test_simpledef(self):
         """Test that simple class definitions work."""
-        src = ("class foo: pass\n" "def f(): return foo()")
+        src = "class foo: pass\n" "def f(): return foo()"
         self.mktmp(src)
         _ip.magic('run %s' % self.fname)
         _ip.run_cell('t = isinstance(f(), foo)')
@@ -393,7 +393,7 @@ tclass.py: deleting object: C-third
         nt.assert_equal(_ip.user_ns['answer'], 42)
 
     def test_file_options(self):
-        src = ('import sys\n' 'a = " ".join(sys.argv[1:])\n')
+        src = 'import sys\n' 'a = " ".join(sys.argv[1:])\n'
         self.mktmp(src)
         test_opts = '-x 3 --verbose'
         _ip.run_line_magic("run", '{0} {1}'.format(self.fname, test_opts))

@@ -28,6 +28,7 @@ from ._process_common import read_no_interrupt, process_handler, arg_split as py
 from . import py3compat
 from .encoding import DEFAULT_ENCODING
 
+
 # -----------------------------------------------------------------------------
 # Function definitions
 # -----------------------------------------------------------------------------
@@ -53,6 +54,7 @@ class AvoidUNCPath(object):
                 cmd = '"pushd %s &&"%s' % (path, cmd)
             os.system(cmd)
     """
+
     def __enter__(self):
         self.path = os.getcwd()
         self.is_unc_path = self.path.startswith(r"\\")
@@ -124,7 +126,7 @@ def system(cmd):
     """
     # The controller provides interactivity with both
     # stdin and stdout
-    #import _process_win32_controller
+    # import _process_win32_controller
     # _process_win32_controller.system(cmd)
 
     with AvoidUNCPath() as path:
@@ -165,6 +167,7 @@ try:
     LocalFree = ctypes.windll.kernel32.LocalFree
     LocalFree.res_type = HLOCAL
     LocalFree.arg_types = [HLOCAL]
+
 
     def arg_split(commandline, posix=False, strict=True):
         """Split a command line's arguments in a shell-like manner.

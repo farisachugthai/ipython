@@ -351,7 +351,7 @@ def import_pylab(user_ns, import_all=True):
     exec(s, user_ns)
 
     if import_all:
-        s = ("from matplotlib.pylab import *\n" "from numpy import *\n")
+        s = "from matplotlib.pylab import *\n" "from numpy import *\n"
         exec(s, user_ns)
 
     # IPython symbols to add

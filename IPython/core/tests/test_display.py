@@ -23,18 +23,18 @@ def test_image_size():
     """Simple test for display.Image(args, width=x,height=y)"""
     thisurl = 'http://www.google.fr/images/srpr/logo3w.png'
     img = display.Image(url=thisurl, width=200, height=200)
-    nt.assert_equal(u'<img src="%s" width="200" height="200"/>' % (thisurl),
+    nt.assert_equal(u'<img src="%s" width="200" height="200"/>' % thisurl,
                     img._repr_html_())
     img = display.Image(url=thisurl, metadata={'width': 200, 'height': 200})
-    nt.assert_equal(u'<img src="%s" width="200" height="200"/>' % (thisurl),
+    nt.assert_equal(u'<img src="%s" width="200" height="200"/>' % thisurl,
                     img._repr_html_())
     img = display.Image(url=thisurl, width=200)
-    nt.assert_equal(u'<img src="%s" width="200"/>' % (thisurl),
+    nt.assert_equal(u'<img src="%s" width="200"/>' % thisurl,
                     img._repr_html_())
     img = display.Image(url=thisurl)
-    nt.assert_equal(u'<img src="%s"/>' % (thisurl), img._repr_html_())
+    nt.assert_equal(u'<img src="%s"/>' % thisurl, img._repr_html_())
     img = display.Image(url=thisurl, unconfined=True)
-    nt.assert_equal(u'<img src="%s" class="unconfined"/>' % (thisurl),
+    nt.assert_equal(u'<img src="%s" class="unconfined"/>' % thisurl,
                     img._repr_html_())
 
 

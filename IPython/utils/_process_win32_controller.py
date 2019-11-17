@@ -21,6 +21,7 @@ import msvcrt
 from ctypes import POINTER
 from ctypes.wintypes import HANDLE, HLOCAL, LPVOID, WORD, DWORD, BOOL, \
     ULONG, LPCWSTR
+
 LPDWORD = POINTER(DWORD)
 LPHANDLE = POINTER(HANDLE)
 ULONG_PTR = POINTER(ULONG)
@@ -175,6 +176,7 @@ class AvoidUNCPath(object):
                 cmd = '"pushd %s &&"%s' % (path, cmd)
             os.system(cmd)
     """
+
     def __enter__(self):
         self.path = os.getcwd()
         self.is_unc_path = self.path.startswith(r"\\")
@@ -219,6 +221,7 @@ class Win32ShellCommandController(object):
         with ShellCommandController('python -i') as scc:
             scc.run(my_stdout_func, my_stdin_func)
     """
+
     def __init__(self, cmd, mergeout=True):
         """Initializes the shell command controller.
 
@@ -239,7 +242,7 @@ class Win32ShellCommandController(object):
         self.piProcInfo = None
         try:
             p_hstdout, c_hstdout, p_hstderr, \
-                c_hstderr, p_hstdin, c_hstdin = [None] * 6
+            c_hstderr, p_hstdin, c_hstdin = [None] * 6
 
             # SECURITY_ATTRIBUTES with inherit handle set to True
             saAttr = SECURITY_ATTRIBUTES()
@@ -332,13 +335,13 @@ class Win32ShellCommandController(object):
         exitCode = DWORD()
         bytesWritten = DWORD(0)
         while True:
-            #print("stdin thread loop start")
+            # print("stdin thread loop start")
             # Get the input string (may be bytes or unicode)
             data = func()
 
             # None signals to poll whether the process has exited
             if data is None:
-                #print("checking for process completion")
+                # print("checking for process completion")
                 if not GetExitCodeProcess(hprocess, ctypes.byref(exitCode)):
                     raise ctypes.WinError()
                 if exitCode.value != STILL_ACTIVE:
@@ -348,7 +351,7 @@ class Win32ShellCommandController(object):
                                  None):
                     raise ctypes.WinError()
                 continue
-            #print("\nGot str %s\n" % repr(data), file=sys.stderr)
+            # print("\nGot str %s\n" % repr(data), file=sys.stderr)
 
             # Encode the string to the console encoding
             if isinstance(data, unicode):  # FIXME: Python3
@@ -368,14 +371,14 @@ class Win32ShellCommandController(object):
             # WriteFile may not accept all the data at once.
             # Loop until everything is processed
             while len(data) != 0:
-                #print("Calling writefile")
+                # print("Calling writefile")
                 if not WriteFile(handle, data, len(data),
                                  ctypes.byref(bytesWritten), None):
                     # This occurs at exit
                     if GetLastError() == ERROR_NO_DATA:
                         return
                     raise ctypes.WinError()
-                #print("Called writefile")
+                # print("Called writefile")
                 data = data[bytesWritten.value:]
 
     def _stdout_thread(self, handle, func):
@@ -391,7 +394,7 @@ class Win32ShellCommandController(object):
                     raise ctypes.WinError()
             # FIXME: Python3
             s = data.value[0:bytesRead.value]
-            #print("\nv: %s" % repr(s), file=sys.stderr)
+            # print("\nv: %s" % repr(s), file=sys.stderr)
             func(s.decode('utf_8', 'replace'))
 
     def run(self, stdout_func=None, stdin_func=None, stderr_func=None):
@@ -514,8 +517,8 @@ class Win32ShellCommandController(object):
                    msvcrt.kbhit/getwch are used asynchronously.
         """
         # Disable Line and Echo mode
-        #lpMode = DWORD()
-        #handle = msvcrt.get_osfhandle(sys.stdin.fileno())
+        # lpMode = DWORD()
+        # handle = msvcrt.get_osfhandle(sys.stdin.fileno())
         # if GetConsoleMode(handle, ctypes.byref(lpMode)):
         #    set_console_mode = True
         #    if not SetConsoleMode(handle, lpMode.value &

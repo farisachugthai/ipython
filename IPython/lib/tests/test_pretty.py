@@ -125,11 +125,11 @@ def test_sets():
     objects = [
         set(),
         frozenset(),
-        set([1]),
+        {1},
         frozenset([1]),
-        set([1, 2]),
+        {1, 2},
         frozenset([1, 2]),
-        set([-1, -2, -3])
+        {-1, -2, -3}
     ]
     expected = [
         'set()', 'frozenset()', '{1}', 'frozenset({1})', '{1, 2}',

@@ -834,7 +834,7 @@ python-profiler package from non-free.""")
                             if nruns < 1:
                                 error('Number of runs must be >=1')
                                 return
-                        except (KeyError):
+                        except KeyError:
                             nruns = 1
                         self._run_with_timing(run, nruns)
                     else:

@@ -65,14 +65,12 @@ Like I mean.::
 Generally.
 
 """
-
 # *****************************************************************************
 #       Copyright (C) 2005 Fernando Perez. <fperez@colorado.edu>
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
-
 from IPython.utils.decorators import undoc
 import tempfile
 import os
@@ -150,25 +148,6 @@ happened to use this function and still need it please make your voice heard on
 the mailing list ipython-dev@python.org , or on the GitHub Issue tracker:
 https://github.com/ipython/ipython/issues/9649 """, UserWarning)
 
-    def vim_quickfix_file():
-        t = tempfile.NamedTemporaryFile()
-        t.write('%s:%d:%d:%s\n' % (filename, linenum, column, msg))
-        t.flush()
-        return t
-
-    if os.path.basename(self.editor) != 'vim':
-        self.hooks.editor(filename, linenum)
-        return
-    t = vim_quickfix_file()
-    try:
-        if os.system('vim --cmd "set errorformat=%f:%l:%c:%m" -q ' + t.name):
-            raise TryNext()
-    finally:
-        t.close()
-
-
-def synchronize_with_editor(self, filename, linenum, column):
-    pass
 
 
 class CommandChainDispatcher:
@@ -274,3 +253,8 @@ def clipboard_get(self):
         dispatcher.add(func)
     text = dispatcher()
     return text
+
+
+def synchronize_with_editor(self, filename, linenum, column):
+    """I genuinely don't understand how this function is only a pass."""
+    pass

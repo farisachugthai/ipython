@@ -69,7 +69,7 @@ def line_at_cursor(cell, cursor_pos=0):
         offset = next_offset
     else:
         line = ""
-    return (line, offset)
+    return line, offset
 
 
 def token_at_cursor(cell, cursor_pos=0):

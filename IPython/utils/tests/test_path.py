@@ -395,7 +395,7 @@ class TestShellGlob(unittest.TestCase):
             ([r'a\*', 'a*'], ['a*'] + self.filenames_start_with_a),
             ([r'a\[012]'], ['a[012]']),
         ]:
-            yield (self.check_match, patterns, matches)
+            yield self.check_match, patterns, matches
 
     @skip_if_not_win32
     def test_match_windows(self):
@@ -406,7 +406,7 @@ class TestShellGlob(unittest.TestCase):
             ([r'a\*', 'a*'], [r'a\*'] + self.filenames_start_with_a),
             ([r'a\[012]'], [r'a\[012]']),
         ]:
-            yield (self.check_match, patterns, matches)
+            yield self.check_match, patterns, matches
 
 
 def test_unescape_glob():

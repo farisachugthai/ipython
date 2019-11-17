@@ -28,6 +28,7 @@ __all__ = [
     'update_display', 'DisplayHandle', 'Video'
 ]
 
+
 # -----------------------------------------------------------------------------
 # utility functions
 # -----------------------------------------------------------------------------
@@ -759,7 +760,6 @@ class Latex(TextDisplayObject):
 
 
 class SVG(DisplayObject):
-
     _read_flags = 'rb'
     # wrap data in a property, which extracts the <svg> tag, discarding
     # document headers
@@ -894,7 +894,7 @@ class JSON(DisplayObject):
         """
         self.metadata = {
             'expanded': expanded,
-            'root': root,
+            'root'    : root,
         }
         if metadata:
             self.metadata.update(metadata)
@@ -1012,7 +1012,7 @@ class GeoJSON(JSON):
     def _ipython_display_(self):
         bundle = {
             'application/geo+json': self.data,
-            'text/plain': '<IPython.display.GeoJSON object>'
+            'text/plain'          : '<IPython.display.GeoJSON object>'
         }
         metadata = {'application/geo+json': self.metadata}
         display(bundle, metadata=metadata, raw=True)
@@ -1115,16 +1115,15 @@ def _gifxy(data):
 
 
 class Image(DisplayObject):
-
     _read_flags = 'rb'
     _FMT_JPEG = u'jpeg'
     _FMT_PNG = u'png'
     _FMT_GIF = u'gif'
     _ACCEPTABLE_EMBEDDINGS = [_FMT_JPEG, _FMT_PNG, _FMT_GIF]
     _MIMETYPES = {
-        _FMT_PNG: 'image/png',
+        _FMT_PNG : 'image/png',
         _FMT_JPEG: 'image/jpeg',
-        _FMT_GIF: 'image/gif',
+        _FMT_GIF : 'image/gif',
     }
 
     def __init__(self,
@@ -1244,7 +1243,7 @@ class Image(DisplayObject):
 
         if self.embed and self.format not in self._ACCEPTABLE_EMBEDDINGS:
             raise ValueError("Cannot embed the '%s' image format" %
-                             (self.format))
+                             self.format)
         if self.embed:
             self._mimetype = self._MIMETYPES.get(self.format)
 
@@ -1325,7 +1324,7 @@ class Image(DisplayObject):
             b64_data = b2a_base64(self.data).decode('ascii')
         except TypeError:
             raise FileNotFoundError("No such file or directory: '%s'" %
-                                    (self.data))
+                                    self.data)
         md = {}
         if self.metadata:
             md.update(self.metadata)

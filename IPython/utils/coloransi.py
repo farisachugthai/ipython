@@ -121,10 +121,12 @@ for name, value in color_templates:
 class ColorScheme:
     """Generic color scheme class. Just a name and a Struct."""
 
-    def __init__(self, name=None, colordict=None, **colormap):
-        """Idk if my use of or here is correct."""
-        self.name = name or self.__class__.__name__
-        self.colors = Struct(colordict) or Struct(**colormap)
+    def __init__(self, __scheme_name_, colordict=None, **colormap):
+        self.name = __scheme_name_
+        if colordict is None:
+            self.colors = Struct(**colormap)
+        else:
+            self.colors = Struct(colordict)
 
     def copy(self, name=None):
         """Return a full copy of the object, optionally renaming it.
@@ -168,16 +170,7 @@ class ColorSchemeTable(dict):
                 default_scheme = 'LightBG'
             for scheme in scheme_list:
                 self.add_scheme(scheme)
-            # self.set_active_scheme(default_scheme)
-        scheme_names = list(self.keys())
-
-    @property
-    def active_scheme_name_prop(self):
-        pass
-
-    # @active_scheme_name_prop_setter
-    # def uhh(self):
-    #     """Idk how to do this."""
+            self.set_active_scheme(default_scheme)
 
     def copy(self):
         """Return full copy of object"""
@@ -189,9 +182,8 @@ class ColorSchemeTable(dict):
 
     def add_scheme(self, new_scheme):
         """Add a new color scheme to the table."""
-        # if not isinstance(new_scheme, ColorScheme):
-        #     raise ValueError(
-        #         'ColorSchemeTable only accepts ColorScheme instances')
+        if not isinstance(new_scheme, ColorScheme):
+            raise ValueError('ColorSchemeTable only accepts ColorScheme instances')
         self[new_scheme.name] = new_scheme
 
     def set_active_scheme(self, scheme, case_sensitive=False):
@@ -199,32 +191,22 @@ class ColorSchemeTable(dict):
 
         Names are by default compared in a case-insensitive way, but this can
         be changed by setting the parameter case_sensitive to true.
-
-        What the hell is this code?? Don't even know how to debug it.
         """
-        pass
-        # if case_sensitive:
-        #     valid_schemes = scheme_names
-        #     scheme_test = scheme
-        # else:
-        #     valid_schemes = [s.lower() for s in scheme_names]
-        #     scheme_test = scheme.lower()
-        # # try:
-        # scheme_idx = valid_schemes.index(scheme_test)
-        # # except ValueError:
-        # #     raise ValueError('Unrecognized color scheme: ' + scheme +
-        # #                      '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
-        # # else:
-        # active = scheme_names[scheme_idx]
-        # self.active_scheme_name = active
-        # self.active_colors = self[active].colors
-        # # Now allow using '' as an index for the current active scheme
-        # self[''] = self[active]
-
-
-class ColorSchemeUserTable(UserDict, ColorSchemeTable):
-    """Attempt #1."""
-
-    def __init__(self, *args, **kwargs):
-        """Wait now I'm realizing I don't know. How does super work with diamond inheritance?"""
-        super().__init__(self, *args, **kwargs)
+        scheme_names = list(self.keys())
+        if case_sensitive:
+            valid_schemes = scheme_names
+            scheme_test = scheme
+        else:
+            valid_schemes = [s.lower() for s in scheme_names]
+            scheme_test = scheme.lower()
+        try:
+            scheme_idx = valid_schemes.index(scheme_test)
+        except ValueError:
+            raise ValueError('Unrecognized color scheme: ' + scheme + \
+                             '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
+        else:
+            active = scheme_names[scheme_idx]
+            self.active_scheme_name = active
+            self.active_colors = self[active].colors
+            # Now allow using '' as an index for the current active scheme
+            self[''] = self[active]

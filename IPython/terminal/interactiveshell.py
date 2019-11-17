@@ -424,7 +424,7 @@ class TerminalInteractiveShell(InteractiveShell):
     @property
     def color_depth(self):
         """ return (ColorDepth.TRUE_COLOR if self.true_color else None)."""
-        return (ColorDepth.TRUE_COLOR if self.true_color else None)
+        return ColorDepth.TRUE_COLOR if self.true_color else None
 
     def _extra_prompt_options(self):
         """Return the current layout option for the current InteractiveShell."""

@@ -16,7 +16,7 @@ def test_latex_to_png_dvipng_fails_when_no_cmd():
     `latex_to_png_dvipng` should return None when there is no required command
     """
     for command in ['latex', 'dvipng']:
-        yield (check_latex_to_png_dvipng_fails_when_no_cmd, command)
+        yield check_latex_to_png_dvipng_fails_when_no_cmd, command
 
 
 def check_latex_to_png_dvipng_fails_when_no_cmd(command):
@@ -39,10 +39,10 @@ def test_latex_to_png_dvipng_runs():
         return None
 
     for (s, wrap) in [(u"$$x^2$$", False), (u"x^2", True)]:
-        yield (latextools.latex_to_png_dvipng, s, wrap)
+        yield latextools.latex_to_png_dvipng, s, wrap
 
         with patch.object(latextools, "kpsewhich", mock_kpsewhich):
-            yield (latextools.latex_to_png_dvipng, s, wrap)
+            yield latextools.latex_to_png_dvipng, s, wrap
 
 
 @skipif_not_matplotlib
@@ -56,10 +56,10 @@ def test_latex_to_png_mpl_runs():
         return None
 
     for (s, wrap) in [("$x^2$", False), ("x^2", True)]:
-        yield (latextools.latex_to_png_mpl, s, wrap)
+        yield latextools.latex_to_png_mpl, s, wrap
 
         with patch.object(latextools, "kpsewhich", mock_kpsewhich):
-            yield (latextools.latex_to_png_mpl, s, wrap)
+            yield latextools.latex_to_png_mpl, s, wrap
 
 
 @skipif_not_matplotlib

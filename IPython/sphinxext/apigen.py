@@ -267,7 +267,7 @@ class ApiDocWriter:
         filename = self._uri2path(uri)
         if filename is None:
             # nothing that we could handle here.
-            return ([], [])
+            return [], []
         with open(filename, 'rb') as f:
             mod = ast.parse(f.read())
         return FuncClsScanner().scan(mod)

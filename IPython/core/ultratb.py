@@ -1042,7 +1042,9 @@ class VerboseTB(TBTools):
                 # E.g. https://github.com/ipython/ipython/issues/9486
                 return '%s %s\n' % (link, call)
 
-        def linereader(file=file, lnum=[lnum], getline=linecache.getline):
+        def linereader(file=file, lnum=None, getline=linecache.getline):
+            if lnum is None:
+                lnum = [lnum]
             line = getline(file, lnum[0])
             lnum[0] += 1
             return line

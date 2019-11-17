@@ -89,4 +89,4 @@ def extract_module_locals(depth=0):
     f = sys._getframe(depth + 1)
     global_ns = f.f_globals
     module = sys.modules[global_ns['__name__']]
-    return (module, f.f_locals)
+    return module, f.f_locals

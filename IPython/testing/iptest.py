@@ -505,7 +505,7 @@ def run_iptest():
                SubprocessStreamCapturePlugin()]
 
     # we still have some vestigial doctests in core
-    if (section.name.startswith(('core', 'IPython.core', 'IPython.utils'))):
+    if section.name.startswith(('core', 'IPython.core', 'IPython.utils')):
         plugins.append(IPythonDoctest())
         argv.extend([
             '--with-ipdoctest',

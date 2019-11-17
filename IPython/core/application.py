@@ -549,7 +549,7 @@ class BaseIPythonApplication(Application):
         s = self.generate_config_file()
         fname = os.path.join(self.profile_dir.location, self.config_file_name)
         if self.overwrite or not os.path.exists(fname):
-            self.log.warning("Generating default config file: %r" % (fname))
+            self.log.warning("Generating default config file: %r" % fname)
             with open(fname, 'w') as f:
                 f.write(s)
 

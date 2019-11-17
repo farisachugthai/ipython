@@ -280,8 +280,8 @@ class Parser(Colorable):
         if string_output:
             output = self.out.getvalue()
             self.out = out_old
-            return (output, error)
-        return (None, error)
+            return output, error
+        return None, error
 
     def _inner_call_(self, toktype, toktext, start_pos):
         """like call but write to a temporary buffer"""

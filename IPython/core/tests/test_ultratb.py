@@ -388,7 +388,9 @@ def test_handlers():
     def foo(a, b, bar=1):
         eggs(a, b + bar)
 
-    def eggs(f, g, z=globals()):
+    def eggs(f, g, z=None):
+        if z is None:
+            z = globals()
         h = f + g
         i = f - g
         return h / i

@@ -617,7 +617,7 @@ Currently the magic system has the following functions:""",
 
         cells = []
         hist = list(self.shell.history_manager.get_range())
-        if (len(hist) <= 1):
+        if len(hist) <= 1:
             raise ValueError('History is empty, cannot export')
         for session, execution_count, source in hist[:-1]:
             cells.append(

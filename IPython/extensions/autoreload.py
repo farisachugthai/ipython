@@ -24,8 +24,8 @@ This makes for example the following workflow possible:
 The module was reloaded without reloading it explicitly, and the object
 imported with ``from foo import ...`` was also updated.
 
-Usage
-=====
+Examples
+---------
 
 The following magic commands are provided:
 
@@ -65,7 +65,7 @@ The following magic commands are provided:
     Mark module 'foo' to not be autoreloaded.
 
 Caveats
-=======
+-------
 
 Reloading Python modules in a reliable way is in general difficult,
 and unexpected things may occur. ``%autoreload`` tries to work around
@@ -90,12 +90,15 @@ Some of the known remaining caveats are:
   before it is reloaded are not upgraded.
 
 - C extension modules cannot be reloaded, and so cannot be autoreloaded.
+
+How many of these caveat got fixed in switching from imp.reload to
+importlib.reload? ;)
+
 """
 
 from IPython.core.magic import Magics, magics_class, line_magic
-from imp import reload
 from importlib.util import source_from_cache
-from importlib import import_module
+from importlib import import_module, reload
 import gc
 import weakref
 import types
@@ -116,40 +119,47 @@ skip_doctest = True
 # This IPython module is written by Pauli Virtanen, based on the autoreload
 # code by Thomas Heller.
 
-# -----------------------------------------------------------------------------
-# Imports
-# -----------------------------------------------------------------------------
 
+class ModuleReloader:
+    """Reloads modules.
 
-# ------------------------------------------------------------------------------
-# Autoreload functionality
-# ------------------------------------------------------------------------------
-
-
-class ModuleReloader(object):
+    Attributes
+    -----------
+    enabled : bool
+        Whether this reloader is enabled
+    check_all : bool
+        Autoreload all modules, not just those listed in 'modules'
+    """
     enabled = False
-    """Whether this reloader is enabled"""
-
     check_all = True
-    """Autoreload all modules, not just those listed in 'modules'"""
 
     def __init__(self):
-        # Modules that failed to reload: {module: mtime-on-failed-reload, ...}
+        """Initialize the class.
+
+        Parameters
+        ----------
+        failed : dict
+            Modules that failed to reload: {module: mtime-on-failed-reload, ...}
+        modules : dict
+            Modules specially marked as autoreloadable.
+        skip_modules : dict
+            Modules specially marked as not autoreloadable.
+        old_objects : dict
+            (module-name, name) -> weakref, for replacing old code objects
+        modules_mtimes
+            Module modification timestamps
+        """
         self.failed = {}
-        # Modules specially marked as autoreloadable.
         self.modules = {}
-        # Modules specially marked as not autoreloadable.
         self.skip_modules = {}
-        # (module-name, name) -> weakref, for replacing old code objects
         self.old_objects = {}
-        # Module modification timestamps
         self.modules_mtimes = {}
 
         # Cache module modification times
         self.check(check_all=True, do_reload=False)
 
     def mark_module_skipped(self, module_name):
-        """Skip reloading the named module in the future"""
+        """Skip reloading the named module in the future."""
         try:
             del self.modules[module_name]
         except KeyError:
@@ -157,7 +167,7 @@ class ModuleReloader(object):
         self.skip_modules[module_name] = True
 
     def mark_module_reloadable(self, module_name):
-        """Reload the named module in the future (if it is imported)"""
+        """Reload the named module in the future (if it is imported)."""
         try:
             del self.skip_modules[module_name]
         except KeyError:
@@ -165,7 +175,7 @@ class ModuleReloader(object):
         self.modules[module_name] = True
 
     def aimport_module(self, module_name):
-        """Import a module, and mark it reloadable
+        """Import a module, and mark it reloadable.
 
         Returns
         -------
@@ -263,7 +273,7 @@ func_attrs = ['__code__', '__defaults__', '__doc__',
 
 
 def update_function(old, new):
-    """Upgrade the code object of a function"""
+    """Upgrade the code object of a function."""
     for name in func_attrs:
         try:
             setattr(old, name, getattr(new, name))
@@ -272,10 +282,11 @@ def update_function(old, new):
 
 
 def update_instances(old, new):
-    """Use garbage collector to find all instances that refer to the old
-    class definition and update their __class__ to point to the new class
-    definition"""
-
+    """
+    Use garbage collector, :func:`gc.get_referrers` to find all instances that
+    refer to the old class definition and update their ``__class__`` to
+    point to the new class definition.
+    """
     refs = gc.get_referrers(old)
 
     for ref in refs:
@@ -284,8 +295,10 @@ def update_instances(old, new):
 
 
 def update_class(old, new):
-    """Replace stuff in the __dict__ of a class, and upgrade
-    method code objects, and add new methods, if any"""
+    """
+    Replace stuff in the ``__dict__`` of a class, and upgrade
+    method code objects, and add new methods, if any.
+    """
     for key in list(old.__dict__.keys()):
         old_obj = getattr(old, key)
         try:
@@ -322,13 +335,14 @@ def update_class(old, new):
 
 
 def update_property(old, new):
-    """Replace get/set/del functions of a property"""
+    """Replace get/set/del functions of a property."""
     update_generic(old.fdel, new.fdel)
     update_generic(old.fget, new.fget)
     update_generic(old.fset, new.fset)
 
 
 def isinstance2(a, b, typ):
+    """If a==b and b==typ, does a==b == b==typ? You'd think it's transitive but w/e."""
     return isinstance(a, typ) and isinstance(b, typ)
 
 
@@ -353,7 +367,7 @@ def update_generic(a, b):
     return False
 
 
-class StrongRef(object):
+class StrongRef:
     def __init__(self, obj):
         self.obj = obj
 
@@ -430,8 +444,18 @@ def superreload(module, reload=reload, old_objects=None):
 
 @magics_class
 class AutoreloadMagics(Magics):
+
     def __init__(self, *a, **kw):
-        super(AutoreloadMagics, self).__init__(*a, **kw)
+        """Initialize the class.
+
+        Attributes
+        ----------
+        _reloader : ModuleReloader
+
+        loaded_modules : set
+            sys.modules cast to a set
+        """
+        super().__init__(*a, **kw)
         self._reloader = ModuleReloader()
         self._reloader.check_all = False
         self.loaded_modules = set(sys.modules)

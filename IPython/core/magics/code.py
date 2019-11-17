@@ -75,7 +75,7 @@ def extract_code_ranges(ranges_str):
         else:
             end = int(start)
             start = int(start) - 1
-        yield (start, end)
+        yield start, end
 
 
 def extract_symbols(code, symbols):
@@ -444,7 +444,7 @@ class CodeMagics(Magics):
                     if filename is None:
                         warn("Argument given (%s) can't be found as a variable "
                              "or as a filename." % args)
-                        return (None, None, None)
+                        return None, None, None
                     use_temp = False
 
                 except DataIsObject:
@@ -496,7 +496,7 @@ class CodeMagics(Magics):
                             if filename is None:
                                 warn('The file where `%s` was defined '
                                      'cannot be read or found.' % data)
-                                return (None, None, None)
+                                return None, None, None
                     use_temp = False
 
         if use_temp:
@@ -526,7 +526,7 @@ class CodeMagics(Magics):
 
     @skip_doctest
     @line_magic
-    def edit(self, parameter_s='', last_call=['', '']):
+    def edit(self, parameter_s='', last_call=None):
         """Bring up an editor and execute the resulting code.
 
         Usage:
@@ -671,6 +671,8 @@ class CodeMagics(Magics):
         general instructions on how to set a new hook for use once you've
         defined it.
         """
+        if last_call is None:
+            last_call = ['', '']
         opts, args = self.parse_options(parameter_s, 'prxn:')
 
         try:
@@ -691,7 +693,7 @@ class CodeMagics(Magics):
 
         if is_temp:
             self._knowntemps.add(filename)
-        elif (filename in self._knowntemps):
+        elif filename in self._knowntemps:
             is_temp = True
 
         # do actual editing here

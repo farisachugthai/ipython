@@ -133,23 +133,20 @@ classic_config.InteractiveShell.separate_out2 = ''
 classic_config.InteractiveShell.colors = 'NoColor'
 classic_config.InteractiveShell.xmode = 'Plain'
 
-frontend_flags = {}
-frontend_flags['classic'] = (
-    classic_config, "Gives IPython a similar feel to the classic Python prompt.")
+frontend_flags = {'classic'                                                               : (
+    classic_config, "Gives IPython a similar feel to the classic Python prompt."), 'quick': ({'TerminalIPythonApp': {
+    'quick': True}}, "Enable quick startup with no config files."), 'i'                   : (
+{'TerminalIPythonApp': {'force_interact': True}},
+"""If running code from the command line, become interactive afterwards.
+It is often useful to follow this with `--` to treat remaining flags as
+script arguments.
+""")}
 # # log doesn't make so much sense this way anymore
 # paa('--log','-l',
 #     action='store_true', dest='InteractiveShell.logstart',
 #     help="Start logging to the default log file (./ipython_log.py).")
 #
 # # quick is harder to implement
-frontend_flags['quick'] = ({'TerminalIPythonApp': {
-                           'quick': True}}, "Enable quick startup with no config files.")
-
-frontend_flags['i'] = ({'TerminalIPythonApp': {'force_interact': True}},
-                       """If running code from the command line, become interactive afterwards.
-It is often useful to follow this with `--` to treat remaining flags as
-script arguments.
-""")
 
 flags.update(frontend_flags)
 

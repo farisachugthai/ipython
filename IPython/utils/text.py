@@ -615,7 +615,7 @@ class DollarFormatter(FullEvalFormatter):
                 if new_field.startswith("$"):
                     txt += new_txt + new_field
                 else:
-                    yield (txt + new_txt, new_field, "", None)
+                    yield txt + new_txt, new_field, "", None
                     txt = ""
                 continue_from = m.end()
 

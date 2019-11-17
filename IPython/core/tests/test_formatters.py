@@ -555,7 +555,7 @@ def test_repr_mime_meta():
                     'height': 10,
                 }
             }
-            return (data, metadata)
+            return data, metadata
 
     f = get_ipython().display_formatter
     obj = HasReprMimeMeta()

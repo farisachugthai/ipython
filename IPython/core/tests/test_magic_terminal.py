@@ -2,11 +2,9 @@
 
 Needs to be run by nose (to make ipython session available).
 """
-
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-
 import sys
 from io import StringIO
 from unittest import TestCase

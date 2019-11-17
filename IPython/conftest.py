@@ -2,9 +2,13 @@ import types
 import sys
 import builtins
 import os
-import pytest
 import pathlib
 import shutil
+
+import pytest
+# adding this here not because we need them yet but they're good reminders.
+from _pytest.nose import pytest_runtest_setup, teardown_nose, is_potential_nosetest, call_optional
+# noqa
 
 from .testing import tools
 
@@ -27,9 +31,10 @@ def work_path():
     path = pathlib.Path("./tmp-ipython-pytest-profiledir")
     os.environ["IPYTHONDIR"] = str(path.absolute())
     if path.exists():
-        raise ValueError('IPython dir temporary path already exists ! Did previous test run exit successfully ?')
+        raise ValueError(
+            'IPython dir temporary path already exists ! Did previous test run exit successfully ?')
     path.mkdir()
-    yield 
+    yield
     shutil.rmtree(str(path.resolve()))
 
 
@@ -44,7 +49,8 @@ def xsys(self, cmd):
     """
     # We use getoutput, but we need to strip it because pexpect captures
     # the trailing newline differently from commands.getoutput
-    print(self.getoutput(cmd, split=False, depth=1).rstrip(), end="", file=sys.stdout)
+    print(self.getoutput(cmd, split=False, depth=1).rstrip(),
+          end="", file=sys.stdout)
     sys.stdout.flush()
 
 
@@ -52,7 +58,7 @@ def xsys(self, cmd):
 # unfortunately this will fail on some test that get executed as _collection_
 # time (before the fixture run), in particular parametrized test that contain
 # yields. so for now execute at import time.
-#@pytest.fixture(autouse=True, scope='session')
+# @pytest.fixture(autouse=True, scope='session')
 def inject():
 
     builtins.get_ipython = get_ipython

@@ -210,7 +210,7 @@ def provisionalcompleter(action='ignore'):
     .. warning:: Doesn't this drop any args passed to the function it wraps?
 
         Or does contextlib.context_manager handle that for us? I'm surprised to see
-        no \*args or \*\*kwargs here.
+        no args or **kwargs here.
 
     """
     with warnings.catch_warnings():
@@ -224,13 +224,15 @@ def has_open_quotes(s):
     This simply counts whether the number of quote characters of either type in
     the string is odd.
 
+    We check " first, then ', so complex cases with nested quotes will get
+    the " to take precedence.
+
     Returns
     -------
     If there is an open quote, the quote character is returned.  Else, return
     False.
+
     """
-    # We check " first, then ', so complex cases with nested quotes will get
-    # the " to take precedence.
     if s.count('"') % 2:
         return '"'
     elif s.count("'") % 2:
@@ -1489,7 +1491,7 @@ class IPCompleter(Completer):
                 return [
                     _FakeJediCompletion(
                         'Oops Jedi has crashed, please report a bug with the following:\n"""\n%s\ns"""' %
-                        (e))]
+                        e)]
             else:
                 return []
 

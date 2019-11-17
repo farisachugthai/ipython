@@ -221,7 +221,7 @@ class DisplayHook(Configurable):
             self.__ = self._
             self._ = result
 
-            if ('_' not in builtin_mod.__dict__) and (update_unders):
+            if ('_' not in builtin_mod.__dict__) and update_unders:
                 self.shell.push({
                     '_': self._,
                     '__': self.__,

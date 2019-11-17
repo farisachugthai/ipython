@@ -1,15 +1,34 @@
-docutils
-sphinx
+colorama
+ipyparallel
+# sip
+# PyQt4
+# PySide
+# PySide2
+# wx
+pypiwin32
+curio
+trio
+Pygments==2.4.2
 backcall==0.1.0
+coverage
 decorator==4.4.1
+docutils
+ipykernel
 ipython-genutils==0.2.0
 jedi==0.15.1
+nbformat
+numpy
 parso==0.5.1
 pexpect==4.7.0
 pickleshare==0.7.5
+pillow
 prompt-toolkit==2.0.10
 ptyprocess==0.6.0
-Pygments==2.4.2
+pyparsing
+pytest
+pywin32
 six==1.13.0
+sphinx
+testpath
 traitlets==4.3.3
 wcwidth==0.1.7

@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Color schemes for exception handling code in IPython.
-"""
-
+"""Color schemes for exception handling code in IPython."""
 import os
 import warnings
 
@@ -14,6 +10,7 @@ import warnings
 #*****************************************************************************
 
 from IPython.utils.coloransi import ColorSchemeTable, TermColors, ColorScheme
+
 
 def exception_colors():
     """Return a color table with fields for exception reporting.
@@ -39,7 +36,6 @@ def exception_colors():
     'lineno', 'linenoEm', 'name', 'nameEm', 'normalEm', 'topline', 'vName',
     'val', 'valEm']
     """
-
     ex_colors = ColorSchemeTable()
 
     # Populate it with color schemes

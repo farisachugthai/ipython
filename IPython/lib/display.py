@@ -246,13 +246,13 @@ class Audio(DisplayObject):
             return ""
 
     def autoplay_attr(self):
-        if (self.autoplay):
+        if self.autoplay:
             return 'autoplay="autoplay"'
         else:
             return ''
 
     def element_id_attr(self):
-        if (self.element_id):
+        if self.element_id:
             return 'id="{element_id}"'.format(element_id=self.element_id)
         else:
             return ''

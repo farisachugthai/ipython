@@ -979,7 +979,10 @@ class TestCompleter(unittest.TestCase):
 
     @dec.skip_without("pandas")
     def test_dataframe_key_completion(self):
-        """Test dict key completion applies to pandas DataFrames"""
+        """Test dict key completion applies to pandas DataFrames.
+
+        hahahhahh dude gtfo. how is pandas now a requirement for this repo???
+        """
         import pandas
 
         ip = get_ipython()

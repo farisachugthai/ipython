@@ -50,8 +50,7 @@ from traitlets import (Any, Bool, CaselessStrEnum, Dict, Enum, Instance,
                        validate)
 from traitlets.config.configurable import SingletonConfigurable
 
-from IPython.core import (async_helpers, hooks, magic, oinspect, page,
-                          prefilter, ultratb)
+from IPython.core import hooks, magic, oinspect, page
 from IPython.core.alias import Alias, AliasManager
 from IPython.core.async_helpers import (_asyncify, _asyncio_runner,
                                         _pseudo_sync_runner)
@@ -75,7 +74,9 @@ from IPython.core.payload import PayloadManager
 from IPython.core.prefilter import PrefilterManager
 from IPython.core.profiledir import ProfileDir
 from IPython.core.usage import default_banner
+
 from IPython.paths import get_ipython_dir
+
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils import PyColorize, openpy, utils_io
 from IPython.utils.decorators import undoc
@@ -1481,23 +1482,17 @@ class InteractiveShell(SingletonConfigurable):
         http://mail.python.org/pipermail/python-dev/2001-April/014068.html
 
         """
-        ns = {}
+        ns = {'_ih' : self.history_manager.input_hist_parsed, '_oh': self.history_manager.output_hist,
+              '_dh' : self.history_manager.dir_hist, 'In': self.history_manager.input_hist_parsed,
+              'Out' : self.history_manager.output_hist, 'get_ipython': self.get_ipython, 'exit': self.exiter,
+              'quit': self.exiter}
 
         # make global variables for user access to the histories
-        ns['_ih'] = self.history_manager.input_hist_parsed
-        ns['_oh'] = self.history_manager.output_hist
-        ns['_dh'] = self.history_manager.dir_hist
 
         # user aliases to input and output histories.  These shouldn't show up
         # in %who, as they can have very large reprs.
-        ns['In'] = self.history_manager.input_hist_parsed
-        ns['Out'] = self.history_manager.output_hist
 
         # Store myself as the public api!!!
-        ns['get_ipython'] = self.get_ipython
-
-        ns['exit'] = self.exiter
-        ns['quit'] = self.exiter
 
         # Sync what we've added so far to user_ns_hidden so these aren't seen
         # by %who
@@ -1985,13 +1980,13 @@ class InteractiveShell(SingletonConfigurable):
             We should really consider offloading this. Debugger?
 
         """
-
-        self.SyntaxTB = ultratb.SyntaxTB(
+        from IPython.core.ultratb import SyntaxTB, AutoFormattedTB
+        self.SyntaxTB = SyntaxTB(
             color_scheme='NoColor',
             parent=self,
             config=self.config)
 
-        self.InteractiveTB = ultratb.AutoFormattedTB(
+        self.InteractiveTB = AutoFormattedTB(
             mode='Plain',
             color_scheme='NoColor',
             tb_offset=1,
@@ -3533,7 +3528,7 @@ class InteractiveShell(SingletonConfigurable):
                 exec(async_wrapper_code, self.user_global_ns, self.user_ns)
                 async_code = removed_co_newlocals(
                     self.user_ns.pop('async-def-wrapper')).__code__
-                if (await self.run_code(async_code, result, async_=True)):
+                if await self.run_code(async_code, result, async_=True):
                     return True
             else:
                 if sys.version_info > (3, 8):
@@ -3565,7 +3560,7 @@ class InteractiveShell(SingletonConfigurable):
                                     ) if self.autoawait else 0x0):
                         code = compiler(mod, cell_name, mode)
                         asy = compare(code)
-                    if (await self.run_code(code, result, async_=asy)):
+                    if await self.run_code(code, result, async_=asy):
                         return True
 
             # Flush softspace
@@ -3942,7 +3937,7 @@ class InteractiveShell(SingletonConfigurable):
                 from urllib.request import urlopen
                 response = urlopen(target)
                 return response.read().decode('latin1')
-            raise ValueError(("'%s' seem to be unreadable.") % target)
+            raise ValueError("'%s' seem to be unreadable." % target)
 
         potential_target = [target]
         try:
@@ -3959,7 +3954,7 @@ class InteractiveShell(SingletonConfigurable):
                     if not py_only:
                         with codecs.open(tgt, 'r', encoding='latin1') as f:
                             return f.read()
-                    raise ValueError(("'%s' seem to be unreadable.") % target)
+                    raise ValueError("'%s' seem to be unreadable." % target)
             elif os.path.isdir(os.path.expanduser(tgt)):
                 raise ValueError("'%s' is a directory, not a regular file." %
                                  target)
@@ -4035,3 +4030,4 @@ class InteractiveShellABC(metaclass=abc.ABCMeta):
 
 
 InteractiveShellABC.register(InteractiveShell)
+

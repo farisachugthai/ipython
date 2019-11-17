@@ -64,4 +64,4 @@ def abbrev_cwd():
     if len(parts) > 2:
         tail = '/'.join(parts[-2:])
 
-    return (drivepart + (cwd == '/' and '/' or tail))
+    return drivepart + (cwd == '/' and '/' or tail)

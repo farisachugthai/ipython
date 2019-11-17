@@ -48,7 +48,7 @@ def toggle_set_term_title(val):
         appropriate platform-specific module).  If False, it is a no-op.
     """
     global ignore_termtitle
-    ignore_termtitle = not (val)
+    ignore_termtitle = not val
 
 
 def _set_term_title_xterm(title):

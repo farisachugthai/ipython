@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Provides a reload() function that acts recursively.
+"""Provides a reload() function that acts recursively.
 
 Python's normal :func:`python:reload` function only reloads the module that it's
 passed. The :func:`reload` function in this module also reloads everything
@@ -31,9 +29,9 @@ re-implementation of hierarchical module import.
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
-
 import builtins as builtin_mod
 from contextlib import contextmanager
+# Yeah i'm still working out how to replace all uses of that
 import imp
 import sys
 
@@ -172,10 +170,16 @@ found_now = {}
 
 
 def import_submodule(mod, subname, fullname):
-    """m = import_submodule(mod, subname, fullname)"""
-    # Require:
-    # if mod == None: subname == fullname
-    # else: mod.__name__ + "." + subname == fullname
+    """m = import_submodule(mod, subname, fullname).
+
+    Require
+    --------
+    if mod == None:
+        subname == fullname
+    else:
+        mod.__name__ + "." + subname == fullname
+
+    """
 
     global found_now
     if fullname in found_now and fullname in sys.modules:

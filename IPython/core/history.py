@@ -978,13 +978,13 @@ def extract_hist_ranges(ranges_str):
         assert endsess >= startsess, "start session must be earlier than end session"
 
         if endsess == startsess:
-            yield (startsess, start, end)
+            yield startsess, start, end
             continue
         # Multiple sessions in one range:
-        yield (startsess, start, None)
+        yield startsess, start, None
         for sess in range(startsess + 1, endsess):
-            yield (sess, 1, None)
-        yield (endsess, 1, end)
+            yield sess, 1, None
+        yield endsess, 1, end
 
 
 def _format_lineno(session, line):

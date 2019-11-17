@@ -28,9 +28,6 @@ from sphinx.util.logging import getLogger
 # import numpydoc  # noqa F401
 from matplotlib.sphinxext.plot_directive import PlotDirective
 
-import IPython  # noqa F401
-from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
-
 logger = getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -71,8 +68,6 @@ extensions = [
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'IPython.sphinxext.ipython_console_highlighting',
-    'IPython.sphinxext.ipython_directive',
     'sphinx.ext.napoleon',  # to preprocess docstrings
     # 'numpydoc.numpydoc',
     # 'autoapi.extension',
@@ -81,9 +76,24 @@ extensions = [
     'configtraits',
 ]
 
-autoapi_type = 'python'
-autoapi_dirs = ['../../IPython']
-autoapi_generate_api_docs = False
+# lol who wants to see a really shoddy way of figuring something out
+try:
+    import IPython
+except BaseException:
+    import sphinx.ext.autoapi
+else:
+
+    import IPython  # noqa F401
+    from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
+
+    extensions.extend([
+        'IPython.sphinxext.ipython_console_highlighting',
+        'IPython.sphinxext.ipython_directive',
+    ])
+
+    autoapi_type = 'python'
+    autoapi_dirs = ['../../IPython']
+    autoapi_generate_api_docs = False
 
 if shutil.which('dot'):
     extensions.append('sphinx.ext.graphviz')
