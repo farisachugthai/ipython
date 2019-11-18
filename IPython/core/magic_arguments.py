@@ -1,6 +1,6 @@
-""" A decorator-based method of constructing IPython magics with `argparse`
-option handling.
+"""A decorator-based method of constructing IPython magics.
 
+Utilizes :mod:`argparse` option handling.
 New magic functions can be defined like so::
 
     from IPython.core.magic_arguments import (argument, magic_arguments,
@@ -10,7 +10,9 @@ New magic functions can be defined like so::
     @argument('-o', '--option', help='An optional argument.')
     @argument('arg', type=int, help='An integer positional argument.')
     def magic_cool(self, arg):
-        """
+        pass
+
+"""
 # -----------------------------------------------------------------------------
 # Copyright (C) 2010-2011, IPython Development Team.
 #
@@ -32,16 +34,15 @@ NAME_RE = re.compile(r"[a-zA-Z][a-zA-Z0-9_-]*$")
 
 @undoc
 class MagicHelpFormatter(argparse.RawDescriptionHelpFormatter):
-    """A HelpFormatter with a couple of changes to meet our needs.
-    """
+    """A HelpFormatter with a couple of changes to meet our needs."""
 
-    # Modified to dedent text.
     def _fill_text(self, text, width, indent):
+        """Modified to dedent text."""
         return argparse.RawDescriptionHelpFormatter._fill_text(
             self, dedent(text), width, indent)
 
-    # Modified to wrap argument placeholders in <> where necessary.
     def _format_action_invocation(self, action):
+        """Modified to wrap argument placeholders in <> where necessary."""
         if not action.option_strings:
             metavar, = self._metavar_formatter(action, action.dest)(1)
             return metavar
@@ -68,16 +69,15 @@ class MagicHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
             return ', '.join(parts)
 
-    # Override the default prefix ('usage') to our % magic escape,
-    # in a code block.
     def add_usage(self, usage, actions, groups, prefix="::\n\n  %"):
+        """Override the default prefix ('usage') to our % magic escape,
+        in a code block."""
         super(MagicHelpFormatter, self).add_usage(usage, actions, groups,
                                                   prefix)
 
 
 class MagicArgumentParser(argparse.ArgumentParser):
-    """ An ArgumentParser tweaked for use by IPython magics.
-    """
+    """An ArgumentParser tweaked for use by IPython magics."""
 
     def __init__(self,
                  prog=None,
@@ -165,17 +165,16 @@ class ArgDecorator(object):
         return func
 
     def add_to_parser(self, parser, group):
-        """ Add this object's information to the parser, if necessary.
-        """
+        """Add this object's information to the parser, if necessary."""
         pass
 
 
 class magic_arguments(ArgDecorator):
-    """ Mark the magic as having argparse arguments and possibly adjust the
+    """Mark the magic as having argparse arguments and possibly adjust the
     name.
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name=None) -> object:
         self.name = name
 
     def __call__(self, func):
@@ -191,11 +190,9 @@ class magic_arguments(ArgDecorator):
 
 
 class ArgMethodWrapper(ArgDecorator):
-    """
-    Base class to define a wrapper for ArgumentParser method.
+    """Base class to define a wrapper for ArgumentParser method.
 
     Child class must define either `_method_name` or `add_to_parser`.
-
     """
 
     _method_name = None
@@ -205,8 +202,7 @@ class ArgMethodWrapper(ArgDecorator):
         self.kwds = kwds
 
     def add_to_parser(self, parser, group):
-        """ Add this object's information to the parser.
-        """
+        """Add this object's information to the parser."""
         if group is not None:
             parser = group
         getattr(parser, self._method_name)(*self.args, **self.kwds)
@@ -214,7 +210,7 @@ class ArgMethodWrapper(ArgDecorator):
 
 
 class argument(ArgMethodWrapper):
-    """ Store arguments and keywords to pass to add_argument().
+    """Store arguments and keywords to pass to add_argument().
 
     Instances also serve to decorate command methods.
     """
@@ -222,7 +218,7 @@ class argument(ArgMethodWrapper):
 
 
 class defaults(ArgMethodWrapper):
-    """ Store arguments and keywords to pass to set_defaults().
+    """Store arguments and keywords to pass to set_defaults().
 
     Instances also serve to decorate command methods.
     """
@@ -230,20 +226,18 @@ class defaults(ArgMethodWrapper):
 
 
 class argument_group(ArgMethodWrapper):
-    """ Store arguments and keywords to pass to add_argument_group().
+    """Store arguments and keywords to pass to add_argument_group().
 
     Instances also serve to decorate command methods.
     """
 
     def add_to_parser(self, parser, group):
-        """ Add this object's information to the parser.
-        """
+        """Add this object's information to the parser."""
         return parser.add_argument_group(*self.args, **self.kwds)
 
 
 class kwds(ArgDecorator):
-    """ Provide other keywords to the sub-parser constructor.
-    """
+    """Provide other keywords to the sub-parser constructor."""
 
     def __init__(self, **kwds):
         self.kwds = kwds

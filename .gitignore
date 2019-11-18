@@ -1,3 +1,4 @@
+docs/source/savefig/*.png
 .idea/**
 cscope.out
 *.log

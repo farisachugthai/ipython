@@ -479,14 +479,17 @@ class TerminalInteractiveShell(InteractiveShell):
         return text
 
     def init_io(self):
-        """Literally only imports colorama if sys.platform==win32 or cli."""
-        if sys.platform not in {'win32', 'cli'}:
-            return
-        import colorama
-        colorama.init()
+        """Literally only imports colorama if sys.platform==win32 or cli.
+
+        Got rid of it in the superclass as well. Both invoke classes we got rid
+        of and nothing else.
+        """
+        # if sys.platform not in {'win32', 'cli'}:
+        #     return
+        # import colorama
+        # colorama.init()
 
     def init_magics(self):
-        """Calls the super method and then register_magics(TerminalMagics)."""
         super().init_magics()
         self.register_magics(TerminalMagics)
 
@@ -502,19 +505,17 @@ class TerminalInteractiveShell(InteractiveShell):
 
         Gotta admit I'm very confused why this code exists at all though.::
 
-            if os.name == 'posix':
-                for cmd in ('clear', 'more', 'less', 'man'):
-                    self.alias_manager.soft_define_alias(cmd, cmd)
-
         """
-        super().init_alias()
+        # super().init_alias()
 
         if os.name == 'posix':
             for cmd in ('clear', 'more', 'less', 'man'):
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
     def __init__(self, *args, **kwargs):
+        """Why is this class built so that every individual method calls it's super?"""
         super().__init__(*args, **kwargs)
+        self.init_aliases()
         self.init_prompt_toolkit_cli()
         self.init_term_title()
         self.keep_running = True

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Create the :class:`~IPython.core.application.Application` object for the command
+The :class:`~IPython.core.application.Application` object for the command
 line :command:`ipython` program.
 
 .. tip:: I guess this is the main entry point.
@@ -10,45 +10,35 @@ line :command:`ipython` program.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+from IPython.core.formatters import PlainTextFormatter
+from .interactiveshell import TerminalInteractiveShell
 import logging
 import os
-from pathlib import Path
 import sys
 import warnings
-
-from traitlets.config.loader import Config
-from traitlets.config.application import boolean_flag, catch_config_error
+from pathlib import Path
 
 from IPython.core import release, usage
 from IPython.core.crashhandler import CrashHandler
-from IPython.core.formatters import PlainTextFormatter
 from IPython.core.history import HistoryManager
-
-# I feel like we should grab this from where ProfileDir was defined
-# from IPython.core.application import (ProfileDir, BaseIPythonApplication,
-
-from ..core.application import BaseAliases, BaseIPythonApplication, base_flags, base_aliases
-from ..core.profiledir import ProfileDir, ProfileDirError
-
-from IPython.core.magics import ScriptMagics, LoggingMagics
-
-from IPython.core.shellapp import (InteractiveShellApp, shell_flags,
-                                   shell_aliases)
+from IPython.core.magics import LoggingMagics, ScriptMagics
+from IPython.core.shellapp import (InteractiveShellApp, shell_aliases,
+                                   shell_flags)
 from IPython.paths import get_ipython_dir
+from ..core.application import (BaseAliases, BaseIPythonApplication,
+                                base_aliases, base_flags)
 
-# why is storemagics still here we deprecated that??
-# from IPython.extensions.storemagic import StoreMagics
-from .interactiveshell import TerminalInteractiveShell
+from traitlets import Bool, List, Type, default, observe
+from traitlets.config.application import boolean_flag, catch_config_error
+from traitlets.config.loader import Config
 
-from traitlets import (Bool, List, default, observe, Type)
 
-# Make it easy to import extensions - they are always directly on pythonpath.
-# Therefore, non-IPython modules can be added to extensions directory.
 # This should probably be in ipapp.py.
 # From IPython/__init__
-# sys.path.append(os.path.join(os.path.dirname(__file__), "extensions"))
-# TODO:
-# sys.path.append(Path(__file__).parent).joinpath('extensions')
+dirname = Path().resolve()
+root = dirname.parent
+extension_dir = dirname.joinpath('extensions')
+sys.path.append(extension_dir.__fspath__())
 
 # -----------------------------------------------------------------------------
 # Globals, utilities and helpers
@@ -93,21 +83,12 @@ class IPAppCrashHandler(CrashHandler):
 
 flags = dict(base_flags)
 flags.update(shell_flags)
-
-
-def addflag(*args, dictionary=None):
-    """Formerly was a lambda. Now a function with optional args."""
-    if dictionary is None:
-        dictionary = {}
-    return dictionary.update(boolean_flag(*args))
-
-
-addflag(
-    'simple-prompt',
-    'TerminalInteractiveShell.simple_prompt',
-    "Force simple minimal prompt using `raw_input`",
-    "Use a rich interactive prompt with prompt_toolkit",
-)
+frontend_flags = {}
+addflag = lambda *args: frontend_flags.update(boolean_flag(*args))
+addflag('simple-prompt', 'TerminalInteractiveShell.simple_prompt',
+        "Force simple minimal prompt using `raw_input`",
+        "Use a rich interactive prompt with prompt_toolkit",
+        )
 
 addflag('banner', 'TerminalIPythonApp.display_banner',
         "Display a banner upon starting IPython.",
@@ -133,14 +114,16 @@ classic_config.InteractiveShell.separate_out2 = ''
 classic_config.InteractiveShell.colors = 'NoColor'
 classic_config.InteractiveShell.xmode = 'Plain'
 
-frontend_flags = {'classic'                                                               : (
-    classic_config, "Gives IPython a similar feel to the classic Python prompt."), 'quick': ({'TerminalIPythonApp': {
-    'quick': True}}, "Enable quick startup with no config files."), 'i'                   : (
-{'TerminalIPythonApp': {'force_interact': True}},
-"""If running code from the command line, become interactive afterwards.
+# JFC it was hard getting this to be a recognizable data structure and format it well
+frontend_flags = {
+    'classic': (classic_config, "Gives IPython a similar feel to the classic Python prompt."),
+    'quick': ({'TerminalIPythonApp': {'quick': True}}, "Enable quick startup with no config files."),
+    'i': ({'TerminalIPythonApp': {'force_interact': True}}, """
+If running code from the command line, become interactive afterwards.
 It is often useful to follow this with `--` to treat remaining flags as
 script arguments.
-""")}
+""")
+}
 # # log doesn't make so much sense this way anymore
 # paa('--log','-l',
 #     action='store_true', dest='InteractiveShell.logstart',
@@ -167,10 +150,12 @@ class LocateIPythonApp(BaseIPythonApplication):
     ), )
 
     def start(self):
+        """Why not print AND return the value?"""
         if self.subapp is not None:
             return self.subapp.start()
         else:
             print(self.ipython_dir)
+            return self.ipython_dir
 
 
 class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
@@ -227,6 +212,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         important use in the world.
         """
         from IPython.core.completer import IPCompleter
+        from IPython.core.profiledir import ProfileDir
         return [
             InteractiveShellApp,  # ShellApp comes before TerminalApp, because
             self.__class__,  # it will also affect subclasses (e.g. QtConsole)
@@ -259,7 +245,9 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     ).tag(config=True)
 
     interact = Bool(
-        True, help="Are we running interactively? I guess that's what this is anyway.")
+        True,
+        help="Are we running interactively? I guess that's what this is anyway."
+    )
 
     @observe('quick')
     def _quick_changed(self, change):
@@ -308,7 +296,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
                 "    Use `--matplotlib <backend>` and import pylab manually.")
             argv[idx] = '--pylab'
 
-        return super(TerminalIPythonApp, self).parse_command_line(argv)
+        return super().parse_command_line(argv)
 
     @catch_config_error
     def initialize(self, argv=None):
@@ -370,13 +358,14 @@ ipython locate profile foo # print the path to the directory for profile `foo`
                 return self.subapp.start()
         # perform any prexec steps:
         if self.interact:
-            self.log.debug("Starting IPython's mainloop...")
+            self.log.info("Starting IPython's mainloop...")
             self.shell.mainloop()
         else:
             # self.log.debug("IPython not interactive...")
             # we're about to sys.exit don't just mark that as debug
-            self.log.error('IPython not interactive. Here is the last execution; result.\ n{}'.format(
-                self.shell.last_execution_result))
+            self.log.error(
+                'IPython not interactive. Here is the last execution; result.\ n{}'
+                .format(self.shell.last_execution_result))
             if not self.shell.last_execution_succeeded:
                 sys.exit(1)
 
@@ -398,8 +387,7 @@ def load_default_config(ipython_dir=None):
         I guess that'd be the type but idk.
 
     """
-    if ipython_dir is None:
-        ipython_dir = get_ipython_dir()
+    ipython_dir = ipython_dir or get_ipython_dir()
 
     profile_dir = os.path.join(ipython_dir, 'profile_default')
     app = TerminalIPythonApp()
@@ -409,7 +397,6 @@ def load_default_config(ipython_dir=None):
 
 
 launch_new_instance = TerminalIPythonApp.launch_instance
-
 
 if __name__ == '__main__':
     launch_new_instance()

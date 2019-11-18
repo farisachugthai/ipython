@@ -695,7 +695,7 @@ class InteractiveShell(SingletonConfigurable):
         # TODO: init_io() needs to happen before init_traceback handlers
         # because the traceback handlers hardcode the stdout/stderr streams.
         # This logic in in debugger.Pdb and should eventually be changed.
-        self.init_io()
+        # self.init_io()
 
         # also this one is a massive source of headaches for me.
         self.init_traceback_handlers(custom_exceptions)
@@ -886,13 +886,16 @@ class InteractiveShell(SingletonConfigurable):
         override sys.stdout and sys.stderr themselves, you need to do that
         *before* instantiating this class, because io holds onto
         references to the underlying streams.
+
         io.std* are deprecated, but don't show our own deprecation warnings
         during initialization of the deprecated API.
+
+        Dude those classes don't even exist anymore wth.
         """
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', DeprecationWarning)
-            utils_io.stdout = io.IOStream(sys.stdout)
-            utils_io.stderr = io.IOStream(sys.stderr)
+        # with warnings.catch_warnings():
+        #     warnings.simplefilter('ignore', DeprecationWarning)
+        #     utils_io.stdout = io.IOStream(sys.stdout)
+        #     utils_io.stderr = io.IOStream(sys.stderr)
 
     def init_prompts(self):
         """Set system prompts, so that scripts can decide if they're interactive."""

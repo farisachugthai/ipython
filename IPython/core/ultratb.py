@@ -685,7 +685,8 @@ class ListTB(TBTools):
                              value,
                              elist,
                              tb_offset=None,
-                             context=5):
+                             context=5,
+                             mode=None):
         """Return a color formatted string with the traceback info.
 
         Parameters
@@ -1251,13 +1252,13 @@ class VerboseTB(TBTools):
             )
             return None
 
-    def structured_traceback(self,
-                             etype,
-                             evalue,
-                             etb,
-                             tb_offset=None,
-                             number_of_lines_of_context=5):
-        """Return a nice text document describing the traceback."""
+    def structured_traceback(self, etype, evalue, etb, tb_offset=None, number_of_lines_of_context=5, **kwargs):
+        """Return a nice text document describing the traceback.
+
+        Parameters
+        ----------
+        **kwargs :
+        """
 
         formatted_exception = self.format_exception_as_a_whole(
             etype, evalue, etb, number_of_lines_of_context, tb_offset)
@@ -1536,7 +1537,6 @@ class ColorTB(FormattedTB):
     """Shorthand to initialize a FormattedTB in Linux colors mode."""
 
     def __init__(self, color_scheme='NoColor', call_pdb=0, **kwargs):
-
         self.color_scheme = color_scheme
         self.call_pdb = call_pdb
         FormattedTB.__init__(self,
@@ -1570,16 +1570,10 @@ class SyntaxTB(ListTB):
         self.config = config
         ListTB.__init__(self, color_scheme=self.color_scheme, parent=self.parent, config=self.config)
 
-
     def __call__(self, etype, value, elist):
         self.last_syntax_error = value
 
-    def structured_traceback(self,
-                             etype,
-                             value,
-                             elist,
-                             tb_offset=None,
-                             context=5):
+    def structured_traceback(self, etype, value, elist, tb_offset=None, context=5, **kwargs):
         # If the source file has been edited, the line in the syntax error can
         # be wrong (retrieved from an outdated cache). This replaces it with
         # the current value.

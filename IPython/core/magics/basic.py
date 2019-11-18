@@ -16,7 +16,7 @@ from warnings import warn
 from IPython.core import magic_arguments, page
 from IPython.core.error import UsageError
 from IPython.core.magic import Magics, magics_class, line_magic, magic_escapes
-from IPython.utils.text import format_screen # , dedent, indent
+from IPython.utils.text import format_screen  # , dedent, indent
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.ipstruct import Struct
 
@@ -31,6 +31,7 @@ class MagicsDisplay:
     Or the other one when you don't inherit from Magics?
     Why don't we need it?
     """
+
     def __init__(self, magics_manager, ignore=None):
         """Initialize the magics class that displays other magics.
 
@@ -48,6 +49,7 @@ class MagicsDisplay:
         self.ignore = ignore if ignore else []
         self.magics_manager = magics_manager
 
+    @property
     def _lsmagic(self):
         """The main implementation of the `%lsmagic`.
 
@@ -57,25 +59,19 @@ class MagicsDisplay:
         cesc = magic_escapes['cell']
         mman = self.magics_manager
         magics = mman.lsmagic()
-        out = [
-            'Available line magics:', mesc + ('  ' + mesc).join(
-                sorted([
-                    m for m, v in magics['line'].items()
-                    if (v not in self.ignore)
-                ])), '', 'Available cell magics:', cesc + ('  ' + cesc).join(
-                    sorted([
-                        m for m, v in magics['cell'].items()
-                        if (v not in self.ignore)
-                    ])), '',
-            mman.auto_status()
-        ]
+        out = ['Available line magics:', mesc + ('  ' + mesc).join(
+            sorted([m for m, v in magics['line'].items()
+                    if (v not in self.ignore)])),
+               '', 'Available cell magics:', cesc + ('  ' + cesc).join(
+            sorted([m for m, v in magics['cell'].items()
+                if (v not in self.ignore)])), '', mman.auto_status()]
         return '\n'.join(out)
 
     def _repr_pretty_(self, p, cycle):
-        p.text(self._lsmagic())
+        p.text(self._lsmagic)
 
     def __str__(self):
-        return self._lsmagic()
+        return self._lsmagic
 
     def _jsonable(self):
         """turn magics dict into jsonable dict of the same structure
@@ -106,7 +102,8 @@ class BasicMagics(Magics):
     """Magics that provide central IPython functionality.
 
     These are various magics that don't fit into specific categories but that
-    are all part of the base 'IPython experience'."""
+    are all part of the base 'IPython experience'.
+    """
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-l',
                               '--line',
@@ -219,14 +216,14 @@ class BasicMagics(Magics):
             format_string = '%s%s:\n%s\n'
 
         return ''.join([
-            format_string %
-            (magic_escapes['line'], fname, indent(dedent(fndoc)))
-            for fname, fndoc in sorted(docs['line'].items())
-        ] + [
-            format_string %
-            (magic_escapes['cell'], fname, indent(dedent(fndoc)))
-            for fname, fndoc in sorted(docs['cell'].items())
-        ])
+                           format_string %
+                           (magic_escapes['line'], fname, indent(dedent(fndoc)))
+                           for fname, fndoc in sorted(docs['line'].items())
+                       ] + [
+                           format_string %
+                           (magic_escapes['cell'], fname, indent(dedent(fndoc)))
+                           for fname, fndoc in sorted(docs['cell'].items())
+                       ])
 
     @line_magic
     def magic(self, parameter_s=''):
@@ -396,6 +393,7 @@ Currently the magic system has the following functions:""",
         Valid modes: Plain, Context, Verbose, and Minimal.
 
         If called without arguments, acts as a toggle."""
+
         def xmode_switch_err(name):
             warn('Error changing %s exception modes.\n%s' %
                  (name, sys.exc_info()[1]))

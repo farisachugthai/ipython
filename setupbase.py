@@ -101,7 +101,6 @@ def find_data_files():
 
     Just man pages at this point.
     """
-
     if "freebsd" in sys.platform:
         manpagebase = pjoin('man', 'man1')
     else:
@@ -245,8 +244,8 @@ class install_lib_symlink(Command):
         )
 
     def run(self):
-        if sys.platform == 'win32':
-            raise Exception("This doesn't work on Windows.")
+        # if sys.platform == 'win32':
+        #     raise Exception("This doesn't work on Windows.")
         pkg = os.path.join(os.getcwd(), 'IPython')
         dest = os.path.join(self.install_dir, 'IPython')
         if os.path.islink(dest):
@@ -268,8 +267,9 @@ class unsymlink(install):
 
 class install_symlinked(install):
     def run(self):
-        if sys.platform == 'win32':
-            raise Exception("This doesn't work on Windows.")
+        # now it does.
+        # if sys.platform == 'win32':
+        #     raise Exception("This doesn't work on Windows.")
 
         # Run all sub-commands (at least those that need to be run)
         for cmd_name in self.get_sub_commands():

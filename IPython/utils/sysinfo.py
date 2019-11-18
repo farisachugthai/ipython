@@ -1,7 +1,8 @@
 # encoding: utf-8
 """Utilities for getting information about IPython and the system it's running in.
 
-.. versionchanged:: num_cpus replaced with multiprocessing.num_cpus
+.. versionchanged:: num_cpus replaced with multiprocessing.cpu_count
+
 """
 
 # -----------------------------------------------------------------------------
@@ -14,7 +15,7 @@
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-from multiprocessing import num_cpus
+from multiprocessing import cpu_count as num_cpus
 import os
 import platform
 import pprint
@@ -22,7 +23,6 @@ import sys
 import subprocess
 
 from IPython.core import release
-# from IPython.utils import _sysinfo, encoding
 
 # -----------------------------------------------------------------------------
 # Code
@@ -53,10 +53,6 @@ def pkg_commit_hash(pkg_path):
     hash_str : str
        short form of hash
     """
-    # Try and get commit from written commit text file
-    if _sysinfo.commit:
-        return "installation", _sysinfo.commit
-
     # maybe we are in a repository
     proc = subprocess.Popen('git rev-parse --short HEAD',
                             stdout=subprocess.PIPE,
@@ -123,3 +119,4 @@ def sys_info():
          'sys_version': '2.6.6 (r266:84292, Sep 15 2010, 15:52:39) \\n[GCC 4.4.5]'}
     """
     return pprint.pformat(get_sys_info())
+
