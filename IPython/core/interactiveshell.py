@@ -1995,7 +1995,8 @@ class InteractiveShell(SingletonConfigurable):
             tb_offset=1,
             check_cache=check_linecache_ipython,
             debugger_cls=self.debugger_cls,
-            parent=self)
+            parent=self,
+            config=self.config)
 
         # The instance will store a pointer to the system-wide exception hook,
         # so that runtime code (such as magics) can access it.  This is because

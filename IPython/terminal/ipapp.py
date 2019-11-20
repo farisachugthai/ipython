@@ -6,12 +6,17 @@ line :command:`ipython` program.
 
 .. tip:: I guess this is the main entry point.
 
+    Yeah this file in particular is. Running the command IPython on the CLI
+    imports this file and initializes the TerminalIPythonApp which kicks
+    off everything else.
+
+    I'm currently running into a problem where we keep sys.exiting with the 1
+    exit status at the bottom so we have to figure out why that is.
+
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from IPython.core.formatters import PlainTextFormatter
-from .interactiveshell import TerminalInteractiveShell
 import logging
 import os
 import sys
@@ -20,13 +25,16 @@ from pathlib import Path
 
 from IPython.core import release, usage
 from IPython.core.crashhandler import CrashHandler
+from IPython.core.formatters import PlainTextFormatter
 from IPython.core.history import HistoryManager
 from IPython.core.magics import LoggingMagics, ScriptMagics
 from IPython.core.shellapp import (InteractiveShellApp, shell_aliases,
                                    shell_flags)
+
 from IPython.paths import get_ipython_dir
 from ..core.application import (BaseAliases, BaseIPythonApplication,
                                 base_aliases, base_flags)
+from .interactiveshell import TerminalInteractiveShell
 
 from traitlets import Bool, List, Type, default, observe
 from traitlets.config.application import boolean_flag, catch_config_error
@@ -59,10 +67,7 @@ class IPAppCrashHandler(CrashHandler):
         super().__init__(app, contact_name, contact_email, bug_tracker)
 
     def make_report(self, traceback):
-        """Return a string containing a crash report.
-
-        But fucking seriously stop catching **BaseException**
-        """
+        """Return a string containing a crash report."""
         # Start with parent report
         report = [super().make_report(traceback)]
 
@@ -124,7 +129,8 @@ It is often useful to follow this with `--` to treat remaining flags as
 script arguments.
 """)
 }
-# # log doesn't make so much sense this way anymore
+# log doesn't make so much sense this way anymore
+# ...does that say paa?
 # paa('--log','-l',
 #     action='store_true', dest='InteractiveShell.logstart',
 #     help="Start logging to the default log file (./ipython_log.py).")
@@ -155,7 +161,7 @@ class LocateIPythonApp(BaseIPythonApplication):
             return self.subapp.start()
         else:
             print(self.ipython_dir)
-            return self.ipython_dir
+            # return self.ipython_dir
 
 
 class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
@@ -225,6 +231,26 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             LoggingMagics,
         ]
 
+    deprecated_subcommands = dict(
+        qtconsole=('qtconsole.qtconsoleapp.JupyterQtConsoleApp',
+                   """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter Qt Console."""
+                   ),
+        notebook=('notebook.notebookapp.NotebookApp',
+                  """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter HTML Notebook Server."""
+                  ),
+        console=('jupyter_console.app.ZMQTerminalIPythonApp',
+                 """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter terminal-based Console."""
+                 ),
+        nbconvert=('nbconvert.nbconvertapp.NbConvertApp',
+                   "DEPRECATED, Will be removed in IPython 6.0 : Convert notebooks to/from other formats."
+                   ),
+        trust=('nbformat.sign.TrustNotebookApp',
+               "DEPRECATED, Will be removed in IPython 6.0 : Sign notebooks to trust their potentially unsafe contents at load."
+               ),
+        kernelspec=('jupyter_client.kernelspecapp.KernelSpecApp',
+                    "DEPRECATED, Will be removed in IPython 6.0 : Manage Jupyter kernel specifications."
+                    ),
+    )
     subcommands = dict(
         profile=("IPython.core.profileapp.ProfileApp",
                  "Create and manage IPython profiles."),
@@ -244,11 +270,6 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         help="""Start IPython quickly by skipping the loading of config files."""
     ).tag(config=True)
 
-    interact = Bool(
-        True,
-        help="Are we running interactively? I guess that's what this is anyway."
-    )
-
     @observe('quick')
     def _quick_changed(self, change):
         if change['new']:
@@ -262,7 +283,8 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         False,
         help="""If a command or file is given via the command-line,
         e.g. 'ipython foo.py', start an interactive shell after executing the
-        file or command. This is presented in the API as App.force_interact"""
+        file or command.
+        This is presented in the API as App.force_interact."""
     ).tag(config=True)
 
     @observe('force_interact')
@@ -301,6 +323,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     @catch_config_error
     def initialize(self, argv=None):
         """Do actions after construct, but before starting the app."""
+        super().initialize(argv)
         if self.subapp is not None:
             # don't bother initializing further, starting subapp
             return
@@ -356,6 +379,8 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         if hasattr(self, 'subapp'):
             if self.subapp is not None:
                 return self.subapp.start()
+
+        self.parse_command_line(self.initialize())
         # perform any prexec steps:
         if self.interact:
             self.log.info("Starting IPython's mainloop...")
