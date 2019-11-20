@@ -114,52 +114,53 @@ I think you can access the shell's completers through
 ``get_ipython().Completers()``
 
 """
-
-# Copyright (c) IPython Development Team.
-# Distributed under the terms of the Modified BSD License.
-#
-# Some of this code originated from rlcompleter in the Python standard library
-# Copyright (C) 2001 Python Software Foundation, www.python.org
-
-import __main__
 import builtins as builtin_mod
 import glob
-import time
 import inspect
 import itertools
 import keyword
 import os
 import re
-import sys
-import unicodedata
 import string
+import sys
+import time
+import unicodedata
 import warnings
-
 from contextlib import contextmanager
 from importlib import import_module
-from typing import Iterator, List, Tuple, Iterable, Union
 from types import SimpleNamespace
+from typing import Iterable, Iterator, List, Tuple, Union
 
-from traitlets import Bool, Enum, observe, Int
+import jedi  # This is a dependency now so we don't need a try/except
+
+import jedi.api.classes
+import jedi.api.helpers
+from traitlets import Bool, Enum, Int, observe
 from traitlets.config.configurable import Configurable
 
-from .error import ProvisionalCompleterWarning
+import __main__
 from IPython.core.error import TryNext
 from IPython.core.inputtransformer2 import ESC_MAGIC
 from IPython.core.latex_symbols import latex_symbols, reverse_latex_symbol
-
-from IPython.utils import generics
+from IPython.utils import PyColorize, generics
 from IPython.utils.dir2 import dir2, get_real_method
 from IPython.utils.process import arg_split
+
+from .error import ProvisionalCompleterWarning
+
+# ----------------------------------------------------------------------------
+# Copyright (c) IPython Development Team.
+# Distributed under the terms of the Modified BSD License.
+#
+# Some of this code originated from rlcompleter in the Python standard library
+# Copyright (C) 2001 Python Software Foundation, www.python.org
+# ----------------------------------------------------------------------------
 
 # skip module docstests
 skip_doctest = True
 
-import jedi  # This is a dependency now so we don't need a try/except
-JEDI_INSTALLED = True
-jedi.settings.case_insensitive_completion = False
-import jedi.api.helpers
-import jedi.api.classes
+# uh i use windows so true
+# jedi.settings.case_insensitive_completion = False
 
 # -----------------------------------------------------------------------------
 # Globals
@@ -175,10 +176,10 @@ else:
 
 # Protect against returning an enormous number of completions which the frontend
 # may have trouble processing.
-MATCHES_LIMIT = 500
+# not all of my devices can handle 500. can we not put these settings in a configurable?
+MATCHES_LIMIT = 50
 
 _deprecation_readline_sentinel = object()
-
 
 warnings.filterwarnings('error', category=ProvisionalCompleterWarning)
 
@@ -204,13 +205,13 @@ def provisionalcompleter(action='ignore'):
         a bug to explain your use case upstream and improve the API and will loose
         credibility if you complain after the API is make stable.
 
-        We'll be happy to get your feedback , feature request and improvement on
-        any of the unstable APIs !
+        We'll be happy to get your feedback, and review any
+        feature requests or improvements on any of the unstable APIs !
 
     .. warning:: Doesn't this drop any args passed to the function it wraps?
 
-        Or does contextlib.context_manager handle that for us? I'm surprised to see
-        no args or **kwargs here.
+        Or does contextlib.context_manager handle that for us?
+        I'm surprised to see no args or kwargs here.
 
     """
     with warnings.catch_warnings():
@@ -227,10 +228,16 @@ def has_open_quotes(s):
     We check " first, then ', so complex cases with nested quotes will get
     the " to take precedence.
 
+    Parameters
+    ----------
+    s : str
+        String to check
+
     Returns
     -------
-    If there is an open quote, the quote character is returned.  Else, return
-    False.
+    str or bool
+       If there is an open quote, the quote character is returned.
+       Else, return False.
 
     """
     if s.count('"') % 2:
@@ -242,7 +249,16 @@ def has_open_quotes(s):
 
 
 def protect_filename(s, protectables=PROTECTABLES):
-    """Escape a string to protect certain characters."""
+    """Escape a string to protect certain characters.
+
+    Parameters
+    -----------
+    s : str
+        String to escape
+    protectables : str
+        Symbols to escape on Windows.
+
+    """
     if set(s) & set(protectables):
         if sys.platform == "win32":
             return '"' + s + '"'
@@ -253,27 +269,30 @@ def protect_filename(s, protectables=PROTECTABLES):
 
 
 def expand_user(path: str) -> Tuple[str, bool, str]:
-    """Expand ``~``-style usernames in strings.
+    """Expand :kbd:`~` style usernames in strings.
 
     This is similar to :func:`os.path.expanduser`, but it computes and returns
     extra information that will be useful if the input was being used in
     computing completions, and you wish to return the completions with the
-    original '~' instead of its expanded value.
+    original :kbd:`~` instead of its expanded value.
+
+    ....Isn't this also similar to IPython.utils.path.expand_path?
 
     Parameters
     ----------
     path : str
-      String to be expanded.  If no ~ is present, the output is the same as the
-      input.
+        String to be expanded.  If no ~ is present, the output is the same as the
+        input.
 
     Returns
     -------
     newpath : str
-      Result of ~ expansion in the input path.
+        Result of ~ expansion in the input path.
     tilde_expand : bool
-      Whether any expansion was performed or not.
+        Whether any expansion was performed or not.
     tilde_val : str
-      The value that ~ was replaced with.
+        The value that ~ was replaced with.
+
     """
     # Default values
     tilde_expand = False
@@ -293,8 +312,7 @@ def expand_user(path: str) -> Tuple[str, bool, str]:
 
 
 def compress_user(path: str, tilde_expand: bool, tilde_val: str) -> str:
-    """Does the opposite of expand_user, with its outputs.
-    """
+    """Does the opposite of expand_user, with its outputs."""
     if tilde_expand:
         return path.replace(tilde_val, '~')
     else:
@@ -302,11 +320,12 @@ def compress_user(path: str, tilde_expand: bool, tilde_val: str) -> str:
 
 
 def completions_sorting_key(word):
-    """key for sorting completions
+    """Key for sorting completions.
 
     This does several things:
 
     - Demote any completions starting with underscores to the end
+
     - Insert any %magic and %%cellmagic completions in the alphabetical order
       by their name
     """
@@ -337,9 +356,11 @@ def completions_sorting_key(word):
 class _FakeJediCompletion:
     """
     This is a workaround to communicate to the UI that Jedi has crashed and to
-    report a bug. Will be used only id :any:`IPCompleter.debug` is set to true.
+    report a bug. Will be used only if :any:`IPCompleter.debug` is set to True.
 
     Added in IPython 6.0 so should likely be removed for 7.0
+
+    .. todo:: Uhh.
 
     """
 
@@ -353,12 +374,11 @@ class _FakeJediCompletion:
         self._origin = 'fake'
 
     def __repr__(self):
-        return '<Fake completion object jedi has crashed>'
+        return ''.join(self.__class__.__name__)
 
 
 class Completion:
-    """
-    Completion object used and return by IPython completers.
+    """Completion object used and return by IPython completers.
 
     .. warning:: Unstable
 
@@ -820,7 +840,8 @@ def match_dict_keys(keys: List[str], prefix: str, delims: str):
         # reformat remainder of key to begin with prefix
         rem = key[len(prefix_str):]
         # force repr wrapped in '
-        rem_repr = repr(rem + '"') if isinstance(rem, str) else repr(rem + b'"')
+        rem_repr = repr(rem + '"') if isinstance(rem,
+                                                 str) else repr(rem + b'"')
         if rem_repr.startswith('u') and prefix[0] not in 'uU':
             # Found key is unicode, but prefix is Py2 string.
             # Therefore attempt to interpret key as string.
@@ -975,14 +996,12 @@ def back_latex_name_matches(text: str):
 
 
 def _formatparamchildren(parameter) -> str:
-    """
-    Get parameter name and value from Jedi Private API
+    """Get parameter name and value from Jedi Private API.
 
     Jedi does not expose a simple way to get `param=value` from its API.
 
     Parameter
     ---------
-
     parameter:
         Jedi's function `Param`
 
@@ -1185,9 +1204,7 @@ class IPCompleter(Completer):
             ]
 
     def all_completions(self, text) -> List[str]:
-        """
-        Wrapper around the completions method for the benefit of emacs.
-        """
+        """Wrapper around the completions method for the benefit of emacs."""
         prefix = text[:text.rfind(".") + 1]
         with provisionalcompleter():
             return list(
@@ -1466,7 +1483,8 @@ class IPCompleter(Completer):
                 # jedi >= 0.11
                 from parso.tree import ErrorLeaf
 
-            next_to_last_tree = interpreter._get_module().tree_node.children[-2]
+            next_to_last_tree = interpreter._get_module(
+            ).tree_node.children[-2]
             completing_string = False
             if isinstance(next_to_last_tree, ErrorLeaf):
                 completing_string = next_to_last_tree.value.lstrip()[0] in {
@@ -1570,7 +1588,8 @@ class IPCompleter(Completer):
 
         try:
             sig = inspect.signature(call_obj)
-            ret.extend(k for k, v in sig.parameters.items() if v.kind in _keeps)
+            ret.extend(k for k, v in sig.parameters.items()
+                       if v.kind in _keeps)
         except ValueError:
             pass
 
@@ -1930,10 +1949,8 @@ class IPCompleter(Completer):
 
     def _completions(self, full_text: str, offset: int, *,
                      _timeout) -> Iterator[Completion]:
-        """
-        Core completion module.Same signature as :any:`completions`, with the
+        """Core completion module.Same signature as :any:`completions`, with the
         extra `timeout` parameter (in seconds).
-
 
         Computing jedi's completion ``.type`` can be quite expensive (it is a
         lazy property) and can require some warm-up, more warm up than just
@@ -2082,23 +2099,25 @@ class IPCompleter(Completer):
             full_text=None
     ) -> Tuple[str, List[str], List[str], Iterable[_FakeJediCompletion]]:
         """
-
         Like complete but can also returns raw jedi completions as well as the
         origin of the completion text. This could (and should) be made much
         cleaner but that will be simpler once we drop the old (and stateful)
         :any:`complete` API.
 
-
         With current provisional API, cursor_pos act both (depending on the
         caller) as the offset in the ``text`` or ``line_buffer``, or as the
-        ``column`` when passing multiline strings this could/should be renamed
-        but would add extra noise.
-        """
+        ``column`` when passing multiline strings.
 
+        This could/should be renamed but would add extra noise.
+
+        But no matter what this should be refactored this one method undertakes a large number of different tasks.
+        """
         # if the cursor position isn't given, the only sane assumption we can
         # make is that it's at the end of the line (the common case)
         if cursor_pos is None:
-            cursor_pos = len(line_buffer) if text is None else len(text)
+            # cursor_pos = len(line_buffer) if text is None else len(text)
+            # uh wouldn't that just be this?
+            cursor_pos = len(line_buffer)
 
         if self.use_main_ns:
             self.namespace = __main__.__dict__
@@ -2124,8 +2143,8 @@ class IPCompleter(Completer):
                 name_text, name_matches = meth(base_text)
                 if name_text:
                     return name_text, name_matches[:MATCHES_LIMIT], \
-                        [meth.__qualname__] * \
-                        min(len(name_matches), MATCHES_LIMIT), ()
+                           [meth.__qualname__]*min(len(name_matches), MATCHES_LIMIT), ()
+
 
         # If no line buffer is given, assume the input text is all there was
         if line_buffer is None:
@@ -2143,7 +2162,7 @@ class IPCompleter(Completer):
 
         # Start with a clean slate of completions
         matches = []
-        custom_res = self.dispatch_custom_completer(text)
+
         # FIXME: we should extend our api to return a dict with completions for
         # different types of objects.  The rlcomplete() method could then
         # simply collapse the dict into a list for readline, but we'd have
@@ -2152,30 +2171,29 @@ class IPCompleter(Completer):
         if self.use_jedi:
             if not full_text:
                 full_text = line_buffer
-            completions = self._jedi_matches(cursor_pos, cursor_line, full_text)
-        if custom_res is not None:
-            # did custom completers produce something?
-            matches = [(m, 'custom') for m in custom_res]
-        else:
-            # Extend the list of completions with the results of each
-            # matcher, so we return results to the user from all
-            # namespaces.
+            completions = self._jedi_matches(
+                cursor_pos, cursor_line, full_text)
+                
             if self.merge_completions:
                 matches = []
                 for matcher in self.matchers:
                     try:
-                        matches.extend([
-                            (m, matcher.__qualname__) for m in matcher(text)
-                        ])
-                    except BaseException:
+                    matches.extend([(m, matcher.__qualname__)
+                                    for m in matcher(text)])
+                except:
                         # Show the ugly traceback if the matcher causes an
                         # exception, but do NOT crash the kernel!
+                        # ooo we should start doing this more frequently. maybe
+                        # make this a method of interactiveapp because we do
+                        # sloppier versions of this everywhere
                         sys.excepthook(*sys.exc_info())
             else:
                 for matcher in self.matchers:
-                    matches = [(m, matcher.__qualname__) for m in matcher(text)]
+                    matches = [(m, matcher.__qualname__)
+                               for m in matcher(text)]
                     if matches:
                         break
+                    
         seen = set()
         filtered_matches = set()
         for m in matches:
@@ -2184,10 +2202,13 @@ class IPCompleter(Completer):
                 filtered_matches.add(m)
                 seen.add(t)
 
-        _filtered_matches = sorted(
-            set(filtered_matches),
-            key=lambda x: completions_sorting_key(x[0]))[:MATCHES_LIMIT]
+        _filtered_matches = sorted(filtered_matches, key=lambda x: completions_sorting_key(x[0]))
 
+        custom_res = [(m, 'custom') for m in self.dispatch_custom_completer(text) or []]
+        
+        _filtered_matches = custom_res or _filtered_matches
+
+        _filtered_matches = _filtered_matches[:MATCHES_LIMIT]
         _matches = [m[0] for m in _filtered_matches]
         origins = [m[1] for m in _filtered_matches]
 

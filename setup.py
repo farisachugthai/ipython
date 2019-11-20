@@ -6,22 +6,8 @@ Under Posix environments it works like a typical setup.py script.
 
 And now it does on Windows as well.
 
------------------------------------------------------------------------------
-
-  Copyright (c) 2008-2011, IPython Development Team.
-  Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
-  Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
-  Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
-
-  Distributed under the terms of the Modified BSD License.
-
-  The full license is in the file COPYING.rst, distributed with this software.
-
------------------------------------------------------------------------------
-
-
 It's also probably worth noting that in the dir
-site-packages/ipython-7.8.0-dist-info/ is  file called entry_points.txt.
+site-packages/ipython-7.8.0-dist-info/ is a file called entry_points.txt.
 
 It only has the following for it's contents:
 
@@ -58,7 +44,44 @@ EntryPoint(name='iptest3', value='IPython.testing.iptestcontroller:main', group=
 EntryPoint(name='ipython', value='IPython:start_ipython', group='console_scripts'),
 EntryPoint(name='ipython3', value='IPython:start_ipython', group='console_scripts'),
 
+
+-----------------------------------------------------------------------------
+
+  Copyright (c) 2008-2011, IPython Development Team.
+  Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
+  Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
+  Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
+
+  Distributed under the terms of the Modified BSD License.
+
 """
+# **Python version check**
+#
+# This check is also made in IPython/__init__, don't forget to update both when
+# changing Python version requirements.
+if sys.version_info < (3, 6):
+    pip_message = 'This may be due to an out of date pip. Make sure you have pip >= 9.0.1.'
+    try:
+        import pip
+        pip_version = tuple([int(x) for x in pip.__version__.split('.')[:3]])
+        if pip_version < (9, 0, 1) :
+            pip_message = 'Your pip version is out of date, please install pip >= 9.0.1. '\
+            'pip {} detected.'.format(pip.__version__)
+        else:
+            # pip is new enough - it must be something else
+            pip_message = ''
+    except Exception:
+        pass
+   # The full license is in the file COPYING.rst, distributed with this software.
+
+# -----------------------------------------------------------------------------
+    error = """
+IPython 7.10+ supports Python 3.6 and above, following NEP 29.
+When using Python 2.7, please install IPython 5.x LTS Long Term Support version.
+Python 3.3 and 3.4 were supported up to IPython 6.x.
+Python 3.5 was supported with IPython 7.0 to 7.9.
+"""
+
 # haven't been py2 compatible in some time
 # from __future__ import print_function
 
@@ -215,6 +238,10 @@ extras_require = dict(
     nbformat=['nbformat'],
     notebook=['notebook', 'ipywidgets'],
     nbconvert=['nbconvert'],
+    parallel = ['ipyparallel'],
+    qtconsole = ['qtconsole'],
+    doc = ['Sphinx>=1.3'],
+    test=['nose>=0.10.1', 'requests', 'testpath', 'pygments', 'nbformat', 'ipykernel', 'numpy>=1.14'],
 )
 
 install_requires = [
@@ -233,13 +260,11 @@ install_requires = [
 # but requires pip >= 6. pip < 6 ignores these.
 
 extras_require.update({
-    ':python_version == "3.4"': ['typing'],
     ':sys_platform != "win32"': ['pexpect'],
     ':sys_platform == "darwin"': ['appnope'],
     ':sys_platform == "win32"': ['colorama'],
-    ':sys_platform == "win32" and python_version < "3.6"':
-    ['win_unicode_console>=0.5'],
 })
+
 # FIXME: re-specify above platform dependencies for pip < 6
 # These would result in non-portable bdists.
 if not any(arg.startswith('bdist') for arg in sys.argv):
@@ -265,7 +290,7 @@ for key, deps in extras_require.items():
 extras_require['all'] = everything
 
 if 'setuptools' in sys.modules:
-    setuptools_extra_args['python_requires'] = '>=3.5'
+    setuptools_extra_args['python_requires'] = '>=3.6'
     setuptools_extra_args['zip_safe'] = False
     setuptools_extra_args['entry_points'] = {
         'console_scripts': [

@@ -1,18 +1,4 @@
-"""IPython terminal interface using prompt_toolkit.
-
-As you can imagine this module is not exactly the most straightforward.
-
-One thing that immediately jumped out at me was...
-
-What's up with all the methods that take 'change' as a parameter and never use
-it?
-
-It happens like 5 times...
-
-Also I'm shifting imports in this module farther down into the methods they're
-called in to reduce interdependencies because I keep having shit crash for
-unrelated bugs.
-"""
+"""IPython terminal interface using prompt_toolkit."""
 
 import os
 import sys
@@ -112,16 +98,14 @@ _use_simple_prompt = ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
 
 
 class TerminalInteractiveShell(InteractiveShell):
-    space_for_menu = Integer(
-        6,
+    space_for_menu = Integer(6,
         help='Number of line at the bottom of the screen '
         'to reserve for the completion menu').tag(config=True)
 
     pt_app = None
     debugger_history = None
 
-    simple_prompt = Bool(
-        _use_simple_prompt,
+    simple_prompt = Bool(_use_simple_prompt,
         help="""Use `raw_input` for the REPL, without completion and prompt colors.
 
             Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
@@ -136,14 +120,15 @@ class TerminalInteractiveShell(InteractiveShell):
         from .debugger import TerminalPdb, Pdb
         return Pdb if self.simple_prompt else TerminalPdb
 
-    confirm_exit = Bool(
-        True,
+    confirm_exit = Bool(True,
         help="""
         Set to confirm when you try to exit IPython with an EOF (Control-D
         in Unix, Control-Z/Enter in Windows). By typing 'exit' or 'quit',
         you can force a direct exit without any confirmation.""",
     ).tag(config=True)
 
+    # TODO: Would it make more sense to use the
+    # prompt_toolkit.enums.EditingMode class here?
     editing_mode = Unicode(
         'emacs',
         help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
@@ -156,8 +141,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     # We don't load the list of styles for the help string, because loading
     # Pygments plugins takes time and can cause unexpected errors.
-    highlighting_style = Union(
-        [Unicode('legacy'), Type(klass=Style)],
+    highlighting_style = Union([Unicode('legacy'), Type(klass=Style)],
         help="""The name or class of a Pygments style to use for syntax
         highlighting. To see available styles, run `pygmentize -L styles`."""
     ).tag(config=True)
@@ -186,8 +170,7 @@ class TerminalInteractiveShell(InteractiveShell):
         self.refresh_style()
 
     def refresh_style(self):
-        self._style = self._make_style_from_name_or_cls(
-            self.highlighting_style)
+        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
 
     highlighting_style_overrides = Dict(
         help="Override highlighting format for specific tokens").tag(
@@ -281,7 +264,7 @@ class TerminalInteractiveShell(InteractiveShell):
             restore_term_title()
 
     def init_display_formatter(self):
-        """We don't need to keep making weird ass super calls."""
+        """We don't need to keep making weird ass super calls. Move to init?"""
         super().init_display_formatter()
         # terminal only supports plain text
         self.display_formatter.active_types = ['text/plain']
@@ -347,7 +330,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     def _make_style_from_name_or_cls(self, name_or_cls):
         """
-        Small wrapper that make an IPython compatible style from a style name
+        Small wrapper that make an IPython compatible style from a style name.
 
         We need that to add style for prompt ... etc.
         """
@@ -366,30 +349,33 @@ class TerminalInteractiveShell(InteractiveShell):
                 # looks like. These tweaks to the default theme help with that.
                 style_cls = get_style_by_name('default')
                 style_overrides.update({
-                    Token.Number:
-                    '#007700',
-                    Token.Operator:
-                    'noinherit',
-                    Token.String:
-                    '#BB6622',
-                    Token.Name.Function:
-                    '#2080D0',
-                    Token.Name.Class:
-                    'bold #2080D0',
-                    Token.Name.Namespace:
-                    'bold #2080D0',
-                    Token.Prompt:
-                    '#009900',
-                    Token.PromptNum:
-                    '#ansibrightgreen bold',
-                    Token.OutPrompt:
-                    '#990000',
-                    Token.OutPromptNum:
-                    '#ansibrightred bold',
+                    Token.Number: '#007700',
+                    Token.Operator: 'noinherit',
+                    Token.String: '#BB6622',
+                    Token.Name.Function: '#2080D0',
+                    Token.Name.Class: 'bold #2080D0',
+                    Token.Name.Namespace: 'bold #2080D0',
+                    Token.Prompt: '#009900',
+                    Token.PromptNum: '#ansibrightgreen bold',
+                    Token.OutPrompt: '#990000',
+                    Token.OutPromptNum: '#ansibrightred bold',
                 })
 
-            elif legacy == 'nocolor':
-                style_cls = _NoStyle
+                # Hack: Due to limited color support on the Windows console
+                # the prompt colors will be wrong without this
+                if os.name == 'nt':
+                    style_overrides.update({
+                        Token.Prompt: '#ansidarkgreen',
+                        Token.PromptNum: '#ansigreen bold',
+                        Token.OutPrompt: '#ansidarkred',
+                        Token.OutPromptNum: '#ansired bold',
+                    })
+            elif legacy =='nocolor':
+                style_cls=_NoStyle
+            # hold up how is this missing from master
+            # elif legacy == 'nocolor':
+            #     style_cls = _NoStyle
+
                 style_overrides = {}
             else:
                 raise ValueError('Got unknown colors: ', legacy)
@@ -434,22 +420,26 @@ class TerminalInteractiveShell(InteractiveShell):
             return PygmentsTokens(self.prompts.in_prompt_tokens())
 
         from .ptutils import IPythonPTLexer
+        if self.editing_mode == 'emacs':
+            # with emacs mode the prompt is (usually) static, so we call only
+            # the function once. With VI mode it can toggle between [ins] and
+            # [nor] so we can't precompute.
+            # here I'm going to favor the default keybinding which almost
+            # everybody uses to decrease CPU usage.
+            # if we have issues with users with custom Prompts we can see how to
+            # work around this.
+            get_message = get_message()
+
         return {
-            'complete_in_thread':
-            False,
-            'lexer':
-            IPythonPTLexer(),
-            'reserve_space_for_menu':
-            self.space_for_menu,
-            'message':
-            get_message,
-            'prompt_continuation':
-            (lambda width, lineno, is_soft_wrap: PygmentsTokens(
-                self.prompts.continuation_prompt_tokens(width))),
-            'multiline':
-            True,
-            'complete_style':
-            self.pt_complete_style,
+                'complete_in_thread': False,
+                'lexer':IPythonPTLexer(),
+                'reserve_space_for_menu':self.space_for_menu,
+                'message': get_message,
+                'prompt_continuation': (
+                    lambda width, lineno, is_soft_wrap:
+                        PygmentsTokens(self.prompts.continuation_prompt_tokens(width))),
+                'multiline': True,
+                'complete_style': self.pt_complete_style,
 
             # Highlight matching brackets, but only when this setting is
             # enabled, and only when the DEFAULT_BUFFER has the focus.
@@ -458,10 +448,8 @@ class TerminalInteractiveShell(InteractiveShell):
                     processor=HighlightMatchingBracketProcessor(
                         chars='[](){}'),
                     filter=HasFocus(DEFAULT_BUFFER) & ~IsDone()
-                    & Condition(lambda: self.highlight_matching_brackets))
-            ],
-            'inputhook':
-            self.inputhook,
+                    & Condition(lambda: self.highlight_matching_brackets))],
+            'inputhook': self.inputhook,
         }
 
     def prompt_for_code(self):
@@ -506,7 +494,7 @@ class TerminalInteractiveShell(InteractiveShell):
         Gotta admit I'm very confused why this code exists at all though.::
 
         """
-        # super().init_alias()
+        super().init_alias()
 
         if os.name == 'posix':
             for cmd in ('clear', 'more', 'less', 'man'):
@@ -515,7 +503,7 @@ class TerminalInteractiveShell(InteractiveShell):
     def __init__(self, *args, **kwargs):
         """Why is this class built so that every individual method calls it's super?"""
         super().__init__(*args, **kwargs)
-        self.init_aliases()
+        # self.init_aliases()
         self.init_prompt_toolkit_cli()
         self.init_term_title()
         self.keep_running = True
@@ -575,7 +563,6 @@ class TerminalInteractiveShell(InteractiveShell):
                 self.restore_term_title()
 
     _inputhook = None
-
     def inputhook(self, context):
         if self._inputhook is not None:
             self._inputhook(context)
@@ -600,8 +587,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
         tokens = self.prompts.rewrite_prompt_tokens()
         if self.pt_app:
-            print_formatted_text(PygmentsTokens(tokens),
-                                 end='',
+            print_formatted_text(PygmentsTokens(tokens), end='',
                                  style=self.pt_app.app.style)
             print(cmd)
         else:

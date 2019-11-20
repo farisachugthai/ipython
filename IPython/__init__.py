@@ -1,4 +1,3 @@
-# encoding: utf-8
 """
 IPython: tools for interactive and parallel computing in Python.
 
@@ -59,31 +58,32 @@ sys.exit(1)
 # Imports
 # -----------------------------------------------------------------------------
 
-from .utils.frame import extract_module_locals
+import os
+import sys
+
+from IPython.core.display import *
+from IPython.lib.display import *
+
+from .core import release
+from .core.application import Application  # noqa F0401
+from .core.getipython import get_ipython  # noqa F0401
 # this forced a nose dependency on startup IME
 # from .testing import test  # noqa F0401
 from .core.interactiveshell import InteractiveShell  # noqa F0401
 from .terminal.embed import embed  # noqa F0401
-from .core.application import Application  # noqa F0401
-from .core import release
-from .core.getipython import get_ipython  # noqa F0401
-import os
-import sys
-
-# This used to be it's own module. Why?
-from IPython.core.display import *
-from IPython.lib.display import *
+from .utils.frame import extract_module_locals
 
 # -----------------------------------------------------------------------------
 # Setup everything
 # -----------------------------------------------------------------------------
 
 # Don't forget to also update setup.py when this changes!
-if sys.version_info < (3, 5):
+if sys.version_info < (3, 6):
     raise ImportError("""
-IPython 7.0+ supports Python 3.5 and above.
-When using Python 2.7, please install IPython 5.x LTS Long Term Support version.
-Python 3.3 and 3.4 were supported up to IPython 6.x.
+IPython 7.10+ supports Python 3.6 and above.
+When using Python 2.7, please install IPython 5.x LTS Long Term Support
+version. Python 3.3 and 3.4 were supported up to IPython 6.x.
+Python 3.5 was supported with IPython 7.0 to 7.9.
 
 See IPython `README.rst` file for more information:
 

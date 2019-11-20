@@ -31,19 +31,19 @@ formatting (which is the hard part).
 
 __all__ = ['ANSICodeColors', 'Parser', 'Colorable', 'available_themes']
 
-from io import StringIO
-from IPython.utils.coloransi import TermColors, InputTermColors, ColorScheme, ColorSchemeTable
-import tokenize
-import token
-import sys
-import os
 import keyword
+import os
+import sys
+import token
+import tokenize
+from io import StringIO
 
 import pygments
-
-from traitlets.config import Configurable
 from traitlets import Unicode
+from traitlets.config import Configurable
 
+from IPython.utils.coloransi import (ColorScheme, ColorSchemeTable,
+                                     InputTermColors, TermColors)
 
 # Imports
 
