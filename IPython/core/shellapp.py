@@ -1,26 +1,19 @@
-# encoding: utf-8
 """
 A mixin for :class:`~IPython.core.application.Application` classes that
 launch InteractiveShell instances, load extensions, etc.
 """
-
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
 import glob
 import os
+from pathlib import Path
 import sys
 
 from traitlets.config.application import boolean_flag
 from traitlets.config.configurable import Configurable
 from traitlets.config.loader import Config
 
-# Both globals are only used 1 time in the whole application...
-# Let's not do it that way.
-#from IPython.core.application import SYSTEM_CONFIG_DIRS, ENV_CONFIG_DIRS
-from IPython.core import pylabtools
-from IPython.utils.contexts import preserve_keys
-from IPython.utils.path import filefind
 from traitlets import (
     Unicode,
     Instance,
@@ -30,6 +23,11 @@ from traitlets import (
     observe,
 )
 from IPython.terminal import pt_inputhooks
+# Both globals are only used 1 time in the whole application...
+# Let's not do it that way.
+#from IPython.core.application import SYSTEM_CONFIG_DIRS, ENV_CONFIG_DIRS
+from IPython.core import pylabtools
+from IPython.utils.contexts import preserve_keys
 
 # -----------------------------------------------------------------------------
 # Aliases and Flags
@@ -45,21 +43,23 @@ shell_flags = {}
 
 addflag = lambda *args: shell_flags.update(boolean_flag(*args))
 
-addflag('autoindent', 'InteractiveShell.autoindent', 'Turn on autoindenting.',
-        'Turn off autoindenting.')
+addflag("autoindent", "InteractiveShell.autoindent", "Turn on autoindenting.",
+        "Turn off autoindenting.")
 addflag(
-    'automagic', 'InteractiveShell.automagic',
-    """Turn on the auto calling of magic commands. Type %%magic at the
-        IPython  prompt  for  more information.""",
-    'Turn off the auto calling of magic commands.')
-addflag('pdb', 'InteractiveShell.pdb',
+    "automagic", "InteractiveShell.automagic",
+    """
+Turn on the auto calling of magic commands. Type %%magic at the
+IPython prompt for more information.
+""",
+    "Turn off the auto calling of magic commands.")
+addflag("pdb", "InteractiveShell.pdb",
         "Enable auto calling the pdb debugger after every exception.",
         "Disable auto calling the pdb debugger after every exception.")
-addflag('pprint', 'PlainTextFormatter.pprint',
+addflag("pprint", "PlainTextFormatter.pprint",
         "Enable auto pretty printing of results.",
         "Disable auto pretty printing of results.")
 addflag(
-    'color-info', 'InteractiveShell.color_info',
+    "color-info", "InteractiveShell.color_info",
     """IPython can display information about objects via a set of functions,
     and optionally can use colors for this, syntax highlighting
     source code and various other elements. This is on by default, but can cause
@@ -67,38 +67,38 @@ addflag(
     colours.""", "Disable using colors for info related things.")
 
 nosep_config = Config()
-nosep_config.InteractiveShell.separate_in = ''
-nosep_config.InteractiveShell.separate_out = ''
-nosep_config.InteractiveShell.separate_out2 = ''
+nosep_config.InteractiveShell.separate_in = ""
+nosep_config.InteractiveShell.separate_out = ""
+nosep_config.InteractiveShell.separate_out2 = ""
 
-shell_flags['nosep'] = (nosep_config, "Eliminate all spacing between prompts.")
-shell_flags['pylab'] = ({
-    'InteractiveShellApp': {
-        'pylab': 'auto'
+shell_flags["nosep"] = (nosep_config, "Eliminate all spacing between prompts.")
+shell_flags["pylab"] = ({
+    "InteractiveShellApp": {
+        "pylab": "auto"
     }
 }, """Pre-load matplotlib and numpy for interactive use with
     the default matplotlib backend.""")
-shell_flags['matplotlib'] = ({
-    'InteractiveShellApp': {
-        'matplotlib': 'auto'
+shell_flags["matplotlib"] = ({
+    "InteractiveShellApp": {
+        "matplotlib": "auto"
     }
 }, """Configure matplotlib for interactive use with
     the default matplotlib backend.""")
 
-# it's possible we don't want short aliases for *all* of these:
+# it"s possible we don"t want short aliases for *all* of these:
 shell_aliases = dict(
-    autocall='InteractiveShell.autocall',
-    colors='InteractiveShell.colors',
-    logfile='InteractiveShell.logfile',
-    logappend='InteractiveShell.logappend',
-    c='InteractiveShellApp.code_to_run',
-    m='InteractiveShellApp.module_to_run',
-    ext='InteractiveShellApp.extra_extension',
-    gui='InteractiveShellApp.gui',
-    pylab='InteractiveShellApp.pylab',
-    matplotlib='InteractiveShellApp.matplotlib',
+    autocall="InteractiveShell.autocall",
+    colors="InteractiveShell.colors",
+    logfile="InteractiveShell.logfile",
+    logappend="InteractiveShell.logappend",
+    c="InteractiveShellApp.code_to_run",
+    m="InteractiveShellApp.module_to_run",
+    ext="InteractiveShellApp.extra_extension",
+    gui="InteractiveShellApp.gui",
+    pylab="InteractiveShellApp.pylab",
+    matplotlib="InteractiveShellApp.matplotlib",
 )
-shell_aliases['cache-size'] = 'InteractiveShell.cache_size'
+shell_aliases["cache-size"] = "InteractiveShell.cache_size"
 
 
 # -----------------------------------------------------------------------------
@@ -115,28 +115,44 @@ class InteractiveShellApp(Configurable):
     The following methods should be called by the :meth:`initialize` method
     of the subclass:
 
-      - :meth:`init_path`
-      - :meth:`init_shell` (to be implemented by the subclass)
-      - :meth:`init_gui_pylab`
-      - :meth:`init_extensions`
-      - :meth:`init_code`
+    Methods
+    -------
+    - :meth:`init_path`
+
+    - :meth:`init_shell` (to be implemented by the subclass)
+
+    - :meth:`init_gui_pylab`
+
+    - :meth:`init_extensions`
+
+    - :meth:`init_code`
+
+    Notes
+    -----
+    :meth:`_run_startup_files` utilizes the newly minted :meth:`_get_system_config_dirs` to determine
+    the previously global var ``SYSTEM_CONFIG_DIRS``.
+
+    Raises
+    ------
+    :exc:`NotImplementedError` for subclasses that don't define :meth:`init_shell`.
+
     """
     extensions = List(
-        Unicode(),
+        Unicode(), allow_none=True,
         help="A list of dotted module names of IPython extensions to load."
     ).tag(config=True)
 
     extra_extension = Unicode(
-        '', help="dotted module name of an IPython extension to load.").tag(
-        config=True)
+        '', allow_none=True,
+        help="dotted module name of an IPython extension to load."
+    ).tag(config=True)
 
     reraise_ipython_extension_failures = Bool(
         False,
-        help="Reraise exceptions encountered loading IPython extensions?",
+        help="Reraise exceptions encountered loading IPython extensions.",
     ).tag(config=True)
 
     # Extensions that are always loaded (not configurable)
-    # WHY IS STOREMAGIC HARDCODED IN HERE
     default_extensions = List(Unicode()).tag(config=False)
 
     hide_initial_ns = Bool(
@@ -145,7 +161,7 @@ class InteractiveShellApp(Configurable):
         be hidden from tools like %who?""").tag(config=True)
 
     exec_files = List(
-        Unicode(),
+        Unicode(), allow_none=True,
         help="""List of files to run at IPython startup.""").tag(config=True)
 
     exec_PYTHONSTARTUP = Bool(
@@ -156,7 +172,7 @@ class InteractiveShellApp(Configurable):
     file_to_run = Unicode('', help="""A file to be run""").tag(config=True)
 
     exec_lines = List(
-        Unicode(),
+        Unicode(), allow_none=True,
         help="""lines of code to run at IPython startup.""").tag(config=True)
 
     code_to_run = Unicode(
@@ -318,7 +334,25 @@ class InteractiveShellApp(Configurable):
                              exc_info=True)
 
     def init_code(self):
-        """run the pre-flight code, specified via exec_lines"""
+        """Run the pre-flight code, specified via ``exec_lines``.
+
+        This method is particularly important because it calls
+        :meth:`_run_startup_files`, :meth:`_run_exec_lines`, and
+        :meth:`_run_exec_files`.
+
+        As a result, it's generally always in the stack trace when code breaks
+        when a user is trying new startup code.
+
+        In addition, this method hides variables that are defined in startup
+        from magics like `%who`.
+
+        Afterwards, it ALSO calls :meth:`_run_cmd_line_code`
+        and :meth:`_run_module`!
+
+        Admittedly though, there's hardly a noticeable difference between any
+        of those methods and they could probably be refactored to simply be
+        1 or 2 methods with some parameters it needs to check.
+        """
         self._run_startup_files()
         self._run_exec_lines()
         self._run_exec_files()
@@ -332,7 +366,7 @@ class InteractiveShellApp(Configurable):
         self._run_cmd_line_code()
         self._run_module()
 
-        # flush output, so itwon't be attached to the first cell
+        # flush output, so it won't be attached to the first cell
         sys.stdout.flush()
         sys.stderr.flush()
 
@@ -341,7 +375,8 @@ class InteractiveShellApp(Configurable):
         if not self.exec_lines:
             return
         try:
-            self.log.debug("Running code from IPythonApp.exec_lines...")
+            self.log.info(
+                "Running code from IPythonApp.exec_lines. \n{}".format(self.exec_lines))
             for line in self.exec_lines:
                 try:
                     self.log.info("Running code in user namespace: %s" % line)
@@ -356,6 +391,15 @@ class InteractiveShellApp(Configurable):
             self.shell.showtraceback()
 
     def _exec_file(self, fname, shell_futures=False):
+        """Executes files with :func:`IPython.utils.path.filefind`.
+
+        Parameters
+        ----------
+        fname : str (os.pathlike)
+            Filename to execute
+
+        """
+        from IPython.utils.path import filefind
         try:
             full_filename = filefind(fname, [u'.', self.ipython_dir])
         except IOError:
@@ -393,12 +437,26 @@ class InteractiveShellApp(Configurable):
         ----------
         :envvar:`PYTHONSTARTUP` : str
             Checks envvar for startup files.
+        :attr:`exec_PYTHONSTARTUP` : str
+            Unicode str for a path to files to execute.
+
+        Notes
+        ------
+        This iterates over the **SORTED** directories in
+        :attr:`profile_dir.startup_dir`. This is why the IPython help
+        tells you to prepend with a number! However, it'd be easier to import
+        and reuse those modules if it doesn't start with a number, so be aware
+        that that is allowed and handled correctly.
+
         """
         SYSTEM_CONFIG_DIRS = self._get_system_config_dirs()
-        startup_dirs = [self.profile_dir.startup_dir] + [
-            os.path.join(p, 'startup')
-            for p in SYSTEM_CONFIG_DIRS
-        ]
+        if SYSTEM_CONFIG_DIRS:
+            startup_dirs = [self.profile_dir.startup_dir] + [
+                os.path.join(p, 'startup')
+                for p in SYSTEM_CONFIG_DIRS
+            ]
+        else:
+            startup_dirs = [self.profile_dir.startup_dir]
         startup_files = []
 
         if self.exec_PYTHONSTARTUP and os.environ.get('PYTHONSTARTUP', False) and \
@@ -418,20 +476,21 @@ class InteractiveShellApp(Configurable):
         if not startup_files:
             return
 
-        self.log.debug("Running startup files from %s...", startup_dir)
+        self.log.info("Running startup files from %s...", startup_dir)
         try:
             for fname in sorted(startup_files):
                 self._exec_file(fname)
         except BaseException:
             self.log.warning("Unknown error in handling startup files:")
-            # self.shell.showtraceback()
+            self.shell.showtraceback()
 
     def _run_exec_files(self):
         """Run files from IPythonApp.exec_files"""
         if not self.exec_files:
             return
 
-        self.log.debug("Running files in IPythonApp.exec_files...")
+        self.log.info(
+            "Running files in IPythonApp.exec_files. {}".format(self.exec_files))
         try:
             for fname in self.exec_files:
                 self._exec_file(fname)
@@ -453,6 +512,7 @@ class InteractiveShellApp(Configurable):
                     "Error in executing line in user namespace: %s" % line)
                 self.shell.showtraceback()
                 if not self.interact:
+                    self.log.critical("IPython not interactive! Exiting.")
                     self.exit(1)
 
         # Like Python itself, ignore the second if the first of these is
@@ -466,6 +526,7 @@ class InteractiveShellApp(Configurable):
             except BaseException:
                 self.shell.showtraceback(tb_offset=4)
                 if not self.interact:
+                    self.log.critical("IPython not interactive! Exiting.")
                     self.exit(1)
 
     def _run_module(self):

@@ -124,23 +124,20 @@ class DisplayFormatter(Configurable):
         Returns
         -------
         (format_dict, metadata_dict) : tuple of two dicts
-
-            format_dict is a dictionary of key/value pairs, one of each format that was
-            generated for the object. The keys are the format types, which
-            will usually be MIME type strings and the values and JSON'able
-            data structure containing the raw data for the representation in
-            that format.
-
-            metadata_dict is a dictionary of metadata about each mime-type output.
-            Its keys will be a strict subset of the keys in format_dict.
+            format_dict is a dictionary of key/value pairs, one of each format
+            that was generated for the object. The keys are the format types,
+            which will usually be MIME type strings and the values and
+            JSON'able data structure containing the raw data for the
+            representation in that format.
+            metadata_dict is a dictionary of metadata about each mime-type output. It's keys will be a strict subset of the keys in
+            ``format_dict``.
 
         Notes
         -----
-
-            If an object implement `_repr_mimebundle_` as well as various
-            `_repr_*_`, the data returned by `_repr_mimebundle_` will take
-            precedence and the corresponding `_repr_*_` for this mimetype will
-            not be called.
+        If an object implement `_repr_mimebundle_` as well as various
+        `_repr_*_`, the data returned by `_repr_mimebundle_` will take
+        precedence and the corresponding `_repr_*_` for this mimetype will
+        not be called.
 
         """
         format_dict = {}
@@ -600,14 +597,23 @@ class PlainTextFormatter(BaseFormatter):
                             p.breakable()
                         p.pretty(field)
                     p.end_group(7, '])')
+
+    Attributes
+    ----------
+    ``format_type`` : str
+    enabled : bool
+    ``max_seq_length``
+    ``print_method``
+    pprint
+
+    .. versionchanged:: 7.10.0
+
+        Moved all the inline comments to arguments of the ``help`` parameter.
+
     """
+    format_type = Unicode('text/plain', help="The format type of data returned.")
 
-    # The format type of data returned.
-    format_type = Unicode('text/plain')
-
-    # This subclass ignores this attribute as it always need to return
-    # something.
-    enabled = Bool(True).tag(config=False)
+    enabled = Bool(True, help="This subclass ignores this attribute as it always need to return something.").tag(config=False)
 
     max_seq_length = Integer(
         pretty.MAX_SEQ_LENGTH,

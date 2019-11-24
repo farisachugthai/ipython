@@ -260,7 +260,6 @@ class SeparateUnicode(Unicode):
 
     This is a Unicode based trait that converts '0'->'' and ``'\\n'->'\n'``.
     """
-
     def validate(self, obj, value):
         if value == '0':
             value = ''
@@ -390,7 +389,8 @@ class InteractiveShell(SingletonConfigurable):
     loop_runner = Any(
         default_value="IPython.core.interactiveshell._asyncio_runner",
         allow_none=True,
-        help="""Select the loop runner that will be used to execute top-level asynchronous code"""
+        help=
+        """Select the loop runner that will be used to execute top-level asynchronous code"""
     ).tag(config=True)
 
     @default('loop_runner')
@@ -515,7 +515,8 @@ class InteractiveShell(SingletonConfigurable):
 
     input_transformers_post = List(
         [],
-        help="A list of string input transformers, to be applied after IPython's "
+        help=
+        "A list of string input transformers, to be applied after IPython's "
         "own input transformations.")
 
     logstart = Bool(False,
@@ -1105,7 +1106,7 @@ class InteractiveShell(SingletonConfigurable):
             alternative = hooks.deprecated[name]
             warn("Hook {} is deprecated. Use {} instead.".format(
                 name, alternative),
-                stacklevel=2)
+                 stacklevel=2)
 
         if not dp:
             dp = hooks.CommandChainDispatcher()
@@ -1415,7 +1416,8 @@ class InteractiveShell(SingletonConfigurable):
         if user_module is None:
             user_module = types.ModuleType(
                 "__main__",
-                doc="Automatically created module for IPython interactive environment"
+                doc=
+                "Automatically created module for IPython interactive environment"
             )
 
         # We must ensure that __builtin__ (without the final 's') is always
@@ -1485,10 +1487,16 @@ class InteractiveShell(SingletonConfigurable):
         http://mail.python.org/pipermail/python-dev/2001-April/014068.html
 
         """
-        ns = {'_ih' : self.history_manager.input_hist_parsed, '_oh': self.history_manager.output_hist,
-              '_dh' : self.history_manager.dir_hist, 'In': self.history_manager.input_hist_parsed,
-              'Out' : self.history_manager.output_hist, 'get_ipython': self.get_ipython, 'exit': self.exiter,
-              'quit': self.exiter}
+        ns = {
+            '_ih': self.history_manager.input_hist_parsed,
+            '_oh': self.history_manager.output_hist,
+            '_dh': self.history_manager.dir_hist,
+            'In': self.history_manager.input_hist_parsed,
+            'Out': self.history_manager.output_hist,
+            'get_ipython': self.get_ipython,
+            'exit': self.exiter,
+            'quit': self.exiter
+        }
 
         # make global variables for user access to the histories
 
@@ -1982,16 +1990,31 @@ class InteractiveShell(SingletonConfigurable):
 
             We should really consider offloading this. Debugger?
 
+        Also note that the call to AutoFormattedTB is different than its init
+        signature. From ultratb.:
+
+            def __init__(self,
+                        mode='Plain',
+                        color_scheme='Linux',
+                        call_pdb=False,
+                        ostream=None,
+                        tb_offset=0,
+                        long_header=False,
+                        include_vars=False,
+                        check_cache=None,
+                        debugger_cls=None,
+                        parent=None,
+                        config=None):
+
         """
         from IPython.core.ultratb import SyntaxTB, AutoFormattedTB
-        self.SyntaxTB = SyntaxTB(
-            color_scheme='NoColor',
-            parent=self,
-            config=self.config)
+        self.SyntaxTB = SyntaxTB(color_scheme='Linux',
+                                 parent=self,
+                                 config=self.config)
 
         self.InteractiveTB = AutoFormattedTB(
             mode='Plain',
-            color_scheme='NoColor',
+            color_scheme='Linux',
             tb_offset=1,
             check_cache=check_linecache_ipython,
             debugger_cls=self.debugger_cls,
@@ -3694,9 +3717,6 @@ class InteractiveShell(SingletonConfigurable):
 
     active_eventloop = None
 
-    def enable_gui(self, gui=None):
-        raise NotImplementedError('Implement enable_gui in a subclass')
-
     def enable_matplotlib(self, gui=None):
         """Enable interactive matplotlib and inline figure support.
 
@@ -3757,6 +3777,11 @@ class InteractiveShell(SingletonConfigurable):
         This method only adds preloading the namespace to
         InteractiveShell.enable_matplotlib.
 
+        We want to prevent the loading of pylab to pollute the user's
+        amespace as shown by the %who* magics, so we execute the activation
+        code in an empty namespace, and we update *both* user_ns and
+        user_ns_hidden with this information.
+
         Parameters
         ----------
         gui : optional, string
@@ -3778,10 +3803,6 @@ class InteractiveShell(SingletonConfigurable):
 
         gui, backend = self.enable_matplotlib(gui)
 
-        # We want to prevent the loading of pylab to pollute the user's
-        # namespace as shown by the %who* magics, so we execute the activation
-        # code in an empty namespace, and we update *both* user_ns and
-        # user_ns_hidden with this information.
         ns = {}
         import_pylab(ns, import_all)
         # warn about clobbered names
@@ -3831,7 +3852,7 @@ class InteractiveShell(SingletonConfigurable):
         """Make a new tempfile and return its filename.
 
         This makes a call to tempfile.mkstemp (created in a tempfile.mkdtemp),
-        but it registers the created filename internally so ipython cleans it up
+        but it registers the created filename internally so IPython cleans it up
         at exit time.
 
         Parameters
@@ -3862,7 +3883,7 @@ class InteractiveShell(SingletonConfigurable):
         return ask_yes_no(prompt, default, interrupt)
 
     def show_usage(self):
-        """Show a usage message"""
+        """Show a usage message using page.page and :func:`usage.interactive_usage`."""
         page.page(IPython.core.usage.interactive_usage)
 
     def extract_input_lines(self, range_str, raw=False):
@@ -3882,7 +3903,6 @@ class InteractiveShell(SingletonConfigurable):
 
         Notes
         -----
-
         Slices can be described with two notations:
 
         * ``N:M`` -> standard python form, means including items N...(M-1).
@@ -3905,18 +3925,27 @@ class InteractiveShell(SingletonConfigurable):
         Parameters
         ----------
         target : str
-            A string specifying code to retrieve. This will be tried respectively
-            as: ranges of input history (see %history for syntax), url,
-            corresponding .py file, filename, or an expression evaluating to a
-            string or Macro in the user namespace.
+            A string specifying code to retrieve. This will be tried
+            respectively as:
+
+            * ranges of input history (see %history for syntax),
+
+            * url,
+
+            * corresponding .py file,
+
+            * filename
+
+            * or an expression evaluating to a string or Macro in the user
+              namespace.
 
         raw : bool
             If true (default), retrieve raw history. Has no effect on the other
             retrieval mechanisms.
 
         py_only : bool (default False)
-            Only try to fetch python code, do not try alternative methods to decode file
-            if unicode fails.
+            Only try to fetch python code, do not try alternative methods to
+            decode file if unicode fails.
 
         Returns
         -------
@@ -3987,7 +4016,7 @@ class InteractiveShell(SingletonConfigurable):
     # Things related to IPython exiting
     # -------------------------------------------------------------------------
     def atexit_operations(self):
-        """This will be executed at the time of exit.
+        """Execute at the time of exit.
 
         Cleanup operations and saving of persistent data that is done
         unconditionally by IPython should be performed here.
@@ -4032,6 +4061,11 @@ class InteractiveShell(SingletonConfigurable):
 class InteractiveShellABC(metaclass=abc.ABCMeta):
     """An abstract base class for InteractiveShell."""
 
+    @abc.abstractmethod
+    def enable_gui(self, gui=None):
+        """I didn't entirely understand why this was in the Interactive Shell and this had no methods."""
+        raise NotImplementedError('Implement enable_gui in a subclass')
+
+
 
 InteractiveShellABC.register(InteractiveShell)
-

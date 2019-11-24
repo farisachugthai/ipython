@@ -15,8 +15,7 @@ from IPython.utils import py3compat
 
 
 def get_pasted_lines(sentinel, l_input=py3compat.input, quiet=False):
-    """ Yield pasted lines until the user enters the given sentinel value.
-    """
+    """Yield pasted lines until the user enters the given sentinel value."""
     if not quiet:
         print("Pasting code; enter '%s' alone on the line to stop or use Ctrl-D."
               % sentinel)
@@ -63,8 +62,7 @@ class TerminalMagics(Magics):
         return strip_email_quotes('\n'.join(lines))
 
     def rerun_pasted(self, name='pasted_block'):
-        """ Rerun a previously pasted command.
-        """
+        """Rerun a previously pasted command."""
         b = self.shell.user_ns.get(name)
 
         # Sanity checks
@@ -79,7 +77,7 @@ class TerminalMagics(Magics):
         self.shell.run_cell(b)
 
     @line_magic
-    def autoindent(self, parameter_s=''):
+    def autoindent(self):
         """Toggle autoindent on/off (deprecated)"""
         self.shell.set_autoindent()
         print("Automatic indentation is:", ['OFF',
@@ -200,7 +198,6 @@ class TerminalMagics(Magics):
     if sys.platform == 'win32':
 
         @line_magic
-        def cls(self, s):
-            """Clear screen.
-            """
+        def cls(self):
+            """Clear screen."""
             os.system("cls")

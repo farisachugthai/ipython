@@ -12,23 +12,23 @@ from IPython.utils.decorators import flag_calls
 # If user specifies a GUI, that dictates the backend, otherwise we read the
 # user's mpl default from the mpl rc structure
 backends = {
-    'tk': 'TkAgg',
-    'gtk': 'GTKAgg',
-    'gtk3': 'GTK3Agg',
-    'wx': 'WXAgg',
-    'qt4': 'Qt4Agg',
-    'qt5': 'Qt5Agg',
-    'qt': 'Qt5Agg',
-    'osx': 'MacOSX',
-    'nbagg': 'nbAgg',
+    'tk'      : 'TkAgg',
+    'gtk'     : 'GTKAgg',
+    'gtk3'    : 'GTK3Agg',
+    'wx'      : 'WXAgg',
+    'qt4'     : 'Qt4Agg',
+    'qt5'     : 'Qt5Agg',
+    'qt'      : 'Qt5Agg',
+    'osx'     : 'MacOSX',
+    'nbagg'   : 'nbAgg',
     'notebook': 'nbAgg',
-    'agg': 'agg',
-    'svg': 'svg',
-    'pdf': 'pdf',
-    'ps': 'ps',
-    'inline': 'module://ipykernel.pylab.backend_inline',
-    'ipympl': 'module://ipympl.backend_nbagg',
-    'widget': 'module://ipympl.backend_nbagg',
+    'agg'     : 'agg',
+    'svg'     : 'svg',
+    'pdf'     : 'pdf',
+    'ps'      : 'ps',
+    'inline'  : 'module://ipykernel.pylab.backend_inline',
+    'ipympl'  : 'module://ipympl.backend_nbagg',
+    'widget'  : 'module://ipympl.backend_nbagg',
 }
 
 # We also need a reverse backends2guis mapping that will properly choose which
@@ -51,6 +51,7 @@ del backend2gui['svg']
 del backend2gui['pdf']
 del backend2gui['ps']
 del backend2gui['module://ipykernel.pylab.backend_inline']
+
 
 # -----------------------------------------------------------------------------
 # Matplotlib utilities
@@ -116,10 +117,10 @@ def print_figure(fig, fmt='png', bbox_inches='tight', **kwargs):
 
     # build keyword args
     kw = {
-        "format": fmt,
-        "facecolor": fig.get_facecolor(),
-        "edgecolor": fig.get_edgecolor(),
-        "dpi": dpi,
+        "format"     : fmt,
+        "facecolor"  : fig.get_facecolor(),
+        "edgecolor"  : fig.get_edgecolor(),
+        "dpi"        : dpi,
         "bbox_inches": bbox_inches,
     }
     # **kwargs get higher priority

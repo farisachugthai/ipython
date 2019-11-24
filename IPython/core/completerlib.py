@@ -313,12 +313,12 @@ def magic_run_completer(self, event):
         matches = [
             f.replace('\\', '/') + ('/' if isdir(f) else '')
 
-    # This works in all versions of python.  While 2.5 has
-    # pkgutil.walk_packages(), that particular routine is fairly dangerous,
-    # since it imports *EVERYTHING* on sys.path.  That is: a) very slow b) full
-    # of possibly problematic side effects.
-    # This search the folders in the sys.path for available modules.
-for f in lglob(relpath + '*')
+            # This works in all versions of python.  While 2.5 has
+            # pkgutil.walk_packages(), that particular routine is fairly dangerous,
+            # since it imports *EVERYTHING* on sys.path.  That is: a) very slow b) full
+            # of possibly problematic side effects.
+            # This search the folders in the sys.path for available modules.
+            for f in lglob(relpath + '*')
         ]
     else:
         dirs = [

@@ -56,8 +56,9 @@ api:
 	mkdir -p build/html build/doctrees
 
 
+# In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here
 html:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) --keep-going -w sphinx.log source build/html
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) --keep-going -w sphinx.log --no-color source build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 

@@ -173,18 +173,19 @@ class CommandChainDispatcher:
         this function, and return the result of first func that didn't raise
         :exc:`TryNext`.
         """
-        last_exc = TryNext()
         for prio, cmd in self.chain:
             # print "prio",prio,"cmd",cmd #dbg
             try:
                 return cmd(*args, **kw)
             except TryNext as exc:
-                last_exc = exc
-        # if no function will accept it, raise TryNext up to the caller
-        raise last_exc
+                # if no function will accept it, raise TryNext up to the caller
+                raise last_exc
 
     def __str__(self):
         return str(self.chain)
+
+    def __repr__(self):
+        return '{!r}'.format(self.__class__.__name__)
 
     def add(self, func, priority=0):
         """ Add a func to the cmd chain with given priority """
@@ -192,7 +193,7 @@ class CommandChainDispatcher:
         self.chain.sort(key=lambda x: x[0])
 
     def __iter__(self):
-        """ Return all objects in chain.
+        """Return all objects in chain.
 
         Handy if the objects are not callable.
         """
@@ -200,7 +201,7 @@ class CommandChainDispatcher:
 
 
 def shutdown_hook(self):
-    """ default shutdown hook
+    """Default shutdown hook.
 
     Typically, shutdown hooks should raise TryNext so all shutdown ops are done
     """
@@ -210,36 +211,32 @@ def shutdown_hook(self):
 
 
 def late_startup_hook(self):
-    """ Executed after ipython has been constructed and configured
-
-    """
+    """Executed after ipython has been constructed and configured."""
     # print "default startup hook ok" # dbg
 
 
 def show_in_pager(self, data, start, screen_lines):
-    """ Run a string through pager """
+    """Run a string throughpager."""
     # raising TryNext here will use the default paging functionality
     raise TryNext
 
 
 def pre_prompt_hook(self):
-    """ Run before displaying the next prompt
+    """Run before displaying the next prompt
 
     Use this e.g. to display output from asynchronous operations (in order
-    to not mess up text entry)
+    to not mess up text entry).
     """
-
     return None
 
 
 def pre_run_code_hook(self):
-    """ Executed before running the (prefiltered) code in IPython """
+    """Executed before running the (prefiltered) code in IPython."""
     return None
 
 
 def clipboard_get(self):
-    """ Get text from the clipboard.
-    """
+    """Get text from the clipboard."""
     from IPython.lib.clipboard import (
         osx_clipboard_get, tkinter_clipboard_get, win32_clipboard_get)
     if sys.platform == 'win32':
@@ -256,5 +253,4 @@ def clipboard_get(self):
 
 
 def synchronize_with_editor(self, filename, linenum, column):
-    """I genuinely don't understand how this function is only a pass."""
     pass

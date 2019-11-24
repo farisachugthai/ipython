@@ -55,35 +55,6 @@ EntryPoint(name='ipython3', value='IPython:start_ipython', group='console_script
   Distributed under the terms of the Modified BSD License.
 
 """
-# **Python version check**
-#
-# This check is also made in IPython/__init__, don't forget to update both when
-# changing Python version requirements.
-if sys.version_info < (3, 6):
-    pip_message = 'This may be due to an out of date pip. Make sure you have pip >= 9.0.1.'
-    try:
-        import pip
-        pip_version = tuple([int(x) for x in pip.__version__.split('.')[:3]])
-        if pip_version < (9, 0, 1) :
-            pip_message = 'Your pip version is out of date, please install pip >= 9.0.1. '\
-            'pip {} detected.'.format(pip.__version__)
-        else:
-            # pip is new enough - it must be something else
-            pip_message = ''
-    except Exception:
-        pass
-   # The full license is in the file COPYING.rst, distributed with this software.
-
-# -----------------------------------------------------------------------------
-    error = """
-IPython 7.10+ supports Python 3.6 and above, following NEP 29.
-When using Python 2.7, please install IPython 5.x LTS Long Term Support version.
-Python 3.3 and 3.4 were supported up to IPython 6.x.
-Python 3.5 was supported with IPython 7.0 to 7.9.
-"""
-
-# haven't been py2 compatible in some time
-# from __future__ import print_function
 
 import os
 import sys
@@ -93,8 +64,6 @@ import sys
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
 
-# from distutils.command.sdist import sdist
-from setuptools.build_meta import build_sdist
 
 from distutils.command.install_data import install_data
 from distutils.util import change_root, convert_path
@@ -106,9 +75,11 @@ except ImportError:
     importlib_metadata = None
 
 # Just checking i'm allowed to make setuptools a hard dependency right?
-# Because everythign we use has it as a dependency so there's no way a user
+# Because everything we use has it as a dependency so there's no way a user
 # doesn't have it
 from setuptools import find_packages, setup, build_meta
+# from distutils.command.sdist import sdist
+from setuptools.build_meta import build_sdist
 
 isfile = os.path.isfile
 pjoin = os.path.join
@@ -123,16 +94,6 @@ def execfile(fname, globs, locs=None):
 
 # release.py contains version, authors, license, url, keywords, etc.
 execfile(pjoin(repo_root, 'IPython', 'core', 'release.py'), globals())
-
-# ------------------------------------------------------------------------------
-# Handle OS specific things
-# ------------------------------------------------------------------------------
-
-# literally where is this used?
-# if os.name in ('nt', 'dos'):
-#     os_name = 'windows'
-# else:
-#     os_name = os.name
 
 # ------------------------------------------------------------------------------
 # Things related to the IPython documentation
@@ -238,10 +199,6 @@ extras_require = dict(
     nbformat=['nbformat'],
     notebook=['notebook', 'ipywidgets'],
     nbconvert=['nbconvert'],
-    parallel = ['ipyparallel'],
-    qtconsole = ['qtconsole'],
-    doc = ['Sphinx>=1.3'],
-    test=['nose>=0.10.1', 'requests', 'testpath', 'pygments', 'nbformat', 'ipykernel', 'numpy>=1.14'],
 )
 
 install_requires = [

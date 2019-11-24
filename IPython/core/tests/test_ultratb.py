@@ -152,6 +152,7 @@ class NestedGenExprTestCase(unittest.TestCase):
     https://github.com/ipython/ipython/issues/8293
     https://github.com/ipython/ipython/issues/8205
     """
+
     def test_nested_genexpr(self):
         code = dedent("""\
             class SpecificException(Exception):

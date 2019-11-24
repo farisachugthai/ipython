@@ -108,6 +108,7 @@ ipython profile list -h    # show the help string for the list subcommand
 ipython locate profile foo # print the path to the directory for profile 'foo'
 """
 
+
 # -----------------------------------------------------------------------------
 # Profile Application Class (for `ipython profile` subcommand)
 # -----------------------------------------------------------------------------
@@ -168,14 +169,14 @@ class ProfileList(Application):
 
     aliases = Dict({
         'ipython-dir': 'ProfileList.ipython_dir',
-        'log-level': 'Application.log_level',
+        'log-level'  : 'Application.log_level',
     })
     flags = Dict(
         dict(debug=({
-            'Application': {
-                'log_level': 0
-            }
-        }, "Set Application.log_level to 0, maximizing log output.")))
+                        'Application': {
+                            'log_level': 0
+                        }
+                    }, "Set Application.log_level to 0, maximizing log output.")))
 
     ipython_dir = Unicode(get_ipython_dir(),
                           help="""
@@ -230,16 +231,16 @@ create_flags.update(base_flags)
 # other apps
 create_flags.pop('init')
 create_flags['reset'] = ({
-    'ProfileCreate': {
-        'overwrite': True
-    }
-}, "reset config files in this profile to the defaults.")
+                             'ProfileCreate': {
+                                 'overwrite': True
+                             }
+                         }, "reset config files in this profile to the defaults.")
 create_flags['parallel'] = ({
-    'ProfileCreate': {
-        'parallel': True
-    }
-}, "Include the config files for parallel "
-    "computing apps (ipengine, ipcontroller, etc.)")
+                                'ProfileCreate': {
+                                    'parallel': True
+                                }
+                            }, "Include the config files for parallel "
+                               "computing apps (ipengine, ipcontroller, etc.)")
 
 
 class ProfileCreate(BaseIPythonApplication):
@@ -262,12 +263,6 @@ class ProfileCreate(BaseIPythonApplication):
     auto_create = Bool(True)
 
     def _log_format_default(self):
-        """Dude look at how pathetic this default formatting message is.
-
-        >>> return "[%(name)s] %(message)s"
-
-        Like ffs we should encourage people to subclass this and overwrite it.
-        """
         return "[ %(created)f : %(name)s : %(highlevel)s : %(message)s : ]"
         # return "[%(name)s] %(message)s"
 
@@ -277,7 +272,7 @@ class ProfileCreate(BaseIPythonApplication):
 
     parallel = Bool(
         False, help="whether to include parallel computing config files").tag(
-            config=True)
+        config=True)
 
     @observe('parallel')
     def _parallel_changed(self, change):
@@ -330,13 +325,12 @@ class ProfileCreate(BaseIPythonApplication):
         try:
             app = import_module(app_path)
         except ImportError as e:
-            self.log.info("Couldn't import %s, config file will be excluded"
-                          "The cause of the ImportError was %s", % e, e.__cause__())
-        # why catch this?
-        # except Exception:
-        #     self.log.warning('Unexpected error importing %s',
-        #                      name,
-        #                      exc_info=True)
+            self.log.info("""Couldn't import {}, config file will be excluded
+                          The cause of the ImportError was {}""".format(e, e.__cause__()))
+        except Exception:
+            self.log.warning('Unexpected error importing %s',
+                             name,
+                             exc_info=True)
         return app
 
     def init_config_files(self):

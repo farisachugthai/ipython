@@ -109,19 +109,23 @@ addflag('term-title', 'TerminalInteractiveShell.term_title',
         "Disable auto setting the terminal title.")
 
 
-classic_config = Config()
-classic_config.InteractiveShell.cache_size = 0
-classic_config.PlainTextFormatter.pprint = False
-classic_config.TerminalInteractiveShell.prompts_class = 'IPython.terminal.prompts.ClassicPrompts'
-classic_config.InteractiveShell.separate_in = ''
-classic_config.InteractiveShell.separate_out = ''
-classic_config.InteractiveShell.separate_out2 = ''
-classic_config.InteractiveShell.colors = 'NoColor'
-classic_config.InteractiveShell.xmode = 'Plain'
+def setup_classic_config():
+    """No point in these being globals if you don't use the classic prompt."""
+    classic_config = Config()
+    classic_config.InteractiveShell.cache_size = 0
+    classic_config.PlainTextFormatter.pprint = False
+    classic_config.TerminalInteractiveShell.prompts_class = 'IPython.terminal.prompts.ClassicPrompts'
+    classic_config.InteractiveShell.separate_in = ''
+    classic_config.InteractiveShell.separate_out = ''
+    classic_config.InteractiveShell.separate_out2 = ''
+    classic_config.InteractiveShell.colors = 'NoColor'
+    classic_config.InteractiveShell.xmode = 'Plain'
+    return classic_config
+
 
 # JFC it was hard getting this to be a recognizable data structure and format it well
 frontend_flags = {
-    'classic': (classic_config, "Gives IPython a similar feel to the classic Python prompt."),
+    'classic': (setup_classic_config(), "Gives IPython a similar feel to the classic Python prompt."),
     'quick': ({'TerminalIPythonApp': {'quick': True}}, "Enable quick startup with no config files."),
     'i': ({'TerminalIPythonApp': {'force_interact': True}}, """
 If running code from the command line, become interactive afterwards.
@@ -231,34 +235,14 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             LoggingMagics,
         ]
 
-    deprecated_subcommands = dict(
-        qtconsole=('qtconsole.qtconsoleapp.JupyterQtConsoleApp',
-                   """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter Qt Console."""
-                   ),
-        notebook=('notebook.notebookapp.NotebookApp',
-                  """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter HTML Notebook Server."""
-                  ),
-        console=('jupyter_console.app.ZMQTerminalIPythonApp',
-                 """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter terminal-based Console."""
-                 ),
-        nbconvert=('nbconvert.nbconvertapp.NbConvertApp',
-                   "DEPRECATED, Will be removed in IPython 6.0 : Convert notebooks to/from other formats."
-                   ),
-        trust=('nbformat.sign.TrustNotebookApp',
-               "DEPRECATED, Will be removed in IPython 6.0 : Sign notebooks to trust their potentially unsafe contents at load."
-               ),
-        kernelspec=('jupyter_client.kernelspecapp.KernelSpecApp',
-                    "DEPRECATED, Will be removed in IPython 6.0 : Manage Jupyter kernel specifications."
-                    ),
-    )
     subcommands = dict(
         profile=("IPython.core.profileapp.ProfileApp",
                  "Create and manage IPython profiles."),
         kernel=("ipykernel.kernelapp.IPKernelApp",
                 "Start a kernel without an attached frontend."),
-        locate=('IPython.terminal.ipapp.LocateIPythonApp',
-                LocateIPythonApp.description),
-        history=('IPython.core.historyapp.HistoryApp',
+        locate=("IPython.terminal.ipapp.LocateIPythonApp",
+                "LocateIPythonApp.description"),
+        history=("IPython.core.historyapp.HistoryApp",
                  "Manage the IPython history database."),
     )
 
@@ -267,8 +251,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     # configurables
     quick = Bool(
         False,
-        help="""Start IPython quickly by skipping the loading of config files."""
-    ).tag(config=True)
+        help="Skipping the loading of config files.").tag(config=True)
 
     @observe('quick')
     def _quick_changed(self, change):
@@ -289,6 +272,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
 
     @observe('force_interact')
     def _force_interact_changed(self, change):
+        """Set self.interact to True if anything changes."""
         if change['new']:
             self.interact = True
 
@@ -324,20 +308,28 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     def initialize(self, argv=None):
         """Do actions after construct, but before starting the app."""
         super().initialize(argv)
+
         if self.subapp is not None:
             # don't bother initializing further, starting subapp
             return
-        # print self.extra_args
+
+        logging.info(self.extra_args)
+
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]
+
         self.init_path()
+
         # create the shell
         self.init_shell()
+
         # and draw the banner
         self.init_banner()
+
         # Now a variety of things that happen after the banner is printed.
         self.init_gui_pylab()
         self.init_extensions()
+        # now this is the one giving us trouble. gets called from shellapp
         self.init_code()
 
     def init_shell(self):
@@ -374,13 +366,15 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     def start(self):
         """Begins the mainloop.
 
-        Relies on self.interact which is defined in the shellapp file and that class.
+        Relies on self.interact which is defined in the
+        :mod:`IPython.core.shellapp` file and that class.
         """
         if hasattr(self, 'subapp'):
             if self.subapp is not None:
                 return self.subapp.start()
 
-        self.parse_command_line(self.initialize())
+        self.initialize()
+        # self.parse_command_line(self.initialize())
         # perform any prexec steps:
         if self.interact:
             self.log.info("Starting IPython's mainloop...")
@@ -422,6 +416,7 @@ def load_default_config(ipython_dir=None):
 
 
 launch_new_instance = TerminalIPythonApp.launch_instance
+
 
 if __name__ == '__main__':
     launch_new_instance()

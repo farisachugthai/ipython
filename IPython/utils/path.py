@@ -321,6 +321,8 @@ def expand_path(s):
 
     Examples
     --------
+    .. ipython::
+
        In [2]: os.environ['FOO']='test'
 
        In [3]: expand_path('variable FOO is $FOO')

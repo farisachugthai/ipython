@@ -2,11 +2,9 @@
 
 import os
 import sys
-import warnings
 from warnings import warn
 
 from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
-from IPython.utils import utils_io
 from IPython.utils.terminal import toggle_set_term_title, set_term_title, restore_term_title
 from IPython.utils.process import abbrev_cwd
 from traitlets import (Bool, Unicode, Dict, Integer, observe, Instance, Type,
@@ -563,6 +561,7 @@ class TerminalInteractiveShell(InteractiveShell):
                 self.restore_term_title()
 
     _inputhook = None
+
     def inputhook(self, context):
         if self._inputhook is not None:
             self._inputhook(context)
