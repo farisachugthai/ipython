@@ -1,0 +1,107 @@
+{% set version = "7.9.0" %}
+
+{# From https://github.com/conda-forge/ipython-feedstock/blob/master/recipe/meta.yaml #}
+
+package:
+  name: ipython
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/i/ipython/ipython-{{ version }}.tar.gz
+  sha256: dfd303b270b7b5232b3d08bd30ec6fd685d8a58cabd54055e3d69d8f029f7280
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  skip: True  # [py2k]
+  entry_points:
+    - ipython = IPython:start_ipython
+    - ipython3 = IPython:start_ipython
+    - iptest = IPython.testing.iptestcontroller:main
+    - iptest3 = IPython.testing.iptestcontroller:main
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - appnope  # [osx]
+    - backcall
+    - colorama  # [win]
+    - decorator
+    - jedi >=0.10
+    - pexpect  # [unix]
+    - pickleshare
+    - prompt_toolkit >=2.0.0,<3
+    - pygments
+    - python
+    - traitlets >=4.2
+    - win_unicode_console >=0.5  # [win and py<36]
+
+test:
+  requires:
+    - curio  # [unix]
+    - nbformat
+    - nose >=0.10.1
+    - numpy
+    - pygments
+    - requests
+    - testpath
+    # We should uncomment the deps below as soon as the python 3.8 migration is done.
+    # - ipykernel  # [not (aarch64 or ppc64le)]
+    # - trio   # [not (aarch64 or ppc64le)]
+    # - matplotlib  # [not (aarch64 or ppc64le)]
+  imports:
+    - IPython
+    - IPython.core
+    - IPython.core.magics
+    - IPython.core.tests
+    - IPython.extensions
+    - IPython.extensions.tests
+    - IPython.external
+    - IPython.external.decorators
+    - IPython.lib
+    - IPython.lib.tests
+    - IPython.sphinxext
+    - IPython.terminal
+    - IPython.terminal.pt_inputhooks
+    - IPython.terminal.tests
+    - IPython.testing
+    - IPython.testing.plugin
+    - IPython.testing.tests
+    - IPython.utils
+    - IPython.utils.tests
+  commands:
+    - ipython -h
+    - ipython3 -h
+    # [unix and not (aarch64 or ppc64le)]
+    - NOSE_EXCLUDE="test_history|recursion" iptest
+
+about:
+  home: https://ipython.org/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "IPython: Productive Interactive Computing"
+  description: |
+    IPython provides a rich architecture for interactive computing with
+    a powerful interactive shell, a kernel for Jupyter, high performance
+    tools for parallel computing, and more.
+  doc_url: https://ipython.readthedocs.io/
+  dev_url: https://github.com/ipython/ipython
+
+extra:
+  recipe-maintainers:
+    - Carreau
+    - jakirkham
+    - fperez
+    - ellisonbg
+    - minrk
+    - ocefpaf
+    - pelson
+    - takluyver
+    - bollwyvl
+    - blink1073
+
+
+...

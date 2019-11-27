@@ -638,6 +638,15 @@ class InteractiveShell(SingletonConfigurable):
 
         This is done from the values on config.
 
+        TODO: init_io() needs to happen before init_traceback handlers
+        because the traceback handlers hardcode the stdout/stderr streams.
+        This logic in in debugger.Pdb and should eventually be changed.
+
+        .. caution:: :meth:`init_pdb` must come after
+                     :meth:`init_traceback_handlers`. `init_traceback_handlers`
+                     is where we define shell.InteractiveTB which `init_pdb`
+                     *along with many other things* depends on.
+
         Parameters
         ----------
         todo
@@ -693,13 +702,9 @@ class InteractiveShell(SingletonConfigurable):
         self.raw_input_original = input
 
         self.init_completer()
-        # TODO: init_io() needs to happen before init_traceback handlers
-        # because the traceback handlers hardcode the stdout/stderr streams.
-        # This logic in in debugger.Pdb and should eventually be changed.
         # self.init_io()
-
-        # also this one is a massive source of headaches for me.
         self.init_traceback_handlers(custom_exceptions)
+        self.init_pdb()
 
         self.init_prompts()
         self.init_display_formatter()
@@ -709,9 +714,6 @@ class InteractiveShell(SingletonConfigurable):
         self.init_magics()
         self.init_alias()
         self.init_logstart()
-
-        # self.init_pdb()
-
         self.init_extension_manager()
         self.init_payload()
         self.init_deprecation_warnings()
@@ -1200,90 +1202,6 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         self._main_mod_cache.clear()
-
-    # -------------------------------------------------------------------------
-    # Things related to debugging
-    # -------------------------------------------------------------------------
-
-    def init_pdb(self):
-        """Set calling of pdb on exceptions.
-
-        Attributes
-        ----------
-        self.pdb
-
-
-        Properties
-        ----------
-        self.call_pdb
-
-        """
-        # self.call_pdb is a property
-        self.call_pdb = self.pdb
-
-    def _get_call_pdb(self):
-        return self._call_pdb
-
-    def _set_call_pdb(self, val):
-        """This method mixes in the logic for pdb with InteractiveTB.
-
-        Things are probably getting really messy from here on out.
-
-        For those of you keeping count at home, the traceback handlers interact
-        with all of:
-
-        #) The utils dir through IPython.utils.PyColorize,
-           IPython.utils.coloransi, IPython.utils.colorable since all three
-           of those modules hold ultratb's superclasses.
-
-        #) The core package
-
-            #) IPython.core.excolors defines the exception_colors function.
-
-        #) Pygments
-
-        #) Prompt_toolkit
-
-            #) As a result IPython.terminal
-
-        #) And at this point we now add in pdb
-
-        #) Both IPython.core.debugger and IPython.terminal.debugger are affected
-
-        #) This has implications for ipdb which is outside of this repository
-        """
-        if val not in (0, 1, False, True):
-            raise ValueError('new call_pdb value must be boolean')
-
-        # store value in instance
-        self._call_pdb = val
-
-        # notify the actual exception handlers
-        self.InteractiveTB.call_pdb = val
-
-    call_pdb = property(_get_call_pdb, _set_call_pdb, None,
-                        'Control auto-activation of pdb at exceptions')
-
-    def debugger(self, force=False):
-        """Call the pdb debugger.
-
-        Parameters
-        ----------
-        force : bool
-            By default, this routine checks the instance call_pdb
-            flag and does not actually invoke the debugger if the flag is false.
-            The 'force' option forces the debugger to activate even if the flag
-            is false.
-
-        """
-        if not (force or self.call_pdb):
-            return
-
-        if not hasattr(sys, 'last_traceback'):
-            error('No traceback has been produced, nothing to debug.')
-            return
-
-        # self.InteractiveTB.debugger(force=True)
 
     # -------------------------------------------------------------------------
     # Things related to IPython's various namespaces
@@ -2008,9 +1926,11 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         from IPython.core.ultratb import SyntaxTB, AutoFormattedTB
+        if not getattr(self, 'config', None):
+            self.config = Config()
         self.SyntaxTB = SyntaxTB(color_scheme='Linux',
-                                 parent=self,
-                                 config=self.config)
+                                parent=self,
+                                config=self.config)
 
         self.InteractiveTB = AutoFormattedTB(
             mode='Plain',
@@ -2353,6 +2273,90 @@ class InteractiveShell(SingletonConfigurable):
         This is overridden in TerminalInteractiveShell to show a message about
         the %paste magic."""
         self.showsyntaxerror()
+
+    # -------------------------------------------------------------------------
+    # Things related to debugging
+    # -------------------------------------------------------------------------
+
+    def init_pdb(self):
+        """Set calling of pdb on exceptions.
+
+        Attributes
+        ----------
+        self.pdb
+
+
+        Properties
+        ----------
+        self.call_pdb
+
+        """
+        # self.call_pdb is a property
+        self.call_pdb = self.pdb
+
+    def _get_call_pdb(self):
+        return self._call_pdb
+
+    def _set_call_pdb(self, val):
+        """This method mixes in the logic for pdb with InteractiveTB.
+
+        Things are probably getting really messy from here on out.
+
+        For those of you keeping count at home, the traceback handlers interact
+        with all of:
+
+        #) The utils dir through IPython.utils.PyColorize,
+           IPython.utils.coloransi, IPython.utils.colorable since all three
+           of those modules hold ultratb's superclasses.
+
+        #) The core package
+
+            #) IPython.core.excolors defines the exception_colors function.
+
+        #) Pygments
+
+        #) Prompt_toolkit
+
+            #) As a result IPython.terminal
+
+        #) And at this point we now add in pdb
+
+        #) Both IPython.core.debugger and IPython.terminal.debugger are affected
+
+        #) This has implications for ipdb which is outside of this repository
+        """
+        if val not in (0, 1, False, True):
+            raise ValueError('new call_pdb value must be boolean')
+
+        # store value in instance
+        self._call_pdb = val
+
+        # notify the actual exception handlers
+        self.InteractiveTB.call_pdb = val
+
+    call_pdb = property(_get_call_pdb, _set_call_pdb, None,
+                        'Control auto-activation of pdb at exceptions')
+
+    def debugger(self, force=False):
+        """Call the pdb debugger.
+
+        Parameters
+        ----------
+        force : bool
+            By default, this routine checks the instance call_pdb
+            flag and does not actually invoke the debugger if the flag is false.
+            The 'force' option forces the debugger to activate even if the flag
+            is false.
+
+        """
+        if not (force or self.call_pdb):
+            return
+
+        if not hasattr(sys, 'last_traceback'):
+            error('No traceback has been produced, nothing to debug.')
+            return
+
+        # self.InteractiveTB.debugger(force=True)
 
     # -------------------------------------------------------------------------
     # Things related to readline
@@ -2796,18 +2800,23 @@ class InteractiveShell(SingletonConfigurable):
         Parameters
         ----------
         cmd : str
-          Command to execute (can not end in '&', as background processes are
-          not supported.
+            Command to execute (can not end in '&', as background processes are
+            not supported.
         split : bool, optional
-          If True, split the output into an IPython SList.  Otherwise, an
-          IPython LSString is returned.  These are objects similar to normal
-          lists and strings, with a few convenience attributes for easier
-          manipulation of line-based output.  You can use '?' on them for
-          details.
+            If True, split the output into an IPython SList.  Otherwise, an
+            IPython LSString is returned.  These are objects similar to normal
+            lists and strings, with a few convenience attributes for easier
+            manipulation of line-based output.  You can use '?' on them for
+            details.
         depth : int, optional
-          How many frames above the caller are the local variables which should
-          be expanded in the command string? The default (0) assumes that the
-          expansion variables are in the stack frame calling this function.
+            How many frames above the caller are the local variables which should
+            be expanded in the command string? The default (0) assumes that the
+            expansion variables are in the stack frame calling this function.
+
+        Raises
+        -------
+        :exc:`OSError`
+
         """
         if cmd.rstrip().endswith('&'):
             # this is *far* from a rigorous test
@@ -2870,17 +2879,18 @@ class InteractiveShell(SingletonConfigurable):
 
           /f x
 
-        into::
+        into:
 
-          ------> f(x)
+            ------> f(x)
 
         after the user's input prompt.  This helps the user understand that the
         input line was transformed automatically by IPython.
+
+        This is overridden in TerminalInteractiveShell to use fancy prompts.
         """
         if not self.show_rewritten_input:
             return
 
-        # This is overridden in TerminalInteractiveShell to use fancy prompts
         print("------> " + cmd)
 
     # -------------------------------------------------------------------------
@@ -3469,11 +3479,13 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         ----------
-        nodelist : list
-            A sequence of AST nodes to run.
         cell_name : str
             Will be passed to the compiler as the filename of the cell. Typically
             the value returned by ip.compile.cache(cell).
+        nodelist : list, optional
+            A sequence of AST nodes to run. In the call signature, it allows for
+            a value of `None`; however, the function immediately returns if
+            called this way.
         interactivity : str
             'all', 'last', 'last_expr' , 'last_expr_or_assign' or 'none',
             specifying which nodes should be run interactively (displaying output
@@ -3633,24 +3645,28 @@ class InteractiveShell(SingletonConfigurable):
         Parameters
         ----------
         code_obj : code object
-          A compiled code object, to be executed
+            A compiled code object, to be executed
         result : ExecutionResult, optional
-          An object to store exceptions that occur during execution.
+            An object to store exceptions that occur during execution.
         async_ :  Bool (Experimental)
-          Attempt to run top-level asynchronous code in a default loop.
+            Attempt to run top-level asynchronous code in a default loop.
 
         Returns
         -------
         bool
             False : successful execution.
             True : an error occurred.
-        """
-        # Set our own excepthook in case the user code tries to call it
-        # directly, so that the IPython crash handler doesn't get triggered
-        old_excepthook, sys.excepthook = sys.excepthook, self.excepthook
 
-        # we save the original sys.excepthook in the instance, in case config
-        # code (such as magics) needs access to it.
+        Notes
+        -----
+        Set our own excepthook in case the user code tries to call it
+        directly, so that the IPython crash handler doesn't get triggered
+
+        We save the original `sys.excepthook` in the instance, in case config
+        code (such as magics) needs access to it.
+
+        """
+        old_excepthook, sys.excepthook = sys.excepthook, self.excepthook
         self.sys_excepthook = old_excepthook
         outflag = True  # happens in more places, so it's easier as default
         try:
@@ -3678,6 +3694,15 @@ class InteractiveShell(SingletonConfigurable):
             if result is not None:
                 result.error_in_exec = value
             self.CustomTB(etype, value, tb)
+
+        # let's build like 2 more custom handlers right here guys
+        except NameError as e:
+            print(e)
+            return
+        except UsageError as e:
+            print(e)
+            return
+
         except BaseException:
             if result is not None:
                 result.error_in_exec = sys.exc_info()[1]
@@ -3862,7 +3887,6 @@ class InteractiveShell(SingletonConfigurable):
             immediately, and the file is closed again.
 
         """
-
         dirname = tempfile.mkdtemp(prefix=prefix)
         self.tempdirs.append(dirname)
 
@@ -4060,6 +4084,12 @@ class InteractiveShell(SingletonConfigurable):
 
 class InteractiveShellABC(metaclass=abc.ABCMeta):
     """An abstract base class for InteractiveShell."""
+
+    def __repr__(self):
+        return ''.join(self.__class__.__name__)
+
+    def __str__(self):
+        return '{}\n{}'.format(self.__class__.__name__, str(self.__doc__))
 
     @abc.abstractmethod
     def enable_gui(self, gui=None):

@@ -1,11 +1,11 @@
-"""
-Paging capabilities for IPython.core
+"""Paging capabilities for IPython.core
 
 Notes
 -----
-
 For now this uses IPython hooks, so it can't be in IPython.utils.  If we can get
 rid of that dependency, we could move it there.
+
+In addition, the :func:`display_page` function utilizes IPython's display API.
 
 """
 # Copyright (c) IPython Development Team.
@@ -268,6 +268,12 @@ def get_pager_cmd(pager_cmd=None):
     .. note:: Doesn't catch BaseException anymore.
 
         Catch an OSError on an os.environ call.
+
+    .. todo::
+
+        Defaults to type before checking if the envvar envvar:`PAGER` is set.
+        Refactor the envvar check out of here, then check if :envvar:`MANPAGER`,
+        :envvar:`PAGER` and :envvar:`LESS` are set or not.
 
     """
     if os.name == 'posix':

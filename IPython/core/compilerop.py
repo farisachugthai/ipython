@@ -3,17 +3,23 @@
 Provides compilation machinery similar to codeop, but with caching support so
 we can provide interactive tracebacks.
 
+Note: though it might be more natural to name this module 'compiler', that
+name is in the stdlib and name collisions with the stdlib tend to produce
+weird problems (often with third-party tools).
+
+.. data:: PyCF_MASK
+
+    Roughly equal to PyCF_MASK | PyCF_MASK_OBSOLETE as defined in pythonrun.h.
+    This is used as a bitmask to extract future-related code flags.
+
+
 Authors
 -------
 * Robert Kern
 * Fernando Perez
 * Thomas Kluyver
+
 """
-
-# Note: though it might be more natural to name this module 'compiler', that
-# name is in the stdlib and name collisions with the stdlib tend to produce
-# weird problems (often with third-party tools).
-
 # -----------------------------------------------------------------------------
 #  Copyright (C) 2010-2011 The IPython Development Team.
 #
@@ -40,9 +46,6 @@ from contextlib import contextmanager
 # -----------------------------------------------------------------------------
 # Constants
 # -----------------------------------------------------------------------------
-
-# Roughly equal to PyCF_MASK | PyCF_MASK_OBSOLETE as defined in pythonrun.h,
-# this is used as a bitmask to extract future-related code flags.
 PyCF_MASK = functools.reduce(operator.or_,
                              (getattr(__future__, fname).compiler_flag
                               for fname in __future__.all_feature_names))
@@ -152,8 +155,7 @@ class CachingCompiler(codeop.Compile):
 
 
 def check_linecache_ipython(*args):
-    """Call linecache.checkcache() safely protecting our cached values.
-    """
+    """Call linecache.checkcache() safely protecting our cached values."""
     # First call the original checkcache as intended
     linecache._checkcache_ori(*args)
     # Then, update back the cache with our data, so that tracebacks related

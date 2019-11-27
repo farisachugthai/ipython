@@ -228,11 +228,13 @@ def ipexec(fname, options=None, commands=()):
     full_fname = os.path.join(test_dir, fname)
     full_cmd = ipython_cmd + cmdargs + [full_fname]
 
-    p = Popen(full_cmd, stdout=PIPE, stderr=PIPE,
-              stdin=PIPE, env=os.environ.copy())
+    p = Popen(full_cmd,
+              stdout=PIPE,
+              stderr=PIPE,
+              stdin=PIPE,
+              env=os.environ.copy())
 
-    out, err = p.communicate(
-        input=('\n'.join(commands)) or None)
+    out, err = p.communicate(input=('\n'.join(commands)) or None)
 
     # `import readline` causes 'ESC[?1034h' to be output sometimes,
     # so strip that out before doing comparisons
@@ -299,7 +301,6 @@ class TempFileMixin(unittest.TestCase):
 
     Should be deprecated IMO. Pytest fixtures could very easily replace this.
     """
-
     def mktmp(self, src, ext='.py'):
         """Make a valid python temp file."""
         fname = temp_pyfile(src, ext)
@@ -383,7 +384,6 @@ class AssertPrints(object):
     abcd
     def
     """
-
     def __init__(self, s, channel='stdout', suppress=True):
         self.s = s
         if isinstance(self.s, (str, _re_type)):
@@ -429,7 +429,6 @@ class AssertNotPrints(AssertPrints):
 
     Counterpart of AssertPrints.
     """
-
     def __exit__(self, etype, value, traceback):
         try:
             if value is not None:

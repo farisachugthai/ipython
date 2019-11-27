@@ -39,6 +39,7 @@ def getargspec(obj):
     args, varargs, varkw = inspect.getargs(func_obj.__code__)
     return args, varargs, varkw, func_obj.__defaults__
 
+
 # -----------------------------------------------------------------------------
 # Testing functions
 
@@ -109,7 +110,6 @@ class FooClass(object):
     >>> 1+1
     2
     """
-
     def __init__(self, x):
         """Make a FooClass.
 
@@ -147,7 +147,7 @@ def test_skip_dt_decorator2():
     """Doctest-skipping decorator should preserve function signature.
     """
     # Hardcoded correct answer
-    dtargs = (['x', 'y'], None, 'k', (1,))
+    dtargs = (['x', 'y'], None, 'k', (1, ))
     # Introspect out the value
     dtargsr = getargspec(doctest_bad)
     assert dtargsr == dtargs, \
@@ -156,22 +156,17 @@ def test_skip_dt_decorator2():
 
 @dec.skip_linux
 def test_linux():
-    nt.assert_false(
-        sys.platform.startswith('linux'),
-        "This test can't run under linux")
+    nt.assert_false(sys.platform.startswith('linux'),
+                    "This test can't run under linux")
 
 
 @dec.skip_win32
 def test_win32():
-    nt.assert_not_equal(
-        sys.platform,
-        'win32',
-        "This test can't run under windows")
+    nt.assert_not_equal(sys.platform, 'win32',
+                        "This test can't run under windows")
 
 
 @dec.skip_osx
 def test_osx():
-    nt.assert_not_equal(
-        sys.platform,
-        'darwin',
-        "This test can't run under osx")
+    nt.assert_not_equal(sys.platform, 'darwin',
+                        "This test can't run under osx")

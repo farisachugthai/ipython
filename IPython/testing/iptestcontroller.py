@@ -84,8 +84,10 @@ class TestController:
         c.start()
         stdout = c.writefd if capture_output else None
         stderr = subprocess.STDOUT if capture_output else None
-        self.process = subprocess.Popen(self.cmd, stdout=stdout,
-                                        stderr=stderr, env=env)
+        self.process = subprocess.Popen(self.cmd,
+                                        stdout=stdout,
+                                        stderr=stderr,
+                                        env=env)
 
     def wait(self):
         self.process.wait()
@@ -207,9 +209,10 @@ class PyTestController(TestController):
         coverage_rc = ("[run]\n"
                        "data_file = {data_file}\n"
                        "source =\n"
-                       "  {source}\n"
-                       ).format(data_file=os.path.abspath('.coverage.' + self.section),
-                                source="\n  ".join(sources))
+                       "  {source}\n").format(
+                           data_file=os.path.abspath('.coverage.' +
+                                                     self.section),
+                           source="\n  ".join(sources))
         config_file = os.path.join(self.workingdir.name, '.coveragerc')
         with open(config_file, 'w') as f:
             f.write(coverage_rc)
@@ -278,11 +281,8 @@ def report():
         out.append((name, value))
 
     _add('IPython version', inf['ipython_version'])
-    _add(
-        'IPython commit',
-        "{} ({})".format(
-            inf['commit_hash'],
-            inf['commit_source']))
+    _add('IPython commit', "{} ({})".format(inf['commit_hash'],
+                                            inf['commit_source']))
     _add('IPython package', compress_user(inf['ipython_path']))
     _add('Python version', inf['sys_version'].replace('\n', ''))
     _add('sys.executable', compress_user(inf['sys_executable']))
@@ -410,8 +410,9 @@ def run_iptestall(options):
         # If anything went wrong, point out what command to rerun manually to
         # see the actual errors and individual summary
         failed_sections = [c.section for c in failed]
-        print('ERROR - {} out of {} test groups failed ({}).'.format(nfail,
-                                                                     nrunners, ', '.join(failed_sections)), took)
+        print(
+            'ERROR - {} out of {} test groups failed ({}).'.format(
+                nfail, nrunners, ', '.join(failed_sections)), took)
         print()
         print('You may wish to rerun these, with:')
         print('  iptest', *failed_sections)
@@ -427,9 +428,8 @@ def run_iptestall(options):
         if options.coverage == 'html':
             html_dir = 'ipy_htmlcov'
             shutil.rmtree(html_dir, ignore_errors=True)
-            print(
-                "Writing HTML coverage report to %s/ ... " %
-                html_dir, end="")
+            print("Writing HTML coverage report to %s/ ... " % html_dir,
+                  end="")
             sys.stdout.flush()
 
             # Custom HTML reporter to clean up module names.
@@ -447,9 +447,11 @@ def run_iptestall(options):
 
             # Reimplement the html_report method with our custom reporter
             cov.get_data()
-            cov.config.from_args(omit='*{0}tests{0}*'.format(os.sep), html_dir=html_dir,
-                                 html_title='IPython test coverage',
-                                 )
+            cov.config.from_args(
+                omit='*{0}tests{0}*'.format(os.sep),
+                html_dir=html_dir,
+                html_title='IPython test coverage',
+            )
             reporter = CustomHtmlReporter(cov, cov.config)
             reporter.report(None)
             print('done.')
@@ -460,7 +462,8 @@ def run_iptestall(options):
                 cov.xml_report(outfile='ipy_coverage.xml')
             except CoverageException as e:
                 print(
-                    'Generating coverage report failed. Are you running javascript tests only?')
+                    'Generating coverage report failed. Are you running javascript tests only?'
+                )
                 import traceback
                 traceback.print_exc()
 
@@ -470,22 +473,36 @@ def run_iptestall(options):
 
 
 argparser = argparse.ArgumentParser(description='Run IPython test suite')
-argparser.add_argument('testgroups', nargs='*',
+argparser.add_argument('testgroups',
+                       nargs='*',
                        help='Run specified groups of tests. If omitted, run '
                        'all tests.')
-argparser.add_argument('--all', action='store_true',
+argparser.add_argument('--all',
+                       action='store_true',
                        help='Include slow tests not run by default.')
-argparser.add_argument('-j', '--fast', nargs='?', const=None, default=1, type=int,
-                       help='Run test sections in parallel. This starts as many '
-                       'processes as you have cores, or you can specify a number.')
-argparser.add_argument('--xunit', action='store_true',
+argparser.add_argument(
+    '-j',
+    '--fast',
+    nargs='?',
+    const=None,
+    default=1,
+    type=int,
+    help='Run test sections in parallel. This starts as many '
+    'processes as you have cores, or you can specify a number.')
+argparser.add_argument('--xunit',
+                       action='store_true',
                        help='Produce Xunit XML results')
-argparser.add_argument('--coverage', nargs='?', const=True, default=False,
+argparser.add_argument('--coverage',
+                       nargs='?',
+                       const=True,
+                       default=False,
                        help="Measure test coverage. Specify 'html' or "
                        "'xml' to get reports.")
-argparser.add_argument('--subproc-streams', default='capture',
-                       help="What to do with stdout/stderr from subprocesses. "
-                       "'capture' (default), 'show' and 'discard' are the options.")
+argparser.add_argument(
+    '--subproc-streams',
+    default='capture',
+    help="What to do with stdout/stderr from subprocesses. "
+    "'capture' (default), 'show' and 'discard' are the options.")
 
 
 def default_options():

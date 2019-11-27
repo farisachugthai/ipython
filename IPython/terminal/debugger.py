@@ -1,21 +1,29 @@
+"""
+IPython.core.debugger.Pdb.trace_dispatch shall not catch
+`bdb.BdbQuit`. When started through __main__ and an exception
+happened after hitting "c", this is needed in order to
+be able to quit the debugging session (see #9950).
+"""
 import signal
 import sys
 
-from IPython.core.debugger import Pdb
-
-from IPython.core.completer import IPCompleter
-from .ptutils import IPythonPTCompleter
-from .shortcuts import suspend_to_bg, cursor_in_leading_ws
-
+from pygments.token import Token
 from prompt_toolkit.enums import DEFAULT_BUFFER
 from prompt_toolkit.filters import (Condition, has_focus, has_selection,
                                     vi_insert_mode, emacs_insert_mode)
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.completion import display_completions_like_readline
-from pygments.token import Token
+# Nov 27, 2019: Just added this
+from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
+
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.formatted_text import PygmentsTokens
+
+from IPython.core.debugger import Pdb
+from IPython.core.completer import IPCompleter
+from .ptutils import IPythonPTCompleter
+from .shortcuts import suspend_to_bg, cursor_in_leading_ws
 
 
 class TerminalPdb(Pdb):
@@ -81,6 +89,7 @@ class TerminalPdb(Pdb):
                            & vi_insert_mode | emacs_insert_mode
                            & ~cursor_in_leading_ws
                            ))(display_completions_like_readline)
+        kb.add(load_basic_bindings())
         return kb
 
     def cmdloop(self, intro=None):
@@ -121,8 +130,7 @@ class TerminalPdb(Pdb):
 
 
 def set_trace(frame=None):
-    """
-    Start debugging from `frame`.
+    """Start debugging from `frame`.
 
     If frame is not specified, debugging starts from caller's frame.
     """
@@ -131,10 +139,6 @@ def set_trace(frame=None):
 
 if __name__ == '__main__':
     import pdb
-    # IPython.core.debugger.Pdb.trace_dispatch shall not catch
-    # bdb.BdbQuit. When started through __main__ and an exception
-    # happened after hitting "c", this is needed in order to
-    # be able to quit the debugging session (see #9950).
     old_trace_dispatch = pdb.Pdb.trace_dispatch
     pdb.Pdb = TerminalPdb
     pdb.Pdb.trace_dispatch = old_trace_dispatch

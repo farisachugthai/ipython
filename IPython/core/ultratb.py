@@ -144,7 +144,7 @@ from IPython.core.excolors import exception_colors
 from IPython.core.getipython import get_ipython
 from IPython.utils import PyColorize
 from IPython.utils import path as util_path
-# from IPython.utils.coloransi import ColorScheme, ColorSchemeTable
+from IPython.utils.coloransi import ColorScheme, ColorSchemeTable
 from IPython.utils.data import uniq_stable
 from IPython.utils.PyColorize import Colorable
 
@@ -305,8 +305,8 @@ def is_recursion_error(etype, value, records):
     # by stack frames in IPython itself. >500 frames probably indicates
     # a recursion error.
     return (etype is recursion_error_type) \
-           and "recursion" in str(value).lower() \
-           and len(records) > _FRAME_RECURSION_LIMIT
+        and "recursion" in str(value).lower() \
+        and len(records) > _FRAME_RECURSION_LIMIT
 
 
 def find_recursion(etype, value, records):
@@ -389,7 +389,6 @@ class TBTools(Colorable):
                 self.Colors = self.color_scheme_table.active_colors
         self.set_colors(color_scheme)
         self.old_scheme = color_scheme  # save initial value for toggles
-
 
         super().__init__(parent=parent, config=config)
         self.call_pdb = call_pdb
@@ -713,7 +712,6 @@ class VerboseTB(TBTools):
             own code cache.
 
         """
-
         self.color_scheme = color_scheme
         self.call_pdb = call_pdb
         self.ostream = ostream
@@ -948,7 +946,7 @@ class VerboseTB(TBTools):
             date = time.ctime(time.time())
 
             head = '%s\n%s%s%s\n%s' % (
-            '-' * width, exc, ' ' * (width - len(str(etype)) - len(pyver)), pyver, date.rjust(width))
+                '-' * width, exc, ' ' * (width - len(str(etype)) - len(pyver)), pyver, date.rjust(width))
 
             head += "\nA problem occurred executing Python code.  Here is the sequence of function" \
                     "\ncalls leading up to the error, with the most recent (innermost) call last."
@@ -1259,7 +1257,7 @@ class FormattedTB(VerboseTB, ListTB):
 
         if not mode:
             new_idx = (self.valid_modes.index(self.mode) + 1) % \
-                      len(self.valid_modes)
+                len(self.valid_modes)
             self.mode = self.valid_modes[new_idx]
         elif mode not in self.valid_modes:
             raise ValueError('Unrecognized mode in FormattedTB: <' + mode +
@@ -1300,38 +1298,42 @@ class AutoFormattedTB(FormattedTB):
             AutoTB()  # or AutoTB(out=logfile) where logfile is an open file object
 
     """
-    def __init__(self,
-                 mode='Plain',
-                 color_scheme='Linux',
-                 call_pdb=False,
-                 ostream=None,
-                 tb_offset=0,
-                 long_header=False,
-                 include_vars=False,
-                 check_cache=None,
-                 debugger_cls=None,
-                 parent=None,
-                 config=None, *args, **kwargs):
-        self.tb = sys.exc_info()
-        self.mode = mode
-        self.color_scheme = color_scheme
-        self.call_pdb = call_pdb
-        self.debugger_cls = debugger_cls
-        self.long_header = long_header
-        self.tb_offset = tb_offset
-        self.include_vars = include_vars
-        self.ostream = ostream
-        self.check_cache = check_cache
-        # self.Colors =
-        self.parent = parent
-        self.config = config
+    # import pdb; pdb.set_trace()
 
-        super().__init__(
-            color_scheme=self.color_scheme, call_pdb=self.call_pdb,
-            debugger_cls=self.debugger_cls, long_header=self.long_header,
-            tb_offset=self.tb_offset, include_vars=self.include_vars,
-            ostream=self.ostream, check_cache=self.check_cache
-        )
+    # def __init__(self,
+    #              mode='Plain',
+    #              color_scheme='Linux',
+    #              call_pdb=False,
+    #              ostream=None,
+    #              tb_offset=0,
+    #              long_header=False,
+    #              include_vars=False,
+    #              check_cache=None,
+    #              debugger_cls=None,
+    #              parent=None,
+    #              config=None, *args, **kwargs):
+    #     self.tb = sys.exc_info()
+    #     self.mode = mode
+    #     self.color_scheme = color_scheme
+    #     self.call_pdb = call_pdb
+    #     self.debugger_cls = debugger_cls
+    #     self.long_header = long_header
+    #     self.tb_offset = tb_offset
+    #     self.include_vars = include_vars
+    #     self.ostream = ostream
+    #     self.check_cache = check_cache
+    #     # self.Colors =
+    #     self.parent = parent
+    #     self.config = config
+    #     if self.config is None:
+    #         import pdb; pdb.set_trace()
+
+    #     super().__init__(
+    #         color_scheme=self.color_scheme, call_pdb=self.call_pdb,
+    #         debugger_cls=self.debugger_cls, long_header=self.long_header,
+    #         tb_offset=self.tb_offset, include_vars=self.include_vars,
+    #         ostream=self.ostream, check_cache=self.check_cache
+    #     )
 
     def __call__(self,
                  etype=None,

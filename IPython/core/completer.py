@@ -8,12 +8,14 @@ This module now support a wide variety of completion mechanism both available
 for normal classic Python code, as well as completer for IPython specific
 syntax like magics.
 
+
 Latex and Unicode completion
 ============================
 
 IPython and compatible frontends not only can complete your code, but can help
 you to input a wide range of characters. In particular we allow you to insert
 a unicode character using the tab completion mechanism.
+
 
 Forward latex/unicode completion
 --------------------------------
@@ -64,7 +66,6 @@ and press `<tab>` to expand it to its latex form.
 
 Both forward and backward completions can be deactivated by setting the
 ``Completer.backslash_combining_completions`` option to ``False``.
-
 
 Experimental
 ------------
@@ -569,23 +570,26 @@ class CompletionSplitter(object):
 
     What characters are used as splitting delimiters can be controlled by
     setting the ``delims`` attribute (this is a property that internally
-    automatically builds the necessary regular expression)"""
+    automatically builds the necessary regular expression).
 
-    # Private interface
-
-    # A string of delimiter characters.  The default value makes sense for
-    # IPython's most typical usage patterns.
+    Attributes
+    ----------
+    _delims : str
+        A string of delimiter characters.  The default value makes sense for
+        IPython's most typical usage patterns.
+    _delim_expr : str
+        The expression (a normal string) to be compiled into a regular expression
+        for actual splitting.  We store it as an attribute mostly for ease of
+        debugging, since this type of code can be so tricky to debug.
+    _delim_re : str
+        The regular expression that does the actual splitting
+    """
     _delims = DELIMS
-
-    # The expression (a normal string) to be compiled into a regular expression
-    # for actual splitting.  We store it as an attribute mostly for ease of
-    # debugging, since this type of code can be so tricky to debug.
     _delim_expr = None
-
-    # The regular expression that does the actual splitting
     _delim_re = None
 
     def __init__(self, delims=None):
+        """Wait we define self.delims here AND we have the property? How does that work?"""
         delims = CompletionSplitter._delims if delims is None else delims
         self.delims = delims
 
@@ -603,26 +607,17 @@ class CompletionSplitter(object):
         self._delim_expr = expr
 
     def split_line(self, line, cursor_pos=None):
-        """Split a line of text with a cursor at the given position.
-        """
+        """Split a line of text with a cursor at the given position."""
         l = line if cursor_pos is None else line[:cursor_pos]
         return self._delim_re.split(l)[-1]
 
 
 class Completer(Configurable):
 
-    # greedy = Bool(False,
-    #               help="""Activate greedy completion
-    #     PENDING DEPRECTION. this is now mostly taken care of with Jedi.
-
-    #     This will enable completion on elements of lists, results of function calls, etc.,
-    #     but can be unsafe because the code is actually evaluated on TAB.
-    #     """).tag(config=True)
-
     # jedi is a hard dependency
-    # use_jedi = Bool(default_value=JEDI_INSTALLED,
-    #                 help="Experimental: Use Jedi to generate autocompletions. "
-    #                 "Default to True if jedi is installed.").tag(config=True)
+    use_jedi = Bool(default_value=True,
+                    help="Experimental: Use Jedi to generate autocompletions. "
+                    "Default to True if jedi is installed.").tag(config=True)
 
     # The rarely seen in the wild example of every different kind of python
     # quoting
@@ -648,11 +643,11 @@ class Completer(Configurable):
     def __init__(self, namespace=None, global_namespace=None, **kwargs):
         """Create a new completer for the command line.
 
-        Completer(namespace=ns, global_namespace=ns2) -> completer instance.
+        .. class:: Completer(namespace=ns, global_namespace=ns2)
 
-        If unspecified, the default namespace where completions are performed
-        is __main__ (technically, __main__.__dict__). Namespaces should be
-        given as dictionaries.
+            If unspecified, the default namespace where completions are performed
+            is __main__ (technically, __main__.__dict__). Namespaces should be
+            given as dictionaries.
 
         An optional second namespace can be given.  This allows the completer
         to handle cases where both the local and global scopes need to be
@@ -674,7 +669,7 @@ class Completer(Configurable):
         else:
             self.global_namespace = global_namespace
 
-        super(Completer, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def complete(self, text, state):
         """Return the next possible completion for 'text'.
@@ -858,14 +853,12 @@ def match_dict_keys(keys: List[str], prefix: str, delims: str):
 
 
 def cursor_to_position(text: str, line: int, column: int) -> int:
-    """
+    """Convert the (line,column) position of the cursor in text.
 
-    Convert the (line,column) position of the cursor in text to an offset in a
-    string.
+    This is converted to an offset in a string.
 
     Parameters
     ----------
-
     text : str
         The text in which to calculate the cursor offset
     line : int
@@ -875,7 +868,7 @@ def cursor_to_position(text: str, line: int, column: int) -> int:
 
     Return
     ------
-        Position of the cursor in ``text``, 0-indexed.
+    Position of the cursor in ``text``, 0-indexed.
 
     See Also
     --------
@@ -907,13 +900,11 @@ def position_to_cursor(text: str, offset: int) -> Tuple[int, int]:
     (line, column) : (int, int)
         Line of the cursor; 0-indexed, column of the cursor 0-indexed
 
-
     See Also
     --------
     cursor_to_position : reciprocal of this function
 
     """
-
     assert 0 <= offset <= len(text), "0 <= %s <= %s" % (offset, len(text))
 
     before = text[:offset]
@@ -938,8 +929,6 @@ def back_unicode_name_matches(text):
     Though it will not recombine back to the snowman character by the completion machinery.
 
     This will not either back-complete standard sequences like \\n, \\b ...
-
-    Used on Python 3 only.
     """
     if len(text) < 2:
         return u'', ()
@@ -964,8 +953,6 @@ def back_latex_name_matches(text: str):
     """Match latex characters back to unicode name
 
     This does ``\\ℵ`` -> ``\\aleph``
-
-    Used on Python 3 only.
     """
     if len(text) < 2:
         return u'', ()
@@ -1026,8 +1013,8 @@ def _make_signature(completion) -> str:
     a string consisting of the function signature, with the parenthesis but
     without the function name.
 
-    Example:
-
+    Example
+    -------
     ``(a, *args, b=1, **kwargs)``
 
     """
@@ -1036,7 +1023,15 @@ def _make_signature(completion) -> str:
 
 
 class IPCompleter(Completer):
-    """Extension of the completer class with IPython-specific features."""
+    """Extension of the completer class with IPython-specific features.
+
+    Attributes
+    ----------
+    _names
+    greedy
+    merge_completions
+
+    """
 
     _names = None
 
@@ -1071,28 +1066,6 @@ class IPCompleter(Completer):
 
         When 0: nothing will be excluded.
         """).tag(config=True)
-    # limit_to__all__ = Bool(
-    #     False,
-    #     help="""
-    #     DEPRECATED as of version 5.0.
-
-    #     Instruct the completer to use __all__ for the completion
-
-    #     Specifically, when completing on ``object.<tab>``.
-
-    #     When True: only those names in obj.__all__ will be included.
-
-    #     When False [default]: the __all__ attribute is ignored
-    #     """,
-    # ).tag(config=True)
-
-    @observe('limit_to__all__')
-    def _limit_to_all_changed(self, change):
-        warnings.warn(
-            '`IPython.core.IPCompleter.limit_to__all__` configuration '
-            'value has been deprecated since IPython 5.0, will be made to have '
-            'no effects and then removed in future version of IPython.',
-            UserWarning)
 
     def __init__(self,
                  shell=None,

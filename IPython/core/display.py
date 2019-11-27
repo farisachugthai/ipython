@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Top-level display functions for displaying object in different formats."""
 
 # Copyright (c) IPython Development Team.
@@ -98,6 +97,14 @@ def publish_display_data(data,
 
     Keys of data and metadata can be any mime-type.
 
+    .. caution:: Only pass 'transient' if supplied, to avoid errors with
+                 older version of ipykernel.
+
+    .. todo::
+
+        We could check for ipykernel version and provide a detailed
+        upgrade message.
+
     Parameters
     ----------
     data : dict
@@ -117,23 +124,17 @@ def publish_display_data(data,
         Unused.
     transient : dict, keyword-only
         A dictionary of transient data, such as display_id.
-        """
+
+    """
     from IPython.core.interactiveshell import InteractiveShell
-
     display_pub = InteractiveShell.instance().display_pub
-
-    # only pass transient if supplied,
-    # to avoid errors with older ipykernel.
-    # TODO: We could check for ipykernel version and provide a detailed
-    # upgrade message.
     if transient:
         kwargs['transient'] = transient
-
     display_pub.publish(data=data, metadata=metadata, **kwargs)
 
 
 def _new_id():
-    """Generate a new random text id with urandom"""
+    """Generate a new random text id with :func:`os.urandom`."""
     return b2a_hex(os.urandom(16)).decode('ascii')
 
 
@@ -149,8 +150,8 @@ def display(*objs,
     By default all representations will be computed and sent to the frontends.
     Frontends can decide which representation is used and how.
 
-    In terminal IPython this will be similar to using :func:`print`, for use in richer
-    frontends see Jupyter notebook examples with rich display logic.
+    In terminal IPython this will be similar to using :func:`print`, for use
+    in richer frontends see Jupyter notebook examples with rich display logic.
 
     Parameters
     ----------
@@ -325,7 +326,8 @@ def display(*objs,
         if raw:
             publish_display_data(data=obj, metadata=metadata, **kwargs)
         else:
-            format_dict, md_dict = format(obj, include=include, exclude=exclude)
+            format_dict, md_dict = format(
+                obj, include=include, exclude=exclude)
             if not format_dict:
                 # nothing to display (e.g. _ipython_display_ took over)
                 continue
@@ -343,33 +345,34 @@ def update_display(obj, *, display_id, **kwargs):
 
     Parameters
     ----------
-
-    obj:
+    obj : object
         The object with which to update the display
-    display_id: keyword-only
+    display_id : keyword-only
         The id of the display to update
 
     See Also
     --------
 
     :func:`display`
+
     """
     kwargs['update'] = True
     display(obj, display_id=display_id, **kwargs)
 
 
-class DisplayHandle(object):
+class DisplayHandle:
     """A handle on an updatable display
 
-    Call `.update(obj)` to display a new object.
+    Call ``.update(obj)`` to display a new object.
 
-    Call `.display(obj`) to add a new instance of this display,
+    Call ``.display(obj)`` to add a new instance of this display,
     and update existing instances.
 
     See Also
     --------
+    :func:`display`
 
-        :func:`display`, :func:`update_display`
+    :func:`update_display`
 
     """
 
@@ -386,11 +389,11 @@ class DisplayHandle(object):
 
         Parameters
         ----------
-
         obj:
             object to display
         **kwargs:
             additional keyword arguments passed to display
+
         """
         display(obj, display_id=self.display_id, **kwargs)
 
@@ -399,11 +402,11 @@ class DisplayHandle(object):
 
         Parameters
         ----------
-
         obj:
             object to display
         **kwargs:
             additional keyword arguments passed to update_display
+
         """
         update_display(obj, display_id=self.display_id, **kwargs)
 
@@ -421,6 +424,7 @@ def display_pretty(*objs, **kwargs):
         formatted before display? [default: False]
     metadata : dict (optional)
         Metadata to be associated with the specific mimetype output.
+
     """
     _display_mimetype('text/plain', objs, **kwargs)
 
@@ -441,6 +445,7 @@ def display_html(*objs, **kwargs):
         formatted before display? [default: False]
     metadata : dict (optional)
         Metadata to be associated with the specific mimetype output.
+
     """
     _display_mimetype('text/html', objs, **kwargs)
 
@@ -486,13 +491,13 @@ def display_png(*objs, **kwargs):
     Parameters
     ----------
     objs : tuple of objects
-        The Python objects to display, or if raw=True raw png data to
-        display.
+        The Python objects to display, or if raw=True raw png data to display.
     raw : bool
         Are the data objects raw data or Python objects that need to be
         formatted before display? [default: False]
     metadata : dict (optional)
         Metadata to be associated with the specific mimetype output.
+
     """
     _display_mimetype('image/png', objs, **kwargs)
 
@@ -508,8 +513,9 @@ def display_jpeg(*objs, **kwargs):
     raw : bool
         Are the data objects raw data or Python objects that need to be
         formatted before display? [default: False]
-    metadata : dict (optional)
+    metadata : dict, optional
         Metadata to be associated with the specific mimetype output.
+
     """
     _display_mimetype('image/jpeg', objs, **kwargs)
 
@@ -708,11 +714,8 @@ class HTML(TextDisplayObject):
         def warn():
             if not data:
                 return False
-
-            #
             # Avoid calling lower() on the entire data, because it could be a
             # long string and we're only interested in its beginning and end.
-            #
             prefix = data[:10].lower()
             suffix = data[-10:].lower()
             return prefix.startswith("<iframe ") and suffix.endswith(
@@ -793,16 +796,16 @@ class SVG(DisplayObject):
 
 
 class ProgressBar(DisplayObject):
-    """Progressbar supports displaying a progressbar like element
-    """
+    """Progressbar supports displaying a progressbar like element."""
 
     def __init__(self, total):
-        """Creates a new progressbar
+        """Creates a new 'ProgressBar'.
 
         Parameters
         ----------
         total : int
-            maximum size of the progressbar
+            Maximum size of the progressbar.
+
         """
         self.total = total
         self._progress = 0
@@ -855,11 +858,10 @@ class ProgressBar(DisplayObject):
 
 
 class JSON(DisplayObject):
-    """JSON expects a JSON-able dict or list
-
-    not an already-serialized JSON string.
+    """JSON expects a JSON-able dict or list not an already-serialized JSON string.
 
     Scalar types (None, number, string) are not allowed, only dict or list containers.
+
     """
     # wrap data in a property, which warns about passing already-serialized
     # JSON
@@ -891,10 +893,11 @@ class JSON(DisplayObject):
             Specify extra metadata to attach to the json display object.
         root : str
             The name of the root element of the JSON tree
+
         """
         self.metadata = {
             'expanded': expanded,
-            'root'    : root,
+            'root': root,
         }
         if metadata:
             self.metadata.update(metadata)
@@ -1012,7 +1015,7 @@ class GeoJSON(JSON):
     def _ipython_display_(self):
         bundle = {
             'application/geo+json': self.data,
-            'text/plain'          : '<IPython.display.GeoJSON object>'
+            'text/plain': '<IPython.display.GeoJSON object>'
         }
         metadata = {'application/geo+json': self.metadata}
         display(bundle, metadata=metadata, raw=True)
@@ -1049,6 +1052,7 @@ class Javascript(TextDisplayObject):
             A sequence of css files to load before running the source code.
             The full URLs of the css files should be given. A single css URL
             can also be given as a string.
+
         """
         if isinstance(lib, str):
             lib = [lib]
@@ -1121,9 +1125,9 @@ class Image(DisplayObject):
     _FMT_GIF = u'gif'
     _ACCEPTABLE_EMBEDDINGS = [_FMT_JPEG, _FMT_PNG, _FMT_GIF]
     _MIMETYPES = {
-        _FMT_PNG : 'image/png',
+        _FMT_PNG: 'image/png',
         _FMT_JPEG: 'image/jpeg',
-        _FMT_GIF : 'image/gif',
+        _FMT_GIF: 'image/gif',
     }
 
     def __init__(self,
@@ -1487,7 +1491,9 @@ def clear_output(wait=False):
     Parameters
     ----------
     wait : bool [default: false]
-        Wait to clear the output until new output is available to replace it."""
+        Wait to clear the output until new output is available to replace it.
+
+    """
     from IPython.core.interactiveshell import InteractiveShell
     if InteractiveShell.initialized():
         InteractiveShell.instance().display_pub.clear_output(wait)
@@ -1551,6 +1557,7 @@ def set_matplotlib_close(close=True):
     close : bool
         Should all matplotlib figures be automatically closed after each cell is
         run?
+
     """
     from ipykernel.pylab.config import InlineBackend
     cfg = InlineBackend.instance()

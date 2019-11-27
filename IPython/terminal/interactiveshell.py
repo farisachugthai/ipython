@@ -95,23 +95,34 @@ else:
 _use_simple_prompt = ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
 
 
+def black_reformat_handler(text_before_cursor):
+    import black
+    formatted_text = black.format_str(
+        text_before_cursor, mode=black.FileMode())
+    if not text_before_cursor.endswith('\n') and formatted_text.endswith('\n'):
+        formatted_text = formatted_text[:-1]
+    return formatted_text
+
+
 class TerminalInteractiveShell(InteractiveShell):
+    mime_renderers = Dict().tag(config=True)
+
     space_for_menu = Integer(6,
-        help='Number of line at the bottom of the screen '
-        'to reserve for the completion menu').tag(config=True)
+                             help='Number of line at the bottom of the screen '
+                             'to reserve for the completion menu').tag(config=True)
 
     pt_app = None
     debugger_history = None
 
     simple_prompt = Bool(_use_simple_prompt,
-        help="""Use `raw_input` for the REPL, without completion and prompt colors.
+                         help="""Use `raw_input` for the REPL, without completion and prompt colors.
 
             Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
             IPython own testing machinery, and emacs inferior-shell integration through elpy.
 
             This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
             environment variable is set, or the current terminal is not a tty."""
-    ).tag(config=True)
+                         ).tag(config=True)
 
     @property
     def debugger_cls(self):
@@ -119,11 +130,11 @@ class TerminalInteractiveShell(InteractiveShell):
         return Pdb if self.simple_prompt else TerminalPdb
 
     confirm_exit = Bool(True,
-        help="""
+                        help="""
         Set to confirm when you try to exit IPython with an EOF (Control-D
         in Unix, Control-Z/Enter in Windows). By typing 'exit' or 'quit',
         you can force a direct exit without any confirmation.""",
-    ).tag(config=True)
+                        ).tag(config=True)
 
     # TODO: Would it make more sense to use the
     # prompt_toolkit.enums.EditingMode class here?
@@ -131,6 +142,11 @@ class TerminalInteractiveShell(InteractiveShell):
         'emacs',
         help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
     ).tag(config=True)
+
+    autoformatter = Unicode(None,
+                            help="Autoformatter to reformat Terminal code. Can be `'black'` or `None`",
+                            allow_none=True
+                            ).tag(config=True)
 
     mouse_support = Bool(
         False,
@@ -140,9 +156,9 @@ class TerminalInteractiveShell(InteractiveShell):
     # We don't load the list of styles for the help string, because loading
     # Pygments plugins takes time and can cause unexpected errors.
     highlighting_style = Union([Unicode('legacy'), Type(klass=Style)],
-        help="""The name or class of a Pygments style to use for syntax
+                               help="""The name or class of a Pygments style to use for syntax
         highlighting. To see available styles, run `pygmentize -L styles`."""
-    ).tag(config=True)
+                               ).tag(config=True)
 
     @validate('editing_mode')
     def _validate_editing_mode(self, proposal):
@@ -162,13 +178,45 @@ class TerminalInteractiveShell(InteractiveShell):
         if self.pt_app:
             self.pt_app.editing_mode = u_mode
 
+    @observe('autoformatter')
+    def _autoformatter_changed(self, change):
+        """Observe the autoformatter parameter of the config dict.
+
+        Parameters
+        ----------
+        change
+
+        Raises
+        ------
+        :exc:`ValueError`
+
+        """
+        formatter = change.new
+        if formatter is None:
+            self.reformat_handler = lambda x: x
+        elif formatter == 'black':
+            self.reformat_handler = black_reformat_handler
+        else:
+            raise ValueError
+
+    @observe('autoformatter')
+    def _autoformatter_changed(self, change):
+        formatter = change.new
+        if formatter is None:
+            self.reformat_handler = lambda x: x
+        elif formatter == 'black':
+            self.reformat_handler = black_reformat_handler
+        else:
+            raise ValueError
+
     @observe('highlighting_style')
     @observe('colors')
     def _highlighting_style_changed(self, change):
         self.refresh_style()
 
     def refresh_style(self):
-        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
+        self._style = self._make_style_from_name_or_cls(
+            self.highlighting_style)
 
     highlighting_style_overrides = Dict(
         help="Override highlighting format for specific tokens").tag(
@@ -197,10 +245,6 @@ class TerminalInteractiveShell(InteractiveShell):
     @default('prompts')
     def _prompts_default(self):
         return self.prompts_class(self)
-
-#    @observe('prompts')
-#    def _(self, change):
-#        self._update_layout()
 
     @default('displayhook_class')
     def _displayhook_class_default(self):
@@ -327,8 +371,7 @@ class TerminalInteractiveShell(InteractiveShell):
             **self._extra_prompt_options())
 
     def _make_style_from_name_or_cls(self, name_or_cls):
-        """
-        Small wrapper that make an IPython compatible style from a style name.
+        """Small wrapper that make an IPython compatible style from a style name.
 
         We need that to add style for prompt ... etc.
         """
@@ -368,8 +411,8 @@ class TerminalInteractiveShell(InteractiveShell):
                         Token.OutPrompt: '#ansidarkred',
                         Token.OutPromptNum: '#ansired bold',
                     })
-            elif legacy =='nocolor':
-                style_cls=_NoStyle
+            elif legacy == 'nocolor':
+                style_cls = _NoStyle
             # hold up how is this missing from master
             # elif legacy == 'nocolor':
             #     style_cls = _NoStyle
@@ -429,15 +472,15 @@ class TerminalInteractiveShell(InteractiveShell):
             get_message = get_message()
 
         return {
-                'complete_in_thread': False,
-                'lexer':IPythonPTLexer(),
-                'reserve_space_for_menu':self.space_for_menu,
-                'message': get_message,
-                'prompt_continuation': (
-                    lambda width, lineno, is_soft_wrap:
-                        PygmentsTokens(self.prompts.continuation_prompt_tokens(width))),
-                'multiline': True,
-                'complete_style': self.pt_complete_style,
+            'complete_in_thread': False,
+            'lexer': IPythonPTLexer(),
+            'reserve_space_for_menu': self.space_for_menu,
+            'message': get_message,
+            'prompt_continuation': (
+                lambda width, lineno, is_soft_wrap:
+                PygmentsTokens(self.prompts.continuation_prompt_tokens(width))),
+            'multiline': True,
+            'complete_style': self.pt_complete_style,
 
             # Highlight matching brackets, but only when this setting is
             # enabled, and only when the DEFAULT_BUFFER has the focus.
@@ -501,7 +544,6 @@ class TerminalInteractiveShell(InteractiveShell):
     def __init__(self, *args, **kwargs):
         """Why is this class built so that every individual method calls it's super?"""
         super().__init__(*args, **kwargs)
-        # self.init_aliases()
         self.init_prompt_toolkit_cli()
         self.init_term_title()
         self.keep_running = True
@@ -513,13 +555,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     rl_next_input = None
 
-    def interact(self, display_banner=DISPLAY_BANNER_DEPRECATED):
-
-        if display_banner is not DISPLAY_BANNER_DEPRECATED:
-            warn(
-                'interact `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.',
-                DeprecationWarning,
-                stacklevel=2)
+    def interact(self):
 
         self.keep_running = True
         while self.keep_running:
@@ -537,6 +573,16 @@ class TerminalInteractiveShell(InteractiveShell):
                     self.run_cell(code, store_history=True)
 
     def mainloop(self, display_banner=DISPLAY_BANNER_DEPRECATED):
+        """I think this is the method to drives the whole application.
+
+        It calls ``while True:: self.interact()`` which seems like it.
+
+        Parameters
+        -----------
+        DISPLAY_BANNER_DEPRECATED : str
+            Deprecated parameter don't worry about it.
+
+        """
         # An extra layer of protection in case someone mashing Ctrl-C breaks
         # out of our internal code.
         if display_banner is not DISPLAY_BANNER_DEPRECATED:
@@ -569,7 +615,7 @@ class TerminalInteractiveShell(InteractiveShell):
     active_eventloop = None
 
     def enable_gui(self, gui=None):
-        if gui:
+        if gui and (gui != 'inline'):
             self.active_eventloop, self._inputhook =\
                 get_inputhook_name_and_func(gui)
         else:
@@ -580,7 +626,21 @@ class TerminalInteractiveShell(InteractiveShell):
     system = InteractiveShell.system_raw
 
     def auto_rewrite_input(self, cmd):
-        """Overridden from the parent class to use fancy rewriting prompt"""
+        """Overridden from the parent class to use fancy rewriting prompt.
+
+        Parameters
+        ----------
+        cmd : str
+            Tokens to print for the new prompt.
+
+        Notes
+        ------
+        Probably worth mentioning to anyone implementing a modified
+        :class:`~IPython.terminal.prompts.Prompts` class that this method
+        expects the new class to have a method
+        :meth:`~prompts.rewrite_prompt_tokens`.
+
+        """
         if not self.show_rewritten_input:
             return
 
@@ -603,6 +663,9 @@ class TerminalInteractiveShell(InteractiveShell):
         elif self._prompts_before:
             self.prompts = self._prompts_before
             self._prompts_before = None
+
+    def __repr__(self):
+        return ''.join(self.__class__.__name__)
 
 
 InteractiveShellABC.register(TerminalInteractiveShell)

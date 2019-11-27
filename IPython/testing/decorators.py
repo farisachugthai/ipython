@@ -70,6 +70,7 @@ def as_unittest(func):
 
     return Tester
 
+
 # Utility functions
 
 
@@ -107,7 +108,6 @@ def skipif(skip_condition, msg=None):
     transmit function name, and various other metadata.
 
     """
-
     def skip_decorator(f):
         # Local import to avoid a hard nose dependency and only incur the
         # import time overhead at actual test-time.
@@ -117,6 +117,7 @@ def skipif(skip_condition, msg=None):
         if callable(skip_condition):
             skip_val = skip_condition
         else:
+
             def skip_val():
                 return skip_condition
 
@@ -155,6 +156,7 @@ def skipif(skip_condition, msg=None):
 
     return skip_decorator
 
+
 # A version with the condition set to true, common case just to attach a
 # message to a skip decorator
 
@@ -183,13 +185,16 @@ def onlyif(condition, msg):
     """The reverse from skipif, see skipif for details."""
 
     if callable(condition):
+
         def skip_condition():
             return not condition()
     else:
+
         def skip_condition():
             return not condition
 
     return skipif(skip_condition, msg)
+
 
 # -----------------------------------------------------------------------------
 # Utility functions for decorators
@@ -213,7 +218,6 @@ def module_not_available(module):
 # -----------------------------------------------------------------------------
 # Decorators for public use
 
-
 # Decorators to skip certain tests on specific platforms.
 skip_win32 = skipif(sys.platform == 'win32',
                     "This test does not run under Windows")
@@ -221,7 +225,6 @@ skip_linux = skipif(sys.platform.startswith('linux'),
                     "This test does not run under Linux")
 skip_osx = skipif(sys.platform == 'darwin',
                   "This test does not run under OS X")
-
 
 # Decorators to skip tests if not on specific platforms.
 skip_if_not_win32 = skipif(sys.platform != 'win32',
@@ -231,32 +234,32 @@ skip_if_not_linux = skipif(not sys.platform.startswith('linux'),
 skip_if_not_osx = skipif(sys.platform != 'darwin',
                          "This test only runs under OSX")
 
-
-_x11_skip_cond = (sys.platform not in ('darwin', 'win32') and
-                  os.environ.get('DISPLAY', '') == '')
+_x11_skip_cond = (sys.platform not in ('darwin', 'win32')
+                  and os.environ.get('DISPLAY', '') == '')
 _x11_skip_msg = "Skipped under *nix when X11/XOrg not available"
 
 skip_if_no_x11 = skipif(_x11_skip_cond, _x11_skip_msg)
 
-
 # Decorators to skip certain tests on specific platform/python combinations
-skip_win32_py38 = skipif(sys.version_info > (3,8) and os.name == 'nt')
-
+skip_win32_py38 = skipif(sys.version_info > (3, 8) and os.name == 'nt')
 
 # not a decorator itself, returns a dummy function to be used as setup
 
 
 def skip_file_no_x11(name):
-    warnings.warn("The function `skip_file_no_x11` is deprecated since IPython 4.0",
-                  DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "The function `skip_file_no_x11` is deprecated since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2)
     return decorated_dummy(skip_if_no_x11, name) if _x11_skip_cond else None
+
 
 # Other skip decorators
 
 
 # generic skip without module
-def skip_without(mod): return skipif(
-    module_not_available(mod), "This test requires %s" % mod)
+def skip_without(mod):
+    return skipif(module_not_available(mod), "This test requires %s" % mod)
 
 
 skipif_not_numpy = skip_without('numpy')
@@ -271,7 +274,8 @@ skip_known_failure = knownfailureif(True, 'This test is known to fail')
 # between different decorators based on OS or other conditions
 
 
-def null_deco(f): return f
+def null_deco(f):
+    return f
 
 
 # Some tests only run where we can use unicode paths. Note that we can't just
@@ -284,8 +288,9 @@ else:
     unicode_paths = True
     f.close()
 
-onlyif_unicode_paths = onlyif(unicode_paths, ("This test is only applicable "
-                                              "where we can use unicode in filenames."))
+onlyif_unicode_paths = onlyif(unicode_paths,
+                              ("This test is only applicable "
+                               "where we can use unicode in filenames."))
 
 
 def onlyif_cmds_exist(*commands):

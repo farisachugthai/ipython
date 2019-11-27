@@ -13,6 +13,7 @@ from _pytest.nose import pytest_runtest_setup, teardown_nose, is_potential_noset
 from .testing import tools
 
 
+# @pytest.fixture
 def get_ipython():
     from .terminal.interactiveshell import TerminalInteractiveShell
     if TerminalInteractiveShell._instance:
@@ -24,6 +25,12 @@ def get_ipython():
     # Create and initialize our test-friendly IPython instance.
     shell = TerminalInteractiveShell.instance(config=config)
     return shell
+
+
+@pytest.fixture
+def ip():
+    """Raises error as fixtures aren't supposed to be called directly."""
+    return get_ipython()
 
 
 @pytest.fixture(scope='session', autouse=True)

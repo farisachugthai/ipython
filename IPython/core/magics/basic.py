@@ -11,9 +11,8 @@ from textwrap import dedent, indent
 import sys
 from warnings import warn
 
-# from traitlets.utils.importstring import import_item
-
-from IPython.core import magic_arguments, page
+from IPython.core import magic_arguments  # page
+from IPython.core.payloadpage import page
 from IPython.core.error import UsageError
 from IPython.core.magic import Magics, magics_class, line_magic, magic_escapes
 from IPython.utils.text import format_screen  # , dedent, indent
@@ -64,7 +63,7 @@ class MagicsDisplay:
                     if (v not in self.ignore)])),
                '', 'Available cell magics:', cesc + ('  ' + cesc).join(
             sorted([m for m, v in magics['cell'].items()
-                if (v not in self.ignore)])), '', mman.auto_status()]
+                    if (v not in self.ignore)])), '', mman.auto_status()]
         return '\n'.join(out)
 
     def _repr_pretty_(self, p, cycle):
@@ -103,7 +102,12 @@ class BasicMagics(Magics):
 
     These are various magics that don't fit into specific categories but that
     are all part of the base 'IPython experience'.
+
+    Also implements a pretty great example of how to use
+    :mod:`IPython.core.magic_arguments`.
+
     """
+
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('-l',
                               '--line',
@@ -130,28 +134,33 @@ class BasicMagics(Magics):
         --------
         ::
 
-          In [1]: %alias_magic t timeit
-          Created `%t` as an alias for `%timeit`.
-          Created `%%t` as an alias for `%%timeit`.
+            In [1]: %alias_magic t timeit
+            Created `%t` as an alias for `%timeit`.
+            Created `%%t` as an alias for `%%timeit`.
 
-          In [2]: %t -n1 pass
-          1 loops, best of 3: 954 ns per loop
+            In [2]: %t -n1 pass
+            1 loops, best of 3: 954 ns per loop
 
-          In [3]: %%t -n1
-             ...: pass
-             ...:
-          1 loops, best of 3: 954 ns per loop
+            In [3]: %%t -n1
+                ...: pass
+                ...:
+            1 loops, best of 3: 954 ns per loop
 
-          In [4]: %alias_magic --cell whereami pwd
-          UsageError: Cell magic function `%%pwd` not found.
-          In [5]: %alias_magic --line whereami pwd
-          Created `%whereami` as an alias for `%pwd`.
+            In [4]: %alias_magic --cell whereami pwd
+            UsageError: Cell magic function `%%pwd` not found.
+            In [5]: %alias_magic --line whereami pwd
+            Created `%whereami` as an alias for `%pwd`.
 
-          In [6]: %whereami
-          Out[6]: u'/home/testuser'
+            In [6]: %whereami
+            Out[6]: u'/home/testuser'
 
-          In [7]: %alias_magic h history "-p -l 30" --line
-          Created `%h` as an alias for `%history -l 30`.
+            In [7]: %alias_magic h history "-p -l 30" --line
+            Created `%h` as an alias for `%history -l 30`.
+
+        Raises
+        -------
+        :exc:`UsageError`
+
         """
 
         args = magic_arguments.parse_argstring(self.alias_magic, line)
@@ -207,8 +216,7 @@ class BasicMagics(Magics):
 
     def _magic_docs(self, brief=False, rest=False):
         """Return docstrings from magic functions."""
-        mman = self.shell.magics_manager
-        docs = mman.lsmagic_docs(brief, missing='No documentation')
+        docs = self.shell.magics_manager.lsmagic_docs(brief, missing='No documentation')
 
         if rest:
             format_string = '**%s%s**::\n\n%s\n\n'
@@ -216,14 +224,15 @@ class BasicMagics(Magics):
             format_string = '%s%s:\n%s\n'
 
         return ''.join([
-                           format_string %
-                           (magic_escapes['line'], fname, indent(dedent(fndoc)))
-                           for fname, fndoc in sorted(docs['line'].items())
-                       ] + [
-                           format_string %
-                           (magic_escapes['cell'], fname, indent(dedent(fndoc)))
-                           for fname, fndoc in sorted(docs['cell'].items())
-                       ])
+            format_string %
+            (magic_escapes['line'], fname, dedent(fndoc))
+            for fname, fndoc in sorted(docs['line'].items())
+        ] + [
+            format_string %
+            (magic_escapes['cell'],
+             fname, indent(dedent(fndoc)))
+            for fname, fndoc in sorted(docs['cell'].items())
+        ])
 
     @line_magic
     def magic(self, parameter_s=''):
@@ -311,7 +320,8 @@ Currently the magic system has the following functions:""",
 
         Options:
 
-          -r: page str(object), don't pretty-print it."""
+          -r: page str(object), don't pretty-print it.
+          """
 
         # After a function contributed by Olivier Aubert, slightly modified.
 

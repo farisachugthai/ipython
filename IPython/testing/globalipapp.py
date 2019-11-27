@@ -31,11 +31,12 @@ class StreamProxy(utils_io.IOStream):
     name : str
         The name of the stream. This will be requested anew at every call
     """
-
     def __init__(self, name):
-        warnings.warn("StreamProxy is deprecated and unused as of IPython 5", DeprecationWarning,
-                      stacklevel=2,
-                      )
+        warnings.warn(
+            "StreamProxy is deprecated and unused as of IPython 5",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.name = name
 
     @property
@@ -55,18 +56,15 @@ def get_ipython():
 # better with doctest (doctest captures on raw stdout, so we need to direct
 # various types of output there otherwise it will miss them).
 
+
 def xsys(self, cmd):
     """Replace the default system call with a capturing one for doctest.
     """
     # We use getoutput, but we need to strip it because pexpect captures
     # the trailing newline differently from commands.getoutput
-    print(
-        self.getoutput(
-            cmd,
-            split=False,
-            depth=1).rstrip(),
-        end='',
-        file=sys.stdout)
+    print(self.getoutput(cmd, split=False, depth=1).rstrip(),
+          end='',
+          file=sys.stdout)
     sys.stdout.flush()
 
 
@@ -96,8 +94,7 @@ def start_ipython():
     config.TerminalInteractiveShell.simple_prompt = True
 
     # Create and initialize our test-friendly IPython instance.
-    shell = TerminalInteractiveShell.instance(config=config,
-                                              )
+    shell = TerminalInteractiveShell.instance(config=config, )
 
     # A few more tweaks needed for playing nicely with doctests...
 

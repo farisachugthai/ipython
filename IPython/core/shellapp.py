@@ -4,7 +4,7 @@ launch InteractiveShell instances, load extensions, etc.
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
+import abc
 import glob
 import os
 from pathlib import Path
@@ -260,10 +260,6 @@ class InteractiveShellApp(Configurable):
             idx = 0
         sys.path.insert(idx, '')
 
-    def init_shell(self):
-        """This may be an ABC method. Only line is to raise NotImplementedError."""
-        raise NotImplementedError("Override in subclasses")
-
     def init_gui_pylab(self):
         """Enable GUI event loop integration, taking pylab into account."""
         enable = False
@@ -384,11 +380,11 @@ class InteractiveShellApp(Configurable):
                 except BaseException:
                     self.log.warning("Error in executing line in user "
                                      "namespace: %s" % line)
-                    self.shell.showtraceback()
+                    # self.shell.showtraceback()
         except BaseException:
             self.log.warning(
                 "Unknown error in handling IPythonApp.exec_lines:")
-            self.shell.showtraceback()
+            # self.shell.showtraceback()
 
     def _exec_file(self, fname, shell_futures=False):
         """Executes files with :func:`IPython.utils.path.filefind`.
@@ -469,7 +465,7 @@ class InteractiveShellApp(Configurable):
                 self.log.warning(
                     "Unknown error in handling PYTHONSTARTUP file %s:",
                     python_startup)
-                self.shell.showtraceback()
+                # self.shell.showtraceback()
         for startup_dir in startup_dirs[::-1]:
             startup_files += glob.glob(os.path.join(startup_dir, '*.py'))
             startup_files += glob.glob(os.path.join(startup_dir, '*.ipy'))
@@ -482,7 +478,7 @@ class InteractiveShellApp(Configurable):
                 self._exec_file(fname)
         except BaseException:
             self.log.warning("Unknown error in handling startup files:")
-            self.shell.showtraceback()
+            # self.shell.showtraceback()
 
     def _run_exec_files(self):
         """Run files from IPythonApp.exec_files"""
@@ -497,7 +493,7 @@ class InteractiveShellApp(Configurable):
         except BaseException:
             self.log.warning(
                 "Unknown error in handling IPythonApp.exec_files:")
-            self.shell.showtraceback()
+            # self.shell.showtraceback()
 
     def _run_cmd_line_code(self):
         """Run code or file specified at the command-line"""
@@ -510,7 +506,7 @@ class InteractiveShellApp(Configurable):
             except BaseException:
                 self.log.warning(
                     "Error in executing line in user namespace: %s" % line)
-                self.shell.showtraceback()
+                # self.shell.showtraceback()
                 if not self.interact:
                     self.log.critical("IPython not interactive! Exiting.")
                     self.exit(1)
@@ -524,7 +520,7 @@ class InteractiveShellApp(Configurable):
             try:
                 self._exec_file(fname, shell_futures=True)
             except BaseException:
-                self.shell.showtraceback(tb_offset=4)
+                # self.shell.showtraceback(tb_offset=4)
                 if not self.interact:
                     self.log.critical("IPython not interactive! Exiting.")
                     self.exit(1)
@@ -541,3 +537,8 @@ class InteractiveShellApp(Configurable):
                                            self.shell.user_ns)
             finally:
                 sys.argv = save_argv
+
+class InteractiveShellAppABC(abc.ABCMeta):
+
+    def init_shell(self):
+        raise NotImplementedError("Override in subclasses")

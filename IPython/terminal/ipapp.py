@@ -40,6 +40,8 @@ from traitlets import Bool, List, Type, default, observe
 from traitlets.config.application import boolean_flag, catch_config_error
 from traitlets.config.loader import Config
 
+# Ensure you comment this out later
+logging.basicConfig(level=logging.DEBUG)
 
 # This should probably be in ipapp.py.
 # From IPython/__init__
@@ -182,8 +184,8 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
 
     """
     name = u'ipython'
-    description = usage.cl_usage
-    crash_handler_class = IPAppCrashHandler
+    # description = usage.cl_usage
+    # crash_handler_class = IPAppCrashHandler
     examples = """
 ipython --matplotlib       # enable matplotlib integration
 ipython --matplotlib=qt    # enable matplotlib integration with qt4 backend
@@ -201,6 +203,9 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     flags = flags
     aliases = aliases
     classes = List()
+    # apparently self hasn't been defined yet
+    # classes = List(self._classes_default(),
+                   # help='Available classes').tag(config=False)
 
     interactive_shell_class = Type(
         klass=object,
@@ -304,6 +309,16 @@ ipython locate profile foo # print the path to the directory for profile `foo`
 
         return super().parse_command_line(argv)
 
+    def _trycatch(self, line, else_to_run=None):
+        """This is done so many times in this repo why not make it official?"""
+        try:
+            line
+        except BaseException as e:
+            logging.ERROR(e)
+            return
+        else:
+            else_to_run
+
     @catch_config_error
     def initialize(self, argv=None):
         """Do actions after construct, but before starting the app."""
@@ -313,18 +328,22 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             # don't bother initializing further, starting subapp
             return
 
-        logging.info(self.extra_args)
+        logging.info('{}: Extra args was:: {}'.format(
+            __file__, self.extra_args))
 
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]
 
-        self.init_path()
+        self._trycatch(self.init_path())
+        # self.init_path()
 
         # create the shell
-        self.init_shell()
+        # self.init_shell()
+        self._trycatch(self.init_shell())
 
         # and draw the banner
-        self.init_banner()
+        # self.init_banner()
+        self._trycatch(self.init_banner())
 
         # Now a variety of things that happen after the banner is printed.
         self.init_gui_pylab()
@@ -343,6 +362,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         """
         self.shell = self.interactive_shell_class.instance(
             parent=self,
+            config=self.config,
             profile_dir=self.profile_dir,
             ipython_dir=self.ipython_dir,
             user_ns=self.user_ns)

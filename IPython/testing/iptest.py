@@ -17,7 +17,6 @@ itself from the command line. There are two ways of running this script:
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import glob
 from importlib import import_module
 
@@ -44,84 +43,75 @@ from IPython.external.decorators import KnownFailure, knownfailureif
 
 pjoin = path.join
 
-
 # Enable printing all warnings raise by IPython's modules
-warnings.filterwarnings(
-    'ignore',
-    message='.*Matplotlib is building the font cache.*',
-    category=UserWarning,
-    module='.*')
-warnings.filterwarnings(
-    'error',
-    message='.*',
-    category=ResourceWarning,
-    module='.*')
-warnings.filterwarnings(
-    'error',
-    message=".*{'config': True}.*",
-    category=DeprecationWarning,
-    module='IPy.*')
-warnings.filterwarnings(
-    'default',
-    message='.*',
-    category=Warning,
-    module='IPy.*')
+warnings.filterwarnings('ignore',
+                        message='.*Matplotlib is building the font cache.*',
+                        category=UserWarning,
+                        module='.*')
+warnings.filterwarnings('error',
+                        message='.*',
+                        category=ResourceWarning,
+                        module='.*')
+warnings.filterwarnings('error',
+                        message=".*{'config': True}.*",
+                        category=DeprecationWarning,
+                        module='IPy.*')
+warnings.filterwarnings('default',
+                        message='.*',
+                        category=Warning,
+                        module='IPy.*')
 
-warnings.filterwarnings(
-    'error',
-    message='.*apply_wrapper.*',
-    category=DeprecationWarning,
-    module='.*')
-warnings.filterwarnings(
-    'error',
-    message='.*make_label_dec',
-    category=DeprecationWarning,
-    module='.*')
-warnings.filterwarnings(
-    'error',
-    message='.*decorated_dummy.*',
-    category=DeprecationWarning,
-    module='.*')
-warnings.filterwarnings(
-    'error',
-    message='.*skip_file_no_x11.*',
-    category=DeprecationWarning,
-    module='.*')
-warnings.filterwarnings(
-    'error',
-    message='.*onlyif_any_cmd_exists.*',
-    category=DeprecationWarning,
-    module='.*')
+warnings.filterwarnings('error',
+                        message='.*apply_wrapper.*',
+                        category=DeprecationWarning,
+                        module='.*')
+warnings.filterwarnings('error',
+                        message='.*make_label_dec',
+                        category=DeprecationWarning,
+                        module='.*')
+warnings.filterwarnings('error',
+                        message='.*decorated_dummy.*',
+                        category=DeprecationWarning,
+                        module='.*')
+warnings.filterwarnings('error',
+                        message='.*skip_file_no_x11.*',
+                        category=DeprecationWarning,
+                        module='.*')
+warnings.filterwarnings('error',
+                        message='.*onlyif_any_cmd_exists.*',
+                        category=DeprecationWarning,
+                        module='.*')
 
-warnings.filterwarnings(
-    'error',
-    message='.*disable_gui.*',
-    category=DeprecationWarning,
-    module='.*')
+warnings.filterwarnings('error',
+                        message='.*disable_gui.*',
+                        category=DeprecationWarning,
+                        module='.*')
 
-warnings.filterwarnings(
-    'error',
-    message='.*ExceptionColors global is deprecated.*',
-    category=DeprecationWarning,
-    module='.*')
+warnings.filterwarnings('error',
+                        message='.*ExceptionColors global is deprecated.*',
+                        category=DeprecationWarning,
+                        module='.*')
 
 # Jedi older versions
-warnings.filterwarnings(
-    'error',
-    message='.*elementwise != comparison failed and.*',
-    category=FutureWarning,
-    module='.*')
+warnings.filterwarnings('error',
+                        message='.*elementwise != comparison failed and.*',
+                        category=FutureWarning,
+                        module='.*')
 
-if version_info < (6,):
+if version_info < (6, ):
     # nose.tools renames all things from `camelCase` to `snake_case` which raise an
     # warning with the runner they also import from standard import library. (as of Dec 2015)
     # Ignore, let's revisit that in a couple of years for IPython 6.
-    warnings.filterwarnings(
-        'ignore', message='.*Please use assertEqual instead', category=Warning, module='IPython.*')
+    warnings.filterwarnings('ignore',
+                            message='.*Please use assertEqual instead',
+                            category=Warning,
+                            module='IPython.*')
 
-if version_info < (8,):
-    warnings.filterwarnings('ignore', message='.*Completer.complete.*',
-                            category=PendingDeprecationWarning, module='.*')
+if version_info < (8, ):
+    warnings.filterwarnings('ignore',
+                            message='.*Completer.complete.*',
+                            category=PendingDeprecationWarning,
+                            module='.*')
 else:
     warnings.warn(
         'Completer.complete was pending deprecation and should be changed to Deprecated',
@@ -139,11 +129,12 @@ def monkeypatch_xunit():
 
     def addError(self, test, err, capt=None):
         if issubclass(err[0], KnownFailureTest):
-            err = (SkipTest,) + err[1:]
+            err = (SkipTest, ) + err[1:]
         return self.orig_addError(test, err, capt)
 
     Xunit.orig_addError = Xunit.addError
     Xunit.addError = addError
+
 
 # -----------------------------------------------------------------------------
 # Check which dependencies are installed and greater than minimum version.
@@ -189,17 +180,24 @@ def test_for(item, min_version=None, callback=extract_version):
 
 # Global dict where we can store information on what we have and what we don't
 # have available at test run time
-have = {'matplotlib': test_for('matplotlib'),
-        'pygments': test_for('pygments'),
-        'sqlite3': test_for('sqlite3')}
+have = {
+    'matplotlib': test_for('matplotlib'),
+    'pygments': test_for('pygments'),
+    'sqlite3': test_for('sqlite3')
+}
 
 # -----------------------------------------------------------------------------
 # Test suite definitions
 # -----------------------------------------------------------------------------
 
-test_group_names = ['core',
-                    'extensions', 'lib', 'terminal', 'testing', 'utils',
-                    ]
+test_group_names = [
+    'core',
+    'extensions',
+    'lib',
+    'terminal',
+    'testing',
+    'utils',
+]
 
 
 class TestSection(object):
@@ -224,9 +222,10 @@ class TestSection(object):
 
 
 # Name -> (include, exclude, dependencies_met)
-test_sections = {n: TestSection(n, ['IPython.%s' % n])
-                 for n in test_group_names}
-
+test_sections = {
+    n: TestSection(n, ['IPython.%s' % n])
+    for n in test_group_names
+}
 
 # Exclusions and dependencies
 # ---------------------------
@@ -274,14 +273,15 @@ sec = test_sections['extensions']
 # autoreload does some strange stuff, so move it to its own test section
 sec.exclude('autoreload')
 sec.exclude('tests.test_autoreload')
-test_sections['autoreload'] = TestSection(
-    'autoreload', ['IPython.extensions.autoreload', 'IPython.extensions.tests.test_autoreload'])
+test_sections['autoreload'] = TestSection('autoreload', [
+    'IPython.extensions.autoreload', 'IPython.extensions.tests.test_autoreload'
+])
 test_group_names.append('autoreload')
-
 
 # -----------------------------------------------------------------------------
 # Functions and classes
 # -----------------------------------------------------------------------------
+
 
 def check_exclusions_exist():
     from IPython.paths import get_ipython_package_dir
@@ -421,9 +421,10 @@ class SubprocessStreamCapturePlugin(Plugin):
         captured = self.stream_capturer.get_buffer().decode('utf-8', 'replace')
         if captured.strip():
             ev = safe_str(ev)
-            out = [ev, '>> begin captured subprocess output <<',
-                   captured,
-                   '>> end captured subprocess output <<']
+            out = [
+                ev, '>> begin captured subprocess output <<', captured,
+                '>> end captured subprocess output <<'
+            ]
             return ec, '\n'.join(out), tb
 
         return err
@@ -478,15 +479,16 @@ def run_iptest():
     else:
         section = TestSection(arg1, includes=[arg1])
 
-    argv = sys.argv + ['--detailed-errors',  # extra info in tracebacks
-                       # We add --exe because of setuptools' imbecility (it
-                       # blindly does chmod +x on ALL files).  Nose does the
-                       # right thing and it tries to avoid executables,
-                       # setuptools unfortunately forces our hand here.  This
-                       # has been discussed on the distutils list and the
-                       # setuptools devs refuse to fix this problem!
-                       '--exe',
-                       ]
+    argv = sys.argv + [
+        '--detailed-errors',  # extra info in tracebacks
+        # We add --exe because of setuptools' imbecility (it
+        # blindly does chmod +x on ALL files).  Nose does the
+        # right thing and it tries to avoid executables,
+        # setuptools unfortunately forces our hand here.  This
+        # has been discussed on the distutils list and the
+        # setuptools devs refuse to fix this problem!
+        '--exe',
+    ]
     if '-a' not in argv and '-A' not in argv:
         argv = argv + ['-a', '!crash']
 
@@ -501,8 +503,11 @@ def run_iptest():
         # for nose >= 0.11, though unfortunately nose 0.10 doesn't support it.
         argv.append('--traverse-namespace')
 
-    plugins = [ExclusionPlugin(section.excludes), KnownFailure(),
-               SubprocessStreamCapturePlugin()]
+    plugins = [
+        ExclusionPlugin(section.excludes),
+        KnownFailure(),
+        SubprocessStreamCapturePlugin()
+    ]
 
     # we still have some vestigial doctests in core
     if section.name.startswith(('core', 'IPython.core', 'IPython.utils')):

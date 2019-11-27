@@ -91,18 +91,14 @@ class Test_ipexec_validate(tt.TempFileMixin):
     def test_main_path(self):
         """Test with only stdout results.
         """
-        self.mktmp("print('A')\n"
-                   "print('B')\n"
-                   )
+        self.mktmp("print('A')\n" "print('B')\n")
         out = "A\nB"
         tt.ipexec_validate(self.fname, out)
 
     def test_main_path2(self):
         """Test with only stdout results, expecting windows line endings.
         """
-        self.mktmp("print('A')\n"
-                   "print('B')\n"
-                   )
+        self.mktmp("print('A')\n" "print('B')\n")
         out = "A\r\nB"
         tt.ipexec_validate(self.fname, out)
 
@@ -113,8 +109,7 @@ class Test_ipexec_validate(tt.TempFileMixin):
                    "print('A')\n"
                    "print('B')\n"
                    "print('C', file=sys.stderr)\n"
-                   "print('D', file=sys.stderr)\n"
-                   )
+                   "print('D', file=sys.stderr)\n")
         out = "A\nB"
         tt.ipexec_validate(self.fname, expected_out=out, expected_err="C\nD")
 
@@ -125,8 +120,7 @@ class Test_ipexec_validate(tt.TempFileMixin):
                    "print('A')\n"
                    "print('B')\n"
                    "print('C', file=sys.stderr)\n"
-                   "print('D', file=sys.stderr)\n"
-                   )
+                   "print('D', file=sys.stderr)\n")
         out = "A\r\nB"
         tt.ipexec_validate(self.fname, expected_out=out, expected_err="C\r\nD")
 

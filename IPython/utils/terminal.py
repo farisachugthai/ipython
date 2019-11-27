@@ -1,6 +1,4 @@
-# encoding: utf-8
-"""
-Utilities for working with terminals.
+"""Utilities for working with terminals.
 
 Authors:
 
@@ -8,7 +6,6 @@ Authors:
 * Fernando Perez
 * Alexander Belchenko (e-mail: bialix AT ukr.net)
 """
-
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -32,8 +29,8 @@ else:
         pass
 
 
-def toggle_set_term_title(val):
-    """Control whether set_term_title is active or not.
+def toggle_set_term_title(val=False):
+    """Control whether `set_term_title` is active or not.
 
     set_term_title() allows writing to the console titlebar.  In embedded
     widgets this can cause problems, so this call can be used to toggle it on
@@ -41,25 +38,30 @@ def toggle_set_term_title(val):
 
     The default state of the module is for the function to be disabled.
 
+    .. versionchanged:: 7.10.0
+
+       Parameter now optional
+
     Parameters
     ----------
-      val : bool
+    val : bool, optional
         If True, set_term_title() actually writes to the terminal (using the
         appropriate platform-specific module).  If False, it is a no-op.
+
     """
     global ignore_termtitle
     ignore_termtitle = not val
 
 
 def _set_term_title_xterm(title):
-    """Change virtual terminal title in xterm-workalikes """
+    """Change virtual terminal title in xterm-workalikes."""
     # save the current title to the xterm "stack"
     sys.stdout.write('\033[22;0t')
     sys.stdout.write('\033]0;%s\007' % title)
 
 
 def _restore_term_title_xterm():
-    """sys.stdout.write('\033[23;0t')."""
+    r"""All this is:: sys.stdout.write('\033[23;0t')."""
     sys.stdout.write('\033[23;0t')
 
 
@@ -104,9 +106,11 @@ def set_term_title(title):
     """Set terminal title using the necessary platform-dependent calls."""
     if ignore_termtitle:
         return
+    _set_term_title(title)
 
 
 def restore_term_title():
-    """Restore, if possible, terminal title to the original state"""
+    """Restore, if possible, terminal title to the original state."""
     if ignore_termtitle:
         return
+    # _restore_term_title()
