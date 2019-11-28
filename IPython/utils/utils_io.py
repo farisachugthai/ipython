@@ -3,6 +3,73 @@
 # Distributed under the terms of the Modified BSD License.
 import sys
 import tempfile
+import warnings
+
+
+class IOStream:
+    """Deprecated class but brought back because it's in the globaliptest file."""
+
+    def __init__(self, stream, fallback=None):
+        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
+             DeprecationWarning, stacklevel=2)
+        if not hasattr(stream, 'write') or not hasattr(stream, 'flush'):
+            if fallback is not None:
+                stream = fallback
+            else:
+                raise ValueError("fallback required, but not specified")
+        self.stream = stream
+        self._swrite = stream.write
+
+        # clone all methods not overridden:
+        def clone(meth):
+            return not hasattr(self, meth) and not meth.startswith('_')
+        for meth in filter(clone, dir(stream)):
+            try:
+                val = getattr(stream, meth)
+            except AttributeError:
+                pass
+            else:
+                setattr(self, meth, val)
+
+    def __repr__(self):
+        cls = self.__class__
+        tpl = '{mod}.{cls}({args})'
+        return tpl.format(mod=cls.__module__, cls=cls.__name__, args=self.stream)
+
+    def write(self, data):
+        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
+             DeprecationWarning, stacklevel=2)
+        try:
+            self._swrite(data)
+        except:
+            try:
+                # print handles some unicode issues which may trip a plain
+                # write() call.  Emulate write() by using an empty end
+                # argument.
+                print(data, end='', file=self.stream)
+            except:
+                # if we get here, something is seriously broken.
+                print('ERROR - failed to write data to stream:', self.stream,
+                      file=sys.stderr)
+
+    def writelines(self, lines):
+        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
+             DeprecationWarning, stacklevel=2)
+        if isinstance(lines, str):
+            lines = [lines]
+        for line in lines:
+            self.write(line)
+
+    # This class used to have a writeln method, but regular files and streams
+    # in Python don't have this method. We need to keep this completely
+    # compatible so we removed it.
+
+    @property
+    def closed(self):
+        return self.stream.closed
+
+    def close(self):
+        pass
 
 
 class Tee:
@@ -123,3 +190,4 @@ def temp_pyfile(src, ext='.py'):
         f.write(src)
         f.flush()
     return fname
+

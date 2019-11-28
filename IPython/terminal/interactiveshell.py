@@ -556,6 +556,14 @@ class TerminalInteractiveShell(InteractiveShell):
     rl_next_input = None
 
     def interact(self):
+        """An oddly undocumented method.
+
+        When running this is the method that calls a lot of the mixin classes'
+        methods. For example, this will initiate ``run_code``.
+
+        Also of all the places to have no try/excepts, our self.run_code
+        block DEFINITELY should have one.
+        """
 
         self.keep_running = True
         while self.keep_running:
@@ -564,13 +572,29 @@ class TerminalInteractiveShell(InteractiveShell):
             try:
                 code = self.prompt_for_code()
             except EOFError:
-                if (not self.confirm_exit) \
-                        or self.ask_yes_no('Do you really want to exit ([y]/n)?', 'y', 'n'):
-                    self.ask_exit()
+                self.check_exit()
 
             else:
                 if code:
-                    self.run_cell(code, store_history=True)
+                    try:
+                        self.run_cell(code, store_history=True)
+                    except KeyboardInterrupt:
+                        self.log.warning('Interrupted!')
+                    except EOFError:
+                        self.check_exit()
+                    except ModuleNotFoundError:
+                        self.log.error('Error: Module Not Found!')
+                    except OSError as e:
+                        self.log.error('Error: {}'.format(e.__traceback__))
+                    except BaseException as e:
+                        self.log.warning(e)
+
+    def check_exit(self):
+        """A quicker way of checking if the user really wants to exit."""
+        if (not self.confirm_exit) \
+                or self.ask_yes_no('Do you really want to exit ([y]/n)?', 'y', 'n'):
+            self.ask_exit()
+
 
     def mainloop(self, display_banner=DISPLAY_BANNER_DEPRECATED):
         """I think this is the method to drives the whole application.

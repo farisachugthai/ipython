@@ -26,6 +26,7 @@ class DisplayHook(Configurable):
 
     This class does many things, but the basic idea is that it is a callable
     that gets called anytime user code returns a value.
+
     """
 
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
@@ -35,7 +36,15 @@ class DisplayHook(Configurable):
     cull_fraction = Float(0.2)
 
     def __init__(self, shell=None, cache_size=1000, **kwargs):
-        super(DisplayHook, self).__init__(shell=shell, **kwargs)
+        """
+        Parameters
+        ----------
+        shell :
+        cache_size :
+        kwargs :
+
+        """
+        super().__init__(shell=shell, **kwargs)
         cache_size_min = 3
         if cache_size <= 0:
             self.do_full_cache = 0
@@ -70,10 +79,13 @@ class DisplayHook(Configurable):
     # -------------------------------------------------------------------------
 
     def check_for_underscore(self):
-        """Check if the user has set the '_' variable by hand."""
-        # If something injected a '_' variable in __builtin__, delete
-        # ipython's automatic one so we don't clobber that.  gettext() in
-        # particular uses _, so we need to stay away from it.
+        """Check if the user has set the '_' variable by hand.
+
+        If something injected a '_' variable in ``__builtin__``, delete
+        IPython's automatic one so we don't clobber that. ``gettext`` in
+        particular uses :kbd:`_`, so we need to stay away from it.
+
+        """
         if '_' in builtin_mod.__dict__:
             try:
                 user_value = self.shell.user_ns['_']
@@ -227,7 +239,7 @@ class DisplayHook(Configurable):
                     '__': self.__,
                     '___': self.___
                 },
-                                interactive=False)
+                    interactive=False)
 
             # hackish access to top-level  namespace to create _1,_2...
             # dynamically

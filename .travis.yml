@@ -1,11 +1,7 @@
 ---
+# Config file for automatic testing at travis-ci.org
 # http://travis-ci.org/#!/ipython/ipython
 language: python
-
-addons:
-  apt:
-    packages:
-      - graphviz
 
 python:
     - 3.8
@@ -56,6 +52,9 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+# - pip3 install -U -r requirements.txt -e .
+
 install:
   - pip3 install pip --upgrade
   - pip3 install setuptools --upgrade
@@ -64,6 +63,9 @@ install:
   - pip3 install 'pytest<4' matplotlib
   - pip3 install codecov check-manifest --upgrade
 
+
+# command to run tests, e.g. python setup.py test
+# script: nosetests
 script:
   - check-manifest
   - |

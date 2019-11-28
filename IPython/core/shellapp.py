@@ -473,11 +473,17 @@ class InteractiveShellApp(Configurable):
             return
 
         self.log.info("Running startup files from %s...", startup_dir)
-        try:
-            for fname in sorted(startup_files):
+        for fname in sorted(startup_files):
+            try:
                 self._exec_file(fname)
-        except BaseException:
-            self.log.warning("Unknown error in handling startup files:")
+            except ImportError as e:
+                self.log.error('ImportError: {}'.format(e))
+
+            except KeyboardInterrupt:
+                sys.exit('Interrupted!')
+
+            except BaseException as e:
+                self.log.warning("Unknown error in handling startup files: {}".format(e))
             # self.shell.showtraceback()
 
     def _run_exec_files(self):
@@ -538,7 +544,9 @@ class InteractiveShellApp(Configurable):
             finally:
                 sys.argv = save_argv
 
+
 class InteractiveShellAppABC(abc.ABCMeta):
 
+    @abc.abstractmethod
     def init_shell(self):
         raise NotImplementedError("Override in subclasses")

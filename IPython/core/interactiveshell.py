@@ -2979,7 +2979,7 @@ class InteractiveShell(SingletonConfigurable):
                       exit_ignore=False,
                       raise_exceptions=False,
                       shell_futures=False):
-        """A safe version of the builtin execfile().
+        """A safe version of the builtin :func:`execfile`.
 
         This version will never throw an exception, but instead print
         helpful error messages to the screen.  This only works on pure
@@ -2992,57 +2992,68 @@ class InteractiveShell(SingletonConfigurable):
         where : tuple
             One or two namespaces, passed to execfile() as (globals,locals).
             If only one is given, it is passed as both.
-        exit_ignore : bool (False)
-            If True, then silence SystemExit for non-zero status (it is always
-            silenced for zero status, as it is so common).
-        raise_exceptions : bool (False)
+        exit_ignore : bool, optional
+            Defaults to False.
+            If True, then silence :exc:`SystemExit` for non-zero status.
+            (it is always silenced for zero status as this typically indicates
+            successful execution).
+        raise_exceptions : bool, optional
+            Defaults to False.
             If True raise exceptions everywhere. Meant for testing.
-        shell_futures : bool (False)
+        shell_futures : bool, optional
+            Defaults to False.
             If True, the code will share future statements with the interactive
-            shell. It will both be affected by previous __future__ imports, and
-            any __future__ imports in the code will affect the shell. If False,
-            __future__ imports are not shared in either direction.
+            shell. It will both be affected by previous ``__future__`` imports,
+            and any ``__future__`` imports in the code will affect the shell.
+            If False, ``__future__`` imports are not shared in either direction.
+
+        Notes
+        -----
+        Find things also in current directory.  This is needed to mimic the
+        behavior of running a script from the system command line, where
+        Python inserts the script's directory into sys.path
+
+        If the call was made with 0 or None exit status (sys.exit(0)
+        or sys.exit() ), don't bother showing a traceback, as both of
+        these are considered normal by the OS:
+        > python -c'import sys;sys.exit(0)'; echo $?
+        0
+        > python -c'import sys;sys.exit()'; echo $?
+        0
+        For other exit status, we show the exception unless
+        explicitly silenced, but only in short form.
 
         """
         fname = os.path.abspath(os.path.expanduser(fname))
-
         # Make sure we can open the file
         try:
             with open(fname):
                 pass
-        except BaseException:
-            warn('Could not open file <%s> for safe execution.' % fname)
-            return
+        except OSError:
+            warn('Error: Could not open file <%s> .' % str(fname))
+            return 127
+        except BaseException as e:
+            warn('Error: {}'.format(e.__traceback__))
 
-        # Find things also in current directory.  This is needed to mimic the
-        # behavior of running a script from the system command line, where
-        # Python inserts the script's directory into sys.path
         dname = os.path.dirname(fname)
 
         with prepended_to_syspath(dname), self.builtin_trap:
+            logging.debug('self.builtin_trap is: {}'.format(self.builtin_trap))
             try:
-                glob, loc = (where + (None, ))[:2]
-                exec(fname, glob, loc, self.compile if shell_futures else None)
+                glob, loc = (where + (None,))[:2]
+                # exec(fname, glob, loc, self.compile if shell_futures else None)
+                exec(fname,glob,loc)
             except SystemExit as status:
-                # If the call was made with 0 or None exit status (sys.exit(0)
-                # or sys.exit() ), don't bother showing a traceback, as both of
-                # these are considered normal by the OS:
-                # > python -c'import sys;sys.exit(0)'; echo $?
-                # 0
-                # > python -c'import sys;sys.exit()'; echo $?
-                # 0
-                # For other exit status, we show the exception unless
-                # explicitly silenced, but only in short form.
                 if status.code:
                     if raise_exceptions:
                         raise
-                    if not exit_ignore:
-                        self.showtraceback(exception_only=True)
+                    # if not exit_ignore:
+                        # self.showtraceback(exception_only=True)
             except BaseException:
                 if raise_exceptions:
                     raise
                 # tb offset is 2 because we wrap execfile
-                self.showtraceback(tb_offset=2)
+                # self.showtraceback(tb_offset=2)
 
     def safe_execfile_ipy(self,
                           fname,

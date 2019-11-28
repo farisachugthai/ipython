@@ -10,14 +10,14 @@ from traitlets.config.configurable import Configurable
 from traitlets import Instance
 
 
-class __BuiltinUndefined(object):
+class __BuiltinUndefined:
     pass
 
 
 BuiltinUndefined = __BuiltinUndefined()
 
 
-class __HideBuiltin(object):
+class __HideBuiltin:
     pass
 
 
@@ -25,12 +25,26 @@ HideBuiltin = __HideBuiltin()
 
 
 class BuiltinTrap(Configurable):
+    """Not sure what the builtin trap is but it's used in the safe_execfile methods.
+
+    Attributes
+    ----------
+    shell
+
+    Notes
+    -----
+    Why are the shell instances for all of the Configurables
+    :class:`~IPython.core.interactiveshell.InteractiveShellABC` and not just
+    InteractiveShell?
+
+    Hm.
+    """
 
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
                      allow_none=True)
 
     def __init__(self, shell=None):
-        super(BuiltinTrap, self).__init__(shell=shell, config=None)
+        super().__init__(shell=shell, config=None)
         self._orig_builtins = {}
         # We define this to track if a single BuiltinTrap is nested.
         # Only turn off the trap when the outermost call to __exit__ is made.
@@ -57,6 +71,9 @@ class BuiltinTrap(Configurable):
         self._nested_level -= 1
         # Returning False will cause exceptions to propagate
         return False
+
+    def __repr__(self):
+        return ''.format(self.__class__.__name__)
 
     def add_builtin(self, key, value):
         """Add a builtin and save the original."""
