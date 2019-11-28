@@ -5,6 +5,7 @@ import sys
 from warnings import warn
 
 from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
+from IPython.core.profiledir import ProfileDir, ProfileDirError
 from IPython.utils.terminal import toggle_set_term_title, set_term_title, restore_term_title
 from IPython.utils.process import abbrev_cwd
 from traitlets import (Bool, Unicode, Dict, Integer, observe, Instance, Type,
@@ -542,12 +543,20 @@ class TerminalInteractiveShell(InteractiveShell):
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
     def __init__(self, *args, **kwargs):
-        """Why is this class built so that every individual method calls it's super?"""
+        """Why is this class built so that every individual method calls it's super?
+
+        Added init_profile_dir because that felt important. It's in the super class.
+
+        Notes
+        -----
+        The super call is totally required.
+
+        """
         super().__init__(*args, **kwargs)
         self.init_prompt_toolkit_cli()
         self.init_term_title()
         self.keep_running = True
-
+        self.init_profile_dir()
         self.debugger_history = InMemoryHistory()
 
     def ask_exit(self):
@@ -678,6 +687,13 @@ class TerminalInteractiveShell(InteractiveShell):
 
     _prompts_before = None
 
+    @staticmethod
+    def execfile(self, fname, globs, locs=None):
+        """Nabbed from the setup.py. Honestly it's surprising that we don't have these sitting around."""
+        locs = locs or globs
+        with open(fname) as f:
+            exec(compile(f.read(), fname, "exec"), globs, locs)
+
     def switch_doctest_mode(self, mode):
         """Switch prompts to classic for %doctest_mode"""
         if mode:
@@ -690,6 +706,17 @@ class TerminalInteractiveShell(InteractiveShell):
     def __repr__(self):
         return ''.join(self.__class__.__name__)
 
+    def init_profile_dir(self, profile_dir=None):
+        """Modify this so we have a none argument for profile_dir."""
+        if profile_dir is not None:
+            self.profile_dir = profile_dir
+            return
+        try:
+            self.profile_dir = ProfileDir.create_profile_dir_by_name(self.ipython_dir, 'default')
+        except ProfileDirError:
+            self.log.error('Profiledirerror')
+        except BaseException as e:
+            self.log.warning(e)
 
 InteractiveShellABC.register(TerminalInteractiveShell)
 

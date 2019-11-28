@@ -30,7 +30,8 @@ from IPython.core import magic
 from IPython.core.error import UsageError
 from IPython.core.magic import (Magics, magics_class, line_magic, cell_magic,
                                 register_line_magic, register_cell_magic)
-from IPython.core.magics import execution, script, code, logging, osm
+# Renamed to avoid std lib collision
+from IPython.core.magics import execution, script, code, ipy_logging, osm
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
 from IPython.utils.utils_io import capture_output

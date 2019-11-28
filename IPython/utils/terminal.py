@@ -66,10 +66,8 @@ def _restore_term_title_xterm():
 
 
 if os.name == 'posix':
-    TERM = os.environ.get('TERM', '')
-    if TERM.startswith('xterm'):
-        _set_term_title = _set_term_title_xterm
-        _restore_term_title = _restore_term_title_xterm
+    _set_term_title = _set_term_title_xterm
+    _restore_term_title = _restore_term_title_xterm
 
 elif sys.platform == 'win32':
     try:

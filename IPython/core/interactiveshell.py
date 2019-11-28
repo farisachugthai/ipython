@@ -760,24 +760,31 @@ class InteractiveShell(SingletonConfigurable):
             ProfileDir.create_profile_dir_by_name(self.ipython_dir, 'default')
 
     def init_instance_attrs(self):
+        """Well this is sweet.
+
+        Attributes
+        ----------
+        more : False
+        compile : CachingCompiler
+            command compiler
+        meta : Struct
+            Make an empty namespace, which extension writers can rely on both
+            existing and NEVER being used by ipython itself.  This gives them a
+            convenient location for storing additional information and state
+            their extensions may require, without fear of collisions with other
+            ipython names that may develop later.
+        tempfiles : list
+            Temporary files used for various purposes.  Deleted at exit.
+        starting_dir : str (path-like)
+            keep track of where we started running (mainly for crash post-mortem)
+            This is not being used anywhere currently.
+
+        """
         self.more = False
-
-        # command compiler
         self.compile = CachingCompiler()
-
-        # Make an empty namespace, which extension writers can rely on both
-        # existing and NEVER being used by ipython itself.  This gives them a
-        # convenient location for storing additional information and state
-        # their extensions may require, without fear of collisions with other
-        # ipython names that may develop later.
         self.meta = Struct()
-
-        # Temporary files used for various purposes.  Deleted at exit.
         self.tempfiles = []
         self.tempdirs = []
-
-        # keep track of where we started running (mainly for crash post-mortem)
-        # This is not being used anywhere currently.
         self.starting_dir = os.getcwd()
 
         # Indentation management
@@ -2099,7 +2106,8 @@ class InteractiveShell(SingletonConfigurable):
         This hook should be used sparingly, only in places which are not likely
         to be true IPython errors.
         """
-        self.showtraceback((etype, value, tb), tb_offset=0)
+        # self.showtraceback((etype, value, tb), tb_offset=0)
+        pass
 
     def _get_exc_info(self, exc_tuple=None):
         """get exc_info from a given tuple, sys.exc_info() or sys.last_type etc.
@@ -2181,7 +2189,9 @@ class InteractiveShell(SingletonConfigurable):
         A specific showsyntaxerror() also exists, but this method can take
         care of calling it if needed, so unless you are explicitly catching a
         SyntaxError exception, don't try to analyze the stack manually and
-        simply call this method."""
+        simply call this method.
+
+        """
 
         try:
             try:
@@ -3147,7 +3157,7 @@ class InteractiveShell(SingletonConfigurable):
                 if status.code:
                     raise
         except BaseException:
-            self.showtraceback()
+            # self.showtraceback()
             warn('Unknown failure executing module: <%s>' % mod_name)
 
     def run_cell(self,
@@ -3160,14 +3170,16 @@ class InteractiveShell(SingletonConfigurable):
         Parameters
         ----------
         raw_cell : str
-          The code (including IPython code such as %magic functions) to run.
-        store_history : bool
-          If True, the raw and translated cell will be stored in IPython's
-          history. For user code calling back into IPython's machinery, this
-          should be set to False.
-        silent : bool
-          If True, avoid side-effects, such as implicit displayhooks and
-          and logging.  silent=True forces store_history=False.
+            The code (including IPython code such as %magic functions) to run.
+        store_history : bool, optional
+            Defaults to False.
+            If True, the raw and translated cell will be stored in IPython's
+            history. For user code calling back into IPython's machinery, this
+            should be set to False.
+        silent : bool, optional
+            Defaults to False.
+            If True, avoid side-effects, such as implicit displayhooks and
+            and logging.  silent=True forces store_history=False.
         shell_futures : bool
           If True, the code will share future statements with the interactive
           shell. It will both be affected by previous __future__ imports, and
@@ -3190,7 +3202,14 @@ class InteractiveShell(SingletonConfigurable):
 
     def _run_cell(self, raw_cell: str, store_history: bool, silent: bool,
                   shell_futures: bool):
-        """Internal method to run a complete IPython cell."""
+        """Internal method to run a complete IPython cell.
+
+        run_cell_async is async, but may not actually need an eventloop.
+        when this is the case, we want to run it using the pseudo_sync_runner
+        so that code can invoke eventloops (for example via the %run , and
+        `%paste` magic.)
+
+        """
         coro = self.run_cell_async(
             raw_cell,
             store_history=store_history,
@@ -3198,10 +3217,6 @@ class InteractiveShell(SingletonConfigurable):
             shell_futures=shell_futures,
         )
 
-        # run_cell_async is async, but may not actually need an eventloop.
-        # when this is the case, we want to run it using the pseudo_sync_runner
-        # so that code can invoke eventloops (for example via the %run , and
-        # `%paste` magic.
         if self.should_run_async(raw_cell):
             runner = self.loop_runner
         else:
@@ -3214,7 +3229,7 @@ class InteractiveShell(SingletonConfigurable):
                                  shell_futures)
             result = ExecutionResult(info)
             result.error_in_exec = e
-            self.showtraceback(running_compiled_code=True)
+            # self.showtraceback(running_compiled_code=True)
             return result
         return
 
@@ -3320,7 +3335,7 @@ class InteractiveShell(SingletonConfigurable):
 
         # Display the exception if input processing failed.
         if preprocessing_exc_tuple is not None:
-            self.showtraceback(preprocessing_exc_tuple)
+            # self.showtraceback(preprocessing_exc_tuple)
             if store_history:
                 self.execution_count += 1
             return error_before_exec(preprocessing_exc_tuple[1])
@@ -3377,7 +3392,7 @@ class InteractiveShell(SingletonConfigurable):
                 try:
                     code_ast = self.transform_ast(code_ast)
                 except InputRejected as e:
-                    self.showtraceback()
+                    # self.showtraceback()
                     return error_before_exec(e)
 
                 # Give the displayhook a reference to our ExecutionResult so it
@@ -3627,7 +3642,7 @@ class InteractiveShell(SingletonConfigurable):
             # broken, we should stop execution completely.
             if result:
                 result.error_before_exec = sys.exc_info()[1]
-            self.showtraceback()
+            # self.showtraceback()
             return True
 
         return False
@@ -3696,7 +3711,7 @@ class InteractiveShell(SingletonConfigurable):
         except SystemExit as e:
             if result is not None:
                 result.error_in_exec = e
-            self.showtraceback(exception_only=True)
+            # self.showtraceback(exception_only=True)
             warn("To exit: use 'exit', 'quit', or Ctrl-D.", stacklevel=1)
         except self.custom_exceptions:
             etype, value, tb = sys.exc_info()
@@ -3715,7 +3730,7 @@ class InteractiveShell(SingletonConfigurable):
         except BaseException:
             if result is not None:
                 result.error_in_exec = sys.exc_info()[1]
-            self.showtraceback(running_compiled_code=True)
+            # self.showtraceback(running_compiled_code=True)
         else:
             outflag = False
         return outflag

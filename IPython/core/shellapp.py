@@ -12,7 +12,7 @@ import sys
 
 from traitlets.config.application import boolean_flag
 from traitlets.config.configurable import Configurable
-from traitlets.config.loader import Config
+from traitlets.config.loader import Config, filefind
 
 from traitlets import (
     Unicode,
@@ -33,8 +33,8 @@ from IPython.utils.contexts import preserve_keys
 # Aliases and Flags
 # -----------------------------------------------------------------------------
 
-gui_keys = tuple(sorted(pt_inputhooks.backends) +
-                 sorted(pt_inputhooks.aliases))
+gui_keys = tuple(
+    sorted(pt_inputhooks.backends) + sorted(pt_inputhooks.aliases))
 
 backend_keys = sorted(pylabtools.backends.keys())
 backend_keys.insert(0, 'auto')
@@ -46,12 +46,10 @@ addflag = lambda *args: shell_flags.update(boolean_flag(*args))
 addflag("autoindent", "InteractiveShell.autoindent", "Turn on autoindenting.",
         "Turn off autoindenting.")
 addflag(
-    "automagic", "InteractiveShell.automagic",
-    """
+    "automagic", "InteractiveShell.automagic", """
 Turn on the auto calling of magic commands. Type %%magic at the
 IPython prompt for more information.
-""",
-    "Turn off the auto calling of magic commands.")
+""", "Turn off the auto calling of magic commands.")
 addflag("pdb", "InteractiveShell.pdb",
         "Enable auto calling the pdb debugger after every exception.",
         "Disable auto calling the pdb debugger after every exception.")
@@ -100,7 +98,6 @@ shell_aliases = dict(
 )
 shell_aliases["cache-size"] = "InteractiveShell.cache_size"
 
-
 # -----------------------------------------------------------------------------
 # Main classes and functions
 # -----------------------------------------------------------------------------
@@ -138,14 +135,16 @@ class InteractiveShellApp(Configurable):
 
     """
     extensions = List(
-        Unicode(), allow_none=True,
+        Unicode(),
+        allow_none=True,
         help="A list of dotted module names of IPython extensions to load."
     ).tag(config=True)
 
     extra_extension = Unicode(
-        '', allow_none=True,
-        help="dotted module name of an IPython extension to load."
-    ).tag(config=True)
+        '',
+        allow_none=True,
+        help="dotted module name of an IPython extension to load.").tag(
+            config=True)
 
     reraise_ipython_extension_failures = Bool(
         False,
@@ -161,7 +160,8 @@ class InteractiveShellApp(Configurable):
         be hidden from tools like %who?""").tag(config=True)
 
     exec_files = List(
-        Unicode(), allow_none=True,
+        Unicode(),
+        allow_none=True,
         help="""List of files to run at IPython startup.""").tag(config=True)
 
     exec_PYTHONSTARTUP = Bool(
@@ -172,14 +172,15 @@ class InteractiveShellApp(Configurable):
     file_to_run = Unicode('', help="""A file to be run""").tag(config=True)
 
     exec_lines = List(
-        Unicode(), allow_none=True,
+        Unicode(),
+        allow_none=True,
         help="""lines of code to run at IPython startup.""").tag(config=True)
 
     code_to_run = Unicode(
         '', help="Execute the given command string.").tag(config=True)
 
-    module_to_run = Unicode('',
-                            help="Run the module as a script.").tag(config=True)
+    module_to_run = Unicode(
+        '', help="Run the module as a script.").tag(config=True)
     gui = CaselessStrEnum(
         gui_keys,
         allow_none=True,
@@ -264,8 +265,10 @@ class InteractiveShellApp(Configurable):
         """Enable GUI event loop integration, taking pylab into account."""
         enable = False
         if self.pylab:
+
             def enable(key):
-                return shell.enable_pylab(key, import_all=self.pylab_import_all)
+                return shell.enable_pylab(key,
+                                          import_all=self.pylab_import_all)
 
         elif self.matplotlib:
             enable = self.shell.enable_matplotlib
@@ -372,7 +375,8 @@ class InteractiveShellApp(Configurable):
             return
         try:
             self.log.info(
-                "Running code from IPythonApp.exec_lines. \n{}".format(self.exec_lines))
+                "Running code from IPythonApp.exec_lines. \n{}".format(
+                    self.exec_lines))
             for line in self.exec_lines:
                 try:
                     self.log.info("Running code in user namespace: %s" % line)
@@ -395,7 +399,6 @@ class InteractiveShellApp(Configurable):
             Filename to execute
 
         """
-        from IPython.utils.path import filefind
         try:
             full_filename = filefind(fname, [u'.', self.ipython_dir])
         except IOError:
@@ -405,26 +408,32 @@ class InteractiveShellApp(Configurable):
         # were run from a system shell.
         save_argv = sys.argv
         sys.argv = [full_filename] + self.extra_args[1:]
-        try:
-            if os.path.isfile(full_filename):
-                self.log.info("Running file in user namespace: %s" %
-                              full_filename)
-                # Ensure that __file__ is always defined to match Python
-                # behavior.
-                with preserve_keys(self.shell.user_ns, '__file__'):
-                    self.shell.user_ns['__file__'] = fname
-                    if full_filename.endswith('.ipy') or full_filename.endswith(
-                            '.ipynb'):
-                        self.shell.safe_execfile_ipy(
-                            full_filename, shell_futures=shell_futures)
-                    else:
-                        # default to python, even without extension
-                        self.shell.safe_execfile(full_filename,
-                                                 self.shell.user_ns,
-                                                 shell_futures=shell_futures,
-                                                 raise_exceptions=True)
-        finally:
-            sys.argv = save_argv
+        if os.path.isfile(full_filename):
+            self.log.info("Running file in user namespace: %s" %
+                          full_filename)
+        # Ensure that __file__ is always defined to match Python
+        # behavior.
+        with preserve_keys(self.shell.user_ns, '__file__'):
+            self.shell.user_ns['__file__'] = fname
+            if full_filename.endswith(
+                    '.ipy') or full_filename.endswith('.ipynb'):
+                try:
+                    self.shell.safe_execfile_ipy(
+                        full_filename, shell_futures=shell_futures)
+                # TODO: this block of code needs to become a method we do something similar SO many times
+                except BaseException:
+                    self.log.warning("Unknown error in handling startup file")
+            else:
+                # default to python, even without extension
+                self.shell.safe_execfile(full_filename,
+                                         self.shell.user_ns,
+                                         exit_ignore=True,
+                                         shell_futures=shell_futures,
+                                         # WHY THE HELL IS RAISE_EXCEPTIONS TRUE
+                                         # raise_exceptions=True)
+                                         raise_exceptions=False)
+                finally:
+                    sys.argv = save_argv
 
     def _run_startup_files(self):
         """Run files from profile startup directory.
@@ -445,11 +454,15 @@ class InteractiveShellApp(Configurable):
         that that is allowed and handled correctly.
 
         """
-        SYSTEM_CONFIG_DIRS = self._get_system_config_dirs()
+        if getattr(self, '_get_system_config_dirs', None):
+            SYSTEM_CONFIG_DIRS = self._get_system_config_dirs()
+        else:
+            self.log.error('Core/shellapp: System config dirs not defined!')
+            SYSTEM_CONFIG_DIRS = None
+
         if SYSTEM_CONFIG_DIRS:
             startup_dirs = [self.profile_dir.startup_dir] + [
-                os.path.join(p, 'startup')
-                for p in SYSTEM_CONFIG_DIRS
+                os.path.join(p, 'startup') for p in SYSTEM_CONFIG_DIRS
             ]
         else:
             startup_dirs = [self.profile_dir.startup_dir]
@@ -492,8 +505,8 @@ class InteractiveShellApp(Configurable):
         if not self.exec_files:
             return
 
-        self.log.info(
-            "Running files in IPythonApp.exec_files. {}".format(self.exec_files))
+        self.log.info("Running files in IPythonApp.exec_files. {}".format(
+            self.exec_files))
         try:
             for fname in self.exec_files:
                 self._exec_file(fname)

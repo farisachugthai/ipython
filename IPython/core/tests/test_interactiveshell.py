@@ -24,7 +24,8 @@ import nose.tools as nt
 
 from IPython import get_ipython
 from IPython.core.error import InputRejected
-from IPython.core.inputtransformer import InputTransformer
+# This import is never used?
+# from IPython.core.inputtransformer import InputTransformer
 from IPython.core import interactiveshell
 from IPython.testing.decorators import (
     skipif,

@@ -11,25 +11,25 @@ site-packages/ipython-7.8.0-dist-info/ is a file called entry_points.txt.
 
 It only has the following for it's contents:
 
-[console_scripts]
+    [console_scripts]
 
-[pygments.lexers]
-ipython = IPython.lib.lexers:IPythonLexer
-ipython3 = IPython.lib.lexers:IPython3Lexer
-ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer
+    [pygments.lexers]
+    ipython = IPython.lib.lexers:IPythonLexer
+    ipython3 = IPython.lib.lexers:IPython3Lexer
+    ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer
 
 This is so weird to me how this script is set up. Like check this::
 
-    if 'setuptools' in sys.modules:
-        setuptools_extra_args['entry_points'] = {
-            'console_scripts':
-            # find_entry_points(),
-            'pygments.lexers': [
-                'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
-                'ipython = IPython.lib.lexers:IPythonLexer',
-                'ipython3 = IPython.lib.lexers:IPython3Lexer',
-            ],
-        }
+   if 'setuptools' in sys.modules:
+       setuptools_extra_args['entry_points'] = {
+           'console_scripts':
+           # find_entry_points(),
+           'pygments.lexers': [
+               'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
+               'ipython = IPython.lib.lexers:IPythonLexer',
+               'ipython3 = IPython.lib.lexers:IPython3Lexer',
+           ],
+       }
 
 So if this user doesn't have setuptools installed, then they don't get the
 pygments lexers installed? Wth?
@@ -100,16 +100,16 @@ execfile(pjoin(repo_root, 'IPython', 'core', 'release.py'), globals())
 # ------------------------------------------------------------------------------
 
 # update the manuals when building a source dist
-if len(sys.argv) >= 2 and sys.argv[1] in ('sdist', 'bdist_rpm'):
+# if len(sys.argv) >= 2 and sys.argv[1] in ('sdist', 'bdist_rpm'):
 
     # List of things to be updated. Each entry is a triplet of args for
     # target_update()
-    to_update = [
-        ('docs/man/ipython.1.gz', ['docs/man/ipython.1'],
-         'cd docs/man && gzip -9c ipython.1 > ipython.1.gz'),
-    ]
+    # to_update = [
+    #     ('docs/man/ipython.1.gz', ['docs/man/ipython.1'],
+    #      'cd docs/man && gzip -9c ipython.1 > ipython.1.gz'),
+    # ]
 
-    [target_update(*t) for t in to_update]
+    # [target_update(*t) for t in to_update]
 
 # ---------------------------------------------------------------------------
 # Find all the packages, package data, and data_files
