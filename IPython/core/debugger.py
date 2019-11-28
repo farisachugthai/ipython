@@ -17,32 +17,35 @@ https://docs.python.org/3/license.html
 This code should really go into terminal though like people won't
 be using this code in the browser.
 
+*****************************************************************************
+      This file is licensed under the PSF license.
+
+      Copyright (C) 2001 Python Software Foundation, www.python.org
+      Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
+*****************************************************************************
+
 """
-# *****************************************************************************
-#       This file is licensed under the PSF license.
-#
-#       Copyright (C) 2001 Python Software Foundation, www.python.org
-#       Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
-# *****************************************************************************
-import reprlib
-from pdb import Pdb
 import bdb
 import functools
 import inspect
 import linecache
+import re
+import reprlib
 import sys
 import warnings
-import re
+from bdb import BdbQuit
+from pdb import Pdb
 
-from IPython.core.getipython import get_ipython
-from IPython.core.error import UsageError
-
-from IPython.utils import PyColorize
-from IPython.utils import coloransi, py3compat
+from IPython.core.error import (BdbQuit_excepthook, BdbQuit_IPython_excepthook,
+                                UsageError)
 from IPython.core.excolors import exception_colors
-from IPython.testing.skipdoctest import skip_doctest
+from IPython.core.getipython import get_ipython
+from IPython.utils import PyColorize, coloransi, py3compat
+
+# from IPython.testing.skipdoctest import skip_doctest
 
 # We have to check this directly from sys.argv, config struct not yet available
+prompt = 'ipdb> '
 
 # Allow the set_trace code to operate outside of an ipython instance, even if
 # it does so with some limitations.  The rest of this support is implemented in

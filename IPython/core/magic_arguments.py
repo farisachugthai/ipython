@@ -12,7 +12,17 @@ New magic functions can be defined like so::
     def magic_cool(self, arg):
         pass
 
+.. data:: NAME_RE
+
+    re.compile(r"[a-zA-Z][a-zA-Z0-9_-]*$")
+
+
 """
+
+__all__ = [
+    'magic_arguments', 'argument', 'argument_group', 'kwds', 'parse_argstring'
+]
+
 # -----------------------------------------------------------------------------
 # Copyright (C) 2010-2011, IPython Development Team.
 #
@@ -22,17 +32,18 @@ New magic functions can be defined like so::
 # -----------------------------------------------------------------------------
 import argparse
 import re
+from textwrap import dedent
 
 # Our own imports
 from IPython.core.error import UsageError
-from IPython.utils.decorators import undoc
+# from IPython.utils.decorators import undoc
 from IPython.utils.process import arg_split
-from IPython.utils.text import dedent
+# from IPython.utils.text import dedent
 
 NAME_RE = re.compile(r"[a-zA-Z][a-zA-Z0-9_-]*$")
 
 
-@undoc
+# @undoc
 class MagicHelpFormatter(argparse.RawDescriptionHelpFormatter):
     """A HelpFormatter with a couple of changes to meet our needs."""
 
@@ -247,7 +258,3 @@ class kwds(ArgDecorator):
         func.argcmd_kwds = self.kwds
         return func
 
-
-__all__ = [
-    'magic_arguments', 'argument', 'argument_group', 'kwds', 'parse_argstring'
-]

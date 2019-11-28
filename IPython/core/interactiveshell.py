@@ -2982,8 +2982,8 @@ class InteractiveShell(SingletonConfigurable):
             return eval(expr, self.user_global_ns, self.user_ns)
 
     def safe_execfile(self,
-                      fname,
                       *where,
+                      fname=None,
                       exit_ignore=False,
                       raise_exceptions=False,
                       shell_futures=False):
@@ -3031,8 +3031,18 @@ class InteractiveShell(SingletonConfigurable):
         For other exit status, we show the exception unless
         explicitly silenced, but only in short form.
 
+        .. todo::
+
+            Something in shellapp is incorrectly calling this with fname=None
+            so we added a return and allow for the func to be called that way.
+
         """
+        if fname is None:
+            return
+`
         fname = os.path.abspath(os.path.expanduser(fname))
+
+
         # Make sure we can open the file
         try:
             with open(fname):
@@ -3041,27 +3051,34 @@ class InteractiveShell(SingletonConfigurable):
             warn('Error: Could not open file <%s> .' % str(fname))
             return 127
         except BaseException as e:
-            warn('Error: {}'.format(e.__traceback__))
+            warn('Error: InteractiveShell safe_execfile: {}'.format(e.__traceback__))
 
         dname = os.path.dirname(fname)
 
         with prepended_to_syspath(dname), self.builtin_trap:
-            logging.debug('self.builtin_trap is: {}'.format(self.builtin_trap))
-            try:
-                glob, loc = (where + (None,))[:2]
-                # exec(fname, glob, loc, self.compile if shell_futures else None)
-                exec(fname, glob, loc)
-            except SystemExit as status:
-                if status.code:
+            # no this line gets called literally ~30 times
+            # logging.debug('self.builtin_trap is: {}'.format(self.builtin_trap))
+            with open(fname, 'rb') as f:
+                try:
+                    # glob, loc = (where + (None,))[:2]
+                    # exec(fname, glob, loc, self.compile if shell_futures else None)
+                    exec(compile(f, '<string>', '<exec>'), globals(), locals())
+                except SystemExit as status:
+                    if status.code:
+                        if raise_exceptions:
+                            raise
+                        print('SystemExit: {}'.format(status))
+                        # if not exit_ignore:
+                            # self.showtraceback(exception_only=True)
+                except BaseException as e:
                     if raise_exceptions:
                         raise
-                    # if not exit_ignore:
-                        # self.showtraceback(exception_only=True)
-            except BaseException:
-                if raise_exceptions:
-                    raise
-                # tb offset is 2 because we wrap execfile
-                # self.showtraceback(tb_offset=2)
+                    if e.__cause__ is not None:
+                        print('Exception cause: {}'.format(e.__cause__))
+                    else:
+                        print(e)
+                    # tb offset is 2 because we wrap execfile
+                    # self.showtraceback(tb_offset=2)
 
     def safe_execfile_ipy(self,
                           fname,

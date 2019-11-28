@@ -2,22 +2,29 @@
 
 Everything in this module is a private API, not to be used outside IPython.
 """
-
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
+
+import os
 
 import unicodedata
 from wcwidth import wcwidth
 
+from IPython import get_ipython
 from IPython.core.completer import (provisionalcompleter, cursor_to_position,
                                     _deduplicate_completions)
+from IPython.lib.lexers import IPyLexer
+
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.lexers import Lexer
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.patch_stdout import patch_stdout
 
-import pygments.lexers as pygments_lexers
-import os
+# import pygments.lexers as pygments_lexers
+import pygments
+
+# just saying some of these could be real cool
+# from pygments.lexers.other import SqliteConsoleLexer
 
 _completion_sentinel = object()
 
@@ -67,7 +74,11 @@ class IPythonPTCompleter(Completer):
 
     def __init__(self, ipy_completer=None, shell=None):
         if shell is None and ipy_completer is None:
-            raise TypeError("Please pass shell=an InteractiveShell instance.")
+            # raise TypeError("Please pass shell=an InteractiveShell instance.")
+            # why can't we do this? all the machinery is up and moving
+            shell = get_ipython()
+            if shell is None:  # okay NOW we have to start worrying
+                raise TraitError
         self._ipy_completer = ipy_completer
         self.shell = shell
 
@@ -145,23 +156,24 @@ class IPythonPTCompleter(Completer):
 
 
 class IPythonPTLexer(Lexer):
-    """
-    Wrapper around PythonLexer and BashLexer.
-    """
+    """Wrapper around PythonLexer and BashLexer."""
 
     def __init__(self):
-        l = pygments_lexers
-        self.python_lexer = PygmentsLexer(l.Python3Lexer)
-        self.shell_lexer = PygmentsLexer(l.BashLexer)
+        """Don't we have lexers?"""
+        # l = pygments_lexers
+        # omg let's spell this out because idk if those lexers are actually
+        # available there
+        self.python_lexer = PygmentsLexer(pygments.lexers.python.Python3Lexer)
+        self.shell_lexer = PygmentsLexer(pygments.lexers.shell.BashLexer)
 
         self.magic_lexers = {
-            'HTML': PygmentsLexer(l.HtmlLexer),
-            'html': PygmentsLexer(l.HtmlLexer),
-            'javascript': PygmentsLexer(l.JavascriptLexer),
-            'js': PygmentsLexer(l.JavascriptLexer),
-            'perl': PygmentsLexer(l.PerlLexer),
-            'ruby': PygmentsLexer(l.RubyLexer),
-            'latex': PygmentsLexer(l.TexLexer),
+            'HTML': PygmentsLexer(pygments.lexers.html.HtmlLexer),
+            'html': PygmentsLexer(pygments.lexers.html.HtmlLexer),
+            'javascript': PygmentsLexer(pygments.lexers.javascript.JavascriptLexer),
+            'js': PygmentsLexer(pygments.lexers.javascript.JavascriptLexer),
+            'perl': PygmentsLexer(pygments.lexers.perl.PerlLexer),
+            'ruby': PygmentsLexer(pygments.lexers.ruby.RubyLexer),
+            'latex': PygmentsLexer(pygments.lexers.markup.TexLexer),
         }
 
     def lex_document(self, document):

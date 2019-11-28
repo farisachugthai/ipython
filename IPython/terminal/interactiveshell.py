@@ -29,6 +29,7 @@ from pygments.token import Token
 from .magics import TerminalMagics
 from .pt_inputhooks import get_inputhook_name_and_func
 from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
+from .ptutils import IPythonPTCompleter
 from .shortcuts import create_ipython_shortcuts
 
 DISPLAY_BANNER_DEPRECATED = object()
@@ -112,7 +113,9 @@ class TerminalInteractiveShell(InteractiveShell):
                              help='Number of line at the bottom of the screen '
                              'to reserve for the completion menu').tag(config=True)
 
-    pt_app = None
+    pt_app = Any(help='Prompt toolkit PromptSession',
+                      allow_none=True).tag(config=True)
+
     debugger_history = None
 
     simple_prompt = Bool(_use_simple_prompt,
@@ -127,8 +130,8 @@ class TerminalInteractiveShell(InteractiveShell):
 
     @property
     def debugger_cls(self):
-        from .debugger import TerminalPdb, Pdb
-        return Pdb if self.simple_prompt else TerminalPdb
+        from .debugger import TerminalPdb, CorePdb
+        return CorePdb if self.simple_prompt else TerminalPdb
 
     confirm_exit = Bool(True,
                         help="""
@@ -293,6 +296,9 @@ class TerminalInteractiveShell(InteractiveShell):
         help="Display the current vi mode (when using vi editing mode).").tag(
             config=True)
 
+    completer = Instance(IPythonPTCompleter, help='Completer for the shell',
+                         allow_none=True).tag(config=True)
+
     @observe('term_title')
     def init_term_title(self, change=None):
         # Enable or disable the terminal title.
@@ -342,13 +348,15 @@ class TerminalInteractiveShell(InteractiveShell):
         # Pre-populate history from IPython's history database
         history = InMemoryHistory()
         last_cell = u""
-        for __, ___, cell in self.history_manager.get_tail(
-                self.history_load_length, include_latest=True):
-            # Ignore blank lines and consecutive duplicates
-            cell = cell.rstrip()
-            if cell and (cell != last_cell):
-                history.append_string(cell)
-                last_cell = cell
+        if getattr(self, 'history_manager', None):
+            if self.history_manager is not None:
+                for __, ___, cell in self.history_manager.get_tail(
+                        self.history_load_length, include_latest=True):
+                    # Ignore blank lines and consecutive duplicates
+                    cell = cell.rstrip()
+                    if cell and (cell != last_cell):
+                        history.append_string(cell)
+                        last_cell = cell
 
         self._style = self._make_style_from_name_or_cls(
             self.highlighting_style)
@@ -356,13 +364,11 @@ class TerminalInteractiveShell(InteractiveShell):
 
         editing_mode = getattr(EditingMode, self.editing_mode.upper())
 
-        from .ptutils import IPythonPTCompleter
-
         self.pt_app = PromptSession(
             editing_mode=editing_mode,
             key_bindings=key_bindings,
             history=history,
-            completer=IPythonPTCompleter(shell=self),
+            completer=self.completer,
             enable_history_search=self.enable_history_search,
             style=self.style,
             include_default_pygments_style=False,
@@ -692,7 +698,8 @@ class TerminalInteractiveShell(InteractiveShell):
         """Nabbed from the setup.py. Honestly it's surprising that we don't have these sitting around."""
         locs = locs or globs
         with open(fname) as f:
-            exec(compile(f.read(), fname, "exec"), globs, locs)
+            # exec(compile(f.read(), fname, "exec"), globs, locs)
+            exec(compile(f.read(), '<string>', "exec"), globs, locs)
 
     def switch_doctest_mode(self, mode):
         """Switch prompts to classic for %doctest_mode"""
@@ -712,11 +719,13 @@ class TerminalInteractiveShell(InteractiveShell):
             self.profile_dir = profile_dir
             return
         try:
-            self.profile_dir = ProfileDir.create_profile_dir_by_name(self.ipython_dir, 'default')
+            self.profile_dir = ProfileDir.create_profile_dir_by_name(
+                self.ipython_dir, 'default')
         except ProfileDirError:
             self.log.error('Profiledirerror')
         except BaseException as e:
             self.log.warning(e)
+
 
 InteractiveShellABC.register(TerminalInteractiveShell)
 

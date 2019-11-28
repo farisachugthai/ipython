@@ -413,27 +413,28 @@ class InteractiveShellApp(Configurable):
                           full_filename)
         # Ensure that __file__ is always defined to match Python
         # behavior.
-        with preserve_keys(self.shell.user_ns, '__file__'):
-            self.shell.user_ns['__file__'] = fname
-            if full_filename.endswith(
-                    '.ipy') or full_filename.endswith('.ipynb'):
-                try:
-                    self.shell.safe_execfile_ipy(
-                        full_filename, shell_futures=shell_futures)
-                # TODO: this block of code needs to become a method we do something similar SO many times
-                except BaseException:
-                    self.log.warning("Unknown error in handling startup file")
-            else:
-                # default to python, even without extension
-                self.shell.safe_execfile(full_filename,
-                                         self.shell.user_ns,
-                                         exit_ignore=True,
-                                         shell_futures=shell_futures,
-                                         # WHY THE HELL IS RAISE_EXCEPTIONS TRUE
-                                         # raise_exceptions=True)
-                                         raise_exceptions=False)
-                finally:
-                    sys.argv = save_argv
+        try:
+            with preserve_keys(self.shell.user_ns, '__file__'):
+                self.shell.user_ns['__file__'] = fname
+                if full_filename.endswith(
+                        '.ipy') or full_filename.endswith('.ipynb'):
+                    try:
+                        self.shell.safe_execfile_ipy(
+                            full_filename, shell_futures=shell_futures)
+                    # TODO: this block of code needs to become a method we do something similar SO many times
+                    except BaseException:
+                        self.log.warning("Unknown error in handling startup file")
+                else:
+                    # default to python, even without extension
+                    self.shell.safe_execfile(full_filename,
+                                            self.shell.user_ns,
+                                            exit_ignore=True,
+                                            shell_futures=shell_futures,
+                                            # WHY THE HELL IS RAISE_EXCEPTIONS TRUE
+                                            # raise_exceptions=True)
+                                            raise_exceptions=False)
+        finally:
+            sys.argv = save_argv
 
     def _run_startup_files(self):
         """Run files from profile startup directory.

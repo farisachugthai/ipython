@@ -1,6 +1,4 @@
-"""
-A context manager for managing things injected into :mod:`builtins`.
-"""
+"""A context manager for managing things injected into :mod:`builtins`."""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 import builtins as builtin_mod

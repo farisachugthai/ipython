@@ -20,13 +20,13 @@ from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.formatted_text import PygmentsTokens
 
-from IPython.core.debugger import Pdb
+from IPython.core.debugger import CorePdb
 from IPython.core.completer import IPCompleter
 from .ptutils import IPythonPTCompleter
 from .shortcuts import suspend_to_bg, cursor_in_leading_ws
 
 
-class TerminalPdb(Pdb):
+class TerminalPdb(CorePdb):
     """Standalone IPython debugger."""
 
     def __init__(self, _ptcomp=None, kb=None, *args, **kwargs):
@@ -40,7 +40,7 @@ class TerminalPdb(Pdb):
             Defaults to standard IPython keybindings if None.
 
         """
-        Pdb.__init__(self, *args, **kwargs)
+        CorePdb.__init__(self, *args, **kwargs)
         if _ptcomp is not None:
             self._ptcomp = _ptcomp
         else:
@@ -71,13 +71,14 @@ class TerminalPdb(Pdb):
         if self._ptcomp is None:
             compl = IPCompleter(
                 shell=self.shell,
-                namespace={},
-                global_namespace={},
-                parent=self.shell,
+                namespace=locals(),
+                global_namespace=globals(),
+                config=self.shell.config,
             )
             self._ptcomp = IPythonPTCompleter(compl)
 
     def setup_prompt_keybindings(self):
+        """Added more bindings."""
         kb = KeyBindings()
         supports_suspend = Condition(lambda: hasattr(signal, 'SIGTSTP'))
         kb.add('c-z', filter=supports_suspend)(suspend_to_bg)
@@ -89,7 +90,9 @@ class TerminalPdb(Pdb):
                            & vi_insert_mode | emacs_insert_mode
                            & ~cursor_in_leading_ws
                            ))(display_completions_like_readline)
+
         kb.add(load_basic_bindings())
+
         return kb
 
     def cmdloop(self, intro=None):

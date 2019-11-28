@@ -62,25 +62,30 @@ def default_aliases():
     the terminal should NOT be declared here, as they will only work if the
     kernel is running inside a true terminal, and not over the network.
 
-    """
+    We define a useful set of ls aliases.  The GNU and BSD options are a little
+    different, so we make aliases that provide as similar as possible
+    behavior in ipython, by passing the right flags for each platform.
 
+    .. versionchanged:: 7.10.0
+
+        Added %l to all of the aliases because they shouldn't be missing that.
+
+    """
     if os.name == 'posix':
+
         default_aliases = [
-            ('mkdir', 'mkdir'),
-            ('rmdir', 'rmdir'),
-            ('mv', 'mv'),
-            ('rm', 'rm'),
-            ('cp', 'cp'),
-            ('cat', 'cat'),
+            ('mkdir', 'mkdir %l'),
+            ('rmdir', 'rmdir %l'),
+            ('mv', 'mv %l'),
+            ('rm', 'rm %l'),
+            ('cp', 'cp %l'),
+            ('cat', 'cat %l'),
         ]
-        # Useful set of ls aliases.  The GNU and BSD options are a little
-        # different, so we make aliases that provide as similar as possible
-        # behavior in ipython, by passing the right flags for each platform
         if sys.platform.startswith('linux'):
             ls_aliases = [
-                ('ls', 'ls -F --color'),
+                ('ls', 'ls -F --color %l'),
                 # long ls
-                ('ll', 'ls -F -o --color'),
+                ('ll', 'ls -F -o --color %l'),
                 # ls normal files only
                 ('lf', 'ls -F -o --color %l | grep ^-'),
                 # ls symbolic links
@@ -125,14 +130,14 @@ def default_aliases():
         default_aliases = default_aliases + ls_aliases
     elif os.name in ['nt', 'dos']:
         default_aliases = [
-            ('ls', 'dir /on'),
-            ('ddir', 'dir /ad /on'),
-            ('ldir', 'dir /ad /on'),
-            ('mkdir', 'mkdir'),
-            ('rmdir', 'rmdir'),
-            ('echo', 'echo'),
-            ('ren', 'ren'),
-            ('copy', 'copy'),
+            ('ls', 'dir /on %l'),
+            ('ddir', 'dir /ad /on %l'),
+            ('ldir', 'dir /ad /on %l'),
+            ('mkdir', 'mkdir %l'),
+            ('rmdir', 'rmdir %l'),
+            ('echo', 'echo %l'),
+            ('ren', 'ren %l'),
+            ('copy', 'copy %l'),
         ]
     else:
         default_aliases = []
@@ -144,6 +149,8 @@ class Alias:
     """Callable object storing the details of one alias.
 
     Instances are registered as magic functions to allow use of aliases.
+
+    .. todo:: More dunders. It would be sweet if we had a container we could ``+`` and ``-`` to.
 
     Attributes
     ----------
@@ -245,7 +252,7 @@ class Alias:
 class AliasManager(Configurable):
     """Alias manager.
 
-    Subclasses the traitlets.config.configurable.
+    Subclasses the :class:`traitlets.config.Configurable`.
 
     Attributes
     ----------

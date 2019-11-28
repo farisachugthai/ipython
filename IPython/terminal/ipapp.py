@@ -313,11 +313,18 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         """This is done so many times in this repo why not make it official?"""
         try:
             line
+        except ImportError as e:
+            self.log.warning('ImportError: {}'.format(e.tb_frame))
+        except KeyboardInterrupt:
+            self.log.warning('Interrupted!')
+        except EOFError:
+            self.log.warning('EOFError!')
         except BaseException as e:
-            logging.ERROR(e)
+            self.log.error('Error: {}'.format(e.tb_frame))
             return
         else:
-            else_to_run
+            if else_to_run is not None:
+                else_to_run
 
     @catch_config_error
     def initialize(self, argv=None):
@@ -328,8 +335,9 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             # don't bother initializing further, starting subapp
             return
 
-        logging.info('{}: Extra args was:: {}'.format(
-            __file__, self.extra_args))
+        # only gets called like 1 or 2 times in startup but that gets old fast
+        # logging.info('{}: Extra args was:: {}'.format(
+        #     __file__, self.extra_args))
 
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]

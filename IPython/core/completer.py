@@ -1080,7 +1080,6 @@ class IPCompleter(Completer):
 
         Parameters
         ----------
-
         shell
             a pointer to the ipython shell itself.  This is needed
             because this completer knows about magic functions, and those can
@@ -1097,7 +1096,6 @@ class IPCompleter(Completer):
         use_readline : bool, optional
             DEPRECATED, ignored since IPython 6.0, will have no effects
         """
-
         self.magic_escape = ESC_MAGIC
         self.splitter = CompletionSplitter()
 

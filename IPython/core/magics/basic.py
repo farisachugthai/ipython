@@ -1,5 +1,4 @@
 """Implementation of basic magic functions."""
-
 import argparse
 import codecs
 import logging
@@ -16,7 +15,7 @@ from IPython.core.payloadpage import page
 from IPython.core.error import UsageError
 from IPython.core.magic import Magics, magics_class, line_magic, magic_escapes
 from IPython.utils.text import format_screen  # , dedent, indent
-from IPython.testing.skipdoctest import skip_doctest
+# from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.ipstruct import Struct
 
 
@@ -315,18 +314,16 @@ Currently the magic system has the following functions:""",
     def page(self, parameter_s=''):
         """Pretty print the object and display it through a pager.
 
-        %page [options] OBJECT
+        .. magic:: %page [options] OBJECT
 
-        If no object is given, use _ (last output).
+        If no object is given, use :kbd:`_` (last output).
 
-        Options:
+        Options
+        -------
+        -r: page str(object), don't pretty-print it.
 
-          -r: page str(object), don't pretty-print it.
-          """
-
-        # After a function contributed by Olivier Aubert, slightly modified.
-
-        # Process options/args
+        After a function contributed by Olivier Aubert, slightly modified.
+        """
         opts, args = self.parse_options(parameter_s, 'r')
         raw = 'r' in opts
 
@@ -364,6 +361,41 @@ Currently the magic system has the following functions:""",
           %colors nocolor
 
         """
+        def color_switch_err(name):
+            warn('Error changing %s color schemes.\n%s' %
+                 (name, sys.exc_info()[1]), stacklevel=2)
+
+        new_scheme = parameter_s.strip()
+        if not new_scheme:
+            raise UsageError(
+                "%colors: you must specify a color scheme. See '%colors?'")
+        # local shortcut
+        shell = self.shell
+
+        # Set shell colour scheme
+        try:
+            shell.colors = new_scheme
+            shell.refresh_style()
+        except:
+            color_switch_err('shell')
+
+        # Set exception colors
+        try:
+            shell.InteractiveTB.set_colors(scheme=new_scheme)
+            shell.SyntaxTB.set_colors(scheme=new_scheme)
+        except:
+            color_switch_err('exception')
+
+        # Set info (for 'object?') colors
+        if shell.color_info:
+            try:
+                shell.inspector.set_active_scheme(new_scheme)
+            except:
+                color_switch_err('object inspector')
+        else:
+            shell.inspector.set_active_scheme('NoColor')
+
+# HERE
         if not parameter_s:
             raise UsageError(
                 "%colors: you must specify a color scheme. See '%colors?'")
@@ -541,7 +573,7 @@ Currently the magic system has the following functions:""",
             # hook up the GUI
             logging.error(str(e))
 
-    @skip_doctest
+    # @skip_doctest
     @line_magic
     def precision(self, s=''):
         """Set floating point precision for pretty printing.
@@ -639,10 +671,10 @@ Currently the magic system has the following functions:""",
 
 @magics_class
 class AsyncMagics(BasicMagics):
+
     @line_magic
     def autoawait(self, parameter_s):
-        """
-        Allow to change the status of the autoawait option.
+        """Allow to change the status of the autoawait option.
 
         This allow you to set a specific asynchronous code runner.
 
@@ -658,7 +690,6 @@ class AsyncMagics(BasicMagics):
           loop
         - asyncio/curio/trio activate autoawait integration and use integration
           with said library.
-
         - `sync` turn on the pseudo-sync integration (mostly used for
           `IPython.embed()` which does not run IPython with a real eventloop and
           deactivate running asynchronous code. Turning on Asynchronous code with

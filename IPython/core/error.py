@@ -151,3 +151,27 @@ if sys.version_info[0:2] < (3, 7):
 
         def __repr__(self):
             return '{}\n{}'.format(self.__class__.__name__, self.__traceback__)
+
+
+def BdbQuit_excepthook(et, ev, tb, excepthook=None):
+    """Exception hook which handles `BdbQuit` exceptions.
+
+    All other exceptions are processed using the `excepthook`
+    parameter.
+    """
+    warnings.warn("`BdbQuit_excepthook` is deprecated since version 5.1",
+                  DeprecationWarning, stacklevel=2)
+    if et == bdb.BdbQuit:
+        print('Exiting Debugger.')
+    elif excepthook is not None:
+        excepthook(et, ev, tb)
+    else:
+        # Backwards compatibility. Raise deprecation warning?
+        BdbQuit_excepthook.excepthook_ori(et, ev, tb)
+
+
+def BdbQuit_IPython_excepthook(self, et, ev, tb, tb_offset=None):
+    warnings.warn(
+        "`BdbQuit_IPython_excepthook` is deprecated since version 5.1",
+        DeprecationWarning, stacklevel=2)
+    print('Exiting Debugger.')
