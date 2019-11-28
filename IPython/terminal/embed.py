@@ -44,7 +44,6 @@ class EmbeddedMagics(Magics):
                               '--yes',
                               action='store_true',
                               help='Do not ask confirmation')
-
     def kill_embedded(self, parameter_s=''):
         """%kill_embedded : deactivate for good the current embedded IPython
 

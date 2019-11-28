@@ -245,7 +245,8 @@ class ScriptMagics(Magics):
             sys.stderr.write(err)
             sys.stderr.flush()
         if args.raise_error and p.returncode != 0:
-            raise CalledProcessError(p.returncode, cell, output=out, stderr=err)
+            raise CalledProcessError(
+                p.returncode, cell, output=out, stderr=err)
 
     def _run_script(self, p, cell, to_close):
         """callback for running the script in the background"""

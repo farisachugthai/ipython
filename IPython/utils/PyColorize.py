@@ -164,6 +164,7 @@ ANSICodeColors = ColorSchemeTable(
 
 Undefined = object()
 
+
 def available_themes():
     return [s for s in pygments.styles.get_all_styles()
             ] + ['NoColor', 'LightBG', 'Linux', 'Neutral']
@@ -174,9 +175,11 @@ class Colorable(Configurable):
     """
     default_style = Unicode('LightBG').tag(config=True)
 
+
 class Parser(Colorable):
     """ Format colored Python source.
     """
+
     def __init__(self,
                  color_table=None,
                  out=sys.stdout,

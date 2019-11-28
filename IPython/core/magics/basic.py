@@ -216,7 +216,8 @@ class BasicMagics(Magics):
 
     def _magic_docs(self, brief=False, rest=False):
         """Return docstrings from magic functions."""
-        docs = self.shell.magics_manager.lsmagic_docs(brief, missing='No documentation')
+        docs = self.shell.magics_manager.lsmagic_docs(
+            brief, missing='No documentation')
 
         if rest:
             format_string = '**%s%s**::\n\n%s\n\n'

@@ -242,7 +242,7 @@ class Win32ShellCommandController(object):
         self.piProcInfo = None
         try:
             p_hstdout, c_hstdout, p_hstderr, \
-            c_hstderr, p_hstdin, c_hstdin = [None] * 6
+                c_hstderr, p_hstdin, c_hstdin = [None] * 6
 
             # SECURITY_ATTRIBUTES with inherit handle set to True
             saAttr = SECURITY_ATTRIBUTES()

@@ -22,6 +22,7 @@ class StrDispatch(object):
     >>> print(list(dis.flat_matches('hei')))
     [123, 34, 686]
     """
+
     def __init__(self):
         self.strs = {}
         self.regexs = {}

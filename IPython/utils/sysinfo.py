@@ -119,4 +119,3 @@ def sys_info():
          'sys_version': '2.6.6 (r266:84292, Sep 15 2010, 15:52:39) \\n[GCC 4.4.5]'}
     """
     return pprint.pformat(get_sys_info())
-

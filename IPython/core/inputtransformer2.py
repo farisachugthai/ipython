@@ -415,7 +415,8 @@ class EscapedCommand(TokenTransformBase):
 
         indent = lines[start_line][:start_col]
         end_line = find_end_of_continued_line(lines, start_line)
-        line = assemble_continued_line(lines, (start_line, start_col), end_line)
+        line = assemble_continued_line(
+            lines, (start_line, start_col), end_line)
 
         if len(line) > 1 and line[:2] in ESCAPE_DOUBLES:
             escape, content = line[:2], line[2:]
@@ -599,7 +600,8 @@ class TransformerManager:
         if not candidates:
             # Nothing to transform
             return False, lines
-        ordered_transformers = sorted(candidates, key=TokenTransformBase.sortby)
+        ordered_transformers = sorted(
+            candidates, key=TokenTransformBase.sortby)
         for transformer in ordered_transformers:
             try:
                 return True, transformer.transform(lines)
@@ -698,7 +700,8 @@ class TransformerManager:
             # We're in a multiline string or expression
             return 'incomplete', find_last_indent(lines)
 
-        newline_types = {tokenize.NEWLINE, tokenize.COMMENT, tokenize.ENDMARKER}
+        newline_types = {tokenize.NEWLINE,
+                         tokenize.COMMENT, tokenize.ENDMARKER}
 
         # Pop the last line which only contains DEDENTs and ENDMARKER
         last_token_line = None

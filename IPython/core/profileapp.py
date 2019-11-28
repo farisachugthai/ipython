@@ -169,14 +169,14 @@ class ProfileList(Application):
 
     aliases = Dict({
         'ipython-dir': 'ProfileList.ipython_dir',
-        'log-level'  : 'Application.log_level',
+        'log-level': 'Application.log_level',
     })
     flags = Dict(
         dict(debug=({
-                        'Application': {
-                            'log_level': 0
-                        }
-                    }, "Set Application.log_level to 0, maximizing log output.")))
+            'Application': {
+                'log_level': 0
+            }
+        }, "Set Application.log_level to 0, maximizing log output.")))
 
     ipython_dir = Unicode(get_ipython_dir(),
                           help="""
@@ -231,16 +231,16 @@ create_flags.update(base_flags)
 # other apps
 create_flags.pop('init')
 create_flags['reset'] = ({
-                             'ProfileCreate': {
-                                 'overwrite': True
-                             }
-                         }, "reset config files in this profile to the defaults.")
+    'ProfileCreate': {
+        'overwrite': True
+    }
+}, "reset config files in this profile to the defaults.")
 create_flags['parallel'] = ({
-                                'ProfileCreate': {
-                                    'parallel': True
-                                }
-                            }, "Include the config files for parallel "
-                               "computing apps (ipengine, ipcontroller, etc.)")
+    'ProfileCreate': {
+        'parallel': True
+    }
+}, "Include the config files for parallel "
+    "computing apps (ipengine, ipcontroller, etc.)")
 
 
 class ProfileCreate(BaseIPythonApplication):

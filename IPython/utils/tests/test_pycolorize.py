@@ -74,6 +74,6 @@ def test_loop_colors():
             if style != 'NoColor':
                 nt.assert_in('ERROR', f1)
 
-        yield test_unicode_colorize
-        yield test_parse_sample
-        yield test_parse_error
+        return test_unicode_colorize
+        return test_parse_sample
+        return test_parse_error

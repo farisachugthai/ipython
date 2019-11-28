@@ -83,7 +83,7 @@ def test_rich_output_empty():
     """RichOutput with no args"""
     rich = capture.RichOutput()
     for method, mime in _mime_map.items():
-        yield nt.assert_equal, getattr(rich, method)(), None
+        return nt.assert_equal, getattr(rich, method)(), None
 
 
 def test_rich_output():
@@ -91,12 +91,12 @@ def test_rich_output():
     data = basic_data
     metadata = basic_metadata
     rich = capture.RichOutput(data=data, metadata=metadata)
-    yield nt.assert_equal, rich._repr_html_(), data['text/html']
-    yield nt.assert_equal, rich._repr_png_(), (data['image/png'],
-                                               metadata['image/png'])
-    yield nt.assert_equal, rich._repr_latex_(), None
-    yield nt.assert_equal, rich._repr_javascript_(), None
-    yield nt.assert_equal, rich._repr_svg_(), None
+    return nt.assert_equal, rich._repr_html_(), data['text/html']
+    return nt.assert_equal, rich._repr_png_(), (data['image/png'],
+                                                metadata['image/png'])
+    return nt.assert_equal, rich._repr_latex_(), None
+    return nt.assert_equal, rich._repr_javascript_(), None
+    return nt.assert_equal, rich._repr_svg_(), None
 
 
 def test_rich_output_no_metadata():
@@ -104,7 +104,7 @@ def test_rich_output_no_metadata():
     data = full_data
     rich = capture.RichOutput(data=data)
     for method, mime in _mime_map.items():
-        yield nt.assert_equal, getattr(rich, method)(), data[mime]
+        return nt.assert_equal, getattr(rich, method)(), data[mime]
 
 
 def test_rich_output_metadata():
@@ -113,8 +113,8 @@ def test_rich_output_metadata():
     metadata = full_metadata
     rich = capture.RichOutput(data=data, metadata=metadata)
     for method, mime in _mime_map.items():
-        yield nt.assert_equal, getattr(rich,
-                                       method)(), (data[mime], metadata[mime])
+        return nt.assert_equal, getattr(rich,
+                                        method)(), (data[mime], metadata[mime])
 
 
 def test_rich_output_display():
@@ -127,10 +127,10 @@ def test_rich_output_display():
     rich = capture.RichOutput(data=data)
     with capture.capture_output() as cap:
         rich.display()
-    yield nt.assert_equal, len(cap.outputs), 1
+    return nt.assert_equal, len(cap.outputs), 1
     rich2 = cap.outputs[0]
-    yield nt.assert_equal, rich2.data, rich.data
-    yield nt.assert_equal, rich2.metadata, rich.metadata
+    return nt.assert_equal, rich2.data, rich.data
+    return nt.assert_equal, rich2.metadata, rich.metadata
 
 
 def test_capture_output():
@@ -140,8 +140,8 @@ def test_capture_output():
         print(hello_stdout, end="")
         print(hello_stderr, end="", file=sys.stderr)
         rich.display()
-    yield nt.assert_equal, hello_stdout, cap.stdout
-    yield nt.assert_equal, hello_stderr, cap.stderr
+    return nt.assert_equal, hello_stdout, cap.stdout
+    return nt.assert_equal, hello_stderr, cap.stderr
 
 
 def test_capture_output_no_stdout():
@@ -151,9 +151,9 @@ def test_capture_output_no_stdout():
         print(hello_stdout, end="")
         print(hello_stderr, end="", file=sys.stderr)
         rich.display()
-    yield nt.assert_equal, "", cap.stdout
-    yield nt.assert_equal, hello_stderr, cap.stderr
-    yield nt.assert_equal, len(cap.outputs), 1
+    return nt.assert_equal, "", cap.stdout
+    return nt.assert_equal, hello_stderr, cap.stderr
+    return nt.assert_equal, len(cap.outputs), 1
 
 
 def test_capture_output_no_stderr():
@@ -164,9 +164,9 @@ def test_capture_output_no_stderr():
         print(hello_stdout, end="")
         print(hello_stderr, end="", file=sys.stderr)
         rich.display()
-    yield nt.assert_equal, hello_stdout, cap.stdout
-    yield nt.assert_equal, "", cap.stderr
-    yield nt.assert_equal, len(cap.outputs), 1
+    return nt.assert_equal, hello_stdout, cap.stdout
+    return nt.assert_equal, "", cap.stderr
+    return nt.assert_equal, len(cap.outputs), 1
 
 
 def test_capture_output_no_display():
@@ -176,6 +176,6 @@ def test_capture_output_no_display():
         print(hello_stdout, end="")
         print(hello_stderr, end="", file=sys.stderr)
         rich.display()
-    yield nt.assert_equal, hello_stdout, cap.stdout
-    yield nt.assert_equal, hello_stderr, cap.stderr
-    yield nt.assert_equal, cap.outputs, []
+    return nt.assert_equal, hello_stdout, cap.stdout
+    return nt.assert_equal, hello_stderr, cap.stderr
+    return nt.assert_equal, cap.outputs, []

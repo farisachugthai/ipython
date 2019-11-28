@@ -595,7 +595,6 @@ class TerminalInteractiveShell(InteractiveShell):
                 or self.ask_yes_no('Do you really want to exit ([y]/n)?', 'y', 'n'):
             self.ask_exit()
 
-
     def mainloop(self, display_banner=DISPLAY_BANNER_DEPRECATED):
         """I think this is the method to drives the whole application.
 

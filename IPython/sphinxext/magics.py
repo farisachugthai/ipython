@@ -55,10 +55,12 @@ class CellMagicRole(LineMagicRole):
 
 def setup(app: "Sphinx") -> Dict[str, Any]:
 
-    app.add_object_type('magic', 'magic', 'pair: %s; magic command', parse_magic)
+    app.add_object_type(
+        'magic', 'magic', 'pair: %s; magic command', parse_magic)
     app.add_role_to_domain('std', 'magic', LineMagicRole(), override=True)
 
-    app.add_object_type('cellmagic', 'cellmagic', 'pair: %s; cell magic', parse_cell_magic)
+    app.add_object_type('cellmagic', 'cellmagic',
+                        'pair: %s; cell magic', parse_cell_magic)
     app.add_role_to_domain('std', 'cellmagic', CellMagicRole(), override=True)
 
     metadata = {

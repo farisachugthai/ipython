@@ -168,7 +168,6 @@ try:
     LocalFree.res_type = HLOCAL
     LocalFree.arg_types = [HLOCAL]
 
-
     def arg_split(commandline, posix=False, strict=True):
         """Split a command line's arguments in a shell-like manner.
 

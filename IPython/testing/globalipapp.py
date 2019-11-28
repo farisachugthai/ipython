@@ -31,6 +31,7 @@ class StreamProxy(utils_io.IOStream):
     name : str
         The name of the stream. This will be requested anew at every call
     """
+
     def __init__(self, name):
         warnings.warn(
             "StreamProxy is deprecated and unused as of IPython 5",

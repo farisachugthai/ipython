@@ -60,8 +60,7 @@ def test_geojson():
                 "name": "Inca City"
             }
         },
-        url_template=
-        "http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/{basemap_id}/{z}/{x}/{y}.png",
+        url_template="http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/{basemap_id}/{z}/{x}/{y}.png",
         layer_options={
             "basemap_id": "celestia_mars-shaded-16k_global",
             "attribution": "Celestia/praesepe",

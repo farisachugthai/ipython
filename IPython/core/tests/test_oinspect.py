@@ -104,10 +104,13 @@ def test_find_file_magic():
 
 class Call(object):
     """This is the class docstring."""
+
     def __init__(self, x, y=1):
         """This is the constructor docstring."""
+
     def __call__(self, *a, **kw):
         """This is the call docstring."""
+
     def method(self, x, z=2):
         """Some method's docstring"""
 
@@ -135,6 +138,7 @@ class NoBoolCall:
     """
     callable with `__bool__` raising should still be inspect-able.
     """
+
     def __call__(self):
         """does nothing"""
         pass
@@ -150,6 +154,7 @@ class SerialLiar(object):
     unittest.mock.call does something similar, but it's not ideal for testing
     as the failure mode is to eat all your RAM. This gives up after 10k levels.
     """
+
     def __init__(self, max_fibbing_twig, lies_told=0):
         if lies_told > 10000:
             raise RuntimeError('Nose too long, honesty is the best policy')
@@ -255,11 +260,13 @@ def test_getdoc():
 
     class B(object):
         """standard docstring"""
+
         def getdoc(self):
             return "custom docstring"
 
     class C(object):
         """standard docstring"""
+
         def getdoc(self):
             return None
 

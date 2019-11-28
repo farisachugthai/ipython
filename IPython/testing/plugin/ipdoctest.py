@@ -334,6 +334,7 @@ class IPExample(doctest.Example):
 
 class IPExternalExample(doctest.Example):
     """Doctest examples to be run in an external process."""
+
     def __init__(self,
                  source,
                  want,
@@ -587,6 +588,7 @@ SKIP = doctest.register_optionflag('SKIP')
 class IPDocTestRunner(doctest.DocTestRunner, object):
     """Test runner that synchronizes the IPython namespace with test globals.
     """
+
     def run(self, test, compileflags=None, out=None, clear_globs=True):
 
         # Hack: ipython needs access to the execution context of the example,
@@ -609,6 +611,7 @@ class IPDocTestRunner(doctest.DocTestRunner, object):
 class DocFileCase(doctest.DocFileCase):
     """Overrides to provide filename
     """
+
     def address(self):
         return self._dt_test.filename, None, None
 

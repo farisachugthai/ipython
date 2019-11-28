@@ -64,9 +64,12 @@ class FuncClsScanner(ast.NodeVisitor):
 
 
         """
-        if classes is None: self.classes = []
-        if classes_seen is None: self.classes_seen = set()
-        if functions is None: self.functions = []
+        if classes is None:
+            self.classes = []
+        if classes_seen is None:
+            self.classes_seen = set()
+        if functions is None:
+            self.functions = []
         super().__init__()
 
     @staticmethod

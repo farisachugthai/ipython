@@ -301,6 +301,7 @@ class TempFileMixin(unittest.TestCase):
 
     Should be deprecated IMO. Pytest fixtures could very easily replace this.
     """
+
     def mktmp(self, src, ext='.py'):
         """Make a valid python temp file."""
         fname = temp_pyfile(src, ext)
@@ -384,6 +385,7 @@ class AssertPrints(object):
     abcd
     def
     """
+
     def __init__(self, s, channel='stdout', suppress=True):
         self.s = s
         if isinstance(self.s, (str, _re_type)):
@@ -429,6 +431,7 @@ class AssertNotPrints(AssertPrints):
 
     Counterpart of AssertPrints.
     """
+
     def __exit__(self, etype, value, traceback):
         try:
             if value is not None:

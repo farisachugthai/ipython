@@ -30,6 +30,7 @@ import sys
 
 class prepended_to_syspath(object):
     """A context for prepending a directory to sys.path for a second."""
+
     def __init__(self, dir):
         self.dir = dir
 

@@ -260,6 +260,7 @@ class SeparateUnicode(Unicode):
 
     This is a Unicode based trait that converts '0'->'' and ``'\\n'->'\n'``.
     """
+
     def validate(self, obj, value):
         if value == '0':
             value = ''
@@ -389,8 +390,7 @@ class InteractiveShell(SingletonConfigurable):
     loop_runner = Any(
         default_value="IPython.core.interactiveshell._asyncio_runner",
         allow_none=True,
-        help=
-        """Select the loop runner that will be used to execute top-level asynchronous code"""
+        help="""Select the loop runner that will be used to execute top-level asynchronous code"""
     ).tag(config=True)
 
     @default('loop_runner')
@@ -515,8 +515,7 @@ class InteractiveShell(SingletonConfigurable):
 
     input_transformers_post = List(
         [],
-        help=
-        "A list of string input transformers, to be applied after IPython's "
+        help="A list of string input transformers, to be applied after IPython's "
         "own input transformations.")
 
     logstart = Bool(False,
@@ -1108,7 +1107,7 @@ class InteractiveShell(SingletonConfigurable):
             alternative = hooks.deprecated[name]
             warn("Hook {} is deprecated. Use {} instead.".format(
                 name, alternative),
-                 stacklevel=2)
+                stacklevel=2)
 
         if not dp:
             dp = hooks.CommandChainDispatcher()
@@ -1334,8 +1333,7 @@ class InteractiveShell(SingletonConfigurable):
         if user_module is None:
             user_module = types.ModuleType(
                 "__main__",
-                doc=
-                "Automatically created module for IPython interactive environment"
+                doc="Automatically created module for IPython interactive environment"
             )
 
         # We must ensure that __builtin__ (without the final 's') is always
@@ -1929,8 +1927,8 @@ class InteractiveShell(SingletonConfigurable):
         if not getattr(self, 'config', None):
             self.config = Config()
         self.SyntaxTB = SyntaxTB(color_scheme='Linux',
-                                parent=self,
-                                config=self.config)
+                                 parent=self,
+                                 config=self.config)
 
         self.InteractiveTB = AutoFormattedTB(
             mode='Plain',
@@ -3042,7 +3040,7 @@ class InteractiveShell(SingletonConfigurable):
             try:
                 glob, loc = (where + (None,))[:2]
                 # exec(fname, glob, loc, self.compile if shell_futures else None)
-                exec(fname,glob,loc)
+                exec(fname, glob, loc)
             except SystemExit as status:
                 if status.code:
                     if raise_exceptions:
@@ -4106,7 +4104,6 @@ class InteractiveShellABC(metaclass=abc.ABCMeta):
     def enable_gui(self, gui=None):
         """I didn't entirely understand why this was in the Interactive Shell and this had no methods."""
         raise NotImplementedError('Implement enable_gui in a subclass')
-
 
 
 InteractiveShellABC.register(InteractiveShell)

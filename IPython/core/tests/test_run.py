@@ -106,6 +106,8 @@ def doctest_run_option_parser():
     ['print*.py']
 
     """
+
+
 @dec.skip_win32
 def doctest_run_option_parser_for_posix():
     r"""Test option parser in %run (Linux/OSX specific).
@@ -121,6 +123,8 @@ def doctest_run_option_parser_for_posix():
     ['print_argv.py']
 
     """
+
+
 @dec.skip_if_not_win32
 def doctest_run_option_parser_for_windows():
     r"""Test option parser in %run (Windows specific).

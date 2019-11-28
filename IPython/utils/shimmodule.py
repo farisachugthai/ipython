@@ -18,6 +18,7 @@ class ShimImporter(object):
     This ensures that submodule imports return the real target module,
     not a clone that will confuse `is` and `isinstance` checks.
     """
+
     def __init__(self, src, mirror):
         self.src = src
         self.mirror = mirror
@@ -55,6 +56,7 @@ class ShimModule(types.ModuleType):
 
     Also note that the :attr:`path` it has simply returns an empty list.
     """
+
     def __init__(self, *args, **kwargs):
         self._mirror = kwargs.pop("mirror")
         src = kwargs.pop("src", None)

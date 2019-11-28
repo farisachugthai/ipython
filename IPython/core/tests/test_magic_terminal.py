@@ -80,6 +80,7 @@ def test_cpaste():
 
 class PasteTestCase(TestCase):
     """Multiple tests for clipboard pasting"""
+
     def paste(self, txt, flags='-q'):
         """Paste input text, by default in quiet mode"""
         ip.hooks.clipboard_get = lambda: txt

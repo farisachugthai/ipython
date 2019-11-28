@@ -76,7 +76,8 @@ class ExtensionManager(Configurable):
 
     def __init__(self, shell=None, **kwargs):
         super(ExtensionManager, self).__init__(shell=shell, **kwargs)
-        self.shell.observe(self._on_ipython_dir_changed, names=('ipython_dir',))
+        self.shell.observe(self._on_ipython_dir_changed,
+                           names=('ipython_dir',))
         self.loaded = set()
 
     @property

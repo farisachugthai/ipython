@@ -149,7 +149,6 @@ the mailing list ipython-dev@python.org , or on the GitHub Issue tracker:
 https://github.com/ipython/ipython/issues/9649 """, UserWarning)
 
 
-
 class CommandChainDispatcher:
     """Dispatch calls to a chain of commands until some func can handle it
 

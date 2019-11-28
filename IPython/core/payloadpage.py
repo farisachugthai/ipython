@@ -38,4 +38,3 @@ def page(strng, start=0):
         start=start,
     )
     shell.payload_manager.write_payload(payload)
-

@@ -483,7 +483,8 @@ class InteractiveShellApp(Configurable):
                 sys.exit('Interrupted!')
 
             except BaseException as e:
-                self.log.warning("Unknown error in handling startup files: {}".format(e))
+                self.log.warning(
+                    "Unknown error in handling startup files: {}".format(e))
             # self.shell.showtraceback()
 
     def _run_exec_files(self):

@@ -40,6 +40,7 @@ class preserve_keys(object):
     >>> print(sorted(d.items()))
     [('b', 2), ('c', 3), ('e', 5)]
     """
+
     def __init__(self, dictionary, *keys):
         self.dictionary = dictionary
         self.keys = keys

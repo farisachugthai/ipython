@@ -99,12 +99,14 @@ def _shutil_which(cmd, *args, **kwargs):
     # honestly just drop the other arguments we don't need them
     return shutil.which(cmd)
 
+
 PY3 = True
 
 # jfc what is this?
 
 # keep reference to builtin_mod because the kernel overrides that value
 # to forward requests to a frontend.
+
 
 def input(prompt=''):
     return builtin_mod.input(prompt)

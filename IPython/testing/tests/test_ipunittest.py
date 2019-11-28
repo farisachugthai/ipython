@@ -56,6 +56,8 @@ def simple_dt():
     >>> print(1+1)
     2
     """
+
+
 @ipdoctest
 def ipdt_flush():
     """
@@ -118,6 +120,7 @@ class Foo(object):
         In [27]: 3+4
         Out[27]: 7
         """
+
     def normaldt_method(self):
         """
         >>> print(1+1)

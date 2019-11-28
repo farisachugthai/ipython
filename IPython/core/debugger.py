@@ -102,7 +102,7 @@ class CorePdb(Pdb):
                  stdout=None,
                  context=5,
                  aliases=None,
-                 prompt = 'IPdb> ',
+                 prompt='IPdb> ',
                  **kwargs):
         """Create a new IPython debugger.
 
@@ -144,7 +144,6 @@ class CorePdb(Pdb):
 
         # Set the prompt - the default prompt is '(Pdb)'
         self.prompt = prompt
-
 
     def debug_colors(self):
         """Ah the plethora of meaning here.

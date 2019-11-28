@@ -1,9 +1,15 @@
 """IO related utilities."""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
+import atexit
+import os
 import sys
 import tempfile
 import warnings
+from warnings import warn
+
+# Guys implicit relative imports???
+from IPython.utils.capture import CapturedIO, capture_output
 
 
 class IOStream:
@@ -70,6 +76,19 @@ class IOStream:
 
     def close(self):
         pass
+
+
+# setup stdin/stdout/stderr to sys.stdin/sys.stdout/sys.stderr
+devnull = open(os.devnull, 'w')
+atexit.register(devnull.close)
+
+# io.std* are deprecated, but don't show our own deprecation warnings
+# during initialization of the deprecated API.
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore', DeprecationWarning)
+    stdin = IOStream(sys.stdin, fallback=devnull)
+    stdout = IOStream(sys.stdout, fallback=devnull)
+    stderr = IOStream(sys.stderr, fallback=devnull)
 
 
 class Tee:
@@ -173,15 +192,15 @@ def temp_pyfile(src, ext='.py'):
 
     Parameters
     ----------
-    src : string or list of strings (no need for ending newlines if list)
+    src: string or list of strings(no need for ending newlines if list)
         Source code to be written to the file.
 
-    ext : optional, string
+    ext: optional, string
         Extension for the generated file.
 
     Returns
     -------
-    fname : str (path-like)
+    fname: str(path-like)
         It is the caller's responsibility to close the open file and unlink it.
 
     """
@@ -190,4 +209,3 @@ def temp_pyfile(src, ext='.py'):
         f.write(src)
         f.flush()
     return fname
-

@@ -23,6 +23,7 @@ class _FakeInput(object):
     return it.  The set of lines to return is specified in the
     constructor; they should not have trailing newlines.
     """
+
     def __init__(self, lines):
         self.lines = iter(lines)
 
@@ -34,6 +35,7 @@ class _FakeInput(object):
 
 class PdbTestInput(object):
     """Context manager that makes testing Pdb in doctests easier."""
+
     def __init__(self, input):
         self.input = input
 

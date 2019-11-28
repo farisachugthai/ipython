@@ -39,6 +39,7 @@ class LSString(str):
 
     Such strings are very useful to efficiently interact with the shell, which
     typically only understands whitespace-separated options for commands."""
+
     def get_list(self):
         try:
             return self.__list
@@ -99,6 +100,7 @@ class SList(list):
 
     Any values which require transformations are computed only once and
     cached."""
+
     def get_list(self):
         return self
 
@@ -511,6 +513,7 @@ class EvalFormatter(Formatter):
         In [3]: f.format("{greeting[slice(2,4)]}", greeting="Hello")
         Out[3]: 'll'
     """
+
     def get_field(self, name, args, kwargs):
         v = eval(name, kwargs)
         return v, name

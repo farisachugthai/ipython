@@ -72,6 +72,7 @@ class CapturedIO:
     Additionally, there's a ``c.show()`` method which will print all of the
     above in the same order, and can be invoked simply via ``c()``.
     """
+
     def __init__(self, stdout, stderr, outputs=None):
         self._stdout = stdout
         self._stderr = stderr

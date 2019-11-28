@@ -110,6 +110,7 @@ class FooClass(object):
     >>> 1+1
     2
     """
+
     def __init__(self, x):
         """Make a FooClass.
 

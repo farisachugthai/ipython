@@ -141,7 +141,7 @@ class InteractivelyDefined(Exception):
         self.index = index
 
 
-if sys.version_info[0:2] < (3,7):
+if sys.version_info[0:2] < (3, 7):
 
     class ModuleNotFoundError(ImportError):
         """Backport and define ModuleNotFound so we can catch it later."""

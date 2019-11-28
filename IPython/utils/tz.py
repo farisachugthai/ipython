@@ -27,6 +27,7 @@ ZERO = timedelta(0)
 
 class tzUTC(tzinfo):
     """tzinfo object for UTC (zero offset)"""
+
     def utcoffset(self, d):
         return ZERO
 

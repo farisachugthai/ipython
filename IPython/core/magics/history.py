@@ -165,7 +165,8 @@ class HistoryMagics(Magics):
         else:
             if os.path.exists(outfname):
                 try:
-                    ans = utils_io.ask_yes_no("File %r exists. Overwrite?" % outfname)
+                    ans = utils_io.ask_yes_no(
+                        "File %r exists. Overwrite?" % outfname)
                 except StdinNotImplementedError:
                     ans = True
                 if not ans:

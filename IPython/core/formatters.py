@@ -611,9 +611,11 @@ class PlainTextFormatter(BaseFormatter):
         Moved all the inline comments to arguments of the ``help`` parameter.
 
     """
-    format_type = Unicode('text/plain', help="The format type of data returned.")
+    format_type = Unicode(
+        'text/plain', help="The format type of data returned.")
 
-    enabled = Bool(True, help="This subclass ignores this attribute as it always need to return something.").tag(config=False)
+    enabled = Bool(
+        True, help="This subclass ignores this attribute as it always need to return something.").tag(config=False)
 
     max_seq_length = Integer(
         pretty.MAX_SEQ_LENGTH,

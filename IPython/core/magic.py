@@ -585,7 +585,8 @@ class Magics(Configurable):
 
         # Now build the string for output:
         #strng = cmd_name_re.sub(r'\n\\texttt{\\textsl{\\large \1}}:',strng)
-        strng = cmd_name_re.sub(r'\n\\bigskip\n\\texttt{\\textbf{ \1}}:', strng)
+        strng = cmd_name_re.sub(
+            r'\n\\bigskip\n\\texttt{\\textbf{ \1}}:', strng)
         strng = cmd_re.sub(r'\\texttt{\g<cmd>}', strng)
         strng = par_re.sub(r'\\\\', strng)
         strng = escape_re.sub(r'\\\1', strng)

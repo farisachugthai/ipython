@@ -38,6 +38,7 @@ from warnings import warn
 # Classes and functions
 # -----------------------------------------------------------------------------
 
+
 class DummyDB:
     """Dummy DB that will act as a black hole for history.
 

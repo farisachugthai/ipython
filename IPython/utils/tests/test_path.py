@@ -142,7 +142,8 @@ def test_get_home_dir_2():
     nt.assert_equal(home_dir, unfrozen)
 
 
-@skip_win32_py38
+# idk what this decorator is
+# @skip_win32_py38
 @with_environment
 def test_get_home_dir_3():
     """get_home_dir() uses $HOME if set"""

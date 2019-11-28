@@ -205,7 +205,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     classes = List()
     # apparently self hasn't been defined yet
     # classes = List(self._classes_default(),
-                   # help='Available classes').tag(config=False)
+    # help='Available classes').tag(config=False)
 
     interactive_shell_class = Type(
         klass=object,
