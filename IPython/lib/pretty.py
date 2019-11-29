@@ -639,13 +639,6 @@ def _dict_pprinter_factory(start, end):
         step = len(start)
         p.begin_group(step, start)
         keys = obj.keys()
-        # if dict isn't large enough to be truncated, sort keys before displaying
-        # From Python 3.7, dicts preserve order by definition, so we don't
-        # sort.
-        if not DICT_IS_ORDERED \
-                and not (p.max_seq_length and len(obj) >= p.max_seq_length):
-            keys = _sorted_for_pprint(keys)
-
         for idx, key in p._enumerate(keys):
             if idx:
                 p.text(',')
@@ -773,23 +766,23 @@ except NameError:
 
 #: printers for builtin types
 _type_pprinters = {
-    int: _repr_pprint,
-    float: _repr_pprint,
-    str: _repr_pprint,
-    tuple: _seq_pprinter_factory('(', ')'),
-    list: _seq_pprinter_factory('[', ']'),
-    dict: _dict_pprinter_factory('{', '}'),
-    set: _set_pprinter_factory('{', '}'),
-    frozenset: _set_pprinter_factory('frozenset({', '})'),
-    super: _super_pprint,
-    _re_pattern_type: _re_pattern_pprint,
-    type: _type_pprint,
-    types.FunctionType: _function_pprint,
-    types.BuiltinFunctionType: _function_pprint,
-    types.MethodType: _repr_pprint,
-    datetime.datetime: _repr_pprint,
-    datetime.timedelta: _repr_pprint,
-    _exception_base: _exception_pprint
+    int:                        _repr_pprint,
+    float:                      _repr_pprint,
+    str:                        _repr_pprint,
+    tuple:                      _seq_pprinter_factory('(', ')'),
+    list:                       _seq_pprinter_factory('[', ']'),
+    dict:                       _dict_pprinter_factory('{', '}'),
+    set:                        _set_pprinter_factory('{', '}'),
+    frozenset:                  _set_pprinter_factory('frozenset({', '})'),
+    super:                      _super_pprint,
+    _re_pattern_type:           _re_pattern_pprint,
+    type:                       _type_pprint,
+    types.FunctionType:         _function_pprint,
+    types.BuiltinFunctionType:  _function_pprint,
+    types.MethodType:           _repr_pprint,
+    datetime.datetime:          _repr_pprint,
+    datetime.timedelta:         _repr_pprint,
+    _exception_base:            _exception_pprint
 }
 
 # render os.environ like a dict

@@ -52,7 +52,7 @@ from traitlets import (Any, Bool, CaselessStrEnum, Dict, Enum, Instance,
                        validate)
 from traitlets.config.configurable import SingletonConfigurable
 
-from IPython.core import hooks, magic, oinspect, page
+from IPython.core import hooks, magic, oinspect, page, prefilter
 from IPython.core.alias import Alias, AliasManager
 from IPython.core.async_helpers import (_asyncify, _asyncio_runner,
                                         _pseudo_sync_runner)

@@ -10,43 +10,42 @@
 __all__ = ['TermColors', 'InputTermColors', 'ColorScheme', 'ColorSchemeTable']
 
 # As a better way to subclass Dict
-# from collections.abc import Mapping
-from collections import UserDict
+from collections.abc import MutableMapping
+# from collections import UserDict
 import copy
 import os
 
 from IPython.utils.ipstruct import Struct
 
 color_templates = (
-    # Dark colors
-    ("Black", "0;30"),
-    ("Red", "0;31"),
-    ("Green", "0;32"),
-    ("Brown", "0;33"),
-    ("Blue", "0;34"),
-    ("Purple", "0;35"),
-    ("Cyan", "0;36"),
-    ("LightGray", "0;37"),
-    # Light colors
-    ("DarkGray", "1;30"),
-    ("LightRed", "1;31"),
-    ("LightGreen", "1;32"),
-    ("Yellow", "1;33"),
-    ("LightBlue", "1;34"),
-    ("LightPurple", "1;35"),
-    ("LightCyan", "1;36"),
-    ("White", "1;37"),
-    # Blinking colors.  Probably should not be used in anything serious.
-    ("BlinkBlack", "5;30"),
-    ("BlinkRed", "5;31"),
-    ("BlinkGreen", "5;32"),
-    ("BlinkYellow", "5;33"),
-    ("BlinkBlue", "5;34"),
-    ("BlinkPurple", "5;35"),
-    ("BlinkCyan", "5;36"),
-    ("BlinkLightGray", "5;37"),
-)
-
+        # Dark colors
+        ("Black"       , "0;30"),
+        ("Red"         , "0;31"),
+        ("Green"       , "0;32"),
+        ("Brown"       , "0;33"),
+        ("Blue"        , "0;34"),
+        ("Purple"      , "0;35"),
+        ("Cyan"        , "0;36"),
+        ("LightGray"   , "0;37"),
+        # Light colors
+        ("DarkGray"    , "1;30"),
+        ("LightRed"    , "1;31"),
+        ("LightGreen"  , "1;32"),
+        ("Yellow"      , "1;33"),
+        ("LightBlue"   , "1;34"),
+        ("LightPurple" , "1;35"),
+        ("LightCyan"   , "1;36"),
+        ("White"       , "1;37"),
+        # Blinking colors.  Probably should not be used in anything serious.
+        ("BlinkBlack"  , "5;30"),
+        ("BlinkRed"    , "5;31"),
+        ("BlinkGreen"  , "5;32"),
+        ("BlinkYellow" , "5;33"),
+        ("BlinkBlue"   , "5;34"),
+        ("BlinkPurple" , "5;35"),
+        ("BlinkCyan"   , "5;36"),
+        ("BlinkLightGray", "5;37"),
+        )
 
 def make_color_table(in_class):
     """Build a set of color attributes in a class.
@@ -151,6 +150,7 @@ class ColorSchemeTable(dict):
     active_colors -> actual color table of the active scheme
 
     """
+    valid_schemes= ['linux', 'lightbg', 'nocolor', 'iforgetrn']
 
     def __init__(self, scheme_list=None, default_scheme=None):
         """Create a table of color schemes.
@@ -159,18 +159,36 @@ class ColorSchemeTable(dict):
         created with a list of valid color schemes AND the specification for
         the default active scheme.
 
-        Since we subclass dict does it make sense to make a super call?
+        Yo this is outrageously confusing. self.active_scheme_name is treated
+        like the default_scheme parameter.
+
+        scheme_list is a list of dicts.
+
+        we never bind the valid_schemes to the instance.
+
         """
         # create object attributes to be set later
         self.active_scheme_name = ''
         self.active_colors = None
 
-        if scheme_list:
-            if default_scheme == None:
-                default_scheme = 'LightBG'
+        if not scheme_list:
+            self.scheme_list = scheme_list = self.valid_schemes
+
+        if self.scheme_list:
+            if default_scheme is None:
+                self.active_scheme_name = default_scheme = 'LightBG'
+            else:
+                self.active_scheme_name = default_scheme
             for scheme in scheme_list:
                 self.add_scheme(scheme)
-            self.set_active_scheme(default_scheme)
+            # self.set_active_scheme(default_scheme)
+
+        self.scheme_names = list(self.keys())
+
+        if self.scheme_names is not None:
+            self.valid_schemes = [s.lower() for s in self.scheme_names]
+        else:
+            self.scheme_names = self.valid_schemes= ['linux', 'lightbg', 'nocolor', 'iforgetrn']
 
     def copy(self):
         """Return full copy of object"""
@@ -187,27 +205,32 @@ class ColorSchemeTable(dict):
                 'ColorSchemeTable only accepts ColorScheme instances')
         self[new_scheme.name] = new_scheme
 
+    def __add__(self, new_scheme):
+        return self.add_scheme(new_scheme)
+
     def set_active_scheme(self, scheme, case_sensitive=False):
         """Set the currently active scheme.
 
         Names are by default compared in a case-insensitive way, but this can
         be changed by setting the parameter case_sensitive to true.
+
+        case sensitive now ignored
         """
-        scheme_names = list(self.keys())
-        if case_sensitive:
-            valid_schemes = scheme_names
-            scheme_test = scheme
-        else:
-            valid_schemes = [s.lower() for s in scheme_names]
-            scheme_test = scheme.lower()
+        scheme_test = scheme.lower()
         try:
-            scheme_idx = valid_schemes.index(scheme_test)
+            scheme_idx = self.valid_schemes.index(scheme_test)
         except ValueError:
             raise ValueError('Unrecognized color scheme: ' + scheme +
                              '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
         else:
-            active = scheme_names[scheme_idx]
+            active = self.scheme_names[scheme_idx]
             self.active_scheme_name = active
             self.active_colors = self[active].colors
             # Now allow using '' as an index for the current active scheme
             self[''] = self[active]
+
+
+
+class ProxyColorSchemeTable(MutableMapping):
+    # TODO
+    pass

@@ -144,19 +144,13 @@ import __main__
 from IPython.core.error import TryNext
 from IPython.core.inputtransformer2 import ESC_MAGIC
 from IPython.core.latex_symbols import latex_symbols, reverse_latex_symbol
+from IPython.core.oinspect import InspectColors
 from IPython.utils import PyColorize, generics
 from IPython.utils.dir2 import dir2, get_real_method
 from IPython.utils.process import arg_split
+from traitlets import Bool, Enum, observe, Int
 
-from .error import ProvisionalCompleterWarning
-
-# ----------------------------------------------------------------------------
-# Copyright (c) IPython Development Team.
-# Distributed under the terms of the Modified BSD License.
-#
-# Some of this code originated from rlcompleter in the Python standard library
-# Copyright (C) 2001 Python Software Foundation, www.python.org
-# ----------------------------------------------------------------------------
+from IPython.core.error import ProvisionalCompleterWarning
 
 # skip module docstests
 skip_doctest = True

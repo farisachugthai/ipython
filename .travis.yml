@@ -57,30 +57,32 @@ jobs:
 
 install:
   - pip3 install pip --upgrade
-  - pip3 install setuptools --upgrade
-  - pip3 install -e file://$PWD#egg=ipython[test] --upgrade
+  # - pip3 install setuptools --upgrade
+  # - pip3 install -e file://$PWD#egg=ipython[test] --upgrade
   - pip3 install trio curio --upgrade --upgrade-strategy eager
-  - pip3 install 'pytest<4' matplotlib
+  # - pip3 install 'pytest<4' matplotlib
   - pip3 install codecov check-manifest --upgrade
+  - pip3 install -U -e . -r requirements.txt
 
 
 # command to run tests, e.g. python setup.py test
 # script: nosetests
 script:
-  - check-manifest
-  - |
-    if [[ "$TRAVIS_PYTHON_VERSION" == "nightly" ]]; then
-       # on nightly fake parso known the grammar
-       cp /home/travis/virtualenv/python3.8-dev/lib/python3.8/site-packages/parso/python/grammar37.txt /home/travis/virtualenv/python3.8-dev/lib/python3.8/site-packages/parso/python/grammar38.txt
-    fi
+  # - check-manifest
+  # - |
+  #   if [[ "$TRAVIS_PYTHON_VERSION" == "nightly" ]]; then
+  #      # on nightly fake parso known the grammar
+  #      cp /home/travis/virtualenv/python3.8-dev/lib/python3.8/site-packages/parso/python/grammar37.txt /home/travis/virtualenv/python3.8-dev/lib/python3.8/site-packages/parso/python/grammar38.txt
+    # fi
   - cd /tmp && iptest --coverage xml && cd -
   - pytest IPython
   # On the latest Python (on Linux) only, make sure that the docs build.
   - |
     if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      pip install -r docs/requirements.txt
-      python tools/fixup_whats_new_pr.py
-      make -C docs/ html SPHINXOPTS="-W"
+      pip3 install -U -r docs/requirements.txt
+      python3 tools/fixup_whats_new_pr.py
+      # make -C docs/ html SPHINXOPTS="-W"
+      sphinx-build -c docs/source -W --keep-going docs/source docs/build
     fi
 
 after_success:
@@ -129,7 +131,7 @@ deploy:
     repo: ipython/ipython
     all_branches: true  # Backports are released from e.g. 5.x branch
     tags: true
-    python: 3.6  # Any version should work, but we only need one
+    python: 3.7  # Any version should work, but we only need one
     condition: $TRAVIS_OS_NAME = "linux"
 
 ...

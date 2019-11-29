@@ -382,15 +382,20 @@ class TBTools(Colorable):
         """Whether to call the interactive pdb debugger after printing
         tracebacks or not.
         """
+        super().__init__(parent=parent, config=config)
         # Create color table
-        self.color_scheme_table = exception_colors()
+        # self.color_scheme_table = exception_colors()
         if hasattr(self, 'color_scheme_table'):
             if hasattr(self.color_scheme_table, 'active_colors'):
                 self.Colors = self.color_scheme_table.active_colors
+        else:
+            self.color_scheme_table = ColorSchemeTable()
+
+        # todo
+        # if self.Colors is None:
         self.set_colors(color_scheme)
         self.old_scheme = color_scheme  # save initial value for toggles
 
-        super().__init__(parent=parent, config=config)
         self.call_pdb = call_pdb
         self._ostream = ostream
 
@@ -1406,6 +1411,7 @@ class SyntaxTB(ListTB):
         ----------
         color_scheme : object
         """
+        self.color_scheme_table = ColorSchemeTable()
         self.color_scheme = color_scheme or None
         self.parent = parent
         # super().__init__(self, color_scheme=color_scheme, call_pdb=call_pdb, ostream=ostream, parent=parent)

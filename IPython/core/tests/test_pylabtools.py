@@ -6,17 +6,17 @@
 from io import UnsupportedOperation, BytesIO
 
 from IPython.testing import decorators as dec
-from .. import pylabtools as pt
+from IPython.core import pylabtools as pt
 from IPython.core.display import _PNG, _JPEG
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.getipython import get_ipython
 import numpy as np
+import matplotlib
 from matplotlib import pyplot as plt
 import nose.tools as nt
 from nose import SkipTest
 from matplotlib.figure import Figure
 
-import matplotlib
 matplotlib.use('Agg')
 
 

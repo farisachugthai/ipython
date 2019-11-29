@@ -1,4 +1,10 @@
+include *.desktop
+include *.lock
+include *.txt
+include Pipfile
+recursive-include recipe *.yaml
 include README.rst
+
 include COPYING.rst
 include LICENSE
 include setupbase.py
