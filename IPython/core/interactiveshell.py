@@ -15,7 +15,7 @@
 
 import abc
 import ast
-# import asyncio
+import asyncio
 import atexit
 import builtins as builtin_mod
 import code
@@ -164,6 +164,7 @@ def removed_co_newlocals(function: types.FunctionType) -> types.FunctionType:
 
 # we still need to run things using the asyncio eventloop, but there is no
 # async integration
+<<<<<<< HEAD
 
 # Why is this ALLLLL over this source code? Why not just do something like
 if hasattr('async_helpers', 'curio_runner'):
@@ -178,6 +179,19 @@ else:
 
     def _should_be_async(cell: str) -> bool:
         return False
+||||||| f6b22ccf6
+from .async_helpers import (_asyncio_runner,  _asyncify, _pseudo_sync_runner)
+if sys.version_info > (3, 5):
+    from .async_helpers import _curio_runner, _trio_runner, _should_be_async
+else :
+    _curio_runner = _trio_runner = None
+
+    def _should_be_async(cell:str)->bool:
+        return False
+=======
+from .async_helpers import (_asyncio_runner,  _asyncify, _pseudo_sync_runner)
+from .async_helpers import _curio_runner, _trio_runner, _should_be_async
+>>>>>>> master
 
 
 # -----------------------------------------------------------------------------
@@ -918,8 +932,14 @@ class InteractiveShell(SingletonConfigurable):
         self.configurables.append(self.display_formatter)
 
     def init_display_pub(self):
+<<<<<<< HEAD
         """Hook display_pub_class to the shell and append it to the :attr:`configurables`."""
         self.display_pub = self.display_pub_class(parent=self)
+||||||| f6b22ccf6
+        self.display_pub = self.display_pub_class(parent=self)
+=======
+        self.display_pub = self.display_pub_class(parent=self, shell=self)
+>>>>>>> master
         self.configurables.append(self.display_pub)
 
     def init_data_pub(self):
@@ -2515,8 +2535,15 @@ class InteractiveShell(SingletonConfigurable):
             m.PylabMagics,
             m.ScriptMagics,
         )
+<<<<<<< HEAD
         if sys.version_info > (3, 5):
             self.register_magics(m.AsyncMagics)
+||||||| f6b22ccf6
+        if sys.version_info >(3,5):
+            self.register_magics(m.AsyncMagics)
+=======
+        self.register_magics(m.AsyncMagics)
+>>>>>>> master
 
         # Register Magic Aliases
         mman = self.magics_manager
@@ -3866,9 +3893,7 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         from IPython.core.pylabtools import import_pylab
-
         gui, backend = self.enable_matplotlib(gui)
-
         ns = {}
         import_pylab(ns, import_all)
         # warn about clobbered names
@@ -3942,7 +3967,6 @@ class InteractiveShell(SingletonConfigurable):
         return filename
 
     def ask_yes_no(self, prompt, default=None, interrupt=None):
-        """Uh why is this a function."""
         if self.quiet:
             return True
         return ask_yes_no(prompt, default, interrupt)
@@ -4004,6 +4028,14 @@ class InteractiveShell(SingletonConfigurable):
             * or an expression evaluating to a string or Macro in the user
               namespace.
 
+        target : str
+
+          A string specifying code to retrieve. This will be tried respectively
+          as: ranges of input history (see %history for syntax), url,
+          corresponding .py file, filename, or an expression evaluating to a
+          string or Macro in the user namespace.
+
+
         raw : bool
             If true (default), retrieve raw history. Has no effect on the other
             retrieval mechanisms.
@@ -4054,8 +4086,9 @@ class InteractiveShell(SingletonConfigurable):
                             return f.read()
                     raise ValueError("'%s' seem to be unreadable." % target)
             elif os.path.isdir(os.path.expanduser(tgt)):
-                raise ValueError("'%s' is a directory, not a regular file." %
-                                 target)
+                raise ValueError(
+                    "%s is a directory, not a regular file." % target
+                )
 
         if search_ns:
             # Inspect namespace to load object source

@@ -97,9 +97,6 @@ __all__ = [
 ]
 
 MAX_SEQ_LENGTH = 1000
-# The language spec says that dicts preserve order from 3.7, but CPython
-# does so from 3.6, so it seems likely that people will expect that.
-DICT_IS_ORDERED = sys.version_info >= (3, 6)
 _re_pattern_type = type(re.compile(''))
 
 
@@ -648,6 +645,7 @@ def _dict_pprinter_factory(start, end):
         if not DICT_IS_ORDERED \
                 and not (p.max_seq_length and len(obj) >= p.max_seq_length):
             keys = _sorted_for_pprint(keys)
+
         for idx, key in p._enumerate(keys):
             if idx:
                 p.text(',')

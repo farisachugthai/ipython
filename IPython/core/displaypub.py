@@ -18,7 +18,7 @@ spec.
 import sys
 
 from traitlets.config.configurable import Configurable
-from traitlets import List
+from traitlets import List, Dict
 
 # This used to be defined here - it is imported for backwards compatibility
 from .display import publish_display_data
@@ -34,6 +34,10 @@ class DisplayPublisher(Configurable):
     Instances of this class are created by the main IPython object and should
     be accessed there.
     """
+
+    def __init__(self, shell=None, *args, **kwargs):
+        self.shell = shell
+        super().__init__(*args, **kwargs)
 
     def _validate_data(self, data, metadata=None):
         """Validate the display data.
@@ -60,7 +64,7 @@ class DisplayPublisher(Configurable):
                 *,
                 transient=None,
                 update=False,
-                **kwargs):
+                **kwargs) -> None:
         """Publish data and metadata to all frontends.
 
         See the ``display_data`` message in the messaging documentation for
@@ -103,9 +107,21 @@ class DisplayPublisher(Configurable):
         update: bool, keyword-only, default: False
             If True, only update existing outputs with the same display_id,
             rather than creating a new output.
+
+        Note
+        -----
+        The default is to simply write the plain text data using sys.stdout.
         """
 
-        # The default is to simply write the plain text data using sys.stdout.
+        handlers = {}
+        if self.shell is not None:
+            handlers = self.shell.mime_renderers
+
+        for mime, handler in handlers.items():
+            if mime in data:
+                handler(data[mime], metadata.get(mime, None))
+                return
+
         if 'text/plain' in data:
             print(data['text/plain'])
 

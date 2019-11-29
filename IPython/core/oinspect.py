@@ -4,20 +4,12 @@ Uses syntax highlighting for presenting the various information elements.
 
 Similar in spirit to the inspect module, but all calls take a name argument to
 reference the name under which an object is being read.
-
-*sigh.*
-
-Notes
-------
-Xonsh has a similarly named module. Check that out to see how cleanly we can
-use it as a drop-in replacement.
-
 """
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-__all__ = ['Inspector']
+__all__ = ['Inspector', 'InspectColors']
 
 import ast
 import collections
@@ -34,6 +26,7 @@ import types
 # IPython's own
 from IPython.core import page
 from IPython.utils import openpy, PyColorize
+from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
 from IPython.utils.wildcard import list_namespace, typestr2type
@@ -56,12 +49,13 @@ _builtin_type_docstrings = {
 }
 
 _builtin_func_type = type(all)
-_builtin_meth_type = type(
-    str.upper)  # Bound methods have the same type as builtin functions
+# Bound methods have the same type as builtin functions
+_builtin_meth_type = type(str.upper)
+
 # ****************************************************************************
 # Builtin color schemes
 
-# Colors = TermColors  # just a shorthand
+Colors = TermColors  # just a shorthand
 
 InspectColors = PyColorize.ANSICodeColors
 
@@ -103,11 +97,22 @@ def object_info(**kw):
     return infodict
 
 
+def get_encoding(obj):
+    """Get encoding for python source file defining obj
+
+    Returns None if obj is not defined in a sourcefile.
+
+    I'm sorry I might just do something dumb like return sys.getfile
+    """
+    return sys.getfilesystemencoding())
+
 def is_simple_callable(obj):
     """True if obj is a function ()"""
     return (inspect.isfunction(obj) or inspect.ismethod(obj) or
             isinstance(obj, _builtin_func_type) or
             isinstance(obj, _builtin_meth_type))
+
+
 
 
 def _get_wrapped(obj):
@@ -150,27 +155,19 @@ def find_source_lines(obj):
     obj = _get_wrapped(obj)
 
     try:
-        lineno = inspect.getsourcelines(obj)[1]
+        fname = inspect.getabsfile(obj)
     except TypeError:
-        # For instances, try the class object like getsource() does
+        # For an instance, the file that matters is where its class was
+        # declared.
         if hasattr(obj, '__class__'):
-            return inspect.getsourcelines(obj.__class__)[1]
-
-
-if sys.version_info < (3, 5, 0):
-    FrameInfo = collections.namedtuple(
-        "FrameInfo",
-        ["frame", "filename", "lineno", "function", "code_context", "index"],
-    )
-
-    def getouterframes(frame, context=1):
-        """Wrapper for getouterframes so that it acts like the Python v3.5 version."""
-        return [FrameInfo(*f) for f in inspect.getouterframes(frame, context=context)]
-
-
-else:
-    getouterframes = inspect.getouterframes
-
+            try:
+                fname = inspect.getabsfile(obj.__class__)
+            except TypeError:
+                # Can happen for builtins
+                pass
+    except:
+        pass
+    return fname
 
 def _mime_format(text, formatter=None):
     """Return a mime bundle representation of the input text.
@@ -763,6 +760,7 @@ class Inspector:
                 if call_ds:
                     out['call_docstring'] = call_ds
 
+<<<<<<< HEAD
         # Compute the object's argspec as a callable.  The key is to decide
         # whether to pull it from the object itself, from its __init__ or
         # from its __call__ method.
@@ -790,6 +788,36 @@ class Inspector:
                 if 'varkw' not in argspec_dict:
                     argspec_dict['varkw'] = argspec_dict.pop('keywords')
 
+||||||| f6b22ccf6
+        # Compute the object's argspec as a callable.  The key is to decide
+        # whether to pull it from the object itself, from its __init__ or
+        # from its __call__ method.
+
+        if inspect.isclass(obj):
+            # Old-style classes need not have an __init__
+            callable_obj = getattr(obj, "__init__", None)
+        elif callable(obj):
+            callable_obj = obj
+        else:
+            callable_obj = None
+
+        if callable_obj is not None:
+            try:
+                argspec = getargspec(callable_obj)
+            except Exception:
+                # For extensions/builtins we can't retrieve the argspec
+                pass
+            else:
+                # named tuples' _asdict() method returns an OrderedDict, but we
+                # we want a normal
+                out['argspec'] = argspec_dict = dict(argspec._asdict())
+                # We called this varkw before argspec became a named tuple.
+                # With getfullargspec it's also called varkw.
+                if 'varkw' not in argspec_dict:
+                    argspec_dict['varkw'] = argspec_dict.pop('keywords')
+
+=======
+>>>>>>> master
         return object_info(**out)
 
     @staticmethod
