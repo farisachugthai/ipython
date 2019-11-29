@@ -98,6 +98,7 @@ else:
 
 _use_simple_prompt = ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
 
+
 def black_reformat_handler(text_before_cursor):
     import black
     formatted_text = black.format_str(
@@ -154,20 +155,9 @@ class TerminalInteractiveShell(InteractiveShell):
                             allow_none=True
                             ).tag(config=True)
 
-    mouse_support = Bool(
-        False,
-||||||| f6b22ccf6
     mouse_support = Bool(False,
-=======
-    autoformatter = Unicode(None,
-        help="Autoformatter to reformat Terminal code. Can be `'black'` or `None`",
-        allow_none=True
-    ).tag(config=True)
-
-    mouse_support = Bool(False,
->>>>>>> master
-        help="Enable mouse support in the prompt\n(Note: prevents selecting text with the mouse)"
-    ).tag(config=True)
+                         help="Enable mouse support in the prompt\n(Note: prevents selecting text with the mouse)"
+                         ).tag(config=True)
 
     # We don't load the list of styles for the help string, because loading
     # Pygments plugins takes time and can cause unexpected errors.
@@ -194,7 +184,6 @@ class TerminalInteractiveShell(InteractiveShell):
         if self.pt_app:
             self.pt_app.editing_mode = u_mode
 
-<<<<<<< HEAD
     @observe('autoformatter')
     def _autoformatter_changed(self, change):
         """Observe the autoformatter parameter of the config dict.
@@ -226,19 +215,6 @@ class TerminalInteractiveShell(InteractiveShell):
         else:
             raise ValueError
 
-||||||| f6b22ccf6
-=======
-    @observe('autoformatter')
-    def _autoformatter_changed(self, change):
-        formatter = change.new
-        if formatter is None:
-            self.reformat_handler = lambda x:x
-        elif formatter == 'black':
-            self.reformat_handler = black_reformat_handler
-        else:
-            raise ValueError
-
->>>>>>> master
     @observe('highlighting_style')
     @observe('colors')
     def _highlighting_style_changed(self, change):
@@ -384,8 +360,8 @@ class TerminalInteractiveShell(InteractiveShell):
                         history.append_string(cell)
                         last_cell = cell
 
-        self._style = self._make_style_from_name_or_cls(
-            self.highlighting_style)
+        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
+
         self.style = DynamicStyle(lambda: self._style)
 
         editing_mode = getattr(EditingMode, self.editing_mode.upper())
@@ -504,8 +480,7 @@ class TerminalInteractiveShell(InteractiveShell):
             # work around this.
             get_message = get_message()
 
-<<<<<<< HEAD
-        return {
+        options = {
             'complete_in_thread': False,
             'lexer': IPythonPTLexer(),
             'reserve_space_for_menu': self.space_for_menu,
@@ -518,58 +493,16 @@ class TerminalInteractiveShell(InteractiveShell):
 
             # Highlight matching brackets, but only when this setting is
             # enabled, and only when the DEFAULT_BUFFER has the focus.
-            'input_processors': [
-                ConditionalProcessor(
-                    processor=HighlightMatchingBracketProcessor(
-                        chars='[](){}'),
-                    filter=HasFocus(DEFAULT_BUFFER) & ~IsDone()
-                    & Condition(lambda: self.highlight_matching_brackets))],
-            'inputhook': self.inputhook,
+            'input_processors': [ConditionalProcessor(
+                processor=HighlightMatchingBracketProcessor(
+                    chars='[](){}'),
+                filter=HasFocus(DEFAULT_BUFFER) & ~IsDone() &
+                Condition(lambda: self.highlight_matching_brackets))],
         }
-||||||| f6b22ccf6
-        return {
-                'complete_in_thread': False,
-                'lexer':IPythonPTLexer(),
-                'reserve_space_for_menu':self.space_for_menu,
-                'message': get_message,
-                'prompt_continuation': (
-                    lambda width, lineno, is_soft_wrap:
-                        PygmentsTokens(self.prompts.continuation_prompt_tokens(width))),
-                'multiline': True,
-                'complete_style': self.pt_complete_style,
-
-                # Highlight matching brackets, but only when this setting is
-                # enabled, and only when the DEFAULT_BUFFER has the focus.
-                'input_processors': [ConditionalProcessor(
-                        processor=HighlightMatchingBracketProcessor(chars='[](){}'),
-                        filter=HasFocus(DEFAULT_BUFFER) & ~IsDone() &
-                            Condition(lambda: self.highlight_matching_brackets))],
-                'inputhook': self.inputhook,
-                }
-=======
-        options = {
-                'complete_in_thread': False,
-                'lexer':IPythonPTLexer(),
-                'reserve_space_for_menu':self.space_for_menu,
-                'message': get_message,
-                'prompt_continuation': (
-                    lambda width, lineno, is_soft_wrap:
-                        PygmentsTokens(self.prompts.continuation_prompt_tokens(width))),
-                'multiline': True,
-                'complete_style': self.pt_complete_style,
-
-                # Highlight matching brackets, but only when this setting is
-                # enabled, and only when the DEFAULT_BUFFER has the focus.
-                'input_processors': [ConditionalProcessor(
-                        processor=HighlightMatchingBracketProcessor(chars='[](){}'),
-                        filter=HasFocus(DEFAULT_BUFFER) & ~IsDone() &
-                            Condition(lambda: self.highlight_matching_brackets))],
-                }
         if not PTK3:
             options['inputhook'] = self.inputhook
 
         return options
->>>>>>> master
 
     def prompt_for_code(self):
         if self.rl_next_input:
@@ -585,45 +518,8 @@ class TerminalInteractiveShell(InteractiveShell):
                 **self._extra_prompt_options())
         return text
 
-<<<<<<< HEAD
-||||||| f6b22ccf6
-    def enable_win_unicode_console(self):
-        if sys.version_info >= (3, 6):
-            # Since PEP 528, Python uses the unicode APIs for the Windows
-            # console by default, so WUC shouldn't be needed.
-            return
-
-        import win_unicode_console
-        win_unicode_console.enable()
-
-=======
-    def enable_win_unicode_console(self):
-        # Since IPython 7.10 doesn't support python < 3.6 and PEP 528, Python uses the unicode APIs for the Windows
-        # console by default, so WUC shouldn't be needed.
-        from warnings import warn
-        warn("`enable_win_unicode_console` is deprecated since IPython 7.10, does not do anything and will be removed in the future",
-             DeprecationWarning,
-             stacklevel=2)
-
->>>>>>> master
     def init_io(self):
-<<<<<<< HEAD
         """Literally only imports colorama if sys.platform==win32 or cli.
-||||||| f6b22ccf6
-        if sys.platform not in {'win32', 'cli'}:
-            return
-
-        self.enable_win_unicode_console()
-
-        import colorama
-        colorama.init()
-=======
-        if sys.platform not in {'win32', 'cli'}:
-            return
-
-        import colorama
-        colorama.init()
->>>>>>> master
 
         Got rid of it in the superclass as well. Both invoke classes we got rid
         of and nothing else.
@@ -632,6 +528,7 @@ class TerminalInteractiveShell(InteractiveShell):
         #     return
         # import colorama
         # colorama.init()
+        pass
 
     def init_magics(self):
         super().init_magics()
@@ -687,7 +584,6 @@ class TerminalInteractiveShell(InteractiveShell):
         Also of all the places to have no try/excepts, our self.run_code
         block DEFINITELY should have one.
         """
-
         self.keep_running = True
         while self.keep_running:
             print(self.separate_in, end='')
@@ -761,15 +657,9 @@ class TerminalInteractiveShell(InteractiveShell):
     active_eventloop = None
 
     def enable_gui(self, gui=None):
-<<<<<<< HEAD
         if gui and (gui != 'inline'):
-||||||| f6b22ccf6
-        if gui:
-=======
-        if gui and (gui != 'inline') :
->>>>>>> master
-            self.active_eventloop, self._inputhook =\
-                get_inputhook_name_and_func(gui)
+            self.active_eventloop, self._inputhook = get_inputhook_name_and_func(
+                gui)
         else:
             self.active_eventloop = self._inputhook = None
 

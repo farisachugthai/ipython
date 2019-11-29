@@ -13,6 +13,8 @@
 # Imports
 # -----------------------------------------------------------------------------
 
+from .async_helpers import _curio_runner, _trio_runner, _should_be_async
+from .async_helpers import (_asyncio_runner, _asyncify, _pseudo_sync_runner)
 import abc
 import ast
 import asyncio
@@ -164,34 +166,17 @@ def removed_co_newlocals(function: types.FunctionType) -> types.FunctionType:
 
 # we still need to run things using the asyncio eventloop, but there is no
 # async integration
-<<<<<<< HEAD
 
 # Why is this ALLLLL over this source code? Why not just do something like
 if hasattr('async_helpers', 'curio_runner'):
     # then import it fuck the version check it's gonna make everything so much
     # harder to maintain!!!
-    from .async_helpers import _curio_runner
-
-if sys.version_info > (3, 5):
     from .async_helpers import _curio_runner, _trio_runner, _should_be_async
 else:
     _curio_runner = _trio_runner = None
 
     def _should_be_async(cell: str) -> bool:
         return False
-||||||| f6b22ccf6
-from .async_helpers import (_asyncio_runner,  _asyncify, _pseudo_sync_runner)
-if sys.version_info > (3, 5):
-    from .async_helpers import _curio_runner, _trio_runner, _should_be_async
-else :
-    _curio_runner = _trio_runner = None
-
-    def _should_be_async(cell:str)->bool:
-        return False
-=======
-from .async_helpers import (_asyncio_runner,  _asyncify, _pseudo_sync_runner)
-from .async_helpers import _curio_runner, _trio_runner, _should_be_async
->>>>>>> master
 
 
 # -----------------------------------------------------------------------------
@@ -274,7 +259,6 @@ class SeparateUnicode(Unicode):
 
     This is a Unicode based trait that converts '0'->'' and ``'\\n'->'\n'``.
     """
-
     def validate(self, obj, value):
         if value == '0':
             value = ''
@@ -404,7 +388,8 @@ class InteractiveShell(SingletonConfigurable):
     loop_runner = Any(
         default_value="IPython.core.interactiveshell._asyncio_runner",
         allow_none=True,
-        help="""Select the loop runner that will be used to execute top-level asynchronous code"""
+        help=
+        """Select the loop runner that will be used to execute top-level asynchronous code"""
     ).tag(config=True)
 
     @default('loop_runner')
@@ -529,7 +514,8 @@ class InteractiveShell(SingletonConfigurable):
 
     input_transformers_post = List(
         [],
-        help="A list of string input transformers, to be applied after IPython's "
+        help=
+        "A list of string input transformers, to be applied after IPython's "
         "own input transformations.")
 
     logstart = Bool(False,
@@ -932,14 +918,8 @@ class InteractiveShell(SingletonConfigurable):
         self.configurables.append(self.display_formatter)
 
     def init_display_pub(self):
-<<<<<<< HEAD
         """Hook display_pub_class to the shell and append it to the :attr:`configurables`."""
-        self.display_pub = self.display_pub_class(parent=self)
-||||||| f6b22ccf6
-        self.display_pub = self.display_pub_class(parent=self)
-=======
         self.display_pub = self.display_pub_class(parent=self, shell=self)
->>>>>>> master
         self.configurables.append(self.display_pub)
 
     def init_data_pub(self):
@@ -1134,7 +1114,7 @@ class InteractiveShell(SingletonConfigurable):
             alternative = hooks.deprecated[name]
             warn("Hook {} is deprecated. Use {} instead.".format(
                 name, alternative),
-                stacklevel=2)
+                 stacklevel=2)
 
         if not dp:
             dp = hooks.CommandChainDispatcher()
@@ -1360,7 +1340,8 @@ class InteractiveShell(SingletonConfigurable):
         if user_module is None:
             user_module = types.ModuleType(
                 "__main__",
-                doc="Automatically created module for IPython interactive environment"
+                doc=
+                "Automatically created module for IPython interactive environment"
             )
 
         # We must ensure that __builtin__ (without the final 's') is always
@@ -2333,25 +2314,25 @@ class InteractiveShell(SingletonConfigurable):
         For those of you keeping count at home, the traceback handlers interact
         with all of:
 
-        #) The utils dir through IPython.utils.PyColorize,
+        # ) The utils dir through IPython.utils.PyColorize,
            IPython.utils.coloransi, IPython.utils.colorable since all three
            of those modules hold ultratb's superclasses.
 
-        #) The core package
+        # ) The core package
 
-            #) IPython.core.excolors defines the exception_colors function.
+            # ) IPython.core.excolors defines the exception_colors function.
 
-        #) Pygments
+        # ) Pygments
 
-        #) Prompt_toolkit
+        # ) Prompt_toolkit
 
-            #) As a result IPython.terminal
+            # ) As a result IPython.terminal
 
-        #) And at this point we now add in pdb
+        # ) And at this point we now add in pdb
 
-        #) Both IPython.core.debugger and IPython.terminal.debugger are affected
+        # ) Both IPython.core.debugger and IPython.terminal.debugger are affected
 
-        #) This has implications for ipdb which is outside of this repository
+        # ) This has implications for ipdb which is outside of this repository
         """
         if val not in (0, 1, False, True):
             raise ValueError('new call_pdb value must be boolean')
@@ -2511,50 +2492,41 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
 
     def init_magics(self):
-        from IPython.core import magics as m
+        from IPython.core import magics
         self.magics_manager = magic.MagicsManager(
-            shell=self, parent=self, user_magics=m.UserMagics(self))
+            shell=self, parent=self, user_magics=magics.UserMagics(self))
         self.configurables.append(self.magics_manager)
 
         # Expose as public API from the magics manager
         self.register_magics = self.magics_manager.register
 
         self.register_magics(
-            m.AutoMagics,
-            m.BasicMagics,
-            m.CodeMagics,
-            m.ConfigMagics,
-            m.DisplayMagics,
-            m.ExecutionMagics,
-            m.ExtensionMagics,
-            m.HistoryMagics,
-            m.LoggingMagics,
-            m.NamespaceMagics,
-            m.OSMagics,
-            m.PackagingMagics,
-            m.PylabMagics,
-            m.ScriptMagics,
+            magics.AutoMagics,
+            magics.BasicMagics,
+            magics.CodeMagics,
+            magics.ConfigMagics,
+            magics.DisplayMagics,
+            magics.ExecutionMagics,
+            magics.ExtensionMagics,
+            magics.HistoryMagics,
+            magics.LoggingMagics,
+            magics.NamespaceMagics,
+            magics.OSMagics,
+            magics.PackagingMagics,
+            magics.PylabMagics,
+            magics.ScriptMagics,
         )
-<<<<<<< HEAD
-        if sys.version_info > (3, 5):
-            self.register_magics(m.AsyncMagics)
-||||||| f6b22ccf6
-        if sys.version_info >(3,5):
-            self.register_magics(m.AsyncMagics)
-=======
-        self.register_magics(m.AsyncMagics)
->>>>>>> master
+        self.register_magics(magics.AsyncMagics)
 
         # Register Magic Aliases
-        mman = self.magics_manager
         # FIXME: magic aliases should be defined by the Magics classes
         # or in MagicsManager, not here
-        mman.register_alias('ed', 'edit')
-        mman.register_alias('hist', 'history')
-        mman.register_alias('rep', 'recall')
-        mman.register_alias('SVG', 'svg', 'cell')
-        mman.register_alias('HTML', 'html', 'cell')
-        mman.register_alias('file', 'writefile', 'cell')
+        self.magics_manager.register_alias('ed', 'edit')
+        self.magics_manager.register_alias('hist', 'history')
+        self.magics_manager.register_alias('rep', 'recall')
+        self.magics_manager.register_alias('SVG', 'svg', 'cell')
+        self.magics_manager.register_alias('HTML', 'html', 'cell')
+        self.magics_manager.register_alias('file', 'writefile', 'cell')
 
         # FIXME: Move the color initialization to the DisplayHook, which
         # should be split into a prompt manager and displayhook. We probably
@@ -2575,14 +2547,17 @@ class InteractiveShell(SingletonConfigurable):
         Parameters
         ----------
         magic_name : str
-          Name of the desired magic function, without '%' prefix.
-
+            Name of the desired magic function, without '%' prefix.
         line : str
-          The rest of the input line as a single string.
-
+            The rest of the input line as a single string.
         _stack_depth : int
-          If run_line_magic() is called from magic() then _stack_depth=2.
-          This is added to ensure backward compatibility for use of 'get_ipython().magic()'
+            If run_line_magic() is called from magic() then _stack_depth=2.
+            This is added to ensure backward compatibility for use of 'get_ipython().magic()'
+
+        Raises
+        ------
+        :exc:`UsageError`
+
         """
         fn = self.find_line_magic(magic_name)
         if fn is None:
@@ -2666,19 +2641,22 @@ class InteractiveShell(SingletonConfigurable):
     def find_line_magic(self, magic_name):
         """Find and return a line magic by name.
 
-        Returns None if the magic isn't found."""
+        Returns None if the magic isn't found.
+        """
         return self.magics_manager.magics['line'].get(magic_name)
 
     def find_cell_magic(self, magic_name):
         """Find and return a cell magic by name.
 
-        Returns None if the magic isn't found."""
+        Returns None if the magic isn't found.
+        """
         return self.magics_manager.magics['cell'].get(magic_name)
 
     def find_magic(self, magic_name, magic_kind='line'):
         """Find and return a magic of the given type by name.
 
-        Returns None if the magic isn't found."""
+        Returns None if the magic isn't found.
+        """
         return self.magics_manager.magics[magic_kind].get(magic_name)
 
     def magic(self, arg_s):
@@ -3066,9 +3044,8 @@ class InteractiveShell(SingletonConfigurable):
         """
         if fname is None:
             return
-`
-        fname = os.path.abspath(os.path.expanduser(fname))
 
+        fname = os.path.abspath(os.path.expanduser(fname))
 
         # Make sure we can open the file
         try:
@@ -3078,7 +3055,8 @@ class InteractiveShell(SingletonConfigurable):
             warn('Error: Could not open file <%s> .' % str(fname))
             return 127
         except BaseException as e:
-            warn('Error: InteractiveShell safe_execfile: {}'.format(e.__traceback__))
+            warn('Error: InteractiveShell safe_execfile: {}'.format(
+                e.__traceback__))
 
         dname = os.path.dirname(fname)
 
@@ -3096,7 +3074,7 @@ class InteractiveShell(SingletonConfigurable):
                             raise
                         print('SystemExit: {}'.format(status))
                         # if not exit_ignore:
-                            # self.showtraceback(exception_only=True)
+                        # self.showtraceback(exception_only=True)
                 except BaseException as e:
                     if raise_exceptions:
                         raise
@@ -3779,6 +3757,8 @@ class InteractiveShell(SingletonConfigurable):
             outflag = False
         return outflag
 
+    # previously was ~3000 lines down
+    # duh it has to be after we define teh function
     # For backwards compatibility
     runcode = run_code
 
@@ -4086,9 +4066,8 @@ class InteractiveShell(SingletonConfigurable):
                             return f.read()
                     raise ValueError("'%s' seem to be unreadable." % target)
             elif os.path.isdir(os.path.expanduser(tgt)):
-                raise ValueError(
-                    "%s is a directory, not a regular file." % target
-                )
+                raise ValueError("%s is a directory, not a regular file." %
+                                 target)
 
         if search_ns:
             # Inspect namespace to load object source
@@ -4158,7 +4137,6 @@ class InteractiveShell(SingletonConfigurable):
 
 class InteractiveShellABC(metaclass=abc.ABCMeta):
     """An abstract base class for InteractiveShell."""
-
     def __repr__(self):
         return ''.join(self.__class__.__name__)
 

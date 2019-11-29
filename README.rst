@@ -98,54 +98,12 @@ As well as the following `Pull-Request for discussion
 <https://github.com/ipython/ipython/pull/9900>`_.
 
 This error does also occur if you are invoking :file:`setup.py` directly –
-which you
-should not – or are using ``easy_install`` If this is the case, use ``pip
-install .`` instead of ``setup.py install`` , and ``pip install -e .`` instead
-of ``setup.py develop`` If you are depending on IPython as a dependency you may
-also want to have a conditional dependency on IPython depending on the Python
-version::
+which you should not – or are using ``easy_install``. If this is the case,
+use ``pip install .`` instead of ``setup.py install`` , and
+``pip install -e .`` instead of ``setup.py develop``.
 
-    install_req = ['ipython']
-    if sys.version_info[0] < 3 and 'bdist_wheel' not in sys.argv:
-        install_req.remove('ipython')
-        install_req.append('ipython<6')
-
-    setup(
-        ...
-        install_requires=install_req
-    )
-=======
-If you are encountering this error message you are likely trying to install or
-use IPython from source. You need to checkout the remote 5.x branch. If you are
-using git the following should work::
-
-  $ git fetch origin
-  $ git checkout 5.x
-
-If you encounter this error message with a regular install of IPython, then you
-likely need to update your package manager, for example if you are using `pip`
-check the version of pip with::
-
-  $ pip --version
-
-You will need to update pip to the version 9.0.1 or greater. If you are not using
-pip, please inquiry with the maintainers of the package for your package
-manager.
-
-For more information see one of our blog posts:
-
-    https://blog.jupyter.org/release-of-ipython-5-0-8ce60b8d2e8e
-
-As well as the following Pull-Request for discussion:
-
-    https://github.com/ipython/ipython/pull/9900
-
-This error does also occur if you are invoking ``setup.py`` directly – which you
-should not – or are using ``easy_install`` If this is the case, use ``pip
-install .`` instead of ``setup.py install`` , and ``pip install -e .`` instead
-of ``setup.py develop`` If you are depending on IPython as a dependency you may
-also want to have a conditional dependency on IPython depending on the Python
-version::
+If you are depending on IPython as a dependency you may also want to have a
+conditional dependency on IPython depending on the Python version::
 
     install_req = ['ipython']
     if sys.version_info[0] < 3 and 'bdist_wheel' not in sys.argv:
@@ -168,4 +126,3 @@ project that you might want to use:
 - `mypython <https://www.asmeurer.com/mypython/>`_
 - `ptpython and ptipython <https://pypi.org/project/ptpython/>`
 - `xonsh <https://xon.sh/>`
->>>>>>> master

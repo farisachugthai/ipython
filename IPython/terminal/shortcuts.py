@@ -118,6 +118,7 @@ def reformat_text_before_cursor(buffer, document, shell):
 
 
 def newline_or_execute_outer(shell):
+    """Admittedly there's a LOT going on and this probably should be broken up."""
 
     def newline_or_execute(event):
         """When the user presses return, insert a newline or execute the code."""
@@ -140,20 +141,14 @@ def newline_or_execute_outer(shell):
             check_text = d.text[:d.cursor_position]
         status, indent = shell.check_complete(check_text)
 
-        if not (d.on_last_line or d.cursor_position_row >=
-                d.line_count - d.empty_line_count_at_the_end()):
-
-        if not (d.on_last_line or
-                d.cursor_position_row >= d.line_count - d.empty_line_count_at_the_end()
-                ):
-            # if all we have after the cursor is whitespace: reformat current text
-            # before cursor
+        # if all we have after the cursor is whitespace: reformat current text
+        # before cursor
         after_cursor = d.text[d.cursor_position:]
         if not after_cursor.strip():
             reformat_text_before_cursor(b, d, shell)
-        if not (d.on_last_line or
-                d.cursor_position_row >= d.line_count - d.empty_line_count_at_the_end()
-                ):
+
+        if not (d.on_last_line or d.cursor_position_row >=
+                d.line_count - d.empty_line_count_at_the_end()):
             if shell.autoindent:
                 b.insert_text('\n' + indent)
             else:
@@ -258,7 +253,6 @@ if sys.platform == 'win32':
     from IPython.lib.clipboard import (ClipboardEmpty, win32_clipboard_get,
                                        tkinter_clipboard_get)
 
-    @undoc
     def win_paste(event):
         try:
             text = win32_clipboard_get()
