@@ -495,6 +495,7 @@ def rectify_completions(text: str, completions: _IC, *, _debug=False) -> _IC:
 
     Parameters
     ----------
+    _debug :
     text: str
         text that should be completed.
     completions: Iterator[Completion]

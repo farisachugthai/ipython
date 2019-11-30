@@ -256,6 +256,7 @@ def ipexec_validate(fname,
 
     Parameters
     ----------
+    commands :
     fname : str
       Name of the file to be executed (should have .py or .ipy extension).
 

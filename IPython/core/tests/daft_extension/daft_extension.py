@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-Useless IPython extension to test installing and loading extensions.
-"""
+"""Useless IPython extension to test installing and loading extensions."""
+
 some_vars = {'arq': 185}
 
 

@@ -47,6 +47,8 @@ class NamespaceMagics(Magics):
 
         Parameters
         ----------
+        namespaces :
+        parameter_s :
         todo
         """
         # print 'pinfo par: <%s>' % parameter_s  # dbg
@@ -159,6 +161,7 @@ class NamespaceMagics(Magics):
 
         Arguments
         ---------
+        parameter_s :
         PATTERN
             where PATTERN is a string containing * as a wildcard similar to its
             use in a shell.  The pattern is matched in all namespaces on the
@@ -529,6 +532,7 @@ class NamespaceMagics(Magics):
 
         Parameters
         ----------
+        parameter_s :
         in : reset input history
 
         out : reset output history

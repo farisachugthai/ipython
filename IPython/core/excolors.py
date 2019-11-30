@@ -179,4 +179,4 @@ class Deprec(object):
 # this should NOT be used, the factory function should be used instead, since
 # these objects are stateful and it's very easy to get strange bugs if any code
 # modifies the module-level object's state.
-ExceptionColors = Deprec(exception_colors())
+# ExceptionColors = Deprec(exception_colors())

@@ -15,9 +15,9 @@ import random
 import glob
 from warnings import warn
 
-from IPython.utils.process import system
-from IPython.utils import py3compat
-from IPython.utils.decorators import undoc
+from pathlib import Path
+# from IPython.utils.process import system
+from os import system
 
 # -----------------------------------------------------------------------------
 # Code
@@ -91,34 +91,6 @@ def get_long_path_name(path):
 
     """
     return _get_long_path_name(path)
-
-
-def unquote_filename(name, win32=(sys.platform == 'win32')):
-    """ On Windows, remove leading and trailing quotes from filenames.
-
-    This function has been deprecated and should not be used any more:
-    unquoting is now taken care of by :func:`IPython.utils.process.arg_split`.
-
-    Parameters
-    ----------
-    path : str (path-like)
-        Path to perform a tilde "compression" on.
-
-    Returns
-    -------
-    str (path-like)
-        Path with a tilde added.
-
-    """
-    warn(
-        "'unquote_filename' is deprecated since IPython 5.0 and should not "
-        "be used anymore",
-        DeprecationWarning,
-        stacklevel=2)
-    if win32:
-        if name.startswith(("'", '"')) and name.endswith(("'", '"')):
-            name = name[1:-1]
-    return name
 
 
 def compress_user(path):
@@ -229,10 +201,6 @@ def filefind(filename, path_dirs=None):
                   (filename, path_dirs))
 
 
-class HomeDirError(Exception):
-    pass
-
-
 def get_home_dir(require_writable=False):
     """Return the 'home' directory, as a unicode string.
 
@@ -252,34 +220,7 @@ def get_home_dir(require_writable=False):
         if False:
             The path is resolved, but it is not guaranteed to exist or be writable.
     """
-
-    homedir = os.path.expanduser('~')
-    # Next line will make things work even when /home/ is a symlink to
-    # /usr/home as it is on FreeBSD, for example
-    homedir = os.path.realpath(homedir)
-
-    if not _writable_dir(homedir) and os.name == 'nt':
-        # expanduser failed, use the registry to get the 'My Documents' folder.
-        try:
-            try:
-                import winreg as wreg  # Py 3
-            except ImportError:
-                import _winreg as wreg  # Py 2
-            key = wreg.OpenKey(
-                wreg.HKEY_CURRENT_USER,
-                r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
-            )
-            homedir = wreg.QueryValueEx(key, 'Personal')[0]
-            key.Close()
-        except BaseException:
-            pass
-
-    if (not require_writable) or _writable_dir(homedir):
-        return py3compat.cast_unicode(homedir, sys.getfilesystemencoding())
-    else:
-        raise HomeDirError('%s is not a writable dir, '
-                           'set $HOME environment variable to override' %
-                           homedir)
+    return Path.home().__fspath__()
 
 
 def get_xdg_dir():
@@ -287,33 +228,24 @@ def get_xdg_dir():
 
     This is only for non-OS X posix (Linux,Unix,etc.) systems.
     """
-
     env = os.environ
-
-    if os.name == 'posix' and sys.platform != 'darwin':
-        # Linux, Unix, AIX, etc.
-        # use ~/.config if empty OR not set
-        xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(
-            get_home_dir(), '.config')
-        if xdg and _writable_dir(xdg):
-            return py3compat.cast_unicode(xdg, sys.getfilesystemencoding())
+    xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(
+        get_home_dir(), '.config')
+    if xdg and _writable_dir(xdg):
+        return xdg
 
 
 def get_xdg_cache_dir():
     """Return the XDG_CACHE_HOME, if it is defined and exists, else None.
 
     This is only for non-OS X posix (Linux,Unix,etc.) systems.
+    Why?
     """
-
     env = os.environ
-
-    if os.name == 'posix' and sys.platform != 'darwin':
-        # Linux, Unix, AIX, etc.
-        # use ~/.cache if empty OR not set
-        xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(
-            get_home_dir(), '.cache')
-        if xdg and _writable_dir(xdg):
-            return py3compat.cast_unicode(xdg, sys.getfilesystemencoding())
+    xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(
+        get_home_dir(), '.cache')
+    if xdg and _writable_dir(xdg):
+        return xdg
 
 
 def expand_path(s):

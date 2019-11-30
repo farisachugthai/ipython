@@ -123,9 +123,11 @@ Inheritance diagram:
 # *****************************************************************************
 
 import abc
+import functools
 import inspect
 import keyword
 import linecache
+import logging
 import os
 import pydoc
 import sys
@@ -167,7 +169,7 @@ def inspect_error():
 
     These are unfortunately quite common.
     """
-    error('Internal Python error in the inspect module.\n'
+    logging.error('Internal Python error in the inspect module.\n'
           'Below is the traceback from this internal error.\n')
 
 
@@ -178,6 +180,7 @@ def with_patch_inspect(f):
     decorator for monkeypatching inspect.findsource
     """
 
+    @functools.wraps
     def wrapped(*args, **kwargs):
         save_findsource = inspect.findsource
         save_getargs = inspect.getargs
@@ -197,12 +200,16 @@ def fix_frame_records_filenames(records):
 
     Particularly, modules loaded from within zip files have useless filenames
     attached to their code object, and inspect.getinnerframes() just uses it.
+
+    Notes
+    ------
+    Look inside the frame's globals dictionary for __file__,
+    which should be better. However, keep Cython filenames since
+    we prefer the source filenames over the compiled .so file.
+
     """
     fixed_records = []
     for frame, filename, line_no, func_name, lines, index in records:
-        # Look inside the frame's globals dictionary for __file__,
-        # which should be better. However, keep Cython filenames since
-        # we prefer the source filenames over the compiled .so file.
         if not filename.endswith(('.pyx', '.pxd', '.pxi')):
             better_fn = frame.f_globals.get('__file__', None)
             if isinstance(better_fn, str):
@@ -217,12 +224,14 @@ def fix_frame_records_filenames(records):
 
 @with_patch_inspect
 def _fixed_getinnerframes(etb, context=1, tb_offset=0):
+    """
+    If the error is at the console, don't build any context, since it would
+    otherwise produce 5 blank lines printed out (there is no file at the
+    console)
+    """
     LNUM_POS, LINES_POS, INDEX_POS = 2, 4, 5
 
     records = fix_frame_records_filenames(inspect.getinnerframes(etb, context))
-    # If the error is at the console, don't build any context, since it would
-    # otherwise produce 5 blank lines printed out (there is no file at the
-    # console)
     rec_check = records[tb_offset:]
     try:
         rname = rec_check[0][1]
@@ -273,13 +282,11 @@ def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
     res = []
 
     for i, line in enumerate(lines, lnum - index):
-
         new_line, err = _line_format(line, 'str')
         if not err:
             line = new_line
 
         if i == lnum:
-            # This is the line with the error
             pad = numbers_width - len(str(i))
             num = '%s%s' % (make_arrow(pad), str(lnum))
             line = '%s%s%s %s%s' % (Colors.linenoEm, num, Colors.line, line,
@@ -295,31 +302,42 @@ def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
 
 
 def is_recursion_error(etype, value, records):
-    try:
-        # RecursionError is new in Python 3.5
-        recursion_error_type = RecursionError
-    except NameError:
-        recursion_error_type = RuntimeError
+    """This function only exists for backwards compatibility?
 
-    # The default recursion limit is 1000, but some of that will be taken up
-    # by stack frames in IPython itself. >500 frames probably indicates
-    # a recursion error.
+    It simply checks for whether an exception is a RecursionError without
+    invoking the keyword as it was only defined in python3.5. We only support
+    3.6+.
+
+    Notes
+    -----
+    The default recursion limit is 1000, but some of that will be taken up
+    by stack frames in IPython itself. >500 frames probably indicates
+    a recursion error.
+
+    """
+    recursion_error_type = RecursionError
     return (etype is recursion_error_type) \
         and "recursion" in str(value).lower() \
         and len(records) > _FRAME_RECURSION_LIMIT
 
 
 def find_recursion(etype, value, records):
-    """Identify the repeating stack frames from a RecursionError traceback
+    """Identify the repeating stack frames from a RecursionError traceback.
 
+    This involves a bit of guesswork - we want to show enough of the traceback
+    to indicate where the recursion is occurring. We guess that the innermost
+    quarter of the traceback (250 frames by default) is repeats, and find the
+    first frame (from in to out) that looks different.
+
+    Parameters
+    ----------
     'records' is a list as returned by VerboseTB.get_records()
 
-    Returns (last_unique, repeat_length)
+    Returns
+    -------
+    (last_unique, repeat_length)
+
     """
-    # This involves a bit of guesswork - we want to show enough of the traceback
-    # to indicate where the recursion is occurring. We guess that the innermost
-    # quarter of the traceback (250 frames by default) is repeats, and find the
-    # first frame (from in to out) that looks different.
     if not is_recursion_error(etype, value, records):
         return len(records), 0
 
@@ -351,9 +369,6 @@ def find_recursion(etype, value, records):
 class TBTools(Colorable):
     """Basic tools used by all traceback printer classes.
 
-    Jesus Christ. Dude I love when people leave 10 line long comments but
-    guys docstrings exist for a reason.
-
     Attributes
     ----------
     ostream : :class:`_io.TextIOWrapper`.
@@ -366,11 +381,10 @@ class TBTools(Colorable):
         subclasses can simply access self.ostream for writing.
 
     tb_offset : int
-        Number of frames to skip when reporting tracebacks.
         Defaults to 0.
+        Number of frames to skip when reporting tracebacks.
 
     """
-
     tb_offset = 0
 
     def __init__(self,
@@ -379,8 +393,20 @@ class TBTools(Colorable):
                  ostream=None,
                  parent=None,
                  config=None):
-        """Whether to call the interactive pdb debugger after printing
-        tracebacks or not.
+        """
+        Parameters
+        ----------
+        color_scheme : str
+            Maybe a colorscheme as defined by IPython.utils.ColorScheme
+        call_pdb : bool
+            Whether to invoke the debugger after an exception
+        ostream : io.TextStream
+            Might be the type. Something similar to sys.stdout.
+        parent : :class:`IPython.core.interactiveshell.InteractiveShell`
+            Global IPython instance
+        config : :class:`traitlets.config.Config`
+            Dict of user configs.
+
         """
         super().__init__(parent=parent, config=config)
         # Create color table
@@ -524,15 +550,16 @@ class ListTB(TBTools):
         self.call_pdb = call_pdb
         self.ostream = ostream
         self.parent = parent
+        self.config = config
 
         TBTools.__init__(self,
                          color_scheme=self.color_scheme,
                          call_pdb=self.call_pdb,
                          ostream=self.ostream,
                          parent=self.parent,
-                         config=config)
+                         config=self.config)
 
-    def __call__(self, etype, value, elist):
+    def __call__(self, etype=None, value=None, elist=None):
         """Wait wait what. What the hell is self.text?
 
         This used to be the old method.
@@ -544,10 +571,20 @@ class ListTB(TBTools):
             self.ostream.write('\n')
 
         Yeah that has to get redone.
+
+        11/29/2019:
+
+        Changing all the parameters to optional. If the user doesn't provide
+        them, check sys.exc_info
         """
         if hasattr(self.ostream, 'flush'):
             self.ostream.flush()
-        self.ostream
+        if getattr(sys, 'exc_info', None):
+            etype = etype or sys.exc_info()[0]
+            value = value or sys.exc_info()[1]
+            elist = elist or sys.exc_info()[2]
+        self.ostream.write(self.text(etype, value, elist))
+        self.ostream.write('\n')
 
     def structured_traceback(self,
                              etype,
@@ -622,7 +659,7 @@ class ListTB(TBTools):
         Well now it simply returns it. It's not like this method wasn't already
         static.
         """
-        return traceback.format_exception_only()
+        return traceback.format_exception_only(etype, evalue)
 
     def get_exception_only(self, etype, value):
         """Only print the exception type and message, without a traceback.
@@ -651,21 +688,20 @@ class ListTB(TBTools):
         ----------
         etype : exception type
         value : exception value
+            As returned by :func:`sys.exc_info`.
 
         """
-        self()
-        ostream.write('\n'.join(self.get_exception_only(etype, evalue)))
-        ostream.flush()
+        self.ostream.write('\n'.join(traceback.format_exception_only(etype, evalue)))
+        self.ostream.flush()
 
+    @staticmethod
     def _some_str(self, value):
-        # Lifted from traceback.py
-        try:
-            return str(value)
-        except BaseException:
-            return u'<unprintable %s object>' % type(value).__name__
+        """Now it literally returns :func:`traceback._some_str`."""
+        return traceback._some_str(value)
 
 
 def get_parts_of_chained_exception(evalue):
+
     def get_chained_exception(exception_value):
         cause = getattr(exception_value, '__cause__', None)
         if cause:
@@ -943,7 +979,7 @@ class VerboseTB(TBTools):
         return message
 
     def prepare_header(self, etype, long_version=False):
-        exc = '%s' % (etype)
+        exc = '%s' % etype
         width = min(75, get_terminal_size()[0])
         if long_version:
             # Header with the exception type, python version, and date
@@ -1302,6 +1338,19 @@ class AutoFormattedTB(FormattedTB):
         except:
             AutoTB()  # or AutoTB(out=logfile) where logfile is an open file object
 
+    Methods
+    -------
+    stb2str
+        This method is directly invoked by the
+        :class:`~IPython.core.interactiveshell.InteractiveShell` whenever the
+        user invokes the :meth:`_showtraceback` method.
+        This means that it's invoked, for all intents and purposes, upon every
+        :mod:`traceback`.
+        As a result it's incredibly important.
+
+        Idk if it's defined in a superclass or something but temporarily I'm
+        explicitly defining it here so I can keep track of it.
+
     """
     # import pdb; pdb.set_trace()
 
@@ -1382,6 +1431,9 @@ class AutoFormattedTB(FormattedTB):
                                                 tb_offset,
                                                 number_of_lines_of_context)
 
+    def stb2text(self, stb):
+        """Convert a structured traceback (a list) to a string."""
+        return self.tb_join_char.join(stb)
 
 class ColorTB(FormattedTB):
     """Shorthand to initialize a FormattedTB in Linux colors mode."""

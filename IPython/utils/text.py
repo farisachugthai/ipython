@@ -746,6 +746,7 @@ def columnize(items,
 
     Parameters
     ----------
+    spread :
     items : sequence of strings
         The strings to process.
 

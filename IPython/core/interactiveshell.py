@@ -50,8 +50,10 @@ from pickleshare import PickleShareDB
 from traitlets import (Any, Bool, CaselessStrEnum, Dict, Enum, Instance,
                        Integer, List, Type, Unicode, default, observe,
                        validate)
+from traitlets.config import Config
 from traitlets.config.configurable import SingletonConfigurable
 
+import IPython
 from IPython.core import hooks, magic, oinspect, page, prefilter
 from IPython.core.alias import Alias, AliasManager
 from IPython.core.async_helpers import (_asyncify, _asyncio_runner,
@@ -1897,25 +1899,28 @@ class InteractiveShell(SingletonConfigurable):
     from .debugger import CorePdb
     debugger_cls = CorePdb
 
-    def init_traceback_handlers(self, custom_exceptions):
+    def init_traceback_handlers(self, custom_exceptions=None):
         """Syntax error handler.
 
         The interactive one is initialized with an offset, meaning we always
         want to remove the topmost item in the traceback, which is our own
-        internal code. Valid modes: ['Plain','Context','Verbose','Minimal']
+        internal code.
+
+        Valid modes:
+
+            ['Plain','Context','Verbose','Minimal']
 
         >>> self.SyntaxTB = ultratb.SyntaxTB(color_scheme='NoColor', parent=self)
 
-        .. todo:: This method is causing a lot of problems currently.
+        Parameters
+        -----------
+        custom_exceptions : `exc`
+            User-defined exceptions
 
-            Really doesn't help that this method alone initializes 2 classes
-            and only accepts 1 parameter. Ofc the 1 parameter isn't used in
-            the initialization of either of the classes.
-
-            We should really consider offloading this. Debugger?
-
-        Also note that the call to AutoFormattedTB is different than its init
-        signature. From ultratb.:
+        Notes
+        ------
+        The call to `AutoFormattedTB` is different than its init
+        signature. From :file:`ultratb.py`:
 
             def __init__(self,
                         mode='Plain',
@@ -1932,9 +1937,10 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         from IPython.core.ultratb import SyntaxTB, AutoFormattedTB
-        if not getattr(self, 'config', None):
-            self.config = Config()
-        self.SyntaxTB = SyntaxTB(color_scheme='Linux',
+        from IPython.utils.coloransi import DefaultDark
+
+        new_colors = DefaultDark()
+        self.SyntaxTB = SyntaxTB(color_scheme=new_colors.color_scheme,
                                  parent=self,
                                  config=self.config)
 
@@ -2022,11 +2028,9 @@ class InteractiveShell(SingletonConfigurable):
             If 'exc_tuple' is not a `tuple`.
 
         """
-        if not isinstance(exc_tuple, tuple):
-            raise TypeError("The custom exceptions must be given as a tuple.")
 
-        def dummy_handler(self, etype, value, tb, tb_offset=None):
-            """This method 100% seems static. todo: """
+        @functools.wrapped
+        def dummy_handler(etype, value, tb):
             print('*** Simple custom exception handler ***')
             print('Exception type :', etype)
             print('Exception value:', value)
@@ -2107,8 +2111,7 @@ class InteractiveShell(SingletonConfigurable):
         This hook should be used sparingly, only in places which are not likely
         to be true IPython errors.
         """
-        # self.showtraceback((etype, value, tb), tb_offset=0)
-        pass
+        self.showtraceback((etype, value, tb), tb_offset=0)
 
     def _get_exc_info(self, exc_tuple=None):
         """get exc_info from a given tuple, sys.exc_info() or sys.last_type etc.
@@ -2156,7 +2159,8 @@ class InteractiveShell(SingletonConfigurable):
 
         return etype, value, tb
 
-    def show_usage_error(self, exc):
+    @staticmethod
+    def show_usage_error(exc):
         """Show a short message for UsageErrors.
 
         These are special exceptions that shouldn't show a traceback.
@@ -2164,7 +2168,7 @@ class InteractiveShell(SingletonConfigurable):
         Yo I get that they don't need a full traceback but we have a UsageError
         exception ready to go like why in the world would you not use that.
         """
-        print("UsageError: %s" % exc, file=sys.stderr)
+        return UsageError(exc)
 
     def get_exception_only(self, exc_tuple=None):
         """
@@ -2176,7 +2180,6 @@ class InteractiveShell(SingletonConfigurable):
         return ''.join(msg)
 
     def showtraceback(self,
-                      exc_tuple=None,
                       filename=None,
                       tb_offset=None,
                       exception_only=False,
@@ -2192,38 +2195,47 @@ class InteractiveShell(SingletonConfigurable):
         SyntaxError exception, don't try to analyze the stack manually and
         simply call this method.
 
+        Parameters
+        -----------
+        filename :
+        running_compiled_code :
+            As used by :meth:`showsyntaxerror`.
+        exception_only : bool
+            Return traceback.format_exception or traceback.format_exception_only?
+
+        Notes
+        -----
+        Exception classes can customise their traceback - we
+        use this in IPython.parallel for exceptions occurring
+        in the engines. This should return a list of strings.
+
         """
+        if hasattr(sys, 'exc_info', None):
+            etype, value, stb = sys.exc_info()
+        else:
+            print('No traceback available to show.', file=sys.stderr)
+            return
 
-        try:
-            try:
-                etype, value, tb = self._get_exc_info(exc_tuple)
-            except ValueError:
-                print('No traceback available to show.', file=sys.stderr)
-                return
-
-            if issubclass(etype, SyntaxError):
-                # Though this won't be called by syntax errors in the input
-                # line, there may be SyntaxError cases with imported code.
-                self.showsyntaxerror(filename, running_compiled_code)
-            elif etype is UsageError:
-                self.show_usage_error(value)
+        if issubclass(etype, SyntaxError):
+            # Though this won't be called by syntax errors in the input
+            # line, there may be SyntaxError cases with imported code.
+            self.showsyntaxerror(filename, running_compiled_code)
+        elif etype is UsageError:
+            self.show_usage_error(value)
+        else:
+            if exception_only:
+                stb = [
+                    'An exception has occurred, use %tb to see '
+                    'the full traceback.\n'
+                ]
+                stb.extend(
+                    traceback.format_exception_only(etype, value))
             else:
-                if exception_only:
-                    stb = [
-                        'An exception has occurred, use %tb to see '
-                        'the full traceback.\n'
-                    ]
-                    stb.extend(
-                        self.InteractiveTB.get_exception_only(etype, value))
-                else:
-                    try:
-                        # Exception classes can customise their traceback - we
-                        # use this in IPython.parallel for exceptions occurring
-                        # in the engines. This should return a list of strings.
-                        stb = value._render_traceback_()
-                    except Exception:
-                        stb = self.InteractiveTB.structured_traceback(
-                            etype, value, tb, tb_offset=tb_offset)
+                try:
+                    stb = value._render_traceback_()
+                except Exception:
+                    stb = self.InteractiveTB.structured_traceback(
+                        etype, value, tb, tb_offset=tb_offset)
 
                     self._showtraceback(etype, value, stb)
                     if self.call_pdb:
@@ -2231,33 +2243,48 @@ class InteractiveShell(SingletonConfigurable):
                         self.debugger(force=True)
                     return
 
-                # Actually show the traceback
-                self._showtraceback(etype, value, stb)
+                except KeyboardInterrupt:
+                    # print('\n' + self.get_exception_only(), file=sys.stderr)
+                    self.log.error('Interrupted!')
 
-        except KeyboardInterrupt:
-            print('\n' + self.get_exception_only(), file=sys.stderr)
-
-    def _showtraceback(self, etype, evalue, stb):
+    def _showtraceback(self, etype=None, evalue=None, stb=None):
         """Actually show a traceback.
 
         Subclasses may override this method to put the traceback on a different
         place, like a side channel.
+
+        Parameters
+        ----------
+        etype, evalue, stb
+            3 parameters as returned by :func:`sys.exc_info`.
+            We don't use 2 of them though???? Ugh.
+            The third one is sys.last_traceback anyway!
+             So make them all optional.
+            If nothing is provided check sys.last_traceback.
+
         """
-        print(self.InteractiveTB.stb2text(stb))
+        if stb is None:
+            stb = sys.last_traceback
+        return ''.join(stb)
 
     def showsyntaxerror(self, filename=None, running_compiled_code=False):
         """Display the syntax error that just occurred.
 
         This doesn't display a stack trace because there isn't one.
 
-        If a filename is given, it is stuffed in the exception instead
-        of what was there before (because Python's parser always uses
-        "<string>" when reading from a string).
+        Parameters
+        ----------
+        filename : str (path-like)
+            If a filename is given, it is stuffed in the exception instead
+            of what was there before (because Python's parser always uses
+            "<string>" when reading from a string).
+        running_compiled_code : bool
+            If the syntax error occurred when running a compiled code (i.e.
+            running_compile_code=True), a longer stack trace will be displayed.
 
-        If the syntax error occurred when running a compiled code (i.e. running_compile_code=True),
-        longer stack trace will be displayed.
-         """
-        etype, value, last_traceback = self._get_exc_info()
+        """
+        # etype, value, last_traceback = self._get_exc_info()
+        etype, value, last_traceback = sys.exc_info()
 
         if filename and issubclass(etype, SyntaxError):
             try:
@@ -2268,19 +2295,20 @@ class InteractiveShell(SingletonConfigurable):
 
         # If the error occurred when executing compiled code, we should provide
         # full stacktrace.
-        elist = traceback.extract_tb(
-            last_traceback) if running_compiled_code else []
+        elist = traceback.extract_tb(last_traceback) if running_compiled_code else []
+
         stb = self.SyntaxTB.structured_traceback(etype, value, elist)
+
         self._showtraceback(etype, value, stb)
 
-    # This is overridden in TerminalInteractiveShell to show a message about
-    # the %paste magic.
     def showindentationerror(self):
-        """Called by _run_cell when there's an IndentationError in code entered
-        at the prompt.
+        """Called by :meth:`_run_cell` when there's an :exc:`IndentationError`
 
-        This is overridden in TerminalInteractiveShell to show a message about
-        the %paste magic."""
+        This is overridden in
+        :class:`~IPython.terminal.interactiveshell.TerminalInteractiveShell`
+         to show a message about the `%paste` magic.
+
+        """
         self.showsyntaxerror()
 
     # -------------------------------------------------------------------------
@@ -2915,9 +2943,13 @@ class InteractiveShell(SingletonConfigurable):
 
         for use in user_expressions
         """
+        # etype, evalue, tb = self._get_exc_info()
+        if not hasattr(sys, 'get_exc_info'):
+            return
 
-        etype, evalue, tb = self._get_exc_info()
-        stb = self.InteractiveTB.get_exception_only(etype, evalue)
+        etype, evalue, tb = sys.get_exc_info()
+        stb = traceback.format_exception_only(etype, evalue)
+        # stb = self.InteractiveTB.get_exception_only(etype, evalue)
 
         exc_info = {
             u'status': 'error',
@@ -3926,6 +3958,8 @@ class InteractiveShell(SingletonConfigurable):
         but it registers the created filename internally so IPython cleans it up
         at exit time.
 
+        .. todo:: Why don't we use our own tempfile functions?
+
         Parameters
         ----------
         data : str, optional
@@ -3952,7 +3986,10 @@ class InteractiveShell(SingletonConfigurable):
         return ask_yes_no(prompt, default, interrupt)
 
     def show_usage(self):
-        """Show a usage message using page.page and :func:`usage.interactive_usage`."""
+        """Show a usage message using :func:IPython.core.page.page`.
+
+        Prints off :func:`IPython.core.usage.interactive_usage`.
+        """
         page.page(IPython.core.usage.interactive_usage)
 
     def extract_input_lines(self, range_str, raw=False):
@@ -4005,22 +4042,19 @@ class InteractiveShell(SingletonConfigurable):
 
             * filename
 
-            * or an expression evaluating to a string or Macro in the user
-              namespace.
+            * An expression evaluating to a string or
+              :class:`IPython.core.macro.Macro` in the user namespace.
 
         target : str
-
           A string specifying code to retrieve. This will be tried respectively
           as: ranges of input history (see %history for syntax), url,
           corresponding .py file, filename, or an expression evaluating to a
           string or Macro in the user namespace.
-
-
         raw : bool
             If true (default), retrieve raw history. Has no effect on the other
             retrieval mechanisms.
-
-        py_only : bool (default False)
+        py_only : bool
+            (default False)
             Only try to fetch python code, do not try alternative methods to
             decode file if unicode fails.
 
@@ -4030,9 +4064,13 @@ class InteractiveShell(SingletonConfigurable):
 
         Raises
         ------
-        ValueError is raised if nothing is found, and TypeError if it evaluates
-        to an object of another type. In each case, .args[0] is a printable
-        message.
+        :exc:`ValueError`
+            Raised if nothing is found
+        :exc:`TypeError`
+            If evaluates to an object of another type.
+
+        In each case, ``.args[0]`` is a printable message.
+
         """
         code = self.extract_input_lines(target, raw=raw)  # Grab history
         if code:

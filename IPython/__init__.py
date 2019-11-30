@@ -188,3 +188,26 @@ def start_kernel(argv=None, **kwargs):
     """
     from IPython.kernel.zmq.kernelapp import launch_new_instance
     return launch_new_instance(argv=argv, **kwargs)
+
+
+def get_ipython():
+    """On a scale from 1 to the worst idea ever...
+
+    Redefining get_ipython?
+
+    Only to ensure we don't have to import the whole repository from top
+    level imports!
+
+    The number of circular imports in this code base is insane, so forgive
+    me for this potentially horrific idea.
+
+    Get the global InteractiveShell instance.
+
+    :strikethrough:`Returns None if no InteractiveShell instance is registered.`
+
+    Returns None if no :class:`traitlets.config.Application` is registered!
+    """
+    # from IPython.core.interactiveshell import InteractiveShell
+    from traitlets.config import Application
+    if Application.initialized():
+        return Application.instance()

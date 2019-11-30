@@ -688,7 +688,7 @@ class AsyncMagics(BasicMagics):
         ----------
         - False/false/off deactivate autoawait integration
         - True/true/on activate autoawait integration using configured default
-          loop
+          parameter_s :
         - asyncio/curio/trio activate autoawait integration and use integration
           with said library.
         - `sync` turn on the pseudo-sync integration (mostly used for

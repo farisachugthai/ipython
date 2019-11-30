@@ -1,4 +1,10 @@
-"""Tools for coloring text in ANSI terminals."""
+"""Tools for coloring text in ANSI terminals.
+
+Featured Below:
+
+Default Dark scheme by Chris Kempson (http://chriskempson.com)
+
+"""
 
 # *****************************************************************************
 #       Copyright (C) 2002-2006 Fernando Perez. <fperez@colorado.edu>
@@ -7,45 +13,51 @@
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
 
-__all__ = ['TermColors', 'InputTermColors', 'ColorScheme', 'ColorSchemeTable']
-
 # As a better way to subclass Dict
+from abc import ABC
 from collections.abc import MutableMapping
-# from collections import UserDict
 import copy
 import os
 
 from IPython.utils.ipstruct import Struct
+from pygments.style import Style
+from pygments.token import (Keyword, Name, Comment, String, Error, Text,
+                            Number, Operator, Literal, Token,
+                            Generic, Escape)
+# TODO:
+# from pygments import highlight
+# from pygments.console import ansiformat
 
 color_templates = (
-        # Dark colors
-        ("Black"       , "0;30"),
-        ("Red"         , "0;31"),
-        ("Green"       , "0;32"),
-        ("Brown"       , "0;33"),
-        ("Blue"        , "0;34"),
-        ("Purple"      , "0;35"),
-        ("Cyan"        , "0;36"),
-        ("LightGray"   , "0;37"),
-        # Light colors
-        ("DarkGray"    , "1;30"),
-        ("LightRed"    , "1;31"),
-        ("LightGreen"  , "1;32"),
-        ("Yellow"      , "1;33"),
-        ("LightBlue"   , "1;34"),
-        ("LightPurple" , "1;35"),
-        ("LightCyan"   , "1;36"),
-        ("White"       , "1;37"),
-        # Blinking colors.  Probably should not be used in anything serious.
-        ("BlinkBlack"  , "5;30"),
-        ("BlinkRed"    , "5;31"),
-        ("BlinkGreen"  , "5;32"),
-        ("BlinkYellow" , "5;33"),
-        ("BlinkBlue"   , "5;34"),
-        ("BlinkPurple" , "5;35"),
-        ("BlinkCyan"   , "5;36"),
-        ("BlinkLightGray", "5;37"),
-        )
+    # Dark colors
+    ("Black", "0;30"),
+    ("Red", "0;31"),
+    ("Green", "0;32"),
+    ("Brown", "0;33"),
+    ("Blue", "0;34"),
+    ("Purple", "0;35"),
+    ("Cyan", "0;36"),
+    ("LightGray", "0;37"),
+    # Light colors
+    ("DarkGray", "1;30"),
+    ("LightRed", "1;31"),
+    ("LightGreen", "1;32"),
+    ("Yellow", "1;33"),
+    ("LightBlue", "1;34"),
+    ("LightPurple", "1;35"),
+    ("LightCyan", "1;36"),
+    ("White", "1;37"),
+    # Blinking colors.  Probably should not be used in anything serious.
+    ("BlinkBlack", "5;30"),
+    ("BlinkRed", "5;31"),
+    ("BlinkGreen", "5;32"),
+    ("BlinkYellow", "5;33"),
+    ("BlinkBlue", "5;34"),
+    ("BlinkPurple", "5;35"),
+    ("BlinkCyan", "5;36"),
+    ("BlinkLightGray", "5;37"),
+)
+
 
 def make_color_table(in_class):
     """Build a set of color attributes in a class.
@@ -120,8 +132,8 @@ for name, value in color_templates:
 class ColorScheme:
     """Generic color scheme class. Just a name and a Struct."""
 
-    def __init__(self, __scheme_name_, colordict=None, **colormap):
-        self.name = __scheme_name_
+    def __init__(self, name, colordict=None, **colormap):
+        self.name = name
         if colordict is None:
             self.colors = Struct(**colormap)
         else:
@@ -132,12 +144,12 @@ class ColorScheme:
 
         Isnt there a dunder method for this that maybe is a better idea to use?
         """
-        if name is None:
-            name = self.name
-        return ColorScheme(name, self.colors.dict())
+        if name:
+            self.name = name
+        return ColorScheme(self.name, self.colors.dict())
 
     def __copy__(self):
-        return copy.copy(self.colors)
+        return copy.copy(self.copy())
 
 
 class ColorSchemeTable(dict):
@@ -150,8 +162,6 @@ class ColorSchemeTable(dict):
     active_colors -> actual color table of the active scheme
 
     """
-    valid_schemes= ['linux', 'lightbg', 'nocolor', 'iforgetrn']
-
     def __init__(self, scheme_list=None, default_scheme=None):
         """Create a table of color schemes.
 
@@ -167,28 +177,32 @@ class ColorSchemeTable(dict):
         we never bind the valid_schemes to the instance.
 
         """
+        valid_schemes = ['linux', 'lightbg', 'nocolor', 'iforgetrn']
+        self.valid_schemes = valid_schemes
         # create object attributes to be set later
         self.active_scheme_name = ''
         self.active_colors = None
 
-        if not scheme_list:
-            self.scheme_list = scheme_list = self.valid_schemes
+        if scheme_list:
+            self.scheme_list = scheme_list
+        else:
+            self.scheme_list = valid_schemes
 
-        if self.scheme_list:
-            if default_scheme is None:
-                self.active_scheme_name = default_scheme = 'LightBG'
-            else:
-                self.active_scheme_name = default_scheme
-            for scheme in scheme_list:
-                self.add_scheme(scheme)
-            # self.set_active_scheme(default_scheme)
+        if default_scheme is None:
+            self.active_scheme_name =  'LightBG'
+        else:
+            self.active_scheme_name = default_scheme
+
+        for scheme in self.scheme_list:
+            self.add_scheme(scheme)
+        # self.set_active_scheme(default_scheme)
 
         self.scheme_names = list(self.keys())
 
         if self.scheme_names is not None:
             self.valid_schemes = [s.lower() for s in self.scheme_names]
         else:
-            self.scheme_names = self.valid_schemes= ['linux', 'lightbg', 'nocolor', 'iforgetrn']
+            self.scheme_names = ['linux', 'lightbg', 'nocolor', 'iforgetrn']
 
     def copy(self):
         """Return full copy of object"""
@@ -200,28 +214,33 @@ class ColorSchemeTable(dict):
 
     def add_scheme(self, new_scheme):
         """Add a new color scheme to the table."""
-        if not isinstance(new_scheme, ColorScheme):
-            raise ValueError(
-                'ColorSchemeTable only accepts ColorScheme instances')
+        # if not isinstance(new_scheme, ColorScheme):
+            # raise ValueError(
+            #     'ColorSchemeTable only accepts ColorScheme instances')
+        if isinstance(new_scheme, dict):
+            # let's just do the work ourselves stop raising errors
+            new_scheme = ColorScheme('tmp_name', new_scheme)
+        if isinstance(new_scheme, str):
+            raise TypeError('We got a str when expecting a ColorScheme object')
         self[new_scheme.name] = new_scheme
 
     def __add__(self, new_scheme):
         return self.add_scheme(new_scheme)
 
-    def set_active_scheme(self, scheme, case_sensitive=False):
+    def set_active_scheme(self, scheme):
         """Set the currently active scheme.
 
         Names are by default compared in a case-insensitive way, but this can
         be changed by setting the parameter case_sensitive to true.
 
-        case sensitive now ignored
+        case sensitive now ignored.
         """
         scheme_test = scheme.lower()
         try:
             scheme_idx = self.valid_schemes.index(scheme_test)
         except ValueError:
             raise ValueError('Unrecognized color scheme: ' + scheme +
-                             '\nValid schemes: ' + str(scheme_names).replace("'', ", ''))
+                             '\nValid schemes: ' + str(self.scheme_names).replace("'', ", ''))
         else:
             active = self.scheme_names[scheme_idx]
             self.active_scheme_name = active
@@ -230,7 +249,73 @@ class ColorSchemeTable(dict):
             self[''] = self[active]
 
 
+class DefaultDark(MutableMapping):
+    """Rewriting the ColorSchemeTable.
 
-class ProxyColorSchemeTable(MutableMapping):
-    # TODO
-    pass
+    See http://chriskempson.com/projects/base16/ for a description of the role
+    of the different colors in the base16 palette.
+
+    .. todo:: This raises
+
+    >>> TypeError: Can't instantiate abstract class DefaultDark with abstract methods __delitem__, __getitem__, __iter__, __len__, __setitem__
+
+    """
+    color_scheme = ColorScheme('default_dark', colordict={
+        'base00': '#181818',
+        'base01': '#282828',
+        'base02': '#383838',
+        'base03': '#585858',
+        'base04': '#b8b8b8',
+        'base05': '#d8d8d8',
+        'base06': '#e8e8e8',
+        'base07': '#f8f8f8',
+        'base08': '#ab4642',
+        'base09': '#dc9656',
+        'base0A': '#f7ca88',
+        'base0B': '#a1b56c',
+        'base0C': '#86c1b9',
+        'base0D': '#7cafc2',
+        'base0E': '#ba8baf',
+        'base0F': '#a16946',
+    })
+
+
+class Base16Style(DefaultDark):
+    """I feel like I did this really wrong."""
+    # See http://pygments.org/docs/tokens/ for a description of the different
+    # pygments tokens.
+    background_color = "base00"
+    highlight_color = "base02"
+    default_style = "base05"
+
+    styles = {
+        Text: "base05",
+        Error: '%s bold' % "base08",
+        Comment: "base03",
+        Keyword: "base0E",
+        Keyword.Constant: "base09",
+        Keyword.Namespace: "base0D",
+        Name.Builtin: "base0D",
+        Name.Function: "base0D",
+        Name.Class: "base0D",
+        Name.Decorator: "base0E",
+        Name.Exception: "base08",
+        Number: "base09",
+        Operator: "base0E",
+        Literal: "base0B",
+        String: "base0B",
+    }
+
+# See https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/prompt_toolkit/styles/defaults.py
+# for a description of prompt_toolkit related pseudo-tokens.
+
+
+overrides = {
+    Token.Prompt: "base0B",
+    Token.PromptNum: '%s bold' % "base0B",
+    Token.OutPrompt: "base08",
+    Token.OutPromptNum: '%s bold' % "base08",
+    Token.Menu.Completions.Completion: 'bg:%s %s' % ("base01", "base04"),
+    Token.Menu.Completions.Completion.Current: 'bg:%s %s' % ("base04", "base01"),
+    Token.MatchingBracket.Other: 'bg:%s %s' % ("base03", "base00")
+}
