@@ -202,32 +202,20 @@ def filefind(filename, path_dirs=None):
 
 
 def get_home_dir(require_writable=False):
-    """Return the 'home' directory, as a unicode string.
-
-    Uses os.path.expanduser('~'), and checks for writability.
-
-    See stdlib docs for how this is determined.
-    For Python <3.8, $HOME is first priority on *ALL* platforms.
-    For Python >=3.8 on Windows, %HOME% is no longer considered.
+    """Return the 'home' directory, as a unicode string using pathlib.
 
     Parameters
     ----------
-
-    require_writable : bool [default: False]
-        if True:
-            guarantees the return value is a writable directory, otherwise
-            raises HomeDirError
-        if False:
-            The path is resolved, but it is not guaranteed to exist or be writable.
+    require_writable : bool
+    [default: False]
     """
+    if require_writable:
+        print('Hey fix the function calling this.')
     return Path.home().__fspath__()
 
 
 def get_xdg_dir():
-    """Return the XDG_CONFIG_HOME, if it is defined and exists, else None.
-
-    This is only for non-OS X posix (Linux,Unix,etc.) systems.
-    """
+    """Return the XDG_CONFIG_HOME, if it is defined and exists, else None."""
     env = os.environ
     xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(
         get_home_dir(), '.config')
@@ -239,7 +227,9 @@ def get_xdg_cache_dir():
     """Return the XDG_CACHE_HOME, if it is defined and exists, else None.
 
     This is only for non-OS X posix (Linux,Unix,etc.) systems.
-    Why?
+    Why? I defined XDG_CACHE_HOME on my windows OS it's not like we're
+    incapable of doing so?
+
     """
     env = os.environ
     xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(

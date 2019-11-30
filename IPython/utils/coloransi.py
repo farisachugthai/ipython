@@ -15,7 +15,7 @@ Default Dark scheme by Chris Kempson (http://chriskempson.com)
 
 # As a better way to subclass Dict
 from abc import ABC
-from collections.abc import MutableMapping
+from collections import defaultdict
 import copy
 import os
 
@@ -162,6 +162,7 @@ class ColorSchemeTable(dict):
     active_colors -> actual color table of the active scheme
 
     """
+
     def __init__(self, scheme_list=None, default_scheme=None):
         """Create a table of color schemes.
 
@@ -189,7 +190,7 @@ class ColorSchemeTable(dict):
             self.scheme_list = valid_schemes
 
         if default_scheme is None:
-            self.active_scheme_name =  'LightBG'
+            self.active_scheme_name = 'LightBG'
         else:
             self.active_scheme_name = default_scheme
 
@@ -200,7 +201,7 @@ class ColorSchemeTable(dict):
         self.scheme_names = list(self.keys())
 
         if self.scheme_names is not None:
-            self.valid_schemes = [s.lower() for s in self.scheme_names]
+            self.valid_schemes = [s.lower() for s in self.scheme_names if isinstance(s, str)]
         else:
             self.scheme_names = ['linux', 'lightbg', 'nocolor', 'iforgetrn']
 
@@ -215,13 +216,15 @@ class ColorSchemeTable(dict):
     def add_scheme(self, new_scheme):
         """Add a new color scheme to the table."""
         # if not isinstance(new_scheme, ColorScheme):
-            # raise ValueError(
-            #     'ColorSchemeTable only accepts ColorScheme instances')
+        # raise ValueError(
+        #     'ColorSchemeTable only accepts ColorScheme instances')
         if isinstance(new_scheme, dict):
             # let's just do the work ourselves stop raising errors
             new_scheme = ColorScheme('tmp_name', new_scheme)
         if isinstance(new_scheme, str):
-            raise TypeError('We got a str when expecting a ColorScheme object')
+            # raise TypeError('We got a str when expecting a ColorScheme object')
+            if new_scheme in self.valid_schemes:
+                return
         self[new_scheme.name] = new_scheme
 
     def __add__(self, new_scheme):
@@ -235,21 +238,37 @@ class ColorSchemeTable(dict):
 
         case sensitive now ignored.
         """
-        scheme_test = scheme.lower()
-        try:
-            scheme_idx = self.valid_schemes.index(scheme_test)
-        except ValueError:
-            raise ValueError('Unrecognized color scheme: ' + scheme +
-                             '\nValid schemes: ' + str(self.scheme_names).replace("'', ", ''))
-        else:
-            active = self.scheme_names[scheme_idx]
-            self.active_scheme_name = active
-            self.active_colors = self[active].colors
-            # Now allow using '' as an index for the current active scheme
-            self[''] = self[active]
+        raise NotImplementedError('fuck it')
+        # try:
+            # scheme_idx = self.valid_schemes.index(scheme_test)
+            # Seriously why the fuck does this use THIS many different variables
+            # scheme
+            # scheme_list
+            # scheme_test
+            # scheme_names
+            # valid_schemes
+            # active_scheme_name,
+            # active_colors
+            # Colors
+            # self.values
+            # valid_schemes
+            # active
+            # scheme_idx
+
+            # IT ALL REPRESENTS ONE OBJECT.
+            # THIS ISN'T THE HARD PART
+        # except ValueError:
+        #     raise ValueError('Unrecognized color scheme: ' + scheme +
+        #                      '\nValid schemes: ' + str(self.scheme_names).replace("'', ", ''))
+        # else:
+        #     active = self.scheme_names[scheme_idx]
+        #     self.active_scheme_name = active
+        #     self.active_colors = self[active].colors
+        #     # Now allow using '' as an index for the current active scheme
+        #     self[''] = self[active]
 
 
-class DefaultDark(MutableMapping):
+class DefaultDark(defaultdict):
     """Rewriting the ColorSchemeTable.
 
     See http://chriskempson.com/projects/base16/ for a description of the role
@@ -280,7 +299,7 @@ class DefaultDark(MutableMapping):
     })
 
 
-class Base16Style(DefaultDark):
+class Base16Style(defaultdict):
     """I feel like I did this really wrong."""
     # See http://pygments.org/docs/tokens/ for a description of the different
     # pygments tokens.

@@ -419,8 +419,8 @@ class TBTools(Colorable):
 
         # todo
         # if self.Colors is None:
-        self.set_colors(color_scheme)
-        self.old_scheme = color_scheme  # save initial value for toggles
+        # self.set_colors(color_scheme)
+        # self.old_scheme = color_scheme  # save initial value for toggles
 
         self.call_pdb = call_pdb
         self._ostream = ostream
@@ -456,12 +456,13 @@ class TBTools(Colorable):
         """Shorthand access to the color table scheme selector method."""
 
         # Set own color table
-        self.color_scheme_table.set_active_scheme(*args, **kw)
+        # self.color_scheme_table.set_active_scheme(*args, **kw)
         # for convenience, set Colors to the active scheme
 
         # Also set colors of debugger
         if hasattr(self, 'pdb') and self.pdb is not None:
-            self.pdb.set_colors(*args, **kw)
+            if getattr(self.pdb,'set_colors', None):
+                self.pdb.set_colors(*args, **kw)
 
     def color_toggle(self):
         """Toggle between the currently active color scheme and NoColor."""
@@ -1233,7 +1234,12 @@ class FormattedTB(VerboseTB, ListTB):
         self.valid_modes = ['Plain', 'Context', 'Verbose', 'Minimal']
         self.verbose_modes = self.valid_modes[1:3]
 
-        self.color_scheme_table = exception_colors()
+        # self.color_scheme_table = exception_colors()
+        if hasattr(self, 'color_scheme_table'):
+            if hasattr(self.color_scheme_table, 'active_colors'):
+                self.Colors = self.color_scheme_table.active_colors
+        else:
+            self.color_scheme_table = ColorSchemeTable()
 
         VerboseTB.__init__(self,
                            color_scheme=color_scheme,

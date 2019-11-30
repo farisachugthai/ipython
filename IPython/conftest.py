@@ -45,7 +45,7 @@ def work_path():
     shutil.rmtree(str(path.resolve()))
 
 
-def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
+def nopage(strng, start=0, screen_lines=0, pager_cmd=None, **kwargs):
     if isinstance(strng, dict):
         strng = strng.get("text/plain", "")
     print(strng)

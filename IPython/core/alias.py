@@ -260,25 +260,43 @@ class AliasManager(Configurable):
         OS dependant aliases.
     user_aliases : list
 
-    """
+    Properties
+    ----------
+    aliases
 
+    """
+    # is that supposed to say default_aliases or default_value?
     default_aliases = List(default_aliases()).tag(config=True)
-    user_aliases = List(default_value=[]).tag(config=True)
+    user_aliases = List(default_value=[],
+                        help="User defined aliases").tag(config=True)
+
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
                      allow_none=True)
 
     def __init__(self, shell=None, **kwargs):
-        super(AliasManager, self).__init__(shell=shell, **kwargs)
+        """Initialize the class.
+
+        Attributes
+        ----------
+        linemagics
+            get_ipython().magics_manager.magics['line']
+
+        """
+        super().__init__(shell=shell, **kwargs)
         # For convenient access
         self.linemagics = self.shell.magics_manager.magics['line']
         self.init_aliases()
 
     def init_aliases(self):
-        # Load default & user aliases
+        """Load default & user aliases."""
         for name, cmd in self.default_aliases + self.user_aliases:
             if cmd.startswith('ls ') and self.shell.colors == 'NoColor':
                 cmd = cmd.replace(' --color', '')
             self.soft_define_alias(name, cmd)
+
+    def __repr__(self):
+        """ .. todo:: mixin reprlib.Repr and then use that for the representation."""
+        return '{!r}\n'.format(self.__class__.__name__)
 
     @property
     def aliases(self):
@@ -295,6 +313,12 @@ class AliasManager(Configurable):
     def define_alias(self, name, cmd):
         """Define a new alias after validating it.
 
+        Parameters
+        ----------
+        todo
+
+        Raises
+        ------
         This will raise an :exc:`AliasError` if there are validation
         problems.
         """

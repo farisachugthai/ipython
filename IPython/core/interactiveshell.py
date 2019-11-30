@@ -2029,7 +2029,7 @@ class InteractiveShell(SingletonConfigurable):
 
         """
 
-        @functools.wrapped
+        @functools.wraps
         def dummy_handler(etype, value, tb):
             print('*** Simple custom exception handler ***')
             print('Exception type :', etype)

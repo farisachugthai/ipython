@@ -14,14 +14,10 @@ if sys.platform == 'win32':
     from ._process_win32 import system, getoutput, arg_split, check_pid
 
 # What the actual hell is the cli platform
-elif sys.platform == 'cli':
-    from ._process_cli import system, getoutput, arg_split, check_pid
+# elif sys.platform == 'cli':
+#     from ._process_cli import system, getoutput, arg_split, check_pid
 else:
     from ._process_posix import system, getoutput, arg_split, check_pid
-
-
-class FindCmdError(Exception):
-    pass
 
 
 def find_cmd(cmd):
@@ -43,10 +39,7 @@ def find_cmd(cmd):
     cmd : str
         The command line program to look for.
     """
-    path = shutil.which(cmd)
-    if path is None:
-        raise FindCmdError('command could not be found: %s' % cmd)
-    return path
+    return shutil.which(cmd)
 
 
 def abbrev_cwd():
