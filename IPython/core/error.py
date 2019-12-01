@@ -8,21 +8,6 @@ Authors:
 * Fernando Perez
 * Min Ragan-Kelley
 
-Notes
------
-
-Nov 01, 2019:
-
-So this was previously in `./magics/basic` inside of the `%colors` magic.
-Why would you not simply make it an error that subclasses
-`UsageError` so nothing crashes?::
-
-    def color_switch_err(name):
-        warn('Error changing %s color schemes.\n%s' %
-                (name, sys.exc_info()[1]),
-                stacklevel=2)
-
-
 """
 
 # -----------------------------------------------------------------------------
@@ -96,16 +81,41 @@ class KillEmbedded(Exception):
 
 
 class ColorSwitchErr(UsageError):
-    """Nov 01, 2019: From ./magics/basic"""
+    """Nov 01, 2019: From ./magics/basic.
 
-    def __call__(self):
-        if sys.exc_info:
-            return ''.format(sys.exc_info())
+    Here's the original.:
 
-    def warn(self, name):
-        return 'Error changing {} color schemes.\n{}'.format(
+        def color_switch_err(name):
+            warn('Error changing %s color schemes.\n%s' %
+                 (name, sys.exc_info()[1]),
+                 stacklevel=2)
+    """
+
+    def __traceback__(self):
+        """So I think exceptions usually have this defined now right?"""
+        super().__traceback__(self)
+
+    def __repr__(self):
+        return ''.format(self.__class__.__name)
+
+    def __call__(self, name):
+        return '{}:\nError changing {} color schemes.\n{}'.format(
+            repr(self),
             name,
-            sys.exc_info()[1])
+            sys.exc_info())
+
+
+class XmodeSwitchErr(ColorSwitchErr):
+    """Also from magics/basic.
+
+        def xmode_switch_err(name):
+            warn('Error changing %s exception modes.\n%s' %
+                 (name, sys.exc_info()[1]))
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
 
 
 class ProvisionalWarning(DeprecationWarning):
@@ -201,4 +211,3 @@ class UnknownBackend(KeyError):
         return ("No event loop integration for {!r}. "
                 "Supported event loops are: {}").format(
                     self.name, ', '.join(backends + sorted(registered)))
-

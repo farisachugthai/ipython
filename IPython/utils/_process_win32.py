@@ -1,6 +1,11 @@
 """Windows-specific implementation of process utilities.
 
 This file is only meant to be imported by process.py, not by end-users.
+
+Then define ``__all__`?
+
+.. note:: This depends on pywin32.
+
 """
 
 # -----------------------------------------------------------------------------
@@ -20,21 +25,20 @@ import sys
 import ctypes
 
 from ctypes import c_int, POINTER
-from ctypes.wintypes import LPCWSTR, HLOCAL
+try:
+    from ctypes.wintypes import LPCWSTR, HLOCAL
+except ImportError:
+    LPCWSTR = None
+    HLOCAL = None
+
 from subprocess import STDOUT
 
 # our own imports
 from ._process_common import read_no_interrupt, process_handler, arg_split as py_arg_split
 from . import py3compat
-from .encoding import DEFAULT_ENCODING
 
 
-# -----------------------------------------------------------------------------
-# Function definitions
-# -----------------------------------------------------------------------------
-
-
-class AvoidUNCPath(object):
+class AvoidUNCPath:
     """A context manager to protect command execution from UNC paths.
 
     In the Win32 API, commands can't be invoked with the cwd being a UNC path.
@@ -72,6 +76,11 @@ class AvoidUNCPath(object):
             os.chdir(self.path)
 
 
+# -----------------------------------------------------------------------------
+# Function definitions
+# -----------------------------------------------------------------------------
+
+
 def _find_cmd(cmd):
     """Find the full path to a .bat or .exe using the win32api module."""
     try:
@@ -96,6 +105,7 @@ def _find_cmd(cmd):
 
 def _system_body(p):
     """Callback for _system."""
+    from .encoding import DEFAULT_ENCODING
     enc = DEFAULT_ENCODING
     for line in read_no_interrupt(p.stdout).splitlines():
         line = line.decode(enc, 'replace')
@@ -148,6 +158,7 @@ def getoutput(cmd):
     Returns
     -------
     stdout : str
+
     """
 
     with AvoidUNCPath() as path:
@@ -156,8 +167,10 @@ def getoutput(cmd):
         out = process_handler(cmd, lambda p: p.communicate()[0], STDOUT)
 
     if out is None:
-        out = b''
-    return py3compat.decode(out)
+        # out = b''
+        # Wait why do we return bytes here?
+        out = ''
+    return out
 
 
 try:
@@ -198,6 +211,21 @@ except AttributeError:
 
 
 def check_pid(pid):
-    # OpenProcess returns 0 if no such process (of ours) exists
-    # positive int otherwise
-    return bool(ctypes.windll.kernel32.OpenProcess(1, 0, pid))
+    """Checks the PID of a process.
+
+    Parameters
+    ----------
+    pid to check
+
+    Returns
+    -------
+    OpenProcess returns 0 if no such process (of ours) exists.
+    positive int otherwise
+
+    Notes
+    -----
+    Uses ctypes. Added in a check that the attr exists so an accidental linux
+    import doesn't throw us off.
+    """
+    if getattr(ctypes, 'windll', None):
+        return bool(ctypes.windll.kernel32.OpenProcess(1, 0, pid))

@@ -29,8 +29,7 @@ To create the blank config files, run::
 If you leave out the profile name, the files will be created for the
 ``default`` profile (see :ref:`profiles`). These will typically be
 located in :file:`~/.ipython/profile_default/`, and will be named
-:file:`ipython_config.py`, :file:`ipython_notebook_config.py`, etc.
-The settings in :file:`ipython_config.py` apply to all IPython commands.
+:file:`ipython_config.py`, :file:`ipython_kernel_config.py`, etc.
 
 The files typically start by getting the root config object::
 
@@ -40,7 +39,7 @@ You can then configure class attributes like this::
 
     c.InteractiveShell.automagic = False
 
-Be careful with spelling--incorrect names will simply be ignored, with
+Be careful with spelling --- incorrect names will be silently ignored, with
 no error.
 
 To add to a collection which may have already been defined elsewhere,
@@ -208,25 +207,9 @@ the directory :file:`~/.ipython/` by default.
    This command line option can also be used to override the default
    IPython directory.
 
-.. toctree::
-
-   intro
-   details
-
 
 .. seealso::
 
-   :doc:`../development/index`
+   :doc:`development/index`
       Technical details of the config system.
 
-Extending and integrating with IPython
---------------------------------------
-
-.. toctree::
-   :maxdepth: 2
-
-   integrating
-   custommagics
-   shell_mimerenderer
-   callbacks
-   eventloops

@@ -3,15 +3,9 @@
 ========================
 IPython Sphinx Directive
 ========================
+
 .. module:: sphinx_directive
    :synopsis: An enhanced extension for Sphinx and rst use.
-
-.. highlight:: ipython
-   :linenothreshold: 3
-
-.. this one is probably overkill right?
-
-.. |IPython| replace:: :mod:`IPython`
 
 .. |rst| replace:: reStructured text
 
@@ -602,6 +596,3 @@ one sets the backend to `None`:
     `ipython_mplbackend` = `None`
 
 
-To view the API documentation, continue reading at `sphinx_ipython_api`.
-
-.. Vim: set et:

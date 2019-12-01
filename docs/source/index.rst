@@ -93,18 +93,17 @@ The latest development version is always available from IPython's `GitHub
 repository <http://github.com/ipython/ipython>`_.
 
 
-Table of Contents
-=================
+Index
+=====
 
 .. toctree::
    :maxdepth: 2
    :caption: Table of Contents
-   :titlesonly:
 
    overview
    install/index
    tutorial/index
-   config/index
+   config
    magics
    extending/index
    extensions/index
@@ -112,10 +111,39 @@ Table of Contents
    development/index
    building
    coredev
-   api/index
-   options/index
    reference
    todo
+
+Extending and integrating with IPython
+======================================
+
+.. toctree::
+   :maxdepth: 2
+
+   integrating
+   custommagics
+   details
+   shell_mimerenderer
+   eventloops
+
+
+Reference
+==========
+
+.. toctree::
+   :maxdepth: 1
+
+   api/index
+   options/index
+
+
+About Us
+=========
+
+.. toctree::
+   :maxdepth: 1
+   :caption: About us
+
    whatsnew/index
    about/index
 

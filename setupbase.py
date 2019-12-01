@@ -14,8 +14,10 @@ Distributed under the terms of the Modified BSD License.
 
 """
 from glob import glob
+import functools
 import re
 import os
+import subprocess
 import sys
 
 from distutils import log
@@ -82,7 +84,10 @@ def check_package_data_first(command):
 
     Probably only needs to wrap build_py
     """
+
+    @functools.wraps
     class DecoratedCommand(command):
+
         def run(self):
             check_package_data(self.package_data)
             command.run(self)
@@ -96,8 +101,7 @@ def check_package_data_first(command):
 
 
 def find_data_files():
-    """
-    Find IPython's data_files.
+    """Find IPython's data_files.
 
     Just man pages at this point.
     """
@@ -122,13 +126,13 @@ def find_data_files():
 # to import IPython during setup, which fails on Python 3.
 
 
-def target_outdated(target, deps):
+def target_outdated(deps, target=None):
     """Determine whether a target is out of date.
 
     target_outdated(target,deps) -> 1/0
 
-    deps: list of filenames which MUST exist.
-    target: single filename which may or may not exist.
+    :param deps: list of filenames which MUST exist.
+    :param target: single filename which may or may not exist.
 
     If target doesn't exist or is older than any file listed in deps, return
     true, otherwise return false.
@@ -198,6 +202,7 @@ class build_scripts_entrypt(build_scripts):
     On Windows, this also creates .cmd wrappers for the scripts so that you can
     easily launch them from a command line.
     """
+
     def run(self):
         self.mkpath(self.build_dir)
         outfiles = []
@@ -244,8 +249,6 @@ class install_lib_symlink(Command):
         )
 
     def run(self):
-        # if sys.platform == 'win32':
-        #     raise Exception("This doesn't work on Windows.")
         pkg = os.path.join(os.getcwd(), 'IPython')
         dest = os.path.join(self.install_dir, 'IPython')
         if os.path.islink(dest):
@@ -266,17 +269,21 @@ class unsymlink(install):
 
 
 class install_symlinked(install):
-    def run(self):
-        # now it does.
-        # if sys.platform == 'win32':
-        #     raise Exception("This doesn't work on Windows.")
+    """Install symlinked.
 
-        # Run all sub-commands (at least those that need to be run)
+    Attributes
+    ----------
+    'sub_commands' : list
+        a list of commands this command might have to run to
+        get its work done.  See cmd.py for more info.
+
+    """
+
+    def run(self):
+        """Run all sub-commands (at least those that need to be run)."""
         for cmd_name in self.get_sub_commands():
             self.run_command(cmd_name)
 
-    # 'sub_commands': a list of commands this command might have to run to
-    # get its work done.  See cmd.py for more info.
     sub_commands = [
         ('install_lib_symlink', lambda self: True),
         ('install_scripts_sym', lambda self: True),
@@ -288,6 +295,7 @@ class install_scripts_for_symlink(install_scripts):
 
     I love distutils almost as much as I love setuptools.
     """
+
     def finalize_options(self):
         self.set_undefined_options('build', ('build_scripts', 'build_dir'))
         self.set_undefined_options(
@@ -310,8 +318,11 @@ def git_prebuild(pkg_dir, build_cmd=build_py):
 
     for use in IPython.utils.sysinfo.sys_info() calls after installation.
     """
+
+    @functools.wraps
     class MyBuildPy(build_cmd):
         ''' Subclass to write commit data into installation tree '''
+
         def run(self):
             # loose as `.dev` is suppose to be invalid
             print("check version number")
@@ -333,7 +344,6 @@ def git_prebuild(pkg_dir, build_cmd=build_py):
             self._record_commit(base_dir)
 
         def _record_commit(self, base_dir):
-            import subprocess
             proc = subprocess.Popen('git rev-parse --short HEAD',
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE,

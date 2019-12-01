@@ -71,14 +71,15 @@ Generally.
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
-from IPython.utils.decorators import undoc
+import logging
 import tempfile
 import os
+import shlex
 import subprocess
 import warnings
 import sys
 
-from .error import TryNext
+from IPython.core.error import TryNext
 
 # List here all the default hooks.  For now it's just the editor functions
 # but over time we'll move here all the public API for user-accessible things.
@@ -101,24 +102,30 @@ deprecated = {
 def editor(self, filename, linenum=None, wait=True):
     """Open the default editor at the given filename and linenumber.
 
-    IPython configures a default editor at startup by reading $EDITOR from
-    the environment, and falling back on vi (unix) or notepad (win32).
+    IPython configures a default editor at startup by reading
+    :envvar:`EDITOR` from the environment, and falling back on
+    :command:`vi` on Unix-like systems or Notepad on Windows.
 
     This is IPython's default editor hook, you can use it as an example to
-    write your own modified one.  To set your own editor function as the
-    new editor hook, call get_ipython().set_hook('editor', yourfunc).
+    write your own modified one.
+
+    Examples
+    --------
+    To set your own editor function as the new editor hook, call:
+
+    >>> get_ipython().set_hook('editor', yourfunc).
+
     """
-    editor = self.editor
+    if not getattr(self, 'editor', None):
+        return
+
+    editor = shlex.quote(self.editor)
 
     # marker for at which line to open the file (for existing objects)
     if linenum is None or editor == 'notepad':
         linemark = ''
     else:
         linemark = '+%d' % int(linenum)
-
-    # Enclose in quotes if necessary and legal
-    if ' ' in editor and os.path.isfile(editor) and editor[0] != '"':
-        editor = '"%s"' % editor
 
     # Call the actual editor
     proc = subprocess.Popen('%s %s %s' % (editor, linemark, filename),
@@ -127,43 +134,29 @@ def editor(self, filename, linenum=None, wait=True):
         raise TryNext()
 
 
-@undoc
-def fix_error_editor(self, filename, linenum, column, msg):
-    """DEPRECATED
-
-    Open the editor at the given filename, linenumber, column and
-    show an error message. This is used for correcting syntax errors.
-    The current implementation only has special support for the VIM editor,
-    and falls back on the 'editor' hook if VIM is not used.
-
-    Call ip.set_hook('fix_error_editor',yourfunc) to use your own function,
-    """
-
-    warnings.warn(
-        """
-`fix_error_editor` is deprecated as of IPython 6.0 and will be removed
-in future versions. It appears to be used only for automatically fixing syntax
-error that has been broken for a few years and has thus been removed. If you
-happened to use this function and still need it please make your voice heard on
-the mailing list ipython-dev@python.org , or on the GitHub Issue tracker:
-https://github.com/ipython/ipython/issues/9649 """, UserWarning)
-
-
 class CommandChainDispatcher:
-    """Dispatch calls to a chain of commands until some func can handle it
+    """Dispatch calls to a chain of commands until some func can handle it.
 
     Usage
     ------
-    Instantiate, execute "add" to add commands (with optional
-    priority), execute normally via f() calling mechanism.
+    - Instantiate
+
+    - execute :meth:`add` to add commands (with optional priority parameter
+
+    - execute normally via f() calling mechanism.
 
     """
 
-    def __init__(self, commands=None):
-        if commands is None:
-            self.chain = []
-        else:
-            self.chain = commands
+    def __init__(self, chain=None):
+        """Initialize.
+
+        Parameters
+        ----------
+        chain : list
+            Commands to try for a hook.
+
+        """
+        self.chain = chain or []
 
     def __call__(self, *args, **kw):
         """Command chain is called just like normal func.
@@ -180,11 +173,8 @@ class CommandChainDispatcher:
                 # if no function will accept it, raise TryNext up to the caller
                 raise last_exc
 
-    def __str__(self):
-        return str(self.chain)
-
     def __repr__(self):
-        return '{!r}'.format(self.__class__.__name__)
+        return '{!r}\n{!r}'.format(self.__class__.__name__, self.chain)
 
     def add(self, func, priority=0):
         """ Add a func to the cmd chain with given priority """
@@ -204,19 +194,26 @@ def shutdown_hook(self):
 
     Typically, shutdown hooks should raise TryNext so all shutdown ops are done
     """
-
-    # print "default shutdown hook ok" # dbg
+    logging.debug("default shutdown hook ok")
     return
 
 
 def late_startup_hook(self):
     """Executed after ipython has been constructed and configured."""
-    # print "default startup hook ok" # dbg
+    logging.debug("default startup hook ok")
+    return
 
 
 def show_in_pager(self, data, start, screen_lines):
-    """Run a string throughpager."""
-    # raising TryNext here will use the default paging functionality
+    """Run a string through the pager.
+
+    Idk what these parameters are though.
+
+    Where does this get invoked by the way?
+
+    .. note:: raising TryNext here will use the default paging functionality
+
+    """
     raise TryNext
 
 

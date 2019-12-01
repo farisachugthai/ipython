@@ -206,12 +206,16 @@ from IPython.sphinxext import configtraits, magics
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.release import version_info
 from IPython.core.profiledir import ProfileDir
-from IPython.lib.lexers import IPyLexer
-
+# We should use the whole buffalo
+from IPython.lib.lexers import (IPyLexer, IPythonTracebackLexer,
+                                IPythonPartialTracebackLexer,
+                                IPythonConsoleLexer, IPythonLexer)
 try:
     import matplotlib
 except ImportError:
     matplotlib = None
+else:
+    matplotlib.use('agg')
 
 logger = getLogger(name=__name__)
 # -----------------------------------------------------------------------------
@@ -836,8 +840,7 @@ class EmbeddedSphinxShell:
                 # call to the @figure decorator (and ipython_execlines did
                 # not set a backend).
                 #raise Exception("No backend was set, but @figure was used!")
-                import matplotlib
-                matplotlib.use('agg')
+                logging.warning('matplotlib.backends not in sys.modules')
 
             # Always import pyplot into embedded shell.
             self.process_input_line('import matplotlib.pyplot as plt',
@@ -845,8 +848,7 @@ class EmbeddedSphinxShell:
             self._pyplot_imported = True
 
     def process_pure_python(self, content):
-        """
-        content is a list of strings. it is unedited directive content
+        """content is a list of strings. it is unedited directive content
 
         This runs it line by line in the InteractiveShell, prepends
         prompts as needed capturing stderr and stdout, then returns
@@ -994,7 +996,7 @@ class IPythonDirective(Directive):
             # EmbeddedSphinxShell is created, its interactive shell member
             # is the same for each instance.
 
-            if mplbackend and 'matplotlib.backends' not in sys.modules and matplotlib:
+            if mplbackend and 'matplotlib.backends' not in sys.modules:
                 import matplotlib
                 matplotlib.use(mplbackend)
 

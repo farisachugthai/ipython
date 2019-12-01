@@ -378,13 +378,13 @@ post-mortem debugging. IPython can also call debugger every time your code
 triggers an uncaught exception. This feature can be toggled with the :magic:`pdb` magic
 command, or you can start IPython with the ``--pdb`` option.
 
-For a post-mortem debugger in your programs outside IPython,
-put the following lines toward the top of your 'main' routine::
+.. For a post-mortem debugger in your programs outside IPython,
+.. put the following lines toward the top of your 'main' routine::
 
-    import sys
-    from IPython.core import ultratb
-    sys.excepthook = ultratb.FormattedTB(mode='Verbose',
-    color_scheme='Linux', call_pdb=1)
+..     import sys
+..     from IPython.core import ultratb
+..     sys.excepthook = ultratb.FormattedTB(mode='Verbose',
+..     color_scheme='Linux', call_pdb=1)
 
 
 .. option:: --xmode
@@ -567,12 +567,7 @@ contents of the demo's namespace.
 
 This allows you to show a piece of code, run it and then execute
 interactively commands based on the variables just created. Once you
-want to continue, you simply execute the next block of the demo. The
-following listing shows the markup necessary for dividing a script into
-sections for execution as a demo:
-
-.. .. literalinclude:: ../../../examples/IPython Kernel/example-demo.py
-..     :language: python
+want to continue, you simply execute the next block of the demo.
 
 In order to run a file as a demo, you must first make a Demo object out
 of it. If the file is named myscript.py, the following code will make a
@@ -615,4 +610,4 @@ divisions are allowed.
    instance at an arbitrary point in a program, you can use IPython's
    :ref:`embedding facilities <Embedding>`.
 
-.. .. include:: ../links.txt
+.. .. include:: links.txt

@@ -1,8 +1,6 @@
 """Top-level display functions for displaying object in different formats."""
-
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
 from binascii import b2a_hex, b2a_base64, hexlify
 import json
 import mimetypes
@@ -13,9 +11,6 @@ import warnings
 from copy import deepcopy
 from os.path import splitext
 from pathlib import Path, PurePath
-
-# from IPython.utils.py3compat import cast_unicode
-# from IPython.testing.skipdoctest import skip_doctest
 
 __all__ = [
     'display', 'display_pretty', 'display_html', 'display_markdown',
@@ -46,7 +41,6 @@ def _merge(d1, d2):
 
     Updates d1 in-place
     """
-
     if not isinstance(d2, dict) or not isinstance(d1, dict):
         return d2
     for key, value in d2.items():
@@ -64,11 +58,13 @@ def _display_mimetype(mimetype, objs, raw=False, metadata=None):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw text data to
         display.
-    raw : bool
+    raw : bool, optional
+        [default: False]
         Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
+        formatted before display?
+    metadata : dict, (optional)
         Metadata to be associated with the specific mimetype output.
+
     """
     if metadata:
         metadata = {mimetype: metadata}
@@ -107,21 +103,29 @@ def publish_display_data(data,
 
     Parameters
     ----------
-    data : dict
+    data : dict, optional
         A dictionary having keys that are valid MIME types (like
         'text/plain' or 'image/svg+xml') and values that are the data for
-        that MIME type. The data itself must be a JSON'able data
-        structure. Minimally all data should have the 'text/plain' data,
-        which can be displayed by all frontends. If more than the plain
-        text is given, it is up to the frontend to decide which
-        representation to use.
-    metadata : dict
+        that MIME type.
+
+        The data itself must be a JSON'able data structure.
+
+        Minimally all data should have the 'text/plain' data,
+        which can be displayed by all frontends.
+
+        If more than the plain text is given, it is up to the frontend
+        to decide which representation to use.
+
+    metadata : dict, optional
         A dictionary for metadata related to the data. This can contain
         arbitrary key, value pairs that frontends can use to interpret
-        the data. mime-type keys matching those in data can be used
+        the data.
+        mime-type keys matching those in data can be used
         to specify metadata about particular representations.
+
     source : str, deprecated
         Unused.
+
     transient : dict, keyword-only
         A dictionary of transient data, such as display_id.
 
@@ -1536,7 +1540,6 @@ def set_matplotlib_formats(*formats, **kwargs):
     select_figure_formats(shell, formats, **kw)
 
 
-# @skip_doctest
 def set_matplotlib_close(close=True):
     """Set whether the inline backend closes all figures automatically or not.
 

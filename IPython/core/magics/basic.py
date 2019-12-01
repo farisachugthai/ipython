@@ -13,7 +13,7 @@ from warnings import warn
 
 from IPython.core import magic_arguments, page
 # from IPython.core.payloadpage import page
-from IPython.core.error import UsageError
+from IPython.core.error import UsageError, ColorSwitchErr, XmodeSwitchErr
 from IPython.core.magic import Magics, magics_class, line_magic, magic_escapes
 from IPython.utils.text import format_screen  # , dedent, indent
 # from IPython.testing.skipdoctest import skip_doctest
@@ -74,13 +74,17 @@ class MagicsDisplay:
         return self._lsmagic
 
     def _jsonable(self):
-        """turn magics dict into jsonable dict of the same structure
+        """Turn magics dict into jsonable dict of the same structure.
 
-        replaces object instances with their class names as strings
+        Replaces object instances with their class names as strings.
+
+        Largely this method just flattens the dictionary of dictionaries that
+        self.magics_manager.lsmagic() returns.
+
+        Can we make this more portable, move it out and then invoke it here?
         """
         magic_dict = {}
-        mman = self.magics_manager
-        magics = mman.lsmagic()
+        magics = self.magics_manager.lsmagic()
         for key, subdict in magics.items():
             d = {}
             magic_dict[key] = d
@@ -163,10 +167,7 @@ class BasicMagics(Magics):
         :exc:`UsageError`
 
         """
-
         args = magic_arguments.parse_argstring(self.alias_magic, line)
-        shell = self.shell
-        mman = self.shell.magics_manager
         escs = ''.join(magic_escapes.values())
 
         target = args.target.lstrip(escs)
@@ -178,8 +179,8 @@ class BasicMagics(Magics):
             params = params[1:-1]
 
         # Find the requested magics.
-        m_line = shell.find_magic(target, 'line')
-        m_cell = shell.find_magic(target, 'cell')
+        m_line = self.shell.find_magic(target, 'line')
+        m_cell = self.shell.find_magic(target, 'cell')
         if args.line and m_line is None:
             raise UsageError('Line magic function `%s%s` not found.' %
                              (magic_escapes['line'], target))
@@ -199,13 +200,13 @@ class BasicMagics(Magics):
         params_str = "" if params is None else " " + params
 
         if args.line:
-            mman.register_alias(name, target, 'line', params)
+            self.self.shell.magics_manager.register_alias(name, target, 'line', params)
             print('Created `%s%s` as an alias for `%s%s%s`.' %
                   (magic_escapes['line'], name, magic_escapes['line'], target,
                    params_str))
 
         if args.cell:
-            mman.register_alias(name, target, 'cell', params)
+            self.self.shell.magics_manager.register_alias(name, target, 'cell', params)
             print('Created `%s%s` as an alias for `%s%s%s`.' %
                   (magic_escapes['cell'], name, magic_escapes['cell'], target,
                    params_str))
@@ -363,15 +364,11 @@ Currently the magic system has the following functions:""",
           %colors nocolor
 
         """
-        def color_switch_err(name):
-            warn('Error changing %s color schemes.\n%s' %
-                 (name, sys.exc_info()[1]),
-                 stacklevel=2)
-
         new_scheme = parameter_s.strip()
         if not new_scheme:
             raise UsageError(
                 "%colors: you must specify a color scheme. See '%colors?'")
+
         # local shortcut
         shell = self.shell
 
@@ -379,59 +376,25 @@ Currently the magic system has the following functions:""",
         try:
             shell.colors = new_scheme
             shell.refresh_style()
-        except:
-            color_switch_err('shell')
+        except Exception as e:
+            ColorSwitchErr('magics/basic: ColorSwitchErr.\nShell\n{}'.format(e))
 
         # Set exception colors
         try:
             shell.InteractiveTB.set_colors(scheme=new_scheme)
             shell.SyntaxTB.set_colors(scheme=new_scheme)
-        except:
-            color_switch_err('exception')
+        except Exception as e:
+            ColorSwitchErr('magics/basic: ColorSwitchErr.\nTB objects\n{}'.format(e))
 
         # Set info (for 'object?') colors
-        if shell.color_info:
+        if getattr(shell, 'color_info', None):
             try:
                 shell.inspector.set_active_scheme(new_scheme)
-            except:
-                color_switch_err('object inspector')
+            except Exception as e:
+                raise ColorSwitchErr('magics/basic: ColorSwitchErr.\nInspector\n{}'.format(e))
         else:
-            shell.inspector.set_active_scheme('NoColor')
+            logging.warning("magics/basic: Shell doesn't have color_info.")
 
-
-# HERE
-        if not parameter_s:
-            raise UsageError(
-                "%colors: you must specify a color scheme. See '%colors?'")
-        # Set shell colour scheme
-        try:
-            self.shell.colors = parameter_s.strip()
-        except AttributeError as e:  # we should REALLY stop catching baseexception like wtf?
-            # color_switch_err('shell')
-            print(e)
-            return
-
-        self.shell.refresh_style()
-
-        # Set exception colors
-        try:
-            self.shell.InteractiveTB.set_colors(scheme=new_scheme)
-            self.shell.SyntaxTB.set_colors(scheme=new_scheme)
-        except Exception as e:
-            # color_switch_err('exception')
-            print(e)
-            return
-
-        # Set info (for 'object?') colors
-        if hasattr(self.shell, 'color_info'):
-            if hasattr(self.shell, 'inspector.set_active_scheme'):
-                self.shell.inspector.set_active_scheme(new_scheme)
-            else:
-                logging
-            # except BaseException:
-            #     color_switch_err('object inspector')
-        else:
-            shell.inspector.set_active_scheme('NoColor')
 
     @line_magic
     def xmode(self, parameter_s=''):
@@ -439,18 +402,15 @@ Currently the magic system has the following functions:""",
 
         Valid modes: Plain, Context, Verbose, and Minimal.
 
-        If called without arguments, acts as a toggle."""
-        def xmode_switch_err(name):
-            warn('Error changing %s exception modes.\n%s' %
-                 (name, sys.exc_info()[1]))
-
+        If called without arguments, acts as a toggle.
+        """
         shell = self.shell
         new_mode = parameter_s.strip().capitalize()
         try:
             shell.InteractiveTB.set_mode(mode=new_mode)
             print('Exception reporting mode:', shell.InteractiveTB.mode)
         except BaseException:
-            xmode_switch_err('user')
+            raise XmodeSwitchErr('user')
 
     @line_magic
     def quickref(self, arg):

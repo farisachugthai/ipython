@@ -4,6 +4,9 @@
 IPython extensions
 ==================
 
+.. module:: extensions
+   :synopsis: Overview of installing IPython extensions.
+
 A level above configuration are IPython extensions, Python modules which modify
 the behaviour of the shell. They are referred to by an importable module name,
 and can be placed anywhere you'd normally import from, or in
@@ -13,6 +16,7 @@ Getting extensions
 ==================
 
 A few important extensions are :ref:`bundled with IPython <bundled_extensions>`.
+
 Others can be found on the `extensions index
 <https://github.com/ipython/ipython/wiki/Extensions-Index>`_ on the wiki, and
 the `Framework :: IPython tag <https://pypi.python.org/pypi?:action=browse&c=586>`_
@@ -52,7 +56,8 @@ functions to load and unload it. Here is a template::
         # If you want your extension to be unloadable, put that logic here.
 
 This :func:`load_ipython_extension` function is called after your extension is
-imported, and the currently active :class:`~IPython.core.interactiveshell.InteractiveShell`
+imported, and the currently active
+:class:`~IPython.core.interactiveshell.InteractiveShell`
 instance is passed as the only argument. You can do anything you want with
 IPython at that point.
 
@@ -60,11 +65,14 @@ IPython at that point.
 `%load_extension`.  The user have to explicitly ask the extension to be
 reloaded (with `%reload_extension`). In case where the use ask the extension to
 be reloaded, , the extension will be unloaded (with
-`unload_ipython_extension`), and loaded again. 
+`unload_ipython_extension`), and loaded again.
 
-Useful :class:`InteractiveShell` methods include :meth:`~IPython.core.interactiveshell.InteractiveShell.register_magic_function`, 
-:meth:`~IPython.core.interactiveshell.InteractiveShell.push` (to add variables to the user namespace) and 
-:meth:`~IPython.core.interactiveshell.InteractiveShell.drop_by_id` (to remove variables on unloading).
+Useful :class:`InteractiveShell` methods include
+:meth:`~IPython.core.interactiveshell.InteractiveShell.register_magic_function`,
+:meth:`~IPython.core.interactiveshell.InteractiveShell.push`
+(to add variables to the user namespace) and
+:meth:`~IPython.core.interactiveshell.InteractiveShell.drop_by_id`
+(to remove variables on unloading).
 
 .. seealso::
 
@@ -81,6 +89,27 @@ index <https://github.com/ipython/ipython/wiki/Extensions-Index>`_. We also
 encourage you to upload it to PyPI and use the ``Framework :: IPython``
 classifier, so that users can install it with standard packaging tools.
 
+Third Party Extensions
+========================
+
+* ``octavemagic`` used to be bundled, but is now part of `oct2py <https://blink1073.github.io/oct2py/>`_.
+  Use ``%load_ext oct2py.ipython`` to load it.
+
+* ``rmagic`` is now part of `rpy2 <http://rpy.sourceforge.net/>`_. Use
+  ``%load_ext rpy2.ipython`` to load it, and see :mod:`rpy2.ipython.rmagic` for
+  details of how to use it.
+
+* ``cythonmagic`` used to be bundled, but is now part of `cython <https://github.com/cython/cython/>`_
+  Use `%load_ext` ``Cython`` to load it.
+  Alternatively, one can run something to the effect of::
+
+      import cython
+      cython.load_ipython_extension()
+
+* ``sympyprinting`` used to be a bundled extension, but you should now use
+  :func:`sympy.init_printing` instead.
+
+
 .. _bundled_extensions:
 
 Extensions bundled with IPython
@@ -92,12 +121,3 @@ Extensions bundled with IPython
    autoreload
    storemagic
 
-* ``octavemagic`` used to be bundled, but is now part of `oct2py <https://blink1073.github.io/oct2py/>`_.
-  Use ``%load_ext oct2py.ipython`` to load it.
-* ``rmagic`` is now part of `rpy2 <http://rpy.sourceforge.net/>`_. Use
-  ``%load_ext rpy2.ipython`` to load it, and see :mod:`rpy2.ipython.rmagic` for
-  details of how to use it.
-* ``cythonmagic`` used to be bundled, but is now part of `cython <https://github.com/cython/cython/>`_
-  Use ``%load_ext Cython`` to load it.
-* ``sympyprinting`` used to be a bundled extension, but you should now use
-  :func:`sympy.init_printing` instead.

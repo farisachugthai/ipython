@@ -1,8 +1,8 @@
-"""
-Allow magics to be documented using Sphinx!!!
+"""Allow magics to be documented using Sphinx!!!
 
 Why don't we distribute this it's awesome!
 """
+import logging
 import re
 from typing import Dict, Any, AnyStr
 
@@ -16,13 +16,17 @@ from sphinx.roles import XRefRole
 # Ours
 from IPython import version_info
 
+logging.basicConfig()
+
 name_re = re.compile(r"[\w_]+")
 
 
 def parse_magic(env, sig, signode):
     m = name_re.match(sig)
     if not m:
-        raise Exception("Invalid magic command: %s" % sig)
+        logging.warning("Invalid magic %s", sig)
+        # raise Exception("Invalid magic command: %s" % sig)
+        return
     name = "%" + sig
     signode += addnodes.desc_name(name, name)
     return m.group(0)
@@ -42,7 +46,9 @@ class LineMagicRole(XRefRole):
 def parse_cell_magic(env, sig, signode):
     m = name_re.match(sig)
     if not m:
-        raise ValueError("Invalid cell magic: %s" % sig)
+        logging.warning("Invalid magic %s", sig)
+        # raise ValueError("Invalid cell magic: %s" % sig)
+        return
     name = "%%" + sig
     signode += addnodes.desc_name(name, name)
     return m.group(0)
@@ -56,7 +62,8 @@ class CellMagicRole(LineMagicRole):
 def setup(app: "Sphinx") -> Dict[str, Any]:
 
     app.add_object_type(
-        'magic', 'magic', 'pair: %s; magic command', parse_magic)
+        'magic', 'magic', 'pair: %s; magic command', parse_magic
+    )
     app.add_role_to_domain('std', 'magic', LineMagicRole(), override=True)
 
     app.add_object_type('cellmagic', 'cellmagic',

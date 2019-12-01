@@ -94,10 +94,23 @@ def pkg_info(pkg_path):
 
 
 def get_sys_info():
-    """Return useful information about IPython and the system, as a dict."""
-    p = os.path
-    path = p.realpath(p.dirname(p.abspath(p.join(__file__, '..'))))
-    return pkg_info(path)
+    """Return useful information about IPython and the system, as a dict.
+
+    Calls the pkg_info function above but most of the work is fiddling with
+    os.path. Like dude...
+
+    >>> p = os.path
+    >>> path = p.realpath(p.dirname(p.abspath(p.join(__file__, '..'))))
+
+    ....???
+    'git rev-parse --short HEAD',
+    """
+    return pkg_info(repo_root())
+
+
+def repo_root():
+    """Get the root of this repository in a cleaner manner."""
+    return subprocess.run(['git', 'rev-parse', '--show-toplevel'])
 
 
 def sys_info():

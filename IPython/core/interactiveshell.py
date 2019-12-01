@@ -44,8 +44,6 @@ from typing import List as ListType
 from typing import Tuple
 from warnings import warn
 
-# Like where is this pickleshare nonsense in the required dependencies?
-# fyi it is in the requirements just not anywhere in the docs
 from pickleshare import PickleShareDB
 from traitlets import (Any, Bool, CaselessStrEnum, Dict, Enum, Instance,
                        Integer, List, Type, Unicode, default, observe,
@@ -53,7 +51,6 @@ from traitlets import (Any, Bool, CaselessStrEnum, Dict, Enum, Instance,
 from traitlets.config import Config
 from traitlets.config.configurable import SingletonConfigurable
 
-import IPython
 from IPython.core import hooks, magic, oinspect, page, prefilter
 from IPython.core.alias import Alias, AliasManager
 from IPython.core.async_helpers import (_asyncify, _asyncio_runner,
@@ -261,6 +258,7 @@ class SeparateUnicode(Unicode):
 
     This is a Unicode based trait that converts '0'->'' and ``'\\n'->'\n'``.
     """
+
     def validate(self, obj, value):
         if value == '0':
             value = ''
@@ -390,8 +388,7 @@ class InteractiveShell(SingletonConfigurable):
     loop_runner = Any(
         default_value="IPython.core.interactiveshell._asyncio_runner",
         allow_none=True,
-        help=
-        """Select the loop runner that will be used to execute top-level asynchronous code"""
+        help="""Select the loop runner that will be used to execute top-level asynchronous code"""
     ).tag(config=True)
 
     @default('loop_runner')
@@ -516,8 +513,7 @@ class InteractiveShell(SingletonConfigurable):
 
     input_transformers_post = List(
         [],
-        help=
-        "A list of string input transformers, to be applied after IPython's "
+        help="A list of string input transformers, to be applied after IPython's "
         "own input transformations.")
 
     logstart = Bool(False,
@@ -1059,15 +1055,27 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
 
     def init_hooks(self):
-        # hooks holds pointers used for user-side customizations
-        self.hooks = Struct()
+        """Hooks holds pointers used for user-side customizations.
 
+        Notes
+        -----
+        In this method we:
+
+        - Set all default hooks, defined in the IPython.hooks module.
+
+            - default hooks have priority 100, i.e. low; user hooks should have
+              0-100 priority
+
+        Attributes
+        ----------
+        hooks : IPython.utils.ipstruct.Struct
+        strdispatcher : dict
+
+        """
+        self.hooks = Struct()
         self.strdispatchers = {}
 
-        # Set all default hooks, defined in the IPython.hooks module.
         for hook_name in hooks.__all__:
-            # default hooks have priority 100, i.e. low; user hooks should have
-            # 0-100 priority
             self.set_hook(hook_name,
                           getattr(hooks, hook_name),
                           100,
@@ -1088,14 +1096,16 @@ class InteractiveShell(SingletonConfigurable):
         IPython exposes some of its internal API as user-modifiable hooks.  By
         adding your function to one of these hooks, you can modify IPython's
         behavior to call at runtime your own routines.
-        """
-        # At some point in the future, this should validate the hook before it
-        # accepts it.  Probably at least check that the hook takes the number
-        # of args it's supposed to.
 
+        At some point in the future, this should validate the hook before it
+        accepts it.  Probably at least check that the hook takes the number
+        of args it's supposed to.
+
+        Check if the hook is for strdispatcher first.
+
+        """
         f = types.MethodType(hook, self)
 
-        # check if the hook is for strdispatcher first
         if str_key is not None:
             sdp = self.strdispatchers.get(name, StrDispatch())
             sdp.add_s(str_key, f, priority)
@@ -1342,8 +1352,7 @@ class InteractiveShell(SingletonConfigurable):
         if user_module is None:
             user_module = types.ModuleType(
                 "__main__",
-                doc=
-                "Automatically created module for IPython interactive environment"
+                doc="Automatically created module for IPython interactive environment"
             )
 
         # We must ensure that __builtin__ (without the final 's') is always
@@ -2425,6 +2434,13 @@ class InteractiveShell(SingletonConfigurable):
         either interactively in-process (typically triggered by the readline
         library), programmatically (such as in test suites) or out-of-process
         (typically over the network by remote frontends).
+
+        Also worth noting that this defines the `Completer` attribute,
+        initializes the the IPCompleter object, defines the strdispatchers
+        attribute and makes no less than 6 calls to set_hook!
+
+        So if you muck around with the hooks in this repo the completions
+        will fry if you do so incorrectly!
         """
         from IPython.core.completer import IPCompleter
         from IPython.core.completerlib import (module_completer,
@@ -2455,28 +2471,6 @@ class InteractiveShell(SingletonConfigurable):
     def complete(self, text, line=None, cursor_pos=None):
         """Return the completed text and a list of completions.
 
-        Parameters
-        ----------
-
-           text : string
-             A string of text to be completed on.  It can be given as empty and
-             instead a line/position pair are given.  In this case, the
-             completer itself will split the line like readline does.
-
-           line : string, optional
-             The complete line that text is part of.
-
-           cursor_pos : int, optional
-             The position of the cursor on the input line.
-
-        Returns
-        -------
-          text : string
-            The actual text that was completed.
-
-          matches : list
-            A sorted list with all possible completions.
-
         The optional arguments allow the completion to take more context into
         account, and are part of the low-level completion API.
 
@@ -2485,15 +2479,37 @@ class InteractiveShell(SingletonConfigurable):
         exposing it as a method, it can be used by other non-readline
         environments (such as GUIs) for text completion.
 
-        Simple usage example:
+        Inject names into __builtin__ so we can complete on the added names.
 
+        Parameters
+        ----------
+        text : string
+            A string of text to be completed on.  It can be given as empty and
+            instead a line/position pair are given.  In this case, the
+            completer itself will split the line like readline does.
+
+        line : string, optional
+            The complete line that text is part of.
+
+        cursor_pos : int, optional
+            The position of the cursor on the input line.
+
+        Returns
+        -------
+        text : string
+            The actual text that was completed.
+
+        matches : list
+            A sorted list with all possible completions.
+
+        Examples
+        --------
         In [1]: x = 'hello'
 
         In [2]: _ip.complete('x.l')
         Out[2]: ('x.l', ['x.ljust', 'x.lower', 'x.lstrip'])
-        """
 
-        # Inject names into __builtin__ so we can complete on the added names.
+        """
         with self.builtin_trap:
             return self.Completer.complete(text, line, cursor_pos)
 
@@ -2501,8 +2517,8 @@ class InteractiveShell(SingletonConfigurable):
         """Adds a new custom completer function.
 
         The position argument (defaults to 0) is the index in the completers
-        list where you want the completer to be inserted."""
-
+        list where you want the completer to be inserted.
+        """
         newcomp = types.MethodType(completer, self.Completer)
         self.Completer.matchers.insert(pos, newcomp)
 
@@ -2520,6 +2536,14 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
 
     def init_magics(self):
+        """Yes I am removing the call to `%colors`.
+
+        FIXME: Move the color initialization to the DisplayHook, which
+        should be split into a prompt manager and displayhook. We probably
+        even need a centralize colors management object.
+        self.run_line_magic('colors', self.colors)
+
+        """
         from IPython.core import magics
         self.magics_manager = magic.MagicsManager(
             shell=self, parent=self, user_magics=magics.UserMagics(self))
@@ -2555,11 +2579,6 @@ class InteractiveShell(SingletonConfigurable):
         self.magics_manager.register_alias('SVG', 'svg', 'cell')
         self.magics_manager.register_alias('HTML', 'html', 'cell')
         self.magics_manager.register_alias('file', 'writefile', 'cell')
-
-        # FIXME: Move the color initialization to the DisplayHook, which
-        # should be split into a prompt manager and displayhook. We probably
-        # even need a centralize colors management object.
-        self.run_line_magic('colors', self.colors)
 
     # Defined here so that it's included in the documentation
     @functools.wraps(magic.MagicsManager.register_function)
@@ -4175,6 +4194,7 @@ class InteractiveShell(SingletonConfigurable):
 
 class InteractiveShellABC(metaclass=abc.ABCMeta):
     """An abstract base class for InteractiveShell."""
+
     def __repr__(self):
         return ''.join(self.__class__.__name__)
 
