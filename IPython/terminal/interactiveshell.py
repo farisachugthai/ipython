@@ -1,5 +1,23 @@
-"""IPython terminal interface using prompt_toolkit."""
+"""IPython terminal interface using prompt_toolkit.
 
+.. todo::
+    Should we move IPython.utils.terminal into this file? Or at least into
+    this directory? Because *I think* this is the only file where it's used
+    and seeing the method :meth:`~TerminalInteractiveShell.restore_term_title`
+    simply calling a function restore_term_title is
+
+    A) Confusing because idk if it's bound to anything or we're just having fun
+       with abbreviations
+
+    B) Indirect and not a mixin
+
+.. data:: _use_simple_prompt
+
+    ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
+
+"""
+
+import asyncio
 import os
 import sys
 from warnings import warn
@@ -109,6 +127,45 @@ def black_reformat_handler(text_before_cursor):
 
 
 class TerminalInteractiveShell(InteractiveShell):
+    """The interactive shell component for the terminal.
+
+    .. note:: All attributes are :class:`traitlets.config.Configurables`.
+
+    .. caution::
+        Still reorganizing all class attributes and moving them to the top.
+        This list is not comprehensive.
+
+    Attributes
+    ----------
+    mime_renderers : dict
+    space_for_menu : int
+    pt_app :
+        Bound instance of the `~prompt_toolkit.application.Application`
+    debugger_history
+        Simply initialized to None?? What is this C?
+    simple_prompt
+    confirm_exit
+    editing_mode
+    autoformatter : Instance
+        YAY new code!
+    mouse_support
+    highlighting_style
+    highlighting_style_overrides
+    true_color
+    editor
+    prompts_class
+    prompts
+    term_title
+    term_title_format
+    display_completions
+    highlight_matching_brackets
+    extra_open_editor_shortcuts
+    handle_return
+    enable_history_search
+    prompt_includes_vi_mode
+    completer
+
+    """
     mime_renderers = Dict().tag(config=True)
 
     space_for_menu = Integer(6,
@@ -117,18 +174,22 @@ class TerminalInteractiveShell(InteractiveShell):
 
     pt_app = Any(help='Prompt toolkit PromptSession',
                       allow_none=True).tag(config=True)
-    mime_renderers = Dict().tag(config=True)
 
     debugger_history = None
+    rl_next_input = None
+
 
     simple_prompt = Bool(_use_simple_prompt,
-                         help="""Use `raw_input` for the REPL, without completion and prompt colors.
+                         help="""Use `raw_input` for the REPL, without
+completion and prompt colors.
+Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR.
+Known usage are:
 
-            Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
-            IPython own testing machinery, and emacs inferior-shell integration through elpy.
+IPython own testing machinery, and emacs inferior-shell integration through elpy.
 
-            This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
-            environment variable is set, or the current terminal is not a tty."""
+This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
+environment variable is set, or the current terminal is not a tty.
+"""
                          ).tag(config=True)
 
     @property
@@ -366,6 +427,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
         editing_mode = getattr(EditingMode, self.editing_mode.upper())
 
+        self.pt_loop = asyncio.new_event_loop()
         self.pt_app = PromptSession(
             editing_mode=editing_mode,
             key_bindings=key_bindings,
@@ -505,6 +567,14 @@ class TerminalInteractiveShell(InteractiveShell):
         return options
 
     def prompt_for_code(self):
+        """
+        In order to make sure that asyncio code written in the
+        interactive shell doesn't interfere with the prompt, we run the
+        prompt in a different event loop.
+
+        If we don't do this, people could spawn coroutine with a
+        while/true inside which will freeze the prompt.
+        """
         if self.rl_next_input:
             default = self.rl_next_input
             self.rl_next_input = None
@@ -512,10 +582,14 @@ class TerminalInteractiveShell(InteractiveShell):
             default = ''
 
         with patch_stdout(raw=True):
-            text = self.pt_app.prompt(
-                default=default,
-                # pre_run=self.pre_prompt,# reset_current_buffer=True,
-                **self._extra_prompt_options())
+            old_loop = asyncio.get_event_loop()
+            # Wait what is self.pt_loop?
+            asyncio.set_event_loop(self.pt_loop)
+            try:
+                text = self.pt_app.prompt(default=default, **self._extra_prompt_options())
+            finally:
+                # Restore the original event loop.
+                asyncio.set_event_loop(old_loop)
         return text
 
     def init_io(self):
@@ -572,8 +646,6 @@ class TerminalInteractiveShell(InteractiveShell):
 
     def ask_exit(self):
         self.keep_running = False
-
-    rl_next_input = None
 
     def interact(self):
         """An oddly undocumented method.
@@ -667,11 +739,11 @@ class TerminalInteractiveShell(InteractiveShell):
         # this inputhook.
         if PTK3:
             if self._inputhook:
-                from prompt_toolkit.eventloop import set_eventloop_with_inputhook
-                set_eventloop_with_inputhook(self._inputhook)
+                from prompt_toolkit.eventloop import new_eventloop_with_inputhook
+                self.pt_loop = new_eventloop_with_inputhook(self._inputhook)
             else:
                 import asyncio
-                asyncio.set_event_loop(asyncio.new_event_loop())
+                self.pt_loop = asyncio.new_event_loop()
 
     # Run !system commands directly, not through pipes, so terminal programs
     # work correctly.

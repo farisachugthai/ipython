@@ -188,3 +188,17 @@ class OperationalError(Exception):
 
     def __init__(self, *args, **kwargs):
         super().__init(self, *args, **kwargs)
+
+
+class UnknownBackend(KeyError):
+    """terminal/pt_inputhooks/__init__"""
+
+    def __init__(self, name):
+        """Name?"""
+        self.name = name
+
+    def __str__(self):
+        return ("No event loop integration for {!r}. "
+                "Supported event loops are: {}").format(
+                    self.name, ', '.join(backends + sorted(registered)))
+

@@ -1,5 +1,18 @@
+"""
+
+.. data:: aliases
+
+    Dict mapping inputhooks.
+
+.. data:: backends
+
+    List of working backends.
+
+"""
 import importlib
 import os
+
+from IPython.core.error import UnknownBackend
 
 aliases = {
     'qt4': 'qt',
@@ -18,6 +31,7 @@ backends = [
     'pyglet',
     'glut',
     'osx',
+    'asyncio'
 ]
 
 registered = {}
@@ -26,16 +40,6 @@ registered = {}
 def register(name, inputhook):
     """Register the function *inputhook* as an event loop integration."""
     registered[name] = inputhook
-
-
-class UnknownBackend(KeyError):
-    def __init__(self, name):
-        self.name = name
-
-    def __str__(self):
-        return ("No event loop integration for {!r}. "
-                "Supported event loops are: {}").format(
-                    self.name, ', '.join(backends + sorted(registered)))
 
 
 def get_inputhook_name_and_func(gui):
