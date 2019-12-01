@@ -9,6 +9,8 @@ from ._process_common import getoutputerror, get_output_error_code, process_hand
 import os
 import shutil
 import sys
+# Frustratingly process.FindCmdError is used in a lot of different tests
+from subprocess import CalledProcessError as FindCmdError
 
 if sys.platform == 'win32':
     from ._process_win32 import system, getoutput, arg_split, check_pid

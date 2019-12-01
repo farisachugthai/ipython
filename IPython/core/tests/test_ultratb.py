@@ -16,7 +16,7 @@ from unittest import mock
 # ....
 from IPython.core import ultratb
 from IPython.core.ultratb import ColorTB, VerboseTB, find_recursion
-
+from IPython.core.getipython import get_ipython
 from IPython.testing import tools as tt
 from IPython.testing.decorators import onlyif_unicode_paths
 from IPython.utils.syspathcontext import prepended_to_syspath
@@ -32,6 +32,11 @@ def f():
 file_2 = """def f():
   1/0
 """
+
+
+def setup_module():
+    global ip
+    ip = get_ipython()
 
 
 def recursionlimit(frames):

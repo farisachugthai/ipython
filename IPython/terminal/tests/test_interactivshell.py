@@ -6,8 +6,7 @@
 import sys
 import unittest
 
-from IPython import get_ipython
-from IPython.core.inputtransformer2 import InputTransformer
+from IPython.core.getipython import get_ipython
 from IPython.testing import tools as tt
 from IPython.utils.capture import capture_output
 

@@ -72,11 +72,8 @@ Generally.
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
 import logging
-import tempfile
-import os
 import shlex
 import subprocess
-import warnings
 import sys
 
 from IPython.core.error import TryNext
@@ -164,6 +161,11 @@ class CommandChainDispatcher:
         This will call all funcs in chain with the same args as were given to
         this function, and return the result of first func that didn't raise
         :exc:`TryNext`.
+
+        .. note:: This doesn't utilize the priority in any way.ArithmeticError
+
+            Maybe we need to do an sort using something in mod:`operator`.
+
         """
         for prio, cmd in self.chain:
             # print "prio",prio,"cmd",cmd #dbg
@@ -171,7 +173,7 @@ class CommandChainDispatcher:
                 return cmd(*args, **kw)
             except TryNext as exc:
                 # if no function will accept it, raise TryNext up to the caller
-                raise last_exc
+                raise exc
 
     def __repr__(self):
         return '{!r}\n{!r}'.format(self.__class__.__name__, self.chain)

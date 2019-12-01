@@ -1,5 +1,4 @@
-"""Tests for the object inspection functionality.
-"""
+"""Tests for the object inspection functionality."""
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -9,23 +8,21 @@ from inspect import signature, Signature, Parameter
 import os
 import re
 
-import nose.tools as nt
-
-from .. import oinspect
-
 from decorator import decorator
-
+from IPython.core import oinspect
+from IPython.core.getipython import get_ipython
 from IPython.testing.tools import AssertPrints, AssertNotPrints
 from IPython.utils.path import compress_user
+
+import nose.tools as nt
 
 # -----------------------------------------------------------------------------
 # Globals and constants
 # -----------------------------------------------------------------------------
 
-inspector = None
-
-
 def setup_module():
+    global ip
+    ip = get_ipython()
     global inspector
     inspector = oinspect.Inspector()
 
@@ -38,10 +35,11 @@ def setup_module():
 # defined, if any code is inserted above, the following line will need to be
 # updated.  Do NOT insert any whitespace between the next line and the function
 # definition below.
-THIS_LINE_NUMBER = 41  # Put here the actual number of this line
+THIS_LINE_NUMBER = 38  # Put here the actual number of this line
 
 
 class Test(TestCase):
+
     def test_find_source_lines(self):
         self.assertEqual(
             oinspect.find_source_lines(Test.test_find_source_lines),
@@ -102,7 +100,7 @@ def test_find_file_magic():
 # A few generic objects we can then inspect in the tests below
 
 
-class Call(object):
+class Call:
     """This is the class docstring."""
 
     def __init__(self, x, y=1):
@@ -115,29 +113,29 @@ class Call(object):
         """Some method's docstring"""
 
 
-class HasSignature(object):
+class HasSignature:
     """This is the class docstring."""
+
     __signature__ = Signature(
-        [Parameter('test', Parameter.POSITIONAL_OR_KEYWORD)])
+        [Parameter('test', Parameter.POSITIONAL_OR_KEYWORD)]
+    )
 
     def __init__(self, *args):
         """This is the init docstring"""
 
 
-class SimpleClass(object):
+class SimpleClass:
     def method(self, x, z=2):
         """Some method's docstring"""
 
 
-class Awkward(object):
+class Awkward:
     def __getattr__(self, name):
         raise Exception(name)
 
 
 class NoBoolCall:
-    """
-    callable with `__bool__` raising should still be inspect-able.
-    """
+    """Callable with ``__bool__`` raising should still be inspect-able."""
 
     def __call__(self):
         """does nothing"""
@@ -148,11 +146,12 @@ class NoBoolCall:
         raise NotImplementedError('Must be implemented')
 
 
-class SerialLiar(object):
+class SerialLiar:
     """Attribute accesses always get another copy of the same class.
 
-    unittest.mock.call does something similar, but it's not ideal for testing
+    `unittest.mock.call` does something similar, but it's not ideal for testing
     as the failure mode is to eat all your RAM. This gives up after 10k levels.
+
     """
 
     def __init__(self, max_fibbing_twig, lies_told=0):

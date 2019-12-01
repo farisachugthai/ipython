@@ -43,7 +43,7 @@ jobs:
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
 
-    - name: "Python 3.7.4 on Windows"
+    - name: "Python 3.8 on Windows"
       os: windows           # Windows 10.0.17134 N/A Build 17134
       language: shell       # 'language: python' is an error on Travis CI Windows
       before_install:
@@ -65,18 +65,9 @@ install:
   - pip3 install -U -e . -r requirements.txt
 
 
-# command to run tests, e.g. python setup.py test
-# script: nosetests
 script:
-  # - check-manifest
-  # - |
-  #   if [[ "$TRAVIS_PYTHON_VERSION" == "nightly" ]]; then
-  #      # on nightly fake parso known the grammar
-  #      cp /home/travis/virtualenv/python3.8-dev/lib/python3.8/site-packages/parso/python/grammar37.txt /home/travis/virtualenv/python3.8-dev/lib/python3.8/site-packages/parso/python/grammar38.txt
-    # fi
   - cd /tmp && iptest --coverage xml && cd -
   - pytest IPython
-  # On the latest Python (on Linux) only, make sure that the docs build.
   - |
     if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       pip3 install -U -r docs/requirements.txt
@@ -94,16 +85,8 @@ matrix:
   include:
     - python: "3.7"
       dist: xenial
-      sudo: true
     - python: "3.8-dev"
       dist: xenial
-      sudo: true
-    - python: "3.7-dev"
-      dist: xenial
-      sudo: true
-    - python: "nightly"
-      dist: xenial
-      sudo: true
     - os: osx
       language: generic
       python: 3.6
@@ -112,8 +95,14 @@ matrix:
       language: generic
       python: 3.7
       env: TRAVIS_PYTHON_VERSION=3.7
+    - os: windows
+      language: shell
+      python: 3.8
+
+
   allow_failures:
-    - python: nightly
+    - python: "3.8"
+
 
 before_deploy:
   - rm -rf dist/

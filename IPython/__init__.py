@@ -186,7 +186,7 @@ def start_kernel(argv=None, **kwargs):
         such as `config`.
 
     """
-    from IPython.kernel.zmq.kernelapp import launch_new_instance
+    from ipykernel.kernelapp import launch_new_instance
     return launch_new_instance(argv=argv, **kwargs)
 
 

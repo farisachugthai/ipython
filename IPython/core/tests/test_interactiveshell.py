@@ -22,7 +22,7 @@ from os.path import join
 
 import nose.tools as nt
 
-from IPython import get_ipython
+from IPython.core.getipython import get_ipython
 from IPython.core.error import InputRejected
 # This import is never used?
 # from IPython.core.inputtransformer import InputTransformer

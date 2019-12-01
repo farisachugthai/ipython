@@ -38,7 +38,7 @@ def doctest_refbug():
     """Very nasty problem with references held by multiple runs of a script.
     See: https://github.com/ipython/ipython/issues/141
 
-    In [1]: _ip.clear_main_mod_cache()
+    In [1]: ip.clear_main_mod_cache()
     # random
 
     In [2]: %run refbug
@@ -152,7 +152,7 @@ def doctest_reset_del():
 
     In [3]: a = A()
 
-    In [4]: get_ipython().reset()
+    In [4]: getipython().reset()
     Hi
 
     In [5]: 1+1
@@ -168,26 +168,24 @@ class TestMagicRunPass(tt.TempFileMixin):
     def setUp(self):
         content = "a = [1,2,3]\nb = 1"
         self.mktmp(content)
+        ip = get_ipython()
 
     def run_tmpfile(self):
-        _ip = get_ipython()
         # This fails on Windows if self.tmpfile.name has spaces or "~" in it.
         # See below and ticket https://bugs.launchpad.net/bugs/366353
-        _ip.magic('run %s' % self.fname)
+        ip.magic('run %s' % self.fname)
 
     def run_tmpfile_p(self):
-        _ip = get_ipython()
         # This fails on Windows if self.tmpfile.name has spaces or "~" in it.
         # See below and ticket https://bugs.launchpad.net/bugs/366353
-        _ip.magic('run -p %s' % self.fname)
+        ip.magic('run -p %s' % self.fname)
 
     def test_builtins_id(self):
         """Check that %run doesn't damage __builtins__ """
-        _ip = get_ipython()
         # Test that the id of __builtins__ is not modified by %run
-        bid1 = id(_ip.user_ns['__builtins__'])
+        bid1 = id(ip.user_ns['__builtins__'])
         self.run_tmpfile()
-        bid2 = id(_ip.user_ns['__builtins__'])
+        bid2 = id(ip.user_ns['__builtins__'])
         nt.assert_equal(bid1, bid2)
 
     def test_builtins_type(self):
@@ -197,9 +195,8 @@ class TestMagicRunPass(tt.TempFileMixin):
         be a dict (it should be a module) by a previous use of %run.  So we
         also check explicitly that it really is a module:
         """
-        _ip = get_ipython()
         self.run_tmpfile()
-        nt.assert_equal(type(_ip.user_ns['__builtins__']), type(sys))
+        nt.assert_equal(type(ip.user_ns['__builtins__']), type(sys))
 
     def test_run_profile(self):
         """Test that the option -p, which invokes the profiler, do not
@@ -208,21 +205,19 @@ class TestMagicRunPass(tt.TempFileMixin):
 
     def test_run_debug_twice(self):
         # https://github.com/ipython/ipython/issues/10028
-        _ip = get_ipython()
         with tt.fake_input(['c']):
-            _ip.magic('run -d %s' % self.fname)
+            ip.magic('run -d %s' % self.fname)
         with tt.fake_input(['c']):
-            _ip.magic('run -d %s' % self.fname)
+            ip.magic('run -d %s' % self.fname)
 
     def test_run_debug_twice_with_breakpoint(self):
         """Make a valid python temp file."""
-        _ip = get_ipython()
         with tt.fake_input(['b 2', 'c', 'c']):
-            _ip.magic('run -d %s' % self.fname)
+            ip.magic('run -d %s' % self.fname)
 
         with tt.fake_input(['c']):
             with tt.AssertNotPrints('KeyError'):
-                _ip.magic('run -d %s' % self.fname)
+                ip.magic('run -d %s' % self.fname)
 
 
 class TestMagicRunSimple(tt.TempFileMixin):
@@ -230,9 +225,9 @@ class TestMagicRunSimple(tt.TempFileMixin):
         """Test that simple class definitions work."""
         src = "class foo: pass\n" "def f(): return foo()"
         self.mktmp(src)
-        _ip.magic('run %s' % self.fname)
-        _ip.run_cell('t = isinstance(f(), foo)')
-        nt.assert_true(_ip.user_ns['t'])
+        ip.magic('run %s' % self.fname)
+        ip.run_cell('t = isinstance(f(), foo)')
+        nt.assert_true(ip.user_ns['t'])
 
     def test_obj_del(self):
         """Test that object's __del__ methods are called on exit."""
@@ -262,7 +257,7 @@ class TestMagicRunSimple(tt.TempFileMixin):
             empty.mktmp('')
             # On Windows, the filename will have \users in it, so we need to use the
             # repr so that the \u becomes \\u.
-            src = ("ip = get_ipython()\n"
+            src = ("ip = getipython()\n"
                    "for i in range(5):\n"
                    "   try:\n"
                    "       ip.magic(%r)\n"
@@ -270,9 +265,9 @@ class TestMagicRunSimple(tt.TempFileMixin):
                    "       print(i)\n"
                    "       break\n" % ('run ' + empty.fname))
             self.mktmp(src)
-            _ip.magic('run %s' % self.fname)
-            _ip.run_cell('ip == get_ipython()')
-            nt.assert_equal(_ip.user_ns['i'], 4)
+            ip.magic('run %s' % self.fname)
+            ip.run_cell('ip == get_ipython()')
+            nt.assert_equal(ip.user_ns['i'], 4)
 
     def test_run_second(self):
         """Test that running a second file doesn't clobber the first, gh-3547
@@ -282,9 +277,9 @@ class TestMagicRunSimple(tt.TempFileMixin):
         with tt.TempFileMixin() as empty:
             empty.mktmp("")
 
-            _ip.magic('run %s' % self.fname)
-            _ip.magic('run %s' % empty.fname)
-            nt.assert_equal(_ip.user_ns['afunc'](), 1)
+            ip.magic('run %s' % self.fname)
+            ip.magic('run %s' % empty.fname)
+            nt.assert_equal(ip.user_ns['afunc'](), 1)
 
     @dec.skip_win32
     def test_tclass(self):
@@ -312,55 +307,55 @@ tclass.py: deleting object: C-third
         """Check that %run -i still works after %reset (gh-693)"""
         src = "yy = zz\n"
         self.mktmp(src)
-        _ip.run_cell("zz = 23")
+        ip.run_cell("zz = 23")
         try:
-            _ip.magic('run -i %s' % self.fname)
-            nt.assert_equal(_ip.user_ns['yy'], 23)
+            ip.magic('run -i %s' % self.fname)
+            nt.assert_equal(ip.user_ns['yy'], 23)
         finally:
-            _ip.magic('reset -f')
+            ip.magic('reset -f')
 
-        _ip.run_cell("zz = 23")
+        ip.run_cell("zz = 23")
         try:
-            _ip.magic('run -i %s' % self.fname)
-            nt.assert_equal(_ip.user_ns['yy'], 23)
+            ip.magic('run -i %s' % self.fname)
+            nt.assert_equal(ip.user_ns['yy'], 23)
         finally:
-            _ip.magic('reset -f')
+            ip.magic('reset -f')
 
     def test_unicode(self):
         """Check that files in odd encodings are accepted."""
         mydir = os.path.dirname(__file__)
         na = os.path.join(mydir, 'nonascii.py')
-        _ip.magic('run "%s"' % na)
-        nt.assert_equal(_ip.user_ns['u'], u'Ўт№Ф')
+        ip.magic('run "%s"' % na)
+        nt.assert_equal(ip.user_ns['u'], u'Ўт№Ф')
 
     def test_run_py_file_attribute(self):
         """Test handling of `__file__` attribute in `%run <file>.py`."""
         src = "t = __file__\n"
         self.mktmp(src)
         _missing = object()
-        file1 = _ip.user_ns.get('__file__', _missing)
-        _ip.magic('run %s' % self.fname)
-        file2 = _ip.user_ns.get('__file__', _missing)
+        file1 = ip.user_ns.get('__file__', _missing)
+        ip.magic('run %s' % self.fname)
+        file2 = ip.user_ns.get('__file__', _missing)
 
         # Check that __file__ was equal to the filename in the script's
         # namespace.
-        nt.assert_equal(_ip.user_ns['t'], self.fname)
+        nt.assert_equal(ip.user_ns['t'], self.fname)
 
         # Check that __file__ was not leaked back into user_ns.
         nt.assert_equal(file1, file2)
 
-    def test_run_ipy_file_attribute(self):
+    def test_runipy_file_attribute(self):
         """Test handling of `__file__` attribute in `%run <file.ipy>`."""
         src = "t = __file__\n"
         self.mktmp(src, ext='.ipy')
         _missing = object()
-        file1 = _ip.user_ns.get('__file__', _missing)
-        _ip.magic('run %s' % self.fname)
-        file2 = _ip.user_ns.get('__file__', _missing)
+        file1 = ip.user_ns.get('__file__', _missing)
+        ip.magic('run %s' % self.fname)
+        file2 = ip.user_ns.get('__file__', _missing)
 
         # Check that __file__ was equal to the filename in the script's
         # namespace.
-        nt.assert_equal(_ip.user_ns['t'], self.fname)
+        nt.assert_equal(ip.user_ns['t'], self.fname)
 
         # Check that __file__ was not leaked back into user_ns.
         nt.assert_equal(file1, file2)
@@ -369,18 +364,18 @@ tclass.py: deleting object: C-third
         """ Test that %run -t -N<N> does not raise a TypeError for N > 1."""
         src = "pass"
         self.mktmp(src)
-        _ip.magic('run -t -N 1 %s' % self.fname)
-        _ip.magic('run -t -N 10 %s' % self.fname)
+        ip.magic('run -t -N 1 %s' % self.fname)
+        ip.magic('run -t -N 10 %s' % self.fname)
 
     def test_ignore_sys_exit(self):
         """Test the -e option to ignore sys.exit()"""
         src = "import sys; sys.exit(1)"
         self.mktmp(src)
         with tt.AssertPrints('SystemExit'):
-            _ip.magic('run %s' % self.fname)
+            ip.magic('run %s' % self.fname)
 
         with tt.AssertNotPrints('SystemExit'):
-            _ip.magic('run -e %s' % self.fname)
+            ip.magic('run -e %s' % self.fname)
 
     def test_run_nb(self):
         """Test %run notebook.ipynb"""
@@ -392,16 +387,16 @@ tclass.py: deleting object: C-third
         src = writes(nb, version=4)
         self.mktmp(src, ext='.ipynb')
 
-        _ip.magic("run %s" % self.fname)
+        ip.magic("run %s" % self.fname)
 
-        nt.assert_equal(_ip.user_ns['answer'], 42)
+        nt.assert_equal(ip.user_ns['answer'], 42)
 
     def test_file_options(self):
         src = 'import sys\n' 'a = " ".join(sys.argv[1:])\n'
         self.mktmp(src)
         test_opts = '-x 3 --verbose'
-        _ip.run_line_magic("run", '{0} {1}'.format(self.fname, test_opts))
-        nt.assert_equal(_ip.user_ns['a'], test_opts)
+        ip.run_line_magic("run", '{0} {1}'.format(self.fname, test_opts))
+        nt.assert_equal(ip.user_ns['a'], test_opts)
 
 
 class TestMagicRunWithPackage(unittest.TestCase):
@@ -447,10 +442,10 @@ class TestMagicRunWithPackage(unittest.TestCase):
         self.tempdir.cleanup()
 
     def check_run_submodule(self, submodule, opts=''):
-        _ip.user_ns.pop('x', None)
-        _ip.magic('run {2} -m {0}.{1}'.format(self.package, submodule, opts))
+        ip.user_ns.pop('x', None)
+        ip.magic('run {2} -m {0}.{1}'.format(self.package, submodule, opts))
         self.assertEqual(
-            _ip.user_ns['x'], self.value,
+            ip.user_ns['x'], self.value,
             'Variable `x` is not loaded from module `{0}`.'.format(submodule))
 
     def test_run_submodule_with_absolute_import(self):
@@ -483,18 +478,18 @@ class TestMagicRunWithPackage(unittest.TestCase):
         self.check_run_submodule('relative', '-d')
 
     def test_module_options(self):
-        _ip.user_ns.pop('a', None)
+        ip.user_ns.pop('a', None)
         test_opts = '-x abc -m test'
-        _ip.run_line_magic('run',
+        ip.run_line_magic('run',
                            '-m {0}.args {1}'.format(self.package, test_opts))
-        nt.assert_equal(_ip.user_ns['a'], test_opts)
+        nt.assert_equal(ip.user_ns['a'], test_opts)
 
     def test_module_options_with_separator(self):
-        _ip.user_ns.pop('a', None)
+        ip.user_ns.pop('a', None)
         test_opts = '-x abc -m test'
-        _ip.run_line_magic(
+        ip.run_line_magic(
             'run', '-m {0}.args -- {1}'.format(self.package, test_opts))
-        nt.assert_equal(_ip.user_ns['a'], test_opts)
+        nt.assert_equal(ip.user_ns['a'], test_opts)
 
 
 def test_run__name__():
@@ -503,18 +498,18 @@ def test_run__name__():
         with open(path, 'w') as f:
             f.write("q = __name__")
 
-        _ip.user_ns.pop('q', None)
-        _ip.magic('run {}'.format(path))
-        nt.assert_equal(_ip.user_ns.pop('q'), '__main__')
+        ip.user_ns.pop('q', None)
+        ip.magic('run {}'.format(path))
+        nt.assert_equal(ip.user_ns.pop('q'), '__main__')
 
-        _ip.magic('run -n {}'.format(path))
-        nt.assert_equal(_ip.user_ns.pop('q'), 'foo')
+        ip.magic('run -n {}'.format(path))
+        nt.assert_equal(ip.user_ns.pop('q'), 'foo')
 
         try:
-            _ip.magic('run -i -n {}'.format(path))
-            nt.assert_equal(_ip.user_ns.pop('q'), 'foo')
+            ip.magic('run -i -n {}'.format(path))
+            nt.assert_equal(ip.user_ns.pop('q'), 'foo')
         finally:
-            _ip.magic('reset -f')
+            ip.magic('reset -f')
 
 
 def test_run_tb():
@@ -530,7 +525,7 @@ def test_run_tb():
                 "foo()",
             ]))
         with capture_output() as io:
-            _ip.magic('run {}'.format(path))
+            ip.magic('run {}'.format(path))
         out = io.stdout
         nt.assert_not_in("execfile", out)
         nt.assert_in("RuntimeError", out)
@@ -558,8 +553,8 @@ def test_multiprocessing_run():
             with open(path, 'w') as f:
                 f.write("import multiprocessing\nprint('hoy')")
             with capture_output() as io:
-                _ip.run_line_magic('run', path)
-                _ip.run_cell("i_m_undefined")
+                ip.run_line_magic('run', path)
+                ip.run_cell("i_m_undefined")
             out = io.stdout
             nt.assert_in("hoy", out)
             nt.assert_not_in("AttributeError", out)

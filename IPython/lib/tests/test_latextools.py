@@ -4,17 +4,16 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 from unittest.mock import patch
+from subprocess import CalledProcessError
+
 import nose.tools as nt
 
 from IPython.lib import latextools
 from IPython.testing.decorators import onlyif_cmds_exist, skipif_not_matplotlib
-from IPython.utils.process import FindCmdError
 
 
 def test_latex_to_png_dvipng_fails_when_no_cmd():
-    """
-    `latex_to_png_dvipng` should return None when there is no required command
-    """
+    """`latex_to_png_dvipng` should return None if no required command """
     for command in ['latex', 'dvipng']:
         yield check_latex_to_png_dvipng_fails_when_no_cmd, command
 
@@ -22,7 +21,7 @@ def test_latex_to_png_dvipng_fails_when_no_cmd():
 def check_latex_to_png_dvipng_fails_when_no_cmd(command):
     def mock_find_cmd(arg):
         if arg == command:
-            raise FindCmdError
+            raise CalledProcessError('arg: {} == command: {}', arg, command)
 
     with patch.object(latextools, "find_cmd", mock_find_cmd):
         nt.assert_equal(latextools.latex_to_png_dvipng("whatever", True), None)
@@ -30,36 +29,32 @@ def check_latex_to_png_dvipng_fails_when_no_cmd(command):
 
 @onlyif_cmds_exist('latex', 'dvipng')
 def test_latex_to_png_dvipng_runs():
-    """
-    Test that latex_to_png_dvipng just runs without error.
-    """
+    """Test that latex_to_png_dvipng just runs without error."""
 
     def mock_kpsewhich(filename):
         nt.assert_equal(filename, "breqn.sty")
         return None
 
     for (s, wrap) in [(u"$$x^2$$", False), (u"x^2", True)]:
-        yield latextools.latex_to_png_dvipng, s, wrap
+        return latextools.latex_to_png_dvipng, s, wrap
 
         with patch.object(latextools, "kpsewhich", mock_kpsewhich):
-            yield latextools.latex_to_png_dvipng, s, wrap
+            return latextools.latex_to_png_dvipng, s, wrap
 
 
 @skipif_not_matplotlib
 def test_latex_to_png_mpl_runs():
-    """
-    Test that latex_to_png_mpl just runs without error.
-    """
+    """Test that latex_to_png_mpl just runs without error."""
 
     def mock_kpsewhich(filename):
         nt.assert_equal(filename, "breqn.sty")
         return None
 
     for (s, wrap) in [("$x^2$", False), ("x^2", True)]:
-        yield latextools.latex_to_png_mpl, s, wrap
+        return latextools.latex_to_png_mpl, s, wrap
 
         with patch.object(latextools, "kpsewhich", mock_kpsewhich):
-            yield latextools.latex_to_png_mpl, s, wrap
+            return latextools.latex_to_png_mpl, s, wrap
 
 
 @skipif_not_matplotlib

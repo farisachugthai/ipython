@@ -10,12 +10,12 @@ import pytest
 from _pytest.nose import pytest_runtest_setup, teardown_nose, is_potential_nosetest, call_optional
 # noqa
 
-from .testing import tools
+from IPython.testing import tools
 
 
 # @pytest.fixture
 def get_ipython():
-    from .terminal.interactiveshell import TerminalInteractiveShell
+    from IPython.terminal.interactiveshell import TerminalInteractiveShell
     if TerminalInteractiveShell._instance:
         return TerminalInteractiveShell.instance()
 
@@ -72,7 +72,7 @@ def inject():
     builtins.ip = get_ipython()
     builtins.ip.system = types.MethodType(xsys, ip)
     builtins.ip.builtin_trap.activate()
-    from .core import page
+    from IPython.core import page
 
     page.pager_page = nopage
     # yield

@@ -1,5 +1,8 @@
 # encoding: utf-8
-"""Tests for the IPython tab-completion machinery."""
+"""Tests for the IPython tab-completion machinery.
+
+What in the world is up with that one method that imports pandas?
+"""
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -8,26 +11,20 @@ import os
 import sys
 import textwrap
 import unittest
-
 from contextlib import contextmanager
 
 import nose.tools as nt
-
+from nose.tools import assert_in, assert_not_in
 from traitlets.config.loader import Config
+
 from IPython import get_ipython
 from IPython.core import completer
+from IPython.core.completer import (Completion, _deduplicate_completions,
+                                    match_dict_keys, provisionalcompleter)
 from IPython.external import decorators
-from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
-from IPython.utils.generics import complete_object
 from IPython.testing import decorators as dec
-
-from IPython.core.completer import (
-    Completion,
-    provisionalcompleter,
-    match_dict_keys,
-    _deduplicate_completions,
-)
-from nose.tools import assert_in, assert_not_in
+from IPython.utils.generics import complete_object
+from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
 
 # -----------------------------------------------------------------------------
 # Test functions
@@ -453,10 +450,10 @@ class TestCompleter(unittest.TestCase):
 
     def test_greedy_completions(self):
         """
-        Test the capability of the Greedy completer. 
+        Test the capability of the Greedy completer.
 
         Most of the test here does not really show off the greedy completer, for proof
-        each of the text below now pass with Jedi. The greedy completer is capable of more. 
+        each of the text below now pass with Jedi. The greedy completer is capable of more.
 
         See the :any:`test_dict_key_completion_contexts`
 
@@ -552,7 +549,7 @@ class TestCompleter(unittest.TestCase):
 
     def test_limit_to__all__False_ok(self):
         """
-        Limit to all is deprecated, once we remove it this test can go away. 
+        Limit to all is deprecated, once we remove it this test can go away.
         """
         ip = get_ipython()
         c = ip.Completer
