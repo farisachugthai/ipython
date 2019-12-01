@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SPHINXOPTS    ?=
+ALLSPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXAPIDOC   ?= sphinx-apidoc
 SOURCEDIR     = source
@@ -58,14 +58,15 @@ api:
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here
 html:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) --keep-going -w sphinx.log --no-color source build/html
+	$(SPHINXAPIDOC) -b html -c source -e --tocfile index -P -w sphinx.log source build/html
+	$(SPHINXBUILD) -b html -c source -P -w sphinx.log $(ALLSPHINXOPTS) source build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 
 
 html_noapi:
-	mkdir -p build/html build/doctrees
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
+	-rm -rf source/api/generated
+	$(SPHINXBUILD) -b html -c source -P -w sphinx.log $(ALLSPHINXOPTS) source build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 

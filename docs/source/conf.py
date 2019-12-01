@@ -362,13 +362,13 @@ ipython_execlines = [
 # Autosummary
 # -------------------------------------------------------------------
 
-modindex_common_prefix = ['IPython.']
+# modindex_common_prefix = ['IPython.']
 
-autosummary_generate = True
+# autosummary_generate = True
 
 autosummary_imported_members = False
 
-autoclass_content = u'both'
+# autoclass_content = u'both'
 autodoc_member_order = u'bysource'
 
 autodoc_docstring_signature = True

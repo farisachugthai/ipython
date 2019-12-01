@@ -59,13 +59,29 @@ API documentation. This build target skips that.
 
 You can run ``make help`` to see information on all possible make targets.
 
-To save time,
-the make targets above only process the files that have been changed since the
-previous docs build.
+To save time, the make targets above only process the files that have
+been changed since the previous docs build.
+
 To remove the previous docs build you can use ``make clean``.
-You can also combine ``clean`` with other `make` commands;
-for example,
-``make clean html`` will do a complete rebuild of the docs or `make clean pdf` will do a complete build of the pdf.
+
+You can also combine ``clean`` with other `make` commands; for example,
+``make clean html`` will do a complete rebuild of the docs or
+``make clean pdf`` will do a complete build of the pdf.
+
+
+Sphinx Integration
+~~~~~~~~~~~~~~~~~~~~
+
+Alternatively, running::
+
+   sphinx-apidoc -f -e --tocfile index -o source/api/generated/ ../IPython "../IPython/*tests*"
+
+Will generate the needed API documentation and running::
+
+   sphinx-build -b html -c source -d build/.doctrees -P -w sphinx.log source build/html
+
+Seems to cover most of what those make commands and our ``autogen_*`` scripts
+do.
 
 
 Continuous Integration

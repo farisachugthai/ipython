@@ -105,36 +105,35 @@ Index
    tutorial/index
    config
    magics
-   extending/index
    extensions/index
    sphinxext/index
-   development/index
-   building
-   coredev
-   reference
-   todo
-
-Extending and integrating with IPython
-======================================
 
 .. toctree::
    :maxdepth: 2
+   :caption: Extending
 
    integrating
    custommagics
    details
    shell_mimerenderer
    eventloops
+   custommagics
+   inputtransforms
+   callbacks
 
 
-Reference
-==========
 
 .. toctree::
    :maxdepth: 1
+   :caption: Developer's Notes and API
 
    api/index
    options/index
+   development/index
+   building
+   coredev
+   reference
+   todo
 
 
 About Us
@@ -145,7 +144,8 @@ About Us
    :caption: About us
 
    whatsnew/index
-   about/index
+   history
+   license_and_copyright
 
 
 .. only:: html

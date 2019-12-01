@@ -20,17 +20,17 @@ It includes every option that the ipython shell accepts on
 the command line, every parameter that the ``ipython_config.py``
 and ``ipython_kernel_config.py`` files accept, and all of the core magics.
 
+
 .. toctree::
-   :caption: Table of Contents
+   :caption: API Table of Contents
 
    terminal
    kernel
 
+
 .. toctree::
-   :hidden:
    :glob:
+   :titlesonly:
 
    generated/*
 
-
-.. include:: generated/gen.rst
