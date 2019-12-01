@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Sphinx directive to support embedded IPython code.
+"""Sphinx directive to support embedded IPython code.
 
 IPython provides an extension for `Sphinx <http://www.sphinx-doc.org/>`_ to
 highlight and run code.
@@ -203,11 +202,11 @@ from traitlets.config import Config
 
 # Our own
 
-from IPython import InteractiveShell
-from IPython import version_info
+from IPython.sphinxext import configtraits, magics
+from IPython.core.interactiveshell import InteractiveShell
+from IPython.core.release import version_info
 from IPython.core.profiledir import ProfileDir
 from IPython.lib.lexers import IPyLexer
-from . import configtraits, magics
 
 try:
     import matplotlib

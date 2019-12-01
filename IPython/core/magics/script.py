@@ -60,7 +60,7 @@ def script_args(f):
             help="""Whether you should raise an error message in addition to
             a stream on stderr if you get a nonzero exit code.
             """)
-    ]
+        ]
     for arg in args:
         f = arg(f)
     return f
@@ -95,11 +95,11 @@ class ScriptMagics(Magics):
             'python2',
             'python3',
             'pypy',
-        ]
+            ]
         if os.name == 'nt':
             defaults.extend([
                 'cmd',
-            ])
+                ])
 
         return defaults
 

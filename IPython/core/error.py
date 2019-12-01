@@ -159,8 +159,6 @@ def BdbQuit_excepthook(et, ev, tb, excepthook=None):
     All other exceptions are processed using the `excepthook`
     parameter.
     """
-    warnings.warn("`BdbQuit_excepthook` is deprecated since version 5.1",
-                  DeprecationWarning, stacklevel=2)
     if et == bdb.BdbQuit:
         print('Exiting Debugger.')
     elif excepthook is not None:
@@ -170,8 +168,23 @@ def BdbQuit_excepthook(et, ev, tb, excepthook=None):
         BdbQuit_excepthook.excepthook_ori(et, ev, tb)
 
 
-def BdbQuit_IPython_excepthook(self, et, ev, tb, tb_offset=None):
-    warnings.warn(
-        "`BdbQuit_IPython_excepthook` is deprecated since version 5.1",
-        DeprecationWarning, stacklevel=2)
+def BdbQuit_IPython_excepthook():
     print('Exiting Debugger.')
+
+
+class DatabaseError(Exception):
+    """Dummy exception when sqlite could not be imported. Should never occur.
+
+    Actually happened to me from some misplaced dlls on Windows.
+    Moved from :mod:`history`.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init(self, *args, **kwargs)
+
+
+class OperationalError(Exception):
+    """Dummy exception when sqlite could not be imported. Should never occur."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init(self, *args, **kwargs)

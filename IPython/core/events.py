@@ -10,10 +10,20 @@ events and the arguments which will be passed to them.
 
 ...So those are abc methods right?
 
-As an aside...wth is backcall?
 
-We import it but if it's required it's not in the requirements and if it's in
-this directory we didn't import it explicitly.
+API
+----
+
+.. data:: available_events
+
+   Dict of events.
+
+
+Callback prototypes
+------------------------------------------------------------------------------
+
+No-op functions which describe the names of available events and the
+signatures of callbacks for those events.
 
 """
 from IPython.core.getipython import get_ipython
@@ -37,6 +47,8 @@ class EventManager:
     This is attached to :class:`~IPython.core.interactiveshell.InteractiveShell`
     instances as an ``events`` attribute.
 
+    The shell itself is also bound to the class as an :attr:`shell` attribute.
+
     """
 
     def __init__(self, shell=None, available_events=None):
@@ -47,9 +59,9 @@ class EventManager:
         Parameters
         ----------
         shell : :class:`~IPython.core.interactiveshell.InteractiveShell`, optional
-          :class:`~IPython.core.interactiveshell.InteractiveShell` instance
+            :class:`~IPython.core.interactiveshell.InteractiveShell` instance
         available_callbacks : iterable
-          An iterable of names for callback events.
+            An iterable of names for callback events.
 
         """
         if available_events is None:
@@ -57,23 +69,26 @@ class EventManager:
         self.shell = shell or get_ipython()
         self.callbacks = {n: [] for n in available_events}
 
+    def __repr__(self):
+        return ''.join(self.__class__.__name)
+
     def register(self, event, function):
         """Register a new event callback.
 
         Parameters
         ----------
         event : str
-          The event for which to register this callback.
+            The event for which to register this callback.
         function : callable
-          A function to be called on the given event. It should take the same
-          parameters as the appropriate callback prototype.
+            A function to be called on the given event. It should take the same
+            parameters as the appropriate callback prototype.
 
         Raises
         ------
         :exc:`TypeError`
-          If ``function`` is not callable.
+            If ``function`` is not callable.
         :exc:`KeyError`
-          If ``event`` is not one of the known events.
+            If ``event`` is not one of the known events.
 
         """
         if not callable(function):
@@ -112,14 +127,6 @@ class EventManager:
                 self.shell.showtraceback()
 
 
-# ------------------------------------------------------------------------------
-# Callback prototypes
-#
-# No-op functions which describe the names of available events and the
-# signatures of callbacks for those events.
-# ------------------------------------------------------------------------------
-
-
 @_define_event
 def pre_execute():
     """Fires before code is executed in response to user/frontend action.
@@ -137,7 +144,7 @@ def pre_run_cell(info):
     Parameters
     ----------
     info : :class:`~IPython.core.interactiveshell.ExecutionInfo`
-      An object containing information used for the code execution.
+        An object containing information used for the code execution.
     """
     pass
 
@@ -159,7 +166,7 @@ def post_run_cell(result):
     Parameters
     ----------
     result : :class:`~IPython.core.interactiveshell.ExecutionResult`
-      The object which will be returned as the execution result.
+        The object which will be returned as the execution result.
     """
     pass
 
@@ -174,6 +181,6 @@ def shell_initialized(ip):
     Parameters
     ----------
     ip : :class:`~IPython.core.interactiveshell.InteractiveShell`
-      The newly initialised shell.
+        The newly initialised shell.
     """
     pass

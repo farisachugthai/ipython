@@ -307,7 +307,7 @@ class NamespaceMagics(Magics):
         out = [
             i for i in user_ns if not i.startswith('_') and
             (user_ns[i] is not user_ns_hidden.get(i, nonmatching))
-        ]
+            ]
 
         typelist = parameter_s.split()
         if typelist:

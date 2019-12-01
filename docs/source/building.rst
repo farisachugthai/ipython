@@ -86,3 +86,11 @@ See Also
    `ipyparallel documentation <http://ipyparallel.readthedocs.io/en/latest/>`_
      Formerly ``IPython.parallel``.
 
+
+Testing
+========
+
+The IPython project currently uses ``nose`` for it's unit testing.
+
+A :file:`../../IPython/conftest.py` file exists for usage with pytest;
+however, this integration is still being actively worked on.

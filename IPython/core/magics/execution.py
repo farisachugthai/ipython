@@ -717,7 +717,7 @@ python-profiler package from non-free.""")
             if os.name == 'nt' and re.match(r"^'.*'$", fpath):
                 warn(
                     'For Windows, use double quotes to wrap a filename: %run "mypath\\myfile.py"'
-                )
+                    )
             error(msg)
             return
 
@@ -787,7 +787,7 @@ python-profiler package from non-free.""")
                     'run_module': self.shell.safe_run_module,
                     'prog_ns': prog_ns,
                     'modulename': modulename,
-                }
+                    }
             else:
                 if 'd' in opts:
                     # allow exceptions to raise in debug mode
@@ -798,7 +798,7 @@ python-profiler package from non-free.""")
                     'execfile': self.shell.safe_execfile,
                     'prog_ns': prog_ns,
                     'filename': get_py_filename(filename),
-                }
+                    }
 
         try:
             stats = None
@@ -910,7 +910,7 @@ python-profiler package from non-free.""")
         deb = self.shell.InteractiveTB.pdb
         if not deb:
             self.shell.InteractiveTB.pdb = self.shell.InteractiveTB.debugger_cls(
-            )
+                )
             deb = self.shell.InteractiveTB.pdb
 
         # deb.checkline() fails if deb.curframe exists but is None; it can

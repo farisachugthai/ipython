@@ -11,8 +11,8 @@ from textwrap import dedent, indent
 import sys
 from warnings import warn
 
-from IPython.core import magic_arguments  # page
-from IPython.core.payloadpage import page
+from IPython.core import magic_arguments, page
+# from IPython.core.payloadpage import page
 from IPython.core.error import UsageError
 from IPython.core.magic import Magics, magics_class, line_magic, magic_escapes
 from IPython.utils.text import format_screen  # , dedent, indent
@@ -21,29 +21,17 @@ from IPython.utils.ipstruct import Struct
 
 
 class MagicsDisplay:
-    """MagicsDisplay. Admittedly confused how this doesn't need to be wrapped.
-
-    You know that error you get when you don't wrap a class with:
-
-    @magic_class
-
-    Or the other one when you don't inherit from Magics?
-    Why don't we need it?
-    """
 
     def __init__(self, magics_manager, ignore=None):
         """Initialize the magics class that displays other magics.
 
         Parameters
         ----------
-        magics_manager : uh
-            Container class for magics right?
+        magics_manager : :class:`traitlets.config.Configurable`.
+            Configurable object bound to IPython shell as ``magics_manager``.
+        ignore : list, optional
+            Magics to ignore
 
-        Notes
-        -----
-        >>> self.ignore = ignore if ignore else []
-
-        THAT'S HOW YOU DO THAT IN 1 line!
         """
         self.ignore = ignore if ignore else []
         self.magics_manager = magics_manager
@@ -58,15 +46,28 @@ class MagicsDisplay:
         cesc = magic_escapes['cell']
         mman = self.magics_manager
         magics = mman.lsmagic()
-        out = ['Available line magics:', mesc + ('  ' + mesc).join(
-            sorted([m for m, v in magics['line'].items()
-                    if (v not in self.ignore)])),
-               '', 'Available cell magics:', cesc + ('  ' + cesc).join(
-            sorted([m for m, v in magics['cell'].items()
-                    if (v not in self.ignore)])), '', mman.auto_status()]
+        out = [
+            'Available line magics:', mesc + ('  ' + mesc).join(
+                sorted([
+                    m for m, v in magics['line'].items()
+                    if (v not in self.ignore)
+                    ])), '', 'Available cell magics:', cesc + ('  ' + cesc).join(
+                    sorted([
+                        m for m, v in magics['cell'].items()
+                        if (v not in self.ignore)
+                        ])), '',
+            mman.auto_status()
+            ]
         return '\n'.join(out)
 
     def _repr_pretty_(self, p, cycle):
+        """What are these parameters?
+
+        This magic is implemented as::
+
+            >>> p.text(self._lsmagic)
+
+        """
         p.text(self._lsmagic)
 
     def __str__(self):
@@ -119,8 +120,8 @@ class BasicMagics(Magics):
                               help="""Create a cell magic alias.""")
     @magic_arguments.argument('name',
                               help="""Name of the magic to be created.""")
-    @magic_arguments.argument(
-        'target', help="""Name of the existing line or cell magic.""")
+    @magic_arguments.argument('target',
+                              help="Name of the existing line or cell magic.")
     @magic_arguments.argument(
         '-p',
         '--params',
@@ -225,21 +226,21 @@ class BasicMagics(Magics):
             format_string = '%s%s:\n%s\n'
 
         return ''.join([
-            format_string %
-            (magic_escapes['line'], fname, dedent(fndoc))
+            format_string % (magic_escapes['line'], fname, dedent(fndoc))
             for fname, fndoc in sorted(docs['line'].items())
-        ] + [
+            ] + [
             format_string %
-            (magic_escapes['cell'],
-             fname, indent(dedent(fndoc)))
+            (magic_escapes['cell'], fname, indent(dedent(fndoc)))
             for fname, fndoc in sorted(docs['cell'].items())
-        ])
+            ])
 
     @line_magic
     def magic(self, parameter_s=''):
         """Print information about the magic function system.
 
         Supported formats: -latex, -brief, -rest
+
+        I think this could really benefit from some magic_arguments decorators.
         """
 
         mode = ''
@@ -305,10 +306,10 @@ of any of them, type %magic_name?, e.g. '%cd?'.
 
 Currently the magic system has the following functions:""",
             magic_docs,
-            "Summary of magic functions (from %slsmagic):" %
+            "Summary of magic functions (from %lsmagic):" %
             magic_escapes['line'],
             str(self.lsmagic()),
-        ]
+            ]
         page.page('\n'.join(out))
 
     @line_magic
@@ -364,7 +365,8 @@ Currently the magic system has the following functions:""",
         """
         def color_switch_err(name):
             warn('Error changing %s color schemes.\n%s' %
-                 (name, sys.exc_info()[1]), stacklevel=2)
+                 (name, sys.exc_info()[1]),
+                 stacklevel=2)
 
         new_scheme = parameter_s.strip()
         if not new_scheme:
@@ -395,6 +397,7 @@ Currently the magic system has the following functions:""",
                 color_switch_err('object inspector')
         else:
             shell.inspector.set_active_scheme('NoColor')
+
 
 # HERE
         if not parameter_s:
@@ -437,7 +440,6 @@ Currently the magic system has the following functions:""",
         Valid modes: Plain, Context, Verbose, and Minimal.
 
         If called without arguments, acts as a toggle."""
-
         def xmode_switch_err(name):
             warn('Error changing %s exception modes.\n%s' %
                  (name, sys.exc_info()[1]))
@@ -655,7 +657,7 @@ Currently the magic system has the following functions:""",
         except ImportError:
             raise UsageError(
                 'This needs the nbformat package so ensure that that is installed.'
-            )
+                )
 
         cells = []
         hist = list(self.shell.history_manager.get_range())
@@ -672,6 +674,12 @@ Currently the magic system has the following functions:""",
 
 @magics_class
 class AsyncMagics(BasicMagics):
+    """Magics for use with an asynchronous event loop.
+
+    .. note::
+        Still experimental!
+
+    """
 
     @line_magic
     def autoawait(self, parameter_s):
@@ -686,15 +694,25 @@ class AsyncMagics(BasicMagics):
 
         Parameters
         ----------
-        - False/false/off deactivate autoawait integration
-        - True/true/on activate autoawait integration using configured default
-          parameter_s :
-        - asyncio/curio/trio activate autoawait integration and use integration
-          with said library.
-        - `sync` turn on the pseudo-sync integration (mostly used for
-          `IPython.embed()` which does not run IPython with a real eventloop and
-          deactivate running asynchronous code. Turning on Asynchronous code with
-          the pseudo sync loop is undefined behavior and may lead IPython to crash.
+        - False/false/off
+            Deactivate autoawait integration
+
+        - True/true/on
+            Activate autoawait integration using configured default
+
+        parameter_s :
+
+        - asyncio/curio/trio
+            activate autoawait integration and use integration with said library.
+
+        - sync
+            turn on the pseudo-sync integration (mostly used for
+            `IPython.embed` which does not run IPython with a real eventloop
+            and deactivate running asynchronous code.
+
+        .. caution::
+            Turning on asynchronous code with the pseudo sync loop is
+            undefined behavior and may lead IPython to crash.
 
         Notes
         -----
@@ -707,8 +725,8 @@ class AsyncMagics(BasicMagics):
 
         The exact behavior of autoawait is experimental and subject to change
         across version of IPython and Python.
-        """
 
+        """
         param = parameter_s.strip()
         d = {True: "on", False: "off"}
 

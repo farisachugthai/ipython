@@ -117,4 +117,4 @@ class PackagingMagics(Magics):
         self.shell.system(' '.join([conda, command] + extra_args + args))
         print(
             "\nNote: you may need to restart the kernel to use updated packages."
-        )
+            )

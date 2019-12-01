@@ -211,7 +211,7 @@ class OSMagics(Magics):
         path = [
             os.path.abspath(os.path.expanduser(p))
             for p in os.environ.get('PATH', '').split(os.pathsep)
-        ]
+            ]
 
         syscmdlist = []
         savedir = os.getcwd()

@@ -5,18 +5,17 @@ import atexit
 import datetime
 import os
 import re
-# try:
-# lol how long has it been since all this logic was necessary
-import sqlite3
-# except ImportError:
-#     try:
-#         from pysqlite2 import dbapi2 as sqlite3
-#     except ImportError:
-#         sqlite3 = None
+try:
+    import sqlite3
+except ImportError:
+    try:
+        from pysqlite2 import dbapi2 as sqlite3
+    except ImportError:
+        sqlite3 = None
 import threading
 
 from traitlets.config.configurable import LoggingConfigurable
-# Excuse me? What is the line below?
+
 from decorator import decorator
 from IPython.utils.decorators import undoc
 from IPython.paths import locate_profile
@@ -45,6 +44,7 @@ class DummyDB:
     Only used in the absence of sqlite.
     """
 
+    @staticmethod
     def execute(*args, **kwargs):
         return []
 
@@ -72,18 +72,9 @@ if sqlite3 is not None:
     OperationalError = sqlite3.OperationalError
 else:
 
-    @undoc
-    class DatabaseError(Exception):
-        """Dummy exception when sqlite could not be imported. Should never occur."""
-
-    @undoc
-    class OperationalError(Exception):
-        """Dummy exception when sqlite could not be imported. Should never occur."""
-
-
-# use 16kB as threshold for whether a corrupt history db should be saved
-# that should be at least 100 entries or so
-_SAVE_DB_SIZE = 16384
+    # use 16kB as threshold for whether a corrupt history db should be saved
+    # that should be at least 100 entries or so
+    _SAVE_DB_SIZE = 16384
 
 
 @decorator
@@ -537,9 +528,9 @@ class HistoryManager(HistoryAccessor):
     """
     shell = Instance('IPython.core.interactiveshell.InteractiveShellABC',
                      allow_none=True)
-    input_hist_parsed = List([""])
-    input_hist_raw = List([""])
-    dir_hist = List()
+    input_hist_parsed = List([""]).tag(config=False)
+    input_hist_raw = List([""]).tag(config=False)
+    dir_hist = List().tag(config=False)
 
     @default('dir_hist')
     def _dir_hist_default(self):
@@ -550,12 +541,12 @@ class HistoryManager(HistoryAccessor):
 
     # A dict of output history, keyed with ints from the shell's
     # execution count.
-    output_hist = Dict()
+    output_hist = Dict().tag(config=False)
     # The text/plain repr of outputs.
-    output_hist_reprs = Dict()
+    output_hist_reprs = Dict().tag(config=False)
 
     # The number of the current session in the history database
-    session_number = Integer()
+    session_number = Integer().tag(config=False)
 
     db_log_output = Bool(
         False,
@@ -566,8 +557,8 @@ class HistoryManager(HistoryAccessor):
         help="Write to database every x commands (higher values save disk access & power).\n"
         "Values of 1 or less effectively disable caching.").tag(config=True)
     # The input and output caches
-    db_input_cache = List()
-    db_output_cache = List()
+    db_input_cache = List().tag(config=False)
+    db_output_cache = List().tag(config=False)
 
     # History saving in separate thread
     save_thread = Instance('IPython.core.history.HistorySavingThread',
@@ -578,10 +569,10 @@ class HistoryManager(HistoryAccessor):
     # Variables used to store the three last inputs from the user.  On each new
     # history update, we populate the user's namespace with these, shifted as
     # necessary.
-    _i00 = Unicode(u'')
-    _i = Unicode(u'')
-    _ii = Unicode(u'')
-    _iii = Unicode(u'')
+    _i00 = Unicode(u'').tag(config=False)
+    _i = Unicode(u'').tag(config=False)
+    _ii = Unicode(u'').tag(config=False)
+    _iii = Unicode(u'').tag(config=False)
 
     # A regex matching all forms of the exit command, so that we don't store
     # them in the history (it's annoying to rewind the first entry and land on
@@ -661,8 +652,9 @@ class HistoryManager(HistoryAccessor):
                             (name, self.session_number))
 
     def reset(self, new_session=True):
-        """Clear the session history, releasing all object references, and
-        optionally open a new session.
+        """Clear the session history.
+
+        Releases all object references, and optionally open a new session.
         """
         self.output_hist.clear()
         # The directory history can't be completely empty
@@ -678,19 +670,19 @@ class HistoryManager(HistoryAccessor):
     # ------------------------------
     # Methods for retrieving history
     # ------------------------------
+
     def get_session_info(self, session=0):
         """Get info about a session.
 
         Parameters
         ----------
-
-        session : int
+        session : int, optional
+            Defaults to 0
             Session number to retrieve. The current session is 0, and negative
             numbers count back from current session, so -1 is the previous session.
 
         Returns
         -------
-
         session_id : int
            Session ID number
         start : datetime
@@ -779,14 +771,12 @@ class HistoryManager(HistoryAccessor):
         Parameters
         ----------
         line_num : int
-          The prompt number of this input.
-
+            The prompt number of this input.
         source : str
-          Python input.
-
+            Python input.
         source_raw : str, optional
-          If given, this is the raw input without any IPython transformations
-          applied to it.  If not given, ``source`` is used.
+            If given, this is the raw input without any IPython transformations
+            applied to it.  If not given, ``source`` is used.
         """
         if source_raw is None:
             source_raw = source
@@ -953,6 +943,7 @@ def extract_hist_ranges(ranges_str):
     --------
     >>> list(extract_hist_ranges("~8/5-~7/4 2"))
     [(-8, 5, None), (-7, 1, 5), (0, 2, 3)]
+
     """
     for range_str in ranges_str.split():
         rmatch = range_re.match(range_str)
@@ -989,7 +980,7 @@ def extract_hist_ranges(ranges_str):
 
 
 def _format_lineno(session, line):
-    """Helper function to format line numbers properly."""
+    """Format line numbers properly."""
     if session == 0:
         return str(line)
     return "%s#%s" % (session, line)

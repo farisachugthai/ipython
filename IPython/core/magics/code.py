@@ -273,7 +273,7 @@ class CodeMagics(Magics):
             "title": opts.get('d', "Pasted from IPython"),
             "syntax": "python3",
             "content": code
-        }).encode('utf-8')
+            }).encode('utf-8')
 
         response = urlopen("http://dpaste.com/api/v2/", post_data)
         return response.headers.get('Location')
@@ -462,7 +462,7 @@ class CodeMagics(Magics):
                             # __module__ in those classes is FakeModule.
                             attrs = [
                                 getattr(data, aname) for aname in dir(data)
-                            ]
+                                ]
                             for attr in attrs:
                                 if not inspect.ismethod(attr):
                                     continue

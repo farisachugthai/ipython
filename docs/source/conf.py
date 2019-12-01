@@ -26,7 +26,10 @@ from sphinx.util.docfields import GroupedField
 from sphinx.util.logging import getLogger
 
 # import numpydoc  # noqa F401
-from matplotlib.sphinxext.plot_directive import PlotDirective
+try:
+    from matplotlib.sphinxext.plot_directive import PlotDirective
+except ImportError:
+    PlotDirective = None
 
 logger = getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -36,7 +39,7 @@ logging.debug('root dir is: {}'.format(root))
 
 ipython_package = root.joinpath('IPython')
 sphinxext = ipython_package.joinpath('sphinxext')
-if sphinxext is not None:
+if sphinxext.is_dir():
     sys.path.append(sphinxext.__fspath__())
 
 
@@ -87,7 +90,6 @@ else:
     from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 
     extensions.extend([
-        'IPython.sphinxext.ipython_console_highlighting',
         'IPython.sphinxext.ipython_directive',
     ])
 
@@ -97,6 +99,10 @@ else:
 
 if shutil.which('dot'):
     extensions.append('sphinx.ext.graphviz')
+
+if PlotDirective is not None:
+    extensions.append('matplotlib.sphinxext.plot_directive')
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

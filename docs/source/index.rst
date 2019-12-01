@@ -25,6 +25,10 @@ interactively.  Its main components are:
 * A `Jupyter <https://jupyter.org/>`_ kernel to work with Python code in Jupyter
   notebooks and other interactive frontends.
 
+
+Features
+========
+
 The enhanced interactive Python shells and kernel have the following main
 features:
 
@@ -56,6 +60,9 @@ features:
 * Integrated access to the pdb debugger and the Python profiler.
 
 
+Command Line Interface
+======================
+
 The Command line interface inherits the above functionality and adds
 
 * real multi-line editing thanks to `prompt_toolkit
@@ -85,6 +92,9 @@ sidebar, allowing you to come back to previous sections or skip ahead, if needed
 The latest development version is always available from IPython's `GitHub
 repository <http://github.com/ipython/ipython>`_.
 
+
+Table of Contents
+=================
 
 .. toctree::
    :maxdepth: 2

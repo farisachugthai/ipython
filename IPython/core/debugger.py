@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Pdb debugger class.
+"""Pdb debugger class.
 
 Modified from the standard pdb.Pdb class to avoid including readline, so that
 the command line completion of other programs which include this isn't
@@ -14,17 +13,41 @@ https://docs.python.org/2/license.html
 
 https://docs.python.org/3/license.html
 
-This code should really go into terminal though like people won't
+
+Portability and Python requirements
+-----------------------------------
+*I think thats a section in the docs.*
+
+This code should really go into `../terminal/debugger` though. People won't
 be using this code in the browser.
 
-*****************************************************************************
-      This file is licensed under the PSF license.
+If you import our Pdb and initialize it from a standard non-IPython
+Python session, we initialize an IPython session for you.
 
-      Copyright (C) 2001 Python Software Foundation, www.python.org
-      Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
-*****************************************************************************
+Fair enough.
+
+Look how we do so.::
+
+    >>> from IPython.terminal.interactiveshell import TerminalInteractiveShell
+
+There's no way that Notebook users can utilize that, so I'd assume that this
+code is basically unavailable to them.
+
+API
+----
+
+.. data:: prompt
+
+    The prompt the user gets in the shell.
 
 """
+# *****************************************************************************
+#       This file is licensed under the PSF license.
+
+#       Copyright (C) 2001 Python Software Foundation, www.python.org
+#       Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
+# *****************************************************************************
+
 import bdb
 import functools
 import inspect
@@ -42,8 +65,6 @@ from IPython.core.excolors import exception_colors
 from IPython.core.getipython import get_ipython
 from IPython.utils import PyColorize, coloransi, py3compat
 
-# from IPython.testing.skipdoctest import skip_doctest
-
 # We have to check this directly from sys.argv, config struct not yet available
 prompt = 'ipdb> '
 
@@ -51,9 +72,11 @@ prompt = 'ipdb> '
 # it does so with some limitations.  The rest of this support is implemented in
 # the Tracer constructor.
 
+# Didn't we deprecate Tracer?
+
 
 def make_arrow(pad):
-    """generate the leading arrow in front of traceback or debugger"""
+    """Generate the leading arrow in front of traceback or debugger."""
     if pad >= 2:
         return '-' * (pad - 2) + '> '
     elif pad == 1:
@@ -62,6 +85,7 @@ def make_arrow(pad):
 
 
 def strip_indentation(multiline_string):
+    """textwrap.dedent?"""
     RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')
     return RGX_EXTRA_INDENT.sub('', multiline_string)
 
@@ -96,6 +120,7 @@ class CorePdb(Pdb):
 
         # Create color table: we copy the default one from the traceback
         # module and add a few attributes needed for debugging
+
     """
 
     def __init__(self,
@@ -109,15 +134,24 @@ class CorePdb(Pdb):
                  **kwargs):
         """Create a new IPython debugger.
 
+        .. todo::
+            Add shell to constructor.
+            Possibly add the variable ``namespaces`` as well.
+            Check the methods :meth:`do_pdef`, :meth:`do_pdoc` and etc.
+            They all start out the same way like there's no need for the repitition.
+
         :param color_scheme: Deprecated, do not use.
-        :param completekey: Passed to pdb.Pdb.
-        :param stdin: Passed to pdb.Pdb.
-        :param stdout: Passed to pdb.Pdb.
+        :param completekey: Passed to `pdb.Pdb`.
+        :param stdin: Passed to `pdb.Pdb`.
+        :param stdout: Passed to `pdb.Pdb`.
         :param context: Number of lines of source code context to show when
-            displaying stacktrace information.
+                        displaying stacktrace information.
+        :param aliases: User aliases.
+        :param prompt: ``$PS1``.
         :param kwargs: Passed to pdb.Pdb.
             The possibilities are python version dependent, see the python
             docs for more info.
+
         """
         # Parent constructor:
         try:
@@ -136,8 +170,7 @@ class CorePdb(Pdb):
         if self.shell is None:
             save_main = sys.modules['__main__']
             # No IPython instance running, we must create one
-            from IPython.terminal.interactiveshell import \
-                TerminalInteractiveShell
+            from IPython.terminal.interactiveshell import TerminalInteractiveShell
             self.shell = TerminalInteractiveShell.instance()
             # needed by any code which calls __import__("__main__") after
             # the debugger was entered. See also #9941.
@@ -358,8 +391,7 @@ class CorePdb(Pdb):
         return tpl_line % (bp_mark_color + bp_mark, num, line)
 
     def print_list_lines(self, filename, first, last):
-        """The printing (as opposed to the parsing part of a 'list'
-        command."""
+        """The printing. (as opposed to the parsing part of a 'list' command."""
         try:
             Colors = self.color_scheme_table.active_colors
             ColorsNormal = Colors.Normal
@@ -394,10 +426,11 @@ class CorePdb(Pdb):
             print(''.join(src), file=self.stdout)
 
         except KeyboardInterrupt:
-            pass
+            # pass well at least notify them.
+            print('Interrupted!')
 
     def do_list(self, arg):
-        """Print lines of code from the current stack frame
+        """Print lines of code from the current stack frame.
         """
         self.lastcmd = 'list'
         last = None
@@ -480,7 +513,8 @@ class CorePdb(Pdb):
     def do_pdef(self, arg):
         """Print the call signature for any callable object.
 
-        The debugger interface to %pdef"""
+        The debugger interface to `%pdef`.
+        """
         namespaces = [('Locals', self.curframe.f_locals),
                       ('Globals', self.curframe.f_globals)]
         self.shell.find_line_magic('pdef')(arg, namespaces=namespaces)
@@ -488,7 +522,8 @@ class CorePdb(Pdb):
     def do_pdoc(self, arg):
         """Print the docstring for an object.
 
-        The debugger interface to %pdoc."""
+        The debugger interface to `%pdoc.`
+        """
         namespaces = [('Locals', self.curframe.f_locals),
                       ('Globals', self.curframe.f_globals)]
         self.shell.find_line_magic('pdoc')(arg, namespaces=namespaces)

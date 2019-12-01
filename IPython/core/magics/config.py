@@ -113,7 +113,7 @@ class ConfigMagics(Magics):
         configurables = sorted(set([
             c for c in self.shell.configurables
             if c.__class__.class_traits(config=True)
-        ]),
+            ]),
             key=lambda x: x.__class__.__name__)
         classnames = [c.__class__.__name__ for c in configurables]
 

@@ -1026,9 +1026,34 @@ class IPCompleter(Completer):
     greedy
     merge_completions
 
+    .. todo:: The fact that the jedi settings aren't in here is a crime
+
     """
 
+    greedy = Bool(default_value=False,
+                  help="Completes user input greedily.").tag(config=True)
+
     _names = None
+
+    case_insensitive_completion = Bool(default_value=False,
+                                       help="The completion is by default case insensitive").tag(
+        config=True)
+
+    add_bracket_after_function = Bool(default_value=False,
+                                      help="Adds an opening bracket after a function call").tag(
+        config=True)
+
+    no_completion_duplicates = Bool(default_value=False,
+                                    help="Don't show completions that have already been accepted").tag(
+        config=True)
+
+
+    @observe('case_insensitive_completion')
+    def _case_insensitive_completion(self, change=None, *args, **kwargs):
+        """Need to reread the documentation on the observe function."""
+        if change:
+            jedi.settings.case_insensitive_completion = not jedi.settings.case_insensitive_completion
+
 
     @observe('greedy')
     def _greedy_changed(self, change):
@@ -1039,7 +1064,7 @@ class IPCompleter(Completer):
             self.splitter.delims = DELIMS
 
     dict_keys_only = Bool(False,
-                          help="""Whether to show dict key matches only""")
+                          help="Whether to show dict key matches only").tag(config=True)
 
     merge_completions = Bool(
         True,
@@ -1048,6 +1073,7 @@ class IPCompleter(Completer):
         If False, only the completion results from the first non-empty
         completer will be returned.
         """).tag(config=True)
+
     omit__names = Enum(
         (0, 1, 2),
         default_value=2,
@@ -1487,12 +1513,21 @@ class IPCompleter(Completer):
             matches = self.global_matches(text)
         return matches
 
-    def _default_arguments_from_docstring(self, doc):
+    def _default_arguments_from_docstring(self, doc=None):
         """Parse the first line of docstring for call signature.
 
-        Docstring should be of the form 'min(iterable[, key=func])\n'.
-        It can also parse cython docstring of the form
-        'Minuit.migrad(self, int ncall=10000, resume=True, int nsplit=1)'.
+        Docstring should be of the form:
+
+        .. function:: min(iterable[, key=func])
+
+        It can also parse cython docstring of the form:
+
+        .. function:: Minuit.migrad(self, int ncall=10000, resume=True, int nsplit=1)
+
+        Parameters
+        ----------
+        doc now optional
+
         """
         if doc is None:
             return []
