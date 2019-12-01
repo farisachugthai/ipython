@@ -1,4 +1,3 @@
-
 {{ fullname | escape | underline }}
 
 {# All credit goes to Matplotlib for these templates #}
@@ -8,12 +7,18 @@
 
 {% if objtype in ['class'] %}
 
+  {{ objtype | escape | underline }}
+
 .. auto{{ objtype }}:: {{ objname }}
     :show-inheritance:
+    :members:
 
 {% else %}
 
+  {{ objtype | escape | underline }}
+
 .. auto{{ objtype }}:: {{ objname }}
+    :members:
 
 {% endif %}
 

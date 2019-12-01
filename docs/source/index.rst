@@ -98,33 +98,38 @@ Index
 
 .. toctree::
    :maxdepth: 2
-   :caption: Table of Contents
+   :caption: Introduction
 
    overview
    install/index
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Tutorial
+
    tutorial/index
    config
    magics
-   extensions/index
-   sphinxext/index
+   custommagics
+   details
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Extending
 
    integrating
-   custommagics
-   details
    shell_mimerenderer
    eventloops
-   custommagics
    inputtransforms
    callbacks
-
+   extensions
+   sphinxext/index
 
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
    :caption: Developer's Notes and API
 
    api/index
@@ -135,9 +140,6 @@ Index
    reference
    todo
 
-
-About Us
-=========
 
 .. toctree::
    :maxdepth: 1

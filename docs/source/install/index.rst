@@ -4,6 +4,9 @@
 Installation
 ============
 
+.. module:: install-index
+   :synopsis: Root of installation instructions
+
 .. toctree:: Installation
    :maxdepth: 2
 
@@ -73,7 +76,7 @@ one can refer to the output of ``pip uninstall``.:
 
 .. code-block:: console-session
 
-   C:\tools\miniconda3\python.exe -m pip uninstall [options] -r <requirements file> ...
+   python.exe -m pip uninstall [options] -r <requirements file> ...
 
    Description:
       Uninstall packages.

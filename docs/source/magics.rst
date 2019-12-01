@@ -1,7 +1,11 @@
 .. _magic:
 
+====================
 Magic command system
 ====================
+
+.. module:: magics-overview
+   :synopsis: Review the magic system.
 
 IPython will treat any line whose first character is a :kbd:`%` as a special
 call to a 'magic' function.
@@ -106,6 +110,8 @@ docstrings of all currently available magic commands.
    :ref:`defining_magics`
      How to define and register additional magic functions
 
+
+.. _interactive-use:
 
 Interactive use
 ===============

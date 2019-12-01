@@ -1,7 +1,13 @@
 .. _kernel_install:
 
+=============================
 Installing the IPython kernel
 =============================
+
+.. module:: ipython-kernel-installation
+   :synopsis: How to for installing the IPython kernel.
+
+
 .. highlight:: bash
 
 .. todo:: So it says this docs is about kernel installs.

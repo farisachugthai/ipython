@@ -6,7 +6,7 @@
 ALLSPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXAPIDOC   ?= sphinx-apidoc
-SOURCEDIR     = source
+SRCDIR     = source
 BUILDDIR      = build
 
 # Put it first so that "make" without argument is like "make help".
@@ -52,20 +52,20 @@ dist: html
 	@echo "Build finished.  Final docs are in html/"
 
 api:
-	$(SPHINXAPIDOC) -e -o source/api/generated ../IPython --tocfile index
-	mkdir -p build/html build/doctrees
+	mkdir -p build/html build/.doctrees
+	@echo "Generating API docs"
+	$(SPHINXAPIDOC) -M -f -e --tocfile index -o source/api/generated -t source/_templates ../IPython ../IPython/*tests*
 
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here
-html:
-	$(SPHINXAPIDOC) -b html -c source -e --tocfile index -P -w sphinx.log source build/html
-	$(SPHINXBUILD) -b html -c source -P -w sphinx.log $(ALLSPHINXOPTS) source build/html
+html: api
+	$(SPHINXBUILD) -b html -c $(SRCDIR) -P -w sphinx.log $(ALLSPHINXOPTS) $(SRCDIR) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 
 
 html_noapi:
-	-rm -rf source/api/generated
+	-rm -rf $(SRCDIR)/api/generated
 	$(SPHINXBUILD) -b html -c source -P -w sphinx.log $(ALLSPHINXOPTS) source build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."

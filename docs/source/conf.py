@@ -67,6 +67,8 @@ exec(compile(open('../../IPython/core/release.py').read(),
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    # terrible idea don't do it
+    # 'sphinx.ext.autosectionlabel',
     'sphinx.ext.doctest',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.intersphinx',
@@ -156,12 +158,10 @@ copyright = 'The IPython Development Team'
 # ghissue config
 github_project_url = "https://github.com/ipython/ipython"
 
-# numpydoc config
-# Otherwise Sphinx emits thousands of warnings
-# numpydoc_show_class_members = False
-# numpydoc_class_members_toctree = False
+trim_doctest_flags = True
 
 highlight_language = 'ipython'
+
 # warning_is_error = True
 warning_is_error = False
 
@@ -181,7 +181,7 @@ version = iprelease['version'].split('-', 1)[0]
 today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-#unused_docs = []
+unused_docs = ['api/generated/IPython', 'api/generated/IPython.core']
 
 # Exclude these glob-style patterns when looking for source files. They are
 # relative to the source/ directory.
@@ -332,7 +332,15 @@ man_show_urls = True
 
 # -- Extension configuration -------------------------------------------------
 
+# -- Numpydoc ----------------------------------------------
+
+# numpydoc config
+# Otherwise Sphinx emits thousands of warnings
+numpydoc_show_class_members = False
+numpydoc_class_members_toctree = False
+
 # -- Options for intersphinx extension ---------------------------------------
+
 intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
                        'rpy2': ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
                        'jupyterclient': ('https://jupyter-client.readthedocs.io/en/latest/', None),
@@ -362,8 +370,29 @@ ipython_execlines = [
 # Autosummary
 # -------------------------------------------------------------------
 
-# modindex_common_prefix = ['IPython.']
+# How it appears on the website currently is core.magics.*
+# So ignore the ``IPython.`` prefix
+modindex_common_prefix = ['IPython.']
 
+if sphinx.version_info < (1, 8):
+    autodoc_default_flags = ['members', 'undoc-members']
+else:
+    autodoc_default_options = {
+        'member-order': 'bysource',
+        'undoc-members': True,
+        'show-inheritance': False,
+        # might need to comment the below out
+        # 'noindex': True,
+    }
+
+apidoc_options = {
+    'members': False,
+    'undoc-members': True,
+    'show-inheritance': False,
+}
+
+
+autodoc_inherit_docstrings = False
 # autosummary_generate = True
 
 autosummary_imported_members = False
@@ -372,19 +401,6 @@ autosummary_imported_members = False
 autodoc_member_order = u'bysource'
 
 autodoc_docstring_signature = True
-
-
-if sphinx.version_info < (1, 8):
-    autodoc_default_flags = ['members', 'undoc-members']
-else:
-    autodoc_default_options = {
-        'members': True,
-        'member-order': 'bysource',
-        'special-members': '__init__',
-        'exclude-members': '__weakref__',
-    }
-
-autodoc_inherit_docstrings = False
 
 
 # Cleanup

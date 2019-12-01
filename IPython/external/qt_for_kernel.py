@@ -1,33 +1,30 @@
-""" Import Qt in a manner suitable for an IPython kernel.
+"""Import Qt in a manner suitable for an IPython kernel.
 
-This is the import used for the `gui=qt` or `matplotlib=qt` initialization.
+This is the import used for the `--gui=qt` or `--matplotlib=qt` initialization.
 
 Import Priority:
 
-if Qt has been imported anywhere else:
-   use that
+- If Qt has been imported anywhere else, use that.
 
-if matplotlib has been imported and doesn't support v2 (<= 1.0.1):
-    use PyQt4 @v1
+- If `matplotlib` has been imported and doesn't support v2 (<= 1.0.1):
+  Use PyQt4 @v1
 
-Next, ask QT_API env variable
+- Next, check for the presence of :envvar:`QT_API` env variable.
 
-if QT_API not set:
-    ask matplotlib what it's using. If Qt4Agg or Qt5Agg, then use the
-        version matplotlib is configured with
+- If `QT_API` not set, ask matplotlib what it's using.
 
-    else: (matplotlib said nothing)
-        # this is the default path - nobody told us anything
-        try in this order:
-            PyQt default version, PySide, PyQt5
-else:
-    use what QT_API says
+- If Qt4Agg or Qt5Agg, then use the version matplotlib is configured with
+
+- In case matplotlib said nothing, this is the default path (I.E. nobody told us anything)
+
+- Try in this order: PyQt default version, PySide, PyQt5
+
+.. note::
+    This is no longer an external, third-party module, and should be
+    considered part of IPython. For compatibility however, it is being kept in
+    IPython/external.
 
 """
-# NOTE: This is no longer an external, third-party module, and should be
-# considered part of IPython. For compatibility however, it is being kept in
-# IPython/external.
-
 import os
 import sys
 
@@ -69,9 +66,7 @@ def matplotlib_options(mpl):
 
 
 def get_options():
-    """Return a list of acceptable QT APIs, in decreasing order of
-    preference
-    """
+    """Return a list of acceptable QT APIs, in decreasing order of preference."""
     # already imported Qt somewhere. Use that
     loaded = loaded_api()
     if loaded is not None:
