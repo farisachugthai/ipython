@@ -1,8 +1,13 @@
 """
+
+# TODO: Wth?
+
 IPython.core.debugger.Pdb.trace_dispatch shall not catch
-`bdb.BdbQuit`. When started through __main__ and an exception
-happened after hitting "c", this is needed in order to
-be able to quit the debugging session (see #9950).
+`bdb.BdbQuit`.
+
+When started through ``__main__`` and an exception happened after hitting "c",
+this is needed in order to be able to quit the debugging session (see #9950).
+
 """
 import signal
 import sys
@@ -22,8 +27,11 @@ from prompt_toolkit.formatted_text import PygmentsTokens
 
 from IPython.core.debugger import CorePdb
 from IPython.core.completer import IPCompleter
-from .ptutils import IPythonPTCompleter
-from .shortcuts import suspend_to_bg, cursor_in_leading_ws
+from IPython.terminal.ptutils import IPythonPTCompleter
+from IPython.terminal.shortcuts import suspend_to_bg, cursor_in_leading_ws
+
+from prompt_toolkit import __version__ as ptk_version
+PTK3 = ptk_version.startswith('3.')
 
 
 class TerminalPdb(CorePdb):
@@ -49,19 +57,21 @@ class TerminalPdb(CorePdb):
         if kb is None:
             kb = self.setup_prompt_keybindings()
 
-        self.pt_app = PromptSession(
-            message=(lambda: PygmentsTokens(self.get_prompt_tokens())),
+        options = dict(
+            message=(lambda: PygmentsTokens(get_prompt_tokens())),
             editing_mode=getattr(EditingMode, self.shell.editing_mode.upper()),
             key_bindings=kb,
             history=self.shell.debugger_history,
             completer=self._ptcomp,
-            enable_history_search=True,  # we don't check the shell parameter?
+            enable_history_search=True,
             mouse_support=self.shell.mouse_support,
             complete_style=self.shell.pt_complete_style,
             style=self.shell.style,
-            inputhook=self.shell.inputhook,
             color_depth=self.shell.color_depth,
         )
+        if not PTK3:
+            options['inputhook'] = self.inputhook
+        self.pt_app = PromptSession(**options)
 
     def get_prompt_tokens(self):
         return [(Token.Prompt, self.prompt)]
@@ -95,12 +105,16 @@ class TerminalPdb(CorePdb):
 
         return kb
 
+
     def cmdloop(self, intro=None):
         """Repeatedly issue a prompt, accept input, parse an initial prefix
         off the received input, and dispatch to action methods, passing them
         the remainder of the line as argument.
 
-        override the same methods from cmd.Cmd to provide prompt toolkit replacement.
+        Override the same methods from cmd.Cmd to provide prompt toolkit replacement.
+
+        Shouldn't we define the class parameters IE self.intro
+        in the init?
         """
         if not self.use_rawinput:
             raise ValueError('Sorry ipdb does not support use_rawinput=False')
@@ -120,8 +134,8 @@ class TerminalPdb(CorePdb):
                     self._ptcomp.ipy_completer.namespace = self.curframe_locals
                     self._ptcomp.ipy_completer.global_namespace = self.curframe.f_globals
                     try:
-                        line = self.pt_app.prompt(
-                        )  # reset_current_buffer=True)
+                        # reset_current_buffer=True)
+                        line = self.pt_app.prompt()
                     except EOFError:
                         line = 'EOF'
                 line = self.precmd(line)
