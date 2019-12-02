@@ -13,6 +13,7 @@ except ImportError:
     except ImportError:
         sqlite3 = None
 import threading
+from warnings import warn
 
 from traitlets.config.configurable import LoggingConfigurable
 
@@ -31,7 +32,6 @@ from traitlets import (
     default,
     observe,
 )
-from warnings import warn
 
 # -----------------------------------------------------------------------------
 # Classes and functions
@@ -43,7 +43,6 @@ class DummyDB:
 
     Only used in the absence of sqlite.
     """
-
     @staticmethod
     def execute(*args, **kwargs):
         return []
@@ -91,8 +90,8 @@ def catch_corrupt_db(f, self, *a, **kw):
         return f(self, *a, **kw)
     except (DatabaseError, OperationalError) as e:
         self._corrupt_db_counter += 1
-        self.log.error("Failed to open SQLite history %s (%s).", self.hist_file,
-                       e)
+        self.log.error("Failed to open SQLite history %s (%s).",
+                       self.hist_file, e)
         if self.hist_file != ':memory:':
             if self._corrupt_db_counter > self._corrupt_db_limit:
                 self.hist_file = ':memory:'
@@ -131,7 +130,6 @@ def catch_corrupt_db(f, self, *a, **kw):
 
 class HistoryAccessorBase(LoggingConfigurable):
     """An abstract class for History Accessors """
-
     def get_tail(self, n=10, raw=True, output=False, include_latest=False):
         raise NotImplementedError
 
@@ -155,7 +153,8 @@ class HistoryAccessor(HistoryAccessorBase):
     """Access the history database without adding to it.
 
     This is intended for use by standalone history tools. IPython shells use
-    HistoryManager, below, which is a subclass of this."""
+    HistoryManager, below, which is a subclass of this.
+    """
 
     # counter for init_db retries, so we don't keep trying over and over
     _corrupt_db_counter = 0
@@ -163,7 +162,8 @@ class HistoryAccessor(HistoryAccessorBase):
     _corrupt_db_limit = 2
 
     # String holding the path to the history file
-    hist_file = Unicode(help="""Path to file to use for SQLite history database.
+    hist_file = Unicode(
+        help="""Path to file to use for SQLite history database.
 
         By default, IPython will put the history database in the IPython
         profile directory.  If you would rather share one history among
@@ -203,7 +203,7 @@ class HistoryAccessor(HistoryAccessorBase):
     def _db_changed(self, change):
         """validate the db, since it can be an Instance of two different types"""
         new = change['new']
-        connection_types = (DummyDB,)
+        connection_types = (DummyDB, )
         if sqlite3 is not None:
             connection_types = (DummyDB, sqlite3.Connection)
         if not isinstance(new, connection_types):
@@ -254,6 +254,7 @@ class HistoryAccessor(HistoryAccessorBase):
         ----------
         profile : str
           The name of a profile which has a history file.
+
         """
         return os.path.join(locate_profile(profile), 'history.sqlite')
 
@@ -265,8 +266,8 @@ class HistoryAccessor(HistoryAccessorBase):
             return
 
         # use detect_types so that timestamps return datetime objects
-        kwargs = dict(detect_types=sqlite3.PARSE_DECLTYPES |
-                      sqlite3.PARSE_COLNAMES)
+        kwargs = dict(detect_types=sqlite3.PARSE_DECLTYPES
+                      | sqlite3.PARSE_COLNAMES)
         kwargs.update(self.connection_options)
         self.db = sqlite3.connect(self.hist_file, **kwargs)
         self.db.execute("""CREATE TABLE IF NOT EXISTS sessions (session integer
@@ -299,11 +300,11 @@ class HistoryAccessor(HistoryAccessorBase):
         Parameters
         ----------
         sql : str
-          Any filtering expressions to go after SELECT ... FROM ...
+            Any filtering expressions to go after SELECT ... FROM ...
         params : tuple
-          Parameters passed to the SQL query (to replace "?")
+            Parameters passed to the SQL query (to replace "?")
         raw, output : bool
-          See :meth:`get_range`
+            See :meth:`get_range`
 
         Returns
         -------
@@ -328,13 +329,11 @@ class HistoryAccessor(HistoryAccessorBase):
 
         Parameters
         ----------
-
         session : int
             Session number to retrieve.
 
         Returns
         -------
-
         session_id : int
            Session ID number
         start : datetime
@@ -347,7 +346,7 @@ class HistoryAccessor(HistoryAccessorBase):
            A manually set description.
         """
         query = "SELECT * from sessions where session == ?"
-        return self.db.execute(query, (session,)).fetchone()
+        return self.db.execute(query, (session, )).fetchone()
 
     @catch_corrupt_db
     def get_last_session_id(self):
@@ -366,22 +365,23 @@ class HistoryAccessor(HistoryAccessorBase):
         Parameters
         ----------
         n : int
-          The number of lines to get
+            The number of lines to get
         raw, output : bool
-          See :meth:`get_range`
+            See :meth:`get_range`
         include_latest : bool
-          If False (default), n+1 lines are fetched, and the latest one
-          is discarded. This is intended to be used where the function
-          is called by a user command, which it should not return.
+            If False (default), n+1 lines are fetched, and the latest one
+            is discarded. This is intended to be used where the function
+            is called by a user command, which it should not return.
 
         Returns
         -------
         Tuples as :meth:`get_range`
+
         """
         self.writeout_cache()
         if not include_latest:
             n += 1
-        cur = self._run_sql("ORDER BY session DESC, line DESC LIMIT ?", (n,),
+        cur = self._run_sql("ORDER BY session DESC, line DESC LIMIT ?", (n, ),
                             raw=raw,
                             output=output)
         if not include_latest:
@@ -396,8 +396,9 @@ class HistoryAccessor(HistoryAccessorBase):
                output=False,
                n=None,
                unique=False):
-        """Search the database using unix glob-style matching (wildcards
-        * and ?).
+        """Search the database using unix glob-style matching.
+
+        I.E. (wildcards * and ?).
 
         Parameters
         ----------
@@ -416,18 +417,19 @@ class HistoryAccessor(HistoryAccessorBase):
         Returns
         -------
         Tuples as :meth:`get_range`
+
         """
         tosearch = "source_raw" if search_raw else "source"
         if output:
             tosearch = "history." + tosearch
         self.writeout_cache()
         sqlform = "WHERE %s GLOB ?" % tosearch
-        params = (pattern,)
+        params = (pattern, )
         if unique:
             sqlform += ' GROUP BY {0}'.format(tosearch)
         if n is not None:
             sqlform += " ORDER BY session DESC, line DESC LIMIT ?"
-            params += (n,)
+            params += (n, )
         elif unique:
             sqlform += " ORDER BY session, line"
         cur = self._run_sql(sqlform, params, raw=raw, output=output)
@@ -554,7 +556,8 @@ class HistoryManager(HistoryAccessor):
             config=True)
     db_cache_size = Integer(
         0,
-        help="Write to database every x commands (higher values save disk access & power).\n"
+        help=
+        "Write to database every x commands (higher values save disk access & power).\n"
         "Values of 1 or less effectively disable caching.").tag(config=True)
     # The input and output caches
     db_input_cache = List().tag(config=False)
@@ -593,9 +596,7 @@ class HistoryManager(HistoryAccessor):
 
         """
         # We need a pointer back to the shell for various tasks.
-        super(HistoryManager, self).__init__(shell=shell,
-                                             config=config,
-                                             **traits)
+        super().__init__(shell=shell, config=config, **traits)
         self.save_flag = threading.Event()
         self.db_input_cache_lock = threading.Lock()
         self.db_output_cache_lock = threading.Lock()
@@ -631,7 +632,7 @@ class HistoryManager(HistoryAccessor):
         with conn:
             cur = conn.execute(
                 """INSERT INTO sessions VALUES (NULL, ?, NULL,
-                            NULL, "") """, (datetime.datetime.now(),))
+                            NULL, "") """, (datetime.datetime.now(), ))
             self.session_number = cur.lastrowid
 
     def end_session(self):
@@ -700,8 +701,9 @@ class HistoryManager(HistoryAccessor):
         return super(HistoryManager, self).get_session_info(session=session)
 
     def _get_range_session(self, start=1, stop=None, raw=True, output=False):
-        """Get input and output history from the current session. Called by
-        get_range, and takes similar parameters.
+        """Get input and output history from the current session.
+
+        Called by get_range, and takes similar parameters.
 
         Yields
         ------
@@ -750,9 +752,9 @@ class HistoryManager(HistoryAccessor):
         Returns
         -------
         entries
-          An iterator over the desired lines. Each line is a 3-tuple, either
-          (session, line, input) if output is False, or
-          (session, line, (input, output)) if output is True.
+            An iterator over the desired lines. Each line is a 3-tuple, either
+            (session, line, input) if output is False, or
+            (session, line, (input, output)) if output is True.
         """
         if session <= 0:
             session += self.session_number
@@ -824,7 +826,8 @@ class HistoryManager(HistoryAccessor):
         line_num : int
           The line number from which to save outputs
         """
-        if (not self.db_log_output) or (line_num not in self.output_hist_reprs):
+        if (not self.db_log_output) or (
+                line_num not in self.output_hist_reprs):
             return
         output = self.output_hist_reprs[line_num]
 
@@ -837,13 +840,13 @@ class HistoryManager(HistoryAccessor):
         with conn:
             for line in self.db_input_cache:
                 conn.execute("INSERT INTO history VALUES (?, ?, ?, ?)",
-                             (self.session_number,) + line)
+                             (self.session_number, ) + line)
 
     def _writeout_output_cache(self, conn):
         with conn:
             for line in self.db_output_cache:
                 conn.execute("INSERT INTO output_history VALUES (?, ?, ?)",
-                             (self.session_number,) + line)
+                             (self.session_number, ) + line)
 
     @needs_sqlite
     def writeout_cache(self, conn=None):
@@ -901,8 +904,9 @@ class HistorySavingThread(threading.Thread):
     def run(self):
         # We need a separate db connection per thread:
         try:
-            self.db = sqlite3.connect(self.history_manager.hist_file,
-                                      **self.history_manager.connection_options)
+            self.db = sqlite3.connect(
+                self.history_manager.hist_file,
+                **self.history_manager.connection_options)
             while True:
                 self.history_manager.save_flag.wait()
                 if self.stop_now:

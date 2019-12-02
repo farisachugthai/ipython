@@ -1,16 +1,15 @@
 # encoding: utf-8
-"""
-An application for managing IPython history.
+"""An application for managing IPython history.
 
 To be invoked as the `ipython history` subcommand.
 """
-
 import os
 import sqlite3
 
-from traitlets.config.application import Application
-from .application import BaseIPythonApplication
 from traitlets import Bool, Int, Dict
+from traitlets.config.application import Application
+
+from IPython.core.application import BaseIPythonApplication
 from IPython.utils.utils_io import ask_yes_no
 
 trim_hist_help = """Trim the IPython history database to the last 1000 entries.
@@ -33,13 +32,13 @@ This is an handy alias to `ipython history trim --keep=0`
 class HistoryTrim(BaseIPythonApplication):
     description = trim_hist_help
 
-    backup = Bool(
-        False,
-        help="Keep the old history file as history.sqlite.<N>").tag(config=True)
+    backup = Bool(False,
+                  help="Keep the old history file as history.sqlite.<N>").tag(
+                      config=True)
 
-    keep = Int(
-        1000,
-        help="Number of recent lines to keep in the database.").tag(config=True)
+    keep = Int(1000,
+               help="Number of recent lines to keep in the database.").tag(
+                   config=True)
 
     flags = Dict(dict(backup=({'HistoryTrim': {'backup': True}}, backup.help)))
 
@@ -55,7 +54,7 @@ class HistoryTrim(BaseIPythonApplication):
             con.execute(
                 'SELECT session, line, source, source_raw FROM '
                 'history ORDER BY session DESC, line DESC LIMIT ?',
-                (self.keep + 1,)))
+                (self.keep + 1, )))
         if len(inputs) <= self.keep:
             print(
                 "There are already at most %d entries in the history database."
@@ -74,11 +73,11 @@ class HistoryTrim(BaseIPythonApplication):
             outputs = list(
                 con.execute(
                     'SELECT session, line, output FROM '
-                    'output_history WHERE session >= ?', (first_session,)))
+                    'output_history WHERE session >= ?', (first_session, )))
             sessions = list(
                 con.execute(
                     'SELECT session, start, end, num_cmds, remark FROM '
-                    'sessions WHERE session >= ?', (first_session,)))
+                    'sessions WHERE session >= ?', (first_session, )))
         con.close()
 
         # Create the new history database.
@@ -141,11 +140,11 @@ class HistoryClear(HistoryTrim):
                 'force': True
             }
         }, force.help),
-            f=({
-                'HistoryTrim': {
-                    'force': True
-                }
-            }, force.help)))
+             f=({
+                 'HistoryTrim': {
+                     'force': True
+                 }
+             }, force.help)))
     aliases = Dict()
 
     def start(self):

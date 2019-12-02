@@ -15,6 +15,6 @@ setup(
         'nose.plugins.0.10': [
             'ipdoctest = ipdoctest:IPythonDoctest',
             'extdoctest = ipdoctest:ExtensionDoctest',
-        ],
-    },
+            ],
+        },
 )

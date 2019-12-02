@@ -1,3 +1,6 @@
+[gc]
+    auto = 3000   # the default is 6700 but that sounds really high
+
 [core]
     autocrlf = false
     eol = lf

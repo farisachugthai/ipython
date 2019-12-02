@@ -451,7 +451,7 @@ def run_iptestall(options):
                 omit='*{0}tests{0}*'.format(os.sep),
                 html_dir=html_dir,
                 html_title='IPython test coverage',
-            )
+                )
             reporter = CustomHtmlReporter(cov, cov.config)
             reporter.report(None)
             print('done.')
@@ -463,7 +463,7 @@ def run_iptestall(options):
             except CoverageException as e:
                 print(
                     'Generating coverage report failed. Are you running javascript tests only?'
-                )
+                    )
                 import traceback
                 traceback.print_exc()
 

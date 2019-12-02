@@ -424,7 +424,7 @@ class SubprocessStreamCapturePlugin(Plugin):
             out = [
                 ev, '>> begin captured subprocess output <<', captured,
                 '>> end captured subprocess output <<'
-            ]
+                ]
             return ec, '\n'.join(out), tb
 
         return err
@@ -488,7 +488,7 @@ def run_iptest():
         # has been discussed on the distutils list and the
         # setuptools devs refuse to fix this problem!
         '--exe',
-    ]
+        ]
     if '-a' not in argv and '-A' not in argv:
         argv = argv + ['-a', '!crash']
 
@@ -507,7 +507,7 @@ def run_iptest():
         ExclusionPlugin(section.excludes),
         KnownFailure(),
         SubprocessStreamCapturePlugin()
-    ]
+        ]
 
     # we still have some vestigial doctests in core
     if section.name.startswith(('core', 'IPython.core', 'IPython.utils')):
@@ -516,7 +516,7 @@ def run_iptest():
             '--with-ipdoctest',
             '--ipdoctest-tests',
             '--ipdoctest-extension=txt',
-        ])
+            ])
 
     # Use working directory set by parent process (see iptestcontroller)
     if 'IPTEST_WORKING_DIR' in os.environ:
