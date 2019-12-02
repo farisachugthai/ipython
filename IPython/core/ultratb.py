@@ -107,6 +107,33 @@ As a result, our patches have been removed, saving us from working with ~200
 LOC. The remaining module level functions might be able to be deleted.
 Still manually inspecting that the patches aren't present upstream.
 
+Dec 02, 2019:
+
+TODO: We'll need to start breaking up the method `structured_traceback`,
+a method that'll be particularly difficult to get into smaller pieces as it's
+overidden in every subclass that exists in this module.
+
+A good start is implementing 3 methods in every TBTool.:
+
+    def get_etype(self, etype):
+        # A closure inside of structured_traceback because we need it's state
+        if etype is None:
+            self.etype = sys.exc_info[0]
+            return self.etype
+
+You can set the return value to etype so that it's locally bound and bound to
+the instance.
+
+So that'll hopefully protect us for how insanely inconsistent the
+variable handling here is.
+
+Cool. Now we can handle that tuple being None gracefully. Call that method for each of the 3 components. Check if all 3 are None and if so just bail.
+
+That'll take care of structured_traceback getting called incorrectly and
+doesn't provide the traceback info we want; in addition to handling a situation
+where it gets called when we didn't have a traceback.
+
+
 Inheritance diagram:
 
 .. inheritance-diagram:: IPython.core.ultratb
@@ -184,13 +211,23 @@ def inspect_error():
 
 
 # Monkeypatch inspect to apply our bugfix.
-def with_patch_inspect(f):
-    """
+def with_patch_inspect(f, *args, **kwargs):
+    """Decorator for monkeypatching inspect.findsource.
+
     Deprecated since IPython 6.0
-    decorator for monkeypatching inspect.findsource
+
+    Parameters
+    ----------
+    f
+        Function to inspect
+
+    Returns
+    -------
+
     """
+
     @functools.wraps
-    def wrapped(*args, **kwargs):
+    def wrapped(f, *args, **kwargs):
         save_findsource = inspect.findsource
         save_getargs = inspect.getargs
         inspect.findsource = findsource
@@ -201,7 +238,7 @@ def with_patch_inspect(f):
             inspect.findsource = save_findsource
             inspect.getargs = save_getargs
 
-    return wrapped
+    return wrapped(f, *args, **kwargs)
 
 
 def fix_frame_records_filenames(records):
@@ -209,6 +246,12 @@ def fix_frame_records_filenames(records):
 
     Particularly, modules loaded from within zip files have useless filenames
     attached to their code object, and inspect.getinnerframes() just uses it.
+
+    Parameters
+    ----------
+    records
+        Apparently something that produces a 6 item index when you iterate
+        over it. Jesus Christ what calls this?
 
     Notes
     ------
@@ -317,7 +360,9 @@ def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
 
 
 def is_recursion_error(etype, value, records):
-    """This function only exists for backwards compatibility?
+    """Check for a recursion error.
+
+    This function only exists for backwards compatibility?
 
     It simply checks for whether an exception is a RecursionError without
     invoking the keyword as it was only defined in python3.5. We only support
@@ -404,12 +449,12 @@ class TBTools(Colorable):
     tb_offset = 0
 
     def __init__(
-        self,
-        color_scheme="NoColor",
-        call_pdb=False,
-        ostream=None,
-        parent=None,
-        config=None,
+            self,
+            color_scheme="NoColor",
+            call_pdb=False,
+            ostream=None,
+            parent=None,
+            config=None,
     ):
         """
         Parameters
@@ -556,17 +601,26 @@ class ListTB(TBTools):
 
     Parameters
     ----------
-    (etype, evalue, elist)
+    # (etype, evalue, elist)
+    Wait why did I have that listed as the parameters?
+    color_scheme
+    call_pdb
+    ostream
+    parent
+    config
+    TODO: Colors
+        Missing a parameter that is used in
+        :meth:`structured_traceback`.
 
     """
 
     def __init__(
-        self,
-        color_scheme="NoColor",
-        call_pdb=False,
-        ostream=None,
-        parent=None,
-        config=None,
+            self,
+            color_scheme="NoColor",
+            call_pdb=False,
+            ostream=None,
+            parent=None,
+            config=None,
     ):
         # """Just modified execution so it calls super() and not the super class directly."""
         self.color_scheme = color_scheme
@@ -585,17 +639,11 @@ class ListTB(TBTools):
         )
 
     def __call__(self, etype=None, value=None, elist=None):
-        """Wait wait what. What the hell is self.text?
+        """How to invoke the tbtool.
 
-        This used to be the old method.
+        Wait wait what. What the hell is self.text?
 
-        .. ipython::
-
-            self.ostream.flush()
-            self.ostream.write(self.text(etype, value, elist))
-            self.ostream.write('\n')
-
-        Yeah that has to get redone.
+        Got it! It's a method from `TBTools`.
 
         11/29/2019:
 
@@ -604,10 +652,14 @@ class ListTB(TBTools):
         """
         if hasattr(self.ostream, "flush"):
             self.ostream.flush()
-        if getattr(sys, "exc_info", None):
-            etype = etype or sys.exc_info()[0]
-            value = value or sys.exc_info()[1]
-            elist = elist or sys.exc_info()[2]
+        # so i made this mistake a bunch of times throughout the repository
+        # sys always have exc_info, sometimes it just returns (None, None, None)
+        if sys.exc_info()[0] is not None:
+            etype = sys_exc_info()[0]
+        if sys.exc_info()[1] is not None:
+            value = sys.exc_info()[1]
+        if sys.exc_info()[2] is not None:
+            elist = sys.exc_info()[2]
         self.ostream.write(self.text(etype, value, elist))
         self.ostream.write("\n")
 
@@ -624,24 +676,21 @@ class ListTB(TBTools):
         ----------
         mode :
         etype : exception type
-          Type of the exception raised.
-
+            Type of the exception raised.
         value : object
-          Data stored in the exception
-
+            Data stored in the exception
         elist : list
-          List of frames, see class docstring for details.
-
+            List of frames, see class docstring for details.
         tb_offset : int, optional
-          Number of frames in the traceback to skip.  If not given, the
-          instance value is used (set in constructor).
-
+            Number of frames in the traceback to skip.  If not given, the
+            instance value is used (set in constructor).
         context : int, optional
-          Number of lines of context information to print.
+            Number of lines of context information to print.
 
         Returns
         -------
-        String with formatted exception.
+        out_list : str
+            String with formatted exception.
 
         """
         tb_offset = self.tb_offset if tb_offset is None else tb_offset
@@ -684,6 +733,7 @@ class ListTB(TBTools):
         Well now it simply returns it. It's not like this method wasn't already
         static.
         """
+        etype, evalue, _ = sys.exc_info()
         return traceback.format_exception_only(etype, evalue)
 
     def get_exception_only(self, etype, value):
@@ -727,6 +777,20 @@ class ListTB(TBTools):
 
 
 def get_parts_of_chained_exception(evalue):
+    """This is a weird way of doing things but the closure works I guess?
+
+    Parameters
+    ----------
+    evalue
+
+    Returns
+    -------
+    chained_evalue.__class__, chained_evalue, chained_evalue.__traceback__
+        Uhh so I guess tuple of str, whatever the hell evalue.__context__ is...
+        maybe a frame? and a traceback type.
+
+    """
+    @functools.wraps
     def get_chained_exception(exception_value):
         cause = getattr(exception_value, "__cause__", None)
         if cause:
@@ -751,17 +815,17 @@ class VerboseTB(TBTools):
     """
 
     def __init__(
-        self,
-        color_scheme="NoColor",
-        call_pdb=False,
-        ostream=None,
-        tb_offset=0,
-        long_header=False,
-        include_vars=True,
-        check_cache=None,
-        debugger_cls=None,
-        parent=None,
-        config=None,
+            self,
+            color_scheme="NoColor",
+            call_pdb=False,
+            ostream=None,
+            tb_offset=0,
+            long_header=False,
+            include_vars=True,
+            check_cache=None,
+            debugger_cls=None,
+            parent=None,
+            config=None,
     ):
         """Specify traceback offset, headers and color scheme.
 
@@ -778,6 +842,11 @@ class VerboseTB(TBTools):
             kernel to provide tracebacks for interactive code that is cached,
             by a compiler instance that flushes the linecache but preserves its
             own code cache.
+        ostream
+            Required as by the method :meth:`get_records`.
+        pdb : bool
+            TODO: Amazingly we didn't cover everything. The :meth:`debugger`
+            method invokes the call_pdb parameter and references it as pdb.
 
         """
         self.color_scheme = color_scheme
@@ -1188,14 +1257,15 @@ class VerboseTB(TBTools):
             The 'force' option forces the debugger to activate even if the flag
             is false.
 
-        If the call_pdb flag is set, the pdb interactive debugger is
+        If the :param:`call_pdb` flag is set, the pdb interactive debugger is
         invoked. In all cases, the self.tb reference to the current traceback
         is deleted to prevent lingering references which hamper memory
         management.
 
         Note that each call to pdb() does an 'import readline', so if your app
         requires a special setup for the readline completers, you'll have to
-        fix that by hand after invoking the exception handler."""
+        fix that by hand after invoking the exception handler.
+        """
 
         if force or self.call_pdb:
             if self.pdb is None:
@@ -1261,6 +1331,14 @@ class FormattedTB(VerboseTB, ListTB):
     one needs to remove a number of topmost frames from the traceback (such as
     occurs with python programs that themselves execute other python code,
     like Python shells).
+
+        Notes
+        -----
+    Outside of the diamond inheritance we have going on, this is also the class
+    where we introduce the xmode parameter to the shell.
+    Like these classes couldn't have more going on if they tried.
+    Break that up into a new block of code.
+
     """
 
     def __init__(
@@ -1314,7 +1392,7 @@ class FormattedTB(VerboseTB, ListTB):
         # set_mode also sets the tb_join_char attribute
         self.set_mode(mode)
 
-    def _extract_tb(self, tb):
+    def _extract_tb(self, tb=None):
         if tb:
             return traceback.extract_tb(tb)
         else:
@@ -1352,8 +1430,8 @@ class FormattedTB(VerboseTB, ListTB):
     def set_mode(self, mode=None):
         """Switch to the desired mode.
 
-        If mode is not specified, cycles through the available modes."""
-
+        If mode is not specified, cycles through the available modes.
+        """
         if not mode:
             new_idx = (self.valid_modes.index(self.mode) + 1) % len(
                 self.valid_modes)
@@ -1371,6 +1449,10 @@ class FormattedTB(VerboseTB, ListTB):
 
     # some convenient shortcuts
     def plain(self):
+        """The implementation of xmode.
+
+        I mean I guess this is a good example of how to do it?
+        """
         self.set_mode(self.valid_modes[0])
 
     def context(self):
@@ -1443,18 +1525,16 @@ class AutoFormattedTB(FormattedTB):
 
             pdb.set_trace()
 
-        super().__init__(
-            color_scheme=self.color_scheme,
-            call_pdb=self.call_pdb,
-            debugger_cls=self.debugger_cls,
-            long_header=self.long_header,
-            tb_offset=self.tb_offset,
-            include_vars=self.include_vars,
-            ostream=self.ostream,
-            check_cache=self.check_cache,
-            parent=self.parent,
-            config=self.config
-        )
+        super().__init__(color_scheme=self.color_scheme,
+                         call_pdb=self.call_pdb,
+                         debugger_cls=self.debugger_cls,
+                         long_header=self.long_header,
+                         tb_offset=self.tb_offset,
+                         include_vars=self.include_vars,
+                         ostream=self.ostream,
+                         check_cache=self.check_cache,
+                         parent=self.parent,
+                         config=self.config)
 
     def __call__(self,
                  etype=None,
@@ -1487,12 +1567,12 @@ class AutoFormattedTB(FormattedTB):
             print("\nKeyboardInterrupt")
 
     def structured_traceback(
-        self,
-        etype=None,
-        value=None,
-        tb=None,
-        tb_offset=None,
-        number_of_lines_of_context=5,
+            self,
+            etype=None,
+            value=None,
+            tb=None,
+            tb_offset=None,
+            number_of_lines_of_context=5,
     ):
         if etype is None:
             etype, value, tb = sys.exc_info()
@@ -1509,11 +1589,29 @@ class ColorTB(FormattedTB):
     """Shorthand to initialize a FormattedTB in Linux colors mode."""
 
     def __init__(self, color_scheme="NoColor", call_pdb=False, **kwargs):
-        """
+        """Initialize the ColorTB.
 
         Parameters
         ----------
         color_scheme : object
+
+        Yo we definitely don't call FormattedTB correctly. Here's the init...
+
+            def __init__(
+                    self,
+                    mode: str = "Plain",
+                    color_scheme: object = "Linux",
+                    call_pdb: bool = False,
+                    ostream: object = None,
+                    tb_offset: int = 0,
+                    long_header: bool = False,
+                    include_vars: bool = False,
+                    check_cache: object = None,
+                    debugger_cls: object = None,
+                    parent: object = None,
+                    config: object = None,
+            ) -> object:
+
         """
         self.color_scheme = color_scheme
         self.call_pdb = call_pdb
@@ -1527,14 +1625,19 @@ class SyntaxTB(ListTB):
     """Extension which holds some state: the last exception value."""
 
     def __init__(self, color_scheme=None, parent=None, config=None):
-        """
+        """Initialize SyntaxTB.
 
         Parameters
         ----------
         color_scheme : object
+        parent : shell
+            IPython instance
+        config : :class:`traitlets.config.Config`
+            Global config instance.
+
         """
         self.color_scheme_table = ColorSchemeTable()
-        self.color_scheme = color_scheme or None
+        self.color_scheme = color_scheme or 'Linux'
         self.parent = parent
         # super().__init__(self, color_scheme=color_scheme, call_pdb=call_pdb, ostream=ostream, parent=parent)
         self.last_syntax_error = None
@@ -1543,7 +1646,6 @@ class SyntaxTB(ListTB):
                         color_scheme=self.color_scheme,
                         parent=self.parent,
                         config=self.config)
-        # ListTB.__call__(self, etype, value, elist)
 
     def __call__(self, value):
         self.last_syntax_error = value
