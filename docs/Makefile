@@ -54,7 +54,7 @@ dist: html
 api:
 	mkdir -p build/html build/.doctrees
 	@echo "Generating API docs"
-	$(SPHINXAPIDOC) -M -f -e --tocfile index -o source/api/generated -t source/_templates ../IPython ../IPython/*tests*
+	$(SPHINXAPIDOC) -M -f --tocfile index -o source/api/generated -t source/_templates ../IPython ../IPython/*tests*
 
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here

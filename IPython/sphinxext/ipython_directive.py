@@ -1119,7 +1119,7 @@ class IPythonDirective(Directive):
         # delete last bookmark
         self.shell.process_input_line('bookmark -d ipy_savedir',
                                       store_history=False)
-        belf.shell.clear_cout()
+        self.shell.clear_cout()
 
     def run(self):
         debug = False

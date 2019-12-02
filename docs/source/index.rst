@@ -130,9 +130,8 @@ Index
 .. toctree::
    :maxdepth: 1
    :titlesonly:
-   :caption: Developer's Notes and API
+   :caption: Developer's Notes
 
-   api/index
    options/index
    development/index
    building
@@ -142,7 +141,15 @@ Index
 
 
 .. toctree::
+   :maxdepth: 4
+   :caption: API
+
+   api/index
+
+
+.. toctree::
    :maxdepth: 1
+   :titlesonly:
    :caption: About us
 
    whatsnew/index

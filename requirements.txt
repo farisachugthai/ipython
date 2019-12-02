@@ -1,5 +1,6 @@
 Pygments
 backcall
+codecov
 colorama
 coverage
 curio
