@@ -142,7 +142,7 @@ def default_argv():
         '--no-term-title',
         '--no-banner',
         '--autocall=0'
-    ]
+        ]
 
 
 def default_config():

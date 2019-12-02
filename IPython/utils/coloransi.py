@@ -240,23 +240,23 @@ class ColorSchemeTable(dict):
         """
         raise NotImplementedError('fuck it')
         # try:
-            # scheme_idx = self.valid_schemes.index(scheme_test)
-            # Seriously why the fuck does this use THIS many different variables
-            # scheme
-            # scheme_list
-            # scheme_test
-            # scheme_names
-            # valid_schemes
-            # active_scheme_name,
-            # active_colors
-            # Colors
-            # self.values
-            # valid_schemes
-            # active
-            # scheme_idx
+        # scheme_idx = self.valid_schemes.index(scheme_test)
+        # Seriously why the fuck does this use THIS many different variables
+        # scheme
+        # scheme_list
+        # scheme_test
+        # scheme_names
+        # valid_schemes
+        # active_scheme_name,
+        # active_colors
+        # Colors
+        # self.values
+        # valid_schemes
+        # active
+        # scheme_idx
 
-            # IT ALL REPRESENTS ONE OBJECT.
-            # THIS ISN'T THE HARD PART
+        # IT ALL REPRESENTS ONE OBJECT.
+        # THIS ISN'T THE HARD PART
         # except ValueError:
         #     raise ValueError('Unrecognized color scheme: ' + scheme +
         #                      '\nValid schemes: ' + str(self.scheme_names).replace("'', ", ''))
@@ -298,6 +298,10 @@ class DefaultDark(defaultdict):
         'base0F': '#a16946',
     })
 
+    @property
+    def colors(self):
+        return styles
+
 
 class Base16Style(defaultdict):
     """I feel like I did this really wrong."""
@@ -325,16 +329,19 @@ class Base16Style(defaultdict):
         String: "base0B",
     }
 
-# See https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/prompt_toolkit/styles/defaults.py
-# for a description of prompt_toolkit related pseudo-tokens.
+    @property
+    def colors(self):
+        return styles
 
+    # See https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/prompt_toolkit/styles/defaults.py
+    # for a description of prompt_toolkit related pseudo-tokens.
 
-overrides = {
-    Token.Prompt: "base0B",
-    Token.PromptNum: '%s bold' % "base0B",
-    Token.OutPrompt: "base08",
-    Token.OutPromptNum: '%s bold' % "base08",
-    Token.Menu.Completions.Completion: 'bg:%s %s' % ("base01", "base04"),
-    Token.Menu.Completions.Completion.Current: 'bg:%s %s' % ("base04", "base01"),
-    Token.MatchingBracket.Other: 'bg:%s %s' % ("base03", "base00")
-}
+    overrides = {
+        Token.Prompt: "base0B",
+        Token.PromptNum: '%s bold' % "base0B",
+        Token.OutPrompt: "base08",
+        Token.OutPromptNum: '%s bold' % "base08",
+        Token.Menu.Completions.Completion: 'bg:%s %s' % ("base01", "base04"),
+        Token.Menu.Completions.Completion.Current: 'bg:%s %s' % ("base04", "base01"),
+        Token.MatchingBracket.Other: 'bg:%s %s' % ("base03", "base00")
+    }

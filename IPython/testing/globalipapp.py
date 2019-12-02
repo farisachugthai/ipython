@@ -37,7 +37,7 @@ class StreamProxy(utils_io.IOStream):
             "StreamProxy is deprecated and unused as of IPython 5",
             DeprecationWarning,
             stacklevel=2,
-        )
+            )
         self.name = name
 
     @property

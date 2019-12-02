@@ -16,8 +16,6 @@ https://docs.python.org/3/license.html
 
 Portability and Python requirements
 -----------------------------------
-*I think thats a section in the docs.*
-
 This code should really go into `../terminal/debugger` though. People won't
 be using this code in the browser.
 
@@ -26,9 +24,12 @@ Python session, we initialize an IPython session for you.
 
 Fair enough.
 
-Look how we do so.::
+Like if the user isn't currently inside of an IPython session, then we create
+one. Reasonably enough.::
 
     >>> from IPython.terminal.interactiveshell import TerminalInteractiveShell
+
+There's no way that that doesn't prohibit Notebook users from using this code.
 
 There's no way that Notebook users can utilize that, so I'd assume that this
 code is basically unavailable to them.
@@ -71,7 +72,6 @@ prompt = 'ipdb> '
 # Allow the set_trace code to operate outside of an ipython instance, even if
 # it does so with some limitations.  The rest of this support is implemented in
 # the Tracer constructor.
-
 # Didn't we deprecate Tracer?
 
 
@@ -93,6 +93,7 @@ def strip_indentation(multiline_string):
 def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     """Make new_fn have old_fn's doc string. This is particularly useful
     for the ``do_...`` commands that hook into the help system.
+
     Adapted from from a comp.lang.python posting
     by Duncan Booth.
 
@@ -131,6 +132,7 @@ class CorePdb(Pdb):
                  context=5,
                  aliases=None,
                  prompt='IPdb> ',
+                 shell=None,
                  **kwargs):
         """Create a new IPython debugger.
 
@@ -146,8 +148,9 @@ class CorePdb(Pdb):
         :param stdout: Passed to `pdb.Pdb`.
         :param context: Number of lines of source code context to show when
                         displaying stacktrace information.
-        :param aliases: User aliases.
-        :param prompt: ``$PS1``.
+        :param aliases: User defined aliases.
+        :param prompt: ``$PS1``
+        :param shell: IPython instance.
         :param kwargs: Passed to pdb.Pdb.
             The possibilities are python version dependent, see the python
             docs for more info.
@@ -165,7 +168,7 @@ class CorePdb(Pdb):
         super().__init__(self, completekey, stdin, stdout, **kwargs)
 
         # IPython changes...
-        self.shell = get_ipython()
+        self.shell = shell or get_ipython()
 
         if self.shell is None:
             save_main = sys.modules['__main__']
@@ -574,6 +577,10 @@ class CorePdb(Pdb):
             self.print_stack_trace()
 
     do_w = do_where
+
+
+# enough modules import this thibking its jere so we should
+Pdb = CorePdb
 
 
 def set_trace(frame=None):
