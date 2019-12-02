@@ -16,6 +16,7 @@ import glob
 from warnings import warn
 
 from pathlib import Path
+
 # from IPython.utils.process import system
 from os import system
 
@@ -29,7 +30,7 @@ def _writable_dir(path):
     return os.path.isdir(path) and os.access(path, os.W_OK)
 
 
-if sys.platform == 'win32':
+if sys.platform == "win32":
 
     def _get_long_path_name(path):
         """Get a long path name (expand ~) on Windows using ctypes.
@@ -54,7 +55,10 @@ if sys.platform == 'win32':
             import ctypes
         except ImportError:
             raise ImportError(
-                'you need to have ctypes installed for this to work')
+                "you need to have ctypes installed for this to work")
+        if not getattr(ctypes, "windll", None):
+            return
+
         _GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
         _GetLongPathName.argtypes = [
             ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint
@@ -66,6 +70,7 @@ if sys.platform == 'win32':
             return path
         else:
             return buf.value
+
 else:
 
     def _get_long_path_name(path):
@@ -107,7 +112,7 @@ def compress_user(path):
         Path with a tilde added.
 
     """
-    home = os.path.expanduser('~')
+    home = os.path.expanduser("~")
     if path.startswith(home):
         path = "~" + path[len(home):]
     return path
@@ -117,7 +122,9 @@ def get_py_filename(name, force_win32=None):
     """Return a valid python filename in the current directory.
 
     If the given name is not a file, it adds '.py' and searches again.
-    Raises IOError with an informative message if the file isn't found.
+
+    .. note::
+        This function is used by the `%edit` magic. So pretty important.
 
     Parameters
     ----------
@@ -126,24 +133,29 @@ def get_py_filename(name, force_win32=None):
 
     Returns
     -------
-    str (path-like)
+    name : str (path-like)
         Path with a tilde added.
 
-    """
+    Raises
+    ------
+    :exc:`IOError`
+        With an informative message if the file isn't found.
 
+    """
     name = os.path.expanduser(name)
     if force_win32 is not None:
         warn(
             "The 'force_win32' argument to 'get_py_filename' is deprecated "
             "since IPython 5.0 and should not be used anymore",
             DeprecationWarning,
-            stacklevel=2)
-    if not os.path.isfile(name) and not name.endswith('.py'):
-        name += '.py'
+            stacklevel=2,
+        )
+    if not os.path.isfile(name) and not name.endswith(".py"):
+        name += ".py"
     if os.path.isfile(name):
         return name
     else:
-        raise IOError('File `%r` not found.' % name)
+        raise IOError("File `%r` not found." % name)
 
 
 def filefind(filename, path_dirs=None):
@@ -163,6 +175,8 @@ def filefind(filename, path_dirs=None):
     Will find the file in the users home directory.  This function does not
     automatically try any paths, such as the cwd or the user's home directory.
 
+    .. todo:: Is this in traitlets now?
+
     Parameters
     ----------
     filename : str
@@ -177,8 +191,8 @@ def filefind(filename, path_dirs=None):
     Returns
     -------
     Raises :exc:`IOError` or returns absolute path to file.
-    """
 
+    """
     # If paths are quoted, abspath gets confused, strip them...
     filename = filename.strip('"').strip("'")
     # If the input is an absolute path, just check it exists
@@ -191,7 +205,7 @@ def filefind(filename, path_dirs=None):
         path_dirs = (path_dirs, )
 
     for path in path_dirs:
-        if path == '.':
+        if path == ".":
             path = os.getcwd()
         testname = expand_path(os.path.join(path, filename))
         if os.path.isfile(testname):
@@ -210,7 +224,7 @@ def get_home_dir(require_writable=False):
     [default: False]
     """
     if require_writable:
-        print('Hey fix the function calling this.')
+        print("Hey fix the function calling this.")
     return Path.home().__fspath__()
 
 
@@ -218,7 +232,7 @@ def get_xdg_dir():
     """Return the XDG_CONFIG_HOME, if it is defined and exists, else None."""
     env = os.environ
     xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(
-        get_home_dir(), '.config')
+        get_home_dir(), ".config")
     if xdg and _writable_dir(xdg):
         return xdg
 
@@ -233,7 +247,7 @@ def get_xdg_cache_dir():
     """
     env = os.environ
     xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(
-        get_home_dir(), '.cache')
+        get_home_dir(), ".cache")
     if xdg and _writable_dir(xdg):
         return xdg
 
@@ -256,22 +270,22 @@ def expand_path(s):
     # the $ to get (\\server\share\%username%). I think it considered $
     # alone an empty var. But, we need the $ to remains there (it indicates
     # a hidden share).
-    if os.name == 'nt':
-        s = s.replace('$\\', 'IPYTHON_TEMP')
+    if os.name == "nt":
+        s = s.replace("$\\", "IPYTHON_TEMP")
     s = os.path.expandvars(os.path.expanduser(s))
-    if os.name == 'nt':
-        s = s.replace('IPYTHON_TEMP', '$\\')
+    if os.name == "nt":
+        s = s.replace("IPYTHON_TEMP", "$\\")
     return s
 
 
 def unescape_glob(string):
     """Unescape glob pattern in `string`."""
     def unescape(s):
-        for pattern in '*[]!?':
-            s = s.replace(r'\{0}'.format(pattern), pattern)
+        for pattern in "*[]!?":
+            s = s.replace(r"\{0}".format(pattern), pattern)
         return s
 
-    return '\\'.join(map(unescape, string.split('\\\\')))
+    return "\\".join(map(unescape, string.split("\\\\")))
 
 
 def shellglob(args):
@@ -284,7 +298,7 @@ def shellglob(args):
     expanded = []
     # Do not unescape backslash in Windows as it is interpreted as
     # path separator:
-    unescape = unescape_glob if sys.platform != 'win32' else lambda x: x
+    unescape = unescape_glob if sys.platform != "win32" else lambda x: x
     for a in args:
         expanded.extend(glob.glob(a) or [unescape(a)])
     return expanded
@@ -336,12 +350,11 @@ ENOLINK = 1998
 
 
 def link(src, dst):
-    """Hard links ``src`` to ``dst``, returning 0 or errno.
+    """Create a hard link ``src`` to ``dst``, returning 0 or errno.
 
-    Note that the special errno ``ENOLINK`` will be returned if ``os.link`` isn't
-    supported by the operating system.
+    Note that the special errno ``ENOLINK`` will be returned if ``os.link``
+    isn't supported by the operating system.
     """
-
     if not hasattr(os, "link"):
         return ENOLINK
     link_errno = 0
@@ -353,11 +366,11 @@ def link(src, dst):
 
 
 def link_or_copy(src, dst):
-    """Attempts to hardlink ``src`` to ``dst``, copying if the link fails.
+    """Attempt to hardlink ``src`` to ``dst``, copying if the link fails.
 
-    Attempts to maintain the semantics of ``shutil.copy``.
+    Attempt to maintain the semantics of `shutil.copy`.
 
-    Because ``os.link`` does not overwrite files, a unique temporary file
+    Because `os.link` does not overwrite files, a unique temporary file
     will be used if the target already exists, then that file will be moved
     into place.
     """

@@ -40,8 +40,7 @@ def exception_colors():
 
     # Populate it with color schemes
     C = TermColors  # shorthand and local lookup
-    ex_colors.add_scheme(ColorScheme(
-        'NoColor',
+    ex_colors.add_scheme(ColorScheme(colormap=dict(
         # The color to be used for the top line
         topline=C.NoColor,
 
@@ -64,12 +63,12 @@ def exception_colors():
         excName=C.NoColor,
         line=C.NoColor,
         caret=C.NoColor,
-        Normal=C.NoColor
+        Normal=C.NoColor),
+        name='NoColor',
     ))
 
     # make some schemes as instances so we can copy them for modification easily
-    ex_colors.add_scheme(ColorScheme(
-        'Linux',
+    ex_colors.add_scheme(ColorScheme(colormap=dict(
         # The color to be used for the top line
         topline=C.LightRed,
 
@@ -92,12 +91,12 @@ def exception_colors():
         excName=C.LightRed,
         line=C.Yellow,
         caret=C.White,
-        Normal=C.Normal
-    ))
+        Normal=C.Normal),
+        name='Linux',
+        ))
 
     # For light backgrounds, swap dark/light colors
-    ex_colors.add_scheme(ColorScheme(
-        'LightBG',
+    ex_colors.add_scheme(ColorScheme(colormap=dict(
         # The color to be used for the top line
         topline=C.Red,
 
@@ -121,11 +120,11 @@ def exception_colors():
         # line = C.Brown,  # brown often is displayed as yellow
         line=C.Red,
         caret=C.Normal,
-        Normal=C.Normal,
+        Normal=C.Normal),
+        name='LightBG',
     ))
 
-    ex_colors.add_scheme(ColorScheme(
-        'Neutral',
+    ex_colors.add_scheme(ColorScheme(colormap=dict(
         # The color to be used for the top line
         topline=C.Red,
 
@@ -149,7 +148,8 @@ def exception_colors():
         # line = C.Brown,  # brown often is displayed as yellow
         line=C.Red,
         caret=C.Normal,
-        Normal=C.Normal,
+        Normal=C.Normal),
+        name='Neutral',
     ))
 
     # Hack: the 'neutral' colours are not very visible on a dark background on
@@ -160,23 +160,3 @@ def exception_colors():
         ex_colors.add_scheme(ex_colors['Linux'].copy('Neutral'))
 
     return ex_colors
-
-
-class Deprec(object):
-
-    def __init__(self, wrapped_obj):
-        self.wrapped = wrapped_obj
-
-    def __getattr__(self, name):
-        val = getattr(self.wrapped, name)
-        warnings.warn("Using ExceptionColors global is deprecated and will be removed in IPython 6.0",
-                      DeprecationWarning, stacklevel=2)
-        # using getattr after warnings break ipydoctest in weird way for 3.5
-        return val
-
-
-# For backwards compatibility, keep around a single global object.  Note that
-# this should NOT be used, the factory function should be used instead, since
-# these objects are stateful and it's very easy to get strange bugs if any code
-# modifies the module-level object's state.
-# ExceptionColors = Deprec(exception_colors())

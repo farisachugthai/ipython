@@ -106,11 +106,13 @@ def get_encoding(obj):
     """
     return sys.getfilesystemencoding()
 
+
 def is_simple_callable(obj):
     """True if obj is a function ()"""
     return (inspect.isfunction(obj) or inspect.ismethod(obj) or
             isinstance(obj, _builtin_func_type) or
             isinstance(obj, _builtin_meth_type))
+
 
 def _get_wrapped(obj):
     """Get the original object if wrapped in one or more @decorators
@@ -120,10 +122,10 @@ def _get_wrapped(obj):
     this will arbitrarily cut off after 100 levels of obj.__wrapped__
     attribute access. --TK, Jan 2016
     """
-    orig_obj=obj
-    i=0
+    orig_obj = obj
+    i = 0
     while safe_hasattr(obj, '__wrapped__'):
-        obj=obj.__wrapped__
+        obj = obj.__wrapped__
         i += 1
         if i > 100:
             # __wrapped__ is probably a lie, so return the thing we started
@@ -149,16 +151,16 @@ def find_source_lines(obj):
       The line number where the object definition starts.
 
     """
-    obj=_get_wrapped(obj)
+    obj = _get_wrapped(obj)
 
     try:
-        fname=inspect.getabsfile(obj)
+        fname = inspect.getabsfile(obj)
     except TypeError:
         # For an instance, the file that matters is where its class was
         # declared.
         if hasattr(obj, '__class__'):
             try:
-                fname=inspect.getabsfile(obj.__class__)
+                fname = inspect.getabsfile(obj.__class__)
             except TypeError:
                 # Can happen for builtins
                 pass
@@ -166,7 +168,8 @@ def find_source_lines(obj):
         pass
     return fname
 
-def _mime_format(text, formatter = None):
+
+def _mime_format(text, formatter=None):
     """Return a mime bundle representation of the input text.
 
     - if `formatter` is None, the returned mime bundle has
@@ -182,12 +185,12 @@ def _mime_format(text, formatter = None):
     Formatters returning strings are supported but this behavior is deprecated.
 
     """
-    defaults={'text/plain': text, 'text/html': '<pre>' + text + '</pre>'}
+    defaults = {'text/plain': text, 'text/html': '<pre>' + text + '</pre>'}
 
     if formatter is None:
         return defaults
     else:
-        formatted=formatter(text)
+        formatted = formatter(text)
 
         if not isinstance(formatted, dict):
             # Handle the deprecated behavior of a formatter returning
@@ -215,24 +218,30 @@ class Inspector:
     """
 
     def __init__(self,
-                 color_table = InspectColors,
-                 scheme = None,
-                 str_detail_level = 0,
-                 parent = None,
-                 config = None,
+                 color_table=InspectColors,
+                 # is this mutable ----^
+                 scheme=None,
+                 str_detail_level=0,
+                 parent=None,
+                 config=None,
                  *args, **kwargs
                  ):
-        self.color_table=color_table
+        self.color_table = color_table
         # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         # self.format = self.parser.format
-        self.__head=None
-        self.str_detail_level=str_detail_level
-        # self.set_active_scheme(scheme)
-        self.parent=parent
-        self.config=config
+        self.__head = None
+        self.str_detail_level = str_detail_level
+
+        # no idea if i set these 3 classes right but oh well
+        self.color_scheme = ColorSchemeTable()
+        self.Colors = TermColors
+        self.set_active_scheme = self.color_scheme.set_active_scheme
+
+        self.parent = parent
+        self.config = config
         super().__init__()
 
-    def _getdef(self, obj, oname = ''):
+    def _getdef(self, obj, oname=''):
         """Return the call signature for any callable object.
 
         If any exception is generated, None is returned instead and the
@@ -242,18 +251,18 @@ class Inspector:
                   inspect.Signature.
 
         """
-        hdef=_render_signature(signature(obj), oname)
+        hdef = _render_signature(signature(obj), oname)
         return hdef
 
     def noinfo(self, msg, oname):
         """Generic message when no information is found."""
-        print('No %s found' % msg, end = ' ')
+        print('No %s found' % msg, end=' ')
         if oname:
             print('for %s' % oname)
         else:
             print()
 
-    def pdef(self, obj, oname = ''):
+    def pdef(self, obj, oname=''):
         """Print the call signature for any callable object.
 
         If the object is a class, print the constructor information.
@@ -263,19 +272,19 @@ class Inspector:
             print('Object is not callable.')
             return
 
-        header=''
+        header = ''
 
         if inspect.isclass(obj):
-            header=self.__head("Class constructor information:\n")
-            obj=obj.__init__
+            header = self.__head("Class constructor information:\n")
+            obj = obj.__init__
 
-        output=self._getdef(obj, oname)
+        output = self._getdef(obj, oname)
         if output is None:
             self.noinfo('definition header', oname)
         else:
-            print(header, output, end = " ", file = sys.stdout)
+            print(header, output, end=" ", file=sys.stdout)
 
-    def pdoc(self, obj, oname = ""):
+    def pdoc(self, obj, oname=""):
         """Print the docstring for any object.
 
         Parameters
@@ -313,19 +322,19 @@ class Inspector:
         In [6]: %pdoc obj2
         No documentation found for obj2
         """
-        head=self.__head  # For convenience
-        lines=[]
-        ds=getdoc(obj)
+        head = self.__head  # For convenience
+        lines = []
+        ds = getdoc(obj)
         if ds:
             lines.append(head("Class docstring:"))
             lines.append(indent(ds))
         if inspect.isclass(obj) and hasattr(obj, "__init__"):
-            init_ds=getdoc(obj.__init__)
+            init_ds = getdoc(obj.__init__)
             if init_ds is not None:
                 lines.append(head("Init docstring:"))
                 lines.append(indent(init_ds))
         elif hasattr(obj, "__call__"):
-            call_ds=getdoc(obj.__call__)
+            call_ds = getdoc(obj.__call__)
             if call_ds:
                 lines.append(head("Call docstring:"))
                 lines.append(indent(call_ds))
@@ -335,26 +344,26 @@ class Inspector:
         else:
             print("\n".join(lines))
 
-    def psource(self, obj, oname = ''):
+    def psource(self, obj, oname=''):
         """Print the source code for an object."""
         # Flush the source cache because inspect can return out-of-date source
         linecache.checkcache()
         try:
-            src=getsource(obj, oname = oname)
+            src = getsource(obj, oname=oname)
         except Exception:
             self.noinfo("source", oname)
         else:
             print(src)
 
-    def pfile(self, obj, oname = ''):
+    def pfile(self, obj, oname=''):
         """Show the whole file where an object was defined."""
 
-        lineno=find_source_lines(obj)
+        lineno = find_source_lines(obj)
         if lineno is None:
             self.noinfo('file', oname)
             return
 
-        ofile=find_file(obj)
+        ofile = find_file(obj)
         # run contents of file through pager starting at line where the object
         # is defined, as long as the file isn't binary and is actually on the
         # filesystem.

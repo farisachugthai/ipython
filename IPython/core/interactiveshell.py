@@ -383,7 +383,39 @@ class ExecutionResult:
 
 
 class InteractiveShell(SingletonConfigurable):
-    """An enhanced, interactive shell for Python."""
+    """An enhanced, interactive shell for Python.
+
+    Thankfully the :mod:`IPython.sphinxext.configtraits` picks up all
+    :class:`traitlets.config.Configurable` attributes. Otherwise....
+
+    I'm going to use this to leave myself room to leave notes.
+
+    First off. Exception handling.
+
+    - init_traceback_handlers(self, custom_exceptions=None) : member
+
+    - set_custom_exc(self, exc_tuple, handler) : member
+
+    - excepthook(self, etype, value, tb) : member
+
+    - _get_exc_info(self, exc_tuple=None) : member
+
+    - show_usage_error(exc) : member
+
+    - get_exception_only(self, exc_tuple=None) : member
+
+    - showtraceback( self, filename=None, tb_offset=None, exception_only=False, running_compiled_code=False, ) : member
+
+    - _showtraceback(self, etype=None, evalue=None, stb=None) : member
+
+    - showsyntaxerror(self, filename=None, running_compiled_code=False) : member
+
+    - showindentationerror(self) : member
+
+    This class has no less than 10 methods for handling exceptions. It
+    calls classes and functions from at least 3 different files. It's
+    really confusing and most immediately needs the most help.
+    """
 
     _instance = None
 
@@ -435,7 +467,7 @@ class InteractiveShell(SingletonConfigurable):
 
     @default("loop_runner")
     def _default_loop_runner(self):
-        return import_module("IPython.core.interactiveshell._asyncio_runner")
+        return "IPython.core._asyncio_runner"
 
     @validate("loop_runner")
     def _import_runner(self, proposal):
@@ -463,6 +495,7 @@ class InteractiveShell(SingletonConfigurable):
         default_banner,
         help="""The part of the banner to be printed before the profile""",
     ).tag(config=True)
+
     banner2 = Unicode(
         "", help="""The part of the banner to be printed after the profile"""
     ).tag(config=True)
@@ -2404,7 +2437,7 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         # self.call_pdb is a property
-        self.call_pdb = self.pdb
+        # self.call_pdb = self.pdb
 
     def _get_call_pdb(self):
         return self._call_pdb
