@@ -55,20 +55,20 @@ EntryPoint(name='ipython3', value='IPython:start_ipython', group='console_script
   Distributed under the terms of the Modified BSD License.
 
 """
-
 import os
 import sys
+
+from setuptools.build_meta import build_sdist
+from setuptools import find_packages, setup, build_meta
+from distutils.core import setup
+from distutils.util import change_root, convert_path
+from distutils.command.install_data import install_data
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
 
-
-from distutils.command.install_data import install_data
-from distutils.util import change_root, convert_path
-
-from distutils.core import setup
 try:
     import importlib_metadata
 except ImportError:
@@ -77,9 +77,7 @@ except ImportError:
 # Just checking i'm allowed to make setuptools a hard dependency right?
 # Because everything we use has it as a dependency so there's no way a user
 # doesn't have it
-from setuptools import find_packages, setup, build_meta
 # from distutils.command.sdist import sdist
-from setuptools.build_meta import build_sdist
 
 isfile = os.path.isfile
 pjoin = os.path.join
@@ -102,14 +100,14 @@ execfile(pjoin(repo_root, 'IPython', 'core', 'release.py'), globals())
 # update the manuals when building a source dist
 # if len(sys.argv) >= 2 and sys.argv[1] in ('sdist', 'bdist_rpm'):
 
-    # List of things to be updated. Each entry is a triplet of args for
-    # target_update()
-    # to_update = [
-    #     ('docs/man/ipython.1.gz', ['docs/man/ipython.1'],
-    #      'cd docs/man && gzip -9c ipython.1 > ipython.1.gz'),
-    # ]
+# List of things to be updated. Each entry is a triplet of args for
+# target_update()
+# to_update = [
+#     ('docs/man/ipython.1.gz', ['docs/man/ipython.1'],
+#      'cd docs/man && gzip -9c ipython.1 > ipython.1.gz'),
+# ]
 
-    # [target_update(*t) for t in to_update]
+# [target_update(*t) for t in to_update]
 
 # ---------------------------------------------------------------------------
 # Find all the packages, package data, and data_files
@@ -191,8 +189,8 @@ extras_require = dict(
 
     # coverage shows up the iptestcontroller and there's no try/excepts
     test=[
-        'nose>=0.10.1', 'requests', 'testpath', 'nbformat',
-        'ipykernel', 'numpy', 'coverage'
+        'nose>=0.10.1', 'requests', 'testpath', 'nbformat', 'ipykernel',
+        'numpy', 'coverage'
     ],
     terminal=[],
     kernel=['ipykernel'],
@@ -272,6 +270,7 @@ if 'setuptools' in sys.modules:
 
 setup_args.update(setuptools_extra_args)
 
+
 class install_data_ext(install_data):
     def initialize_options(self):
         self.install_base = None
@@ -330,7 +329,7 @@ class install_data_ext(install_data):
                 for f in files:
                     f = convert_path(f)
                     (out, _) = self.copy_file(f, dir)
-                    #print "DEBUG: ", out  # dbg
+                    # print "DEBUG: ", out  # dbg
                     self.outfiles.append(out)
 
         return self.outfiles

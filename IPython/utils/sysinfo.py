@@ -15,7 +15,8 @@
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-from multiprocessing import cpu_count as num_cpus
+
+from multiprocessing import cpu_count as num_cpus  # noqa F401
 import os
 import platform
 import pprint
@@ -30,7 +31,7 @@ from IPython.core import release
 
 
 def pkg_commit_hash(pkg_path):
-    """Get short form of commit hash given directory `pkg_path`
+    """Get short form of commit hash given directory `pkg_path`.
 
     The SHA-1. He was trying to say SHA1.
 
@@ -52,21 +53,24 @@ def pkg_commit_hash(pkg_path):
        Where we got the hash from - description
     hash_str : str
        short form of hash
+
     """
     # maybe we are in a repository
-    proc = subprocess.Popen('git rev-parse --short HEAD',
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            cwd=pkg_path,
-                            shell=True)
+    proc = subprocess.Popen(
+        "git rev-parse --short HEAD",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=pkg_path,
+        shell=True,
+    )
     repo_commit, _ = proc.communicate()
     if repo_commit:
-        return 'repository', repo_commit.strip().decode('ascii')
-    return '(none found)', '<not found>'
+        return "repository", repo_commit.strip().decode("ascii")
+    return "(none found)", "<not found>"
 
 
 def pkg_info(pkg_path):
-    """Return dict describing the context of this package
+    """Return dict describing the context of this package.
 
     Parameters
     ----------
@@ -77,6 +81,7 @@ def pkg_info(pkg_path):
     -------
     context : dict
        with named parameters of interest
+
     """
     src, hsh = pkg_commit_hash(pkg_path)
     return dict(
@@ -102,15 +107,13 @@ def get_sys_info():
     >>> p = os.path
     >>> path = p.realpath(p.dirname(p.abspath(p.join(__file__, '..'))))
 
-    ....???
-    'git rev-parse --short HEAD',
     """
     return pkg_info(repo_root())
 
 
 def repo_root():
     """Get the root of this repository in a cleaner manner."""
-    return subprocess.run(['git', 'rev-parse', '--show-toplevel'])
+    return (subprocess.run(["git", "rev-parse", "--show-toplevel"])).stdout
 
 
 def sys_info():
@@ -129,6 +132,8 @@ def sys_info():
          'platform': 'Linux-2.6.35-22-generic-i686-with-Ubuntu-10.10-maverick',
          'sys_executable': '/usr/bin/python',
          'sys_platform': 'linux2',
-         'sys_version': '2.6.6 (r266:84292, Sep 15 2010, 15:52:39) \\n[GCC 4.4.5]'}
+         'sys_version': '2.6.6 (r266:84292, Sep 15 2010, 15:52:39)
+         [GCC 4.4.5]'}
+
     """
     return pprint.pformat(get_sys_info())

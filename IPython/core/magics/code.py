@@ -1,5 +1,4 @@
-"""Implementation of code management magic functions.
-"""
+"""Implementation of code management magic functions."""
 # -----------------------------------------------------------------------------
 #  Copyright (c) 2012 The IPython Development Team.
 #
@@ -15,7 +14,10 @@
 # Stdlib
 import ast
 import codecs
-import io
+import inspect
+
+# Woops
+import os
 import re
 from logging import error
 from urllib.parse import urlencode
@@ -24,19 +26,23 @@ from warnings import warn
 from itertools import chain
 from urllib.request import urlopen
 
-from IPython.core.error import (StdinNotImplementedError, TryNext, UsageError,
-                                MacroToEdit, InteractivelyDefined)
+from IPython.core.error import (
+    StdinNotImplementedError,
+    TryNext,
+    UsageError,
+    MacroToEdit,
+    InteractivelyDefined,
+)
 from IPython.core.macro import Macro
 from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.core.oinspect import find_file, find_source_lines
 from IPython.testing.skipdoctest import skip_doctest
+from IPython.utils.path import get_py_filename
 from IPython.utils.text import get_text_list
-
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes
 # -----------------------------------------------------------------------------
-
 
 ipython_input_pat = re.compile(r"<ipython\-input\-(\d+)-[a-z\d]+>$")
 
@@ -46,7 +52,9 @@ range_re = re.compile(
 (?P<start>\d+)?
 ((?P<sep>[\-:])
  (?P<end>\d+)?)?
-$""", re.VERBOSE)
+$""",
+    re.VERBOSE,
+)
 
 
 def extract_code_ranges(ranges_str):
@@ -55,8 +63,9 @@ def extract_code_ranges(ranges_str):
 
     Examples
     --------
-    list(extract_input_ranges("5-10 2"))
+    >>> list(extract_input_ranges("5-10 2"))
     [(4, 10), (1, 2)]
+
     """
     for range_str in ranges_str.split():
         rmatch = range_re.match(range_str)
@@ -66,10 +75,10 @@ def extract_code_ranges(ranges_str):
         start = rmatch.group("start")
         end = rmatch.group("end")
 
-        if sep == '-':
+        if sep == "-":
             start = int(start) - 1 if start else None
             end = int(end) if end else None
-        elif sep == ':':
+        elif sep == ":":
             start = int(start) - 1 if start else None
             end = int(end) - 1 if end else None
         else:
@@ -79,13 +88,18 @@ def extract_code_ranges(ranges_str):
 
 
 def extract_symbols(code, symbols):
-    """
-    Return a tuple  (blocks, not_found)
-    where ``blocks`` is a list of code fragments
-    for each symbol parsed from code, and ``not_found`` are
-    symbols not found in the code.
+    """Run code through :func:`ast.parse`.
 
-    For example::
+    Returns
+    --------
+    (blocks, not_found) : tuple
+        Return a tuple  (blocks, not_found) where ``blocks`` is a list of code
+        fragments for each symbol parsed from code, and ``not_found`` are
+        symbols not found in the code.
+
+    Examples
+    --------
+    ::
 
         In [1]: code = '''a = 10
            ...: def b(): return 42
@@ -93,14 +107,16 @@ def extract_symbols(code, symbols):
 
         In [2]: extract_symbols(code, 'A,b,z')
         Out[2]: (['class A: pass\\n', 'def b(): return 42\\n'], ['z'])
+
     """
-    symbols = symbols.split(',')
+    symbols = symbols.split(",")
 
     # this will raise SyntaxError if code isn't valid Python
+    # ....so should we try catching that?
     py_code = ast.parse(code)
 
-    marks = [(getattr(s, 'name', None), s.lineno) for s in py_code.body]
-    code = code.split('\n')
+    marks = [(getattr(s, "name", None), s.lineno) for s in py_code.body]
+    code = code.split("\n")
 
     symbols_lines = {}
 
@@ -124,7 +140,7 @@ def extract_symbols(code, symbols):
     for symbol in symbols:
         if symbol in symbols_lines:
             start, end = symbols_lines[symbol]
-            blocks.append('\n'.join(code[start:end]) + '\n')
+            blocks.append("\n".join(code[start:end]) + "\n")
         else:
             not_found.append(symbol)
 
@@ -136,7 +152,7 @@ def strip_initial_indent(lines):
 
     https://github.com/ipython/ipython/issues/9775
     """
-    indent_re = re.compile(r'\s+')
+    indent_re = re.compile(r"\s+")
 
     it = iter(lines)
     first_line = next(it)
@@ -171,7 +187,7 @@ class CodeMagics(Magics):
         super(CodeMagics, self).__init__(*args, **kwargs)
 
     @line_magic
-    def save(self, parameter_s=''):
+    def save(self, parameter_s=""):
         """Save a set of lines or a macro to a given filename.
 
         Usage:
@@ -189,12 +205,12 @@ class CodeMagics(Magics):
 
         .. option::  -f
 
-        Force overwrite.  If file exists, %save will prompt for overwrite
-        unless -f is given.
+            Force overwrite.  If file exists, %save will prompt for overwrite
+            unless -f is given.
 
         .. option::  -a
 
-        Append to the file instead of overwriting it.
+            Append to the file instead of overwriting it.
 
         This function uses the same syntax as `%history` for input ranges,
         then saves the lines to the filename you specify.
@@ -205,30 +221,30 @@ class CodeMagics(Magics):
         If `-r` option is used, the default extension is '.ipy'.
 
         """
-        opts, args = self.parse_options(parameter_s, 'fra', mode='list')
+        opts, args = self.parse_options(parameter_s, "fra", mode="list")
         if not args:
-            raise UsageError('Missing filename.')
-        raw = 'r' in opts
-        force = 'f' in opts
-        append = 'a' in opts
-        mode = 'a' if append else 'w'
-        ext = u'.ipy' if raw else u'.py'
+            raise UsageError("Missing filename.")
+        raw = "r" in opts
+        force = "f" in opts
+        append = "a" in opts
+        mode = "a" if append else "w"
+        ext = u".ipy" if raw else u".py"
         fname, codefrom = args[0], " ".join(args[1:])
-        if not fname.endswith((u'.py', u'.ipy')):
+        if not fname.endswith((u".py", u".ipy")):
             fname += ext
         file_exists = os.path.isfile(fname)
         if file_exists and not force and not append:
             try:
                 overwrite = self.shell.ask_yes_no(
-                    'File `%s` exists. Overwrite (y/[N])? ' % fname,
-                    default='n')
+                    "File `%s` exists. Overwrite (y/[N])? " % fname,
+                    default="n")
             except StdinNotImplementedError:
                 print(
                     "File `%s` exists. Use `%%save -f %s` to force overwrite" %
                     (fname, parameter_s))
                 return
             if not overwrite:
-                print('Operation cancelled.')
+                print("Operation cancelled.")
                 return
         try:
             cmds = self.shell.find_user_code(codefrom, raw)
@@ -241,13 +257,13 @@ class CodeMagics(Magics):
                 f.write(u"# coding: utf-8\n")
             f.write(out)
             # make sure we end on a newline
-            if not out.endswith(u'\n'):
-                f.write(u'\n')
-        print('The following commands were written to file `%s`:' % fname)
+            if not out.endswith(u"\n"):
+                f.write(u"\n")
+        print("The following commands were written to file `%s`:" % fname)
         print(cmds)
 
     @line_magic
-    def pastebin(self, parameter_s=''):
+    def pastebin(self, parameter_s=""):
         """Upload code to dpaste's paste bin, returning the URL.
 
         Usage:\\
@@ -256,12 +272,13 @@ class CodeMagics(Magics):
         The argument can be an input history range, a filename, or the name of a
         string or macro.
 
-        Options:
+        .. option:: -d:
 
-          -d: Pass a custom description for the gist. The default will say
-              "Pasted from IPython".
+            Pass a custom description for the gist. The default will say
+            "Pasted from IPython".
+
         """
-        opts, args = self.parse_options(parameter_s, 'd:')
+        opts, args = self.parse_options(parameter_s, "d:")
 
         try:
             code = self.shell.find_user_code(args)
@@ -270,13 +287,13 @@ class CodeMagics(Magics):
             return
 
         post_data = urlencode({
-            "title": opts.get('d', "Pasted from IPython"),
+            "title": opts.get("d", "Pasted from IPython"),
             "syntax": "python3",
-            "content": code
-            }).encode('utf-8')
+            "content": code,
+        }).encode("utf-8")
 
         response = urlopen("http://dpaste.com/api/v2/", post_data)
-        return response.headers.get('Location')
+        return response.headers.get("Location")
 
     @line_magic
     def loadpy(self, arg_s):
@@ -326,56 +343,57 @@ class CodeMagics(Magics):
         %load -n MyClass
         %load -n my_module.wonder_function
         """
-        opts, args = self.parse_options(arg_s, 'yns:r:')
+        opts, args = self.parse_options(arg_s, "yns:r:")
 
         if not args:
-            raise UsageError('Missing filename, URL, input history range, '
-                             'macro, or element in the user namespace.')
+            raise UsageError("Missing filename, URL, input history range, "
+                             "macro, or element in the user namespace.")
 
-        search_ns = 'n' in opts
+        search_ns = "n" in opts
 
         contents = self.shell.find_user_code(args, search_ns=search_ns)
 
-        if 's' in opts:
+        if "s" in opts:
             try:
-                blocks, not_found = extract_symbols(contents, opts['s'])
+                blocks, not_found = extract_symbols(contents, opts["s"])
             except SyntaxError:
                 # non python code
                 error("Unable to parse the input as valid Python code")
                 return
 
             if len(not_found) == 1:
-                warn('The symbol `%s` was not found' % not_found[0])
+                warn("The symbol `%s` was not found" % not_found[0])
             elif len(not_found) > 1:
-                warn('The symbols %s were not found' %
-                     get_text_list(not_found, wrap_item_with='`'))
+                warn("The symbols %s were not found" %
+                     get_text_list(not_found, wrap_item_with="`"))
 
-            contents = '\n'.join(blocks)
+            contents = "\n".join(blocks)
 
-        if 'r' in opts:
-            ranges = opts['r'].replace(',', ' ')
-            lines = contents.split('\n')
+        if "r" in opts:
+            ranges = opts["r"].replace(",", " ")
+            lines = contents.split("\n")
             slices = extract_code_ranges(ranges)
             contents = [lines[slice(*slc)] for slc in slices]
-            contents = '\n'.join(
+            contents = "\n".join(
                 strip_initial_indent(chain.from_iterable(contents)))
 
         l = len(contents)
 
         # 200 000 is ~ 2500 full 80 character lines
         # so in average, more than 5000 lines
-        if l > 200000 and 'y' not in opts:
+        if l > 200000 and "y" not in opts:
             try:
                 ans = self.shell.ask_yes_no(
                     ("The text you're trying to load seems pretty big"
                      " (%d characters). Continue (y/[N]) ?" % l),
-                    default='n')
+                    default="n",
+                )
             except StdinNotImplementedError:
                 # assume yes if raw input not implemented
                 ans = True
 
             if ans is False:
-                print('Operation cancelled.')
+                print("Operation cancelled.")
                 return
 
         contents = "# %load {}\n".format(arg_s) + contents
@@ -385,7 +403,6 @@ class CodeMagics(Magics):
     @staticmethod
     def _find_edit_target(shell, args, opts, last_call):
         """Utility method used by magic_edit to find what to edit."""
-
         def make_filename(arg):
             """Make a filename from the given args"""
             try:
@@ -393,25 +410,25 @@ class CodeMagics(Magics):
             except IOError:
                 # If it ends with .py but doesn't already exist, assume we want
                 # a new file.
-                if arg.endswith('.py'):
+                if arg.endswith(".py"):
                     filename = arg
                 else:
                     filename = None
             return filename
 
         # Set a few locals from the options for convenience:
-        opts_prev = 'p' in opts
-        opts_raw = 'r' in opts
+        opts_prev = "p" in opts
+        opts_raw = "r" in opts
 
         # custom exceptions
         class DataIsObject(Exception):
             pass
 
         # Default line number value
-        lineno = opts.get('n', None)
+        lineno = opts.get("n", None)
 
         if opts_prev:
-            args = '_%s' % last_call[0]
+            args = "_%s" % last_call[0]
             if args not in shell.user_ns:
                 args = last_call[1]
 
@@ -419,7 +436,7 @@ class CodeMagics(Magics):
         # arg is a filename
         use_temp = True
 
-        data = ''
+        data = ""
 
         # First, see if the arguments should be a filename.
         filename = make_filename(args)
@@ -442,8 +459,9 @@ class CodeMagics(Magics):
                     # given argument is not a variable, try as a filename
                     filename = make_filename(args)
                     if filename is None:
-                        warn("Argument given (%s) can't be found as a variable "
-                             "or as a filename." % args)
+                        warn(
+                            "Argument given (%s) can't be found as a variable "
+                            "or as a filename." % args)
                         return None, None, None
                     use_temp = False
 
@@ -455,20 +473,20 @@ class CodeMagics(Magics):
                     # For objects, try to edit the file where they are defined
                     filename = find_file(data)
                     if filename:
-                        if 'fakemodule' in filename.lower() and \
-                                inspect.isclass(data):
+                        if "fakemodule" in filename.lower(
+                        ) and inspect.isclass(data):
                             # class created by %edit? Try to find source
                             # by looking for method definitions instead, the
                             # __module__ in those classes is FakeModule.
                             attrs = [
                                 getattr(data, aname) for aname in dir(data)
-                                ]
+                            ]
                             for attr in attrs:
                                 if not inspect.ismethod(attr):
                                     continue
                                 filename = find_file(attr)
-                                if filename and \
-                                        'fakemodule' not in filename.lower():
+                                if filename and "fakemodule" not in filename.lower(
+                                ):
                                     # change the attribute to be the edit
                                     # target instead
                                     data = attr
@@ -484,8 +502,9 @@ class CodeMagics(Magics):
                         datafile = 1
                         if filename is not None:
                             # only warn about this if we get a real name
-                            warn('Could not find file where `%s` is defined.\n'
-                                 'Opening a file named `%s`' % (args, filename))
+                            warn("Could not find file where `%s` is defined.\n"
+                                 "Opening a file named `%s`" %
+                                 (args, filename))
                     # Now, make sure we can actually read the source (if it was
                     # in a temp file it's gone by now).
                     if datafile:
@@ -494,14 +513,14 @@ class CodeMagics(Magics):
                         if lineno is None:
                             filename = make_filename(args)
                             if filename is None:
-                                warn('The file where `%s` was defined '
-                                     'cannot be read or found.' % data)
+                                warn("The file where `%s` was defined "
+                                     "cannot be read or found." % data)
                                 return None, None, None
                     use_temp = False
 
         if use_temp:
             filename = shell.mktempfile(data)
-            print('IPython will make a temporary file named:', filename)
+            print("IPython will make a temporary file named:", filename)
 
         # use last_call to remember the state of the previous call, but don't
         # let it be clobbered by successive '-p' calls.
@@ -526,8 +545,8 @@ class CodeMagics(Magics):
 
     @skip_doctest
     @line_magic
-    def edit(self, parameter_s='', last_call=None):
-        """Bring up an editor and execute the resulting code.
+    def edit(self, parameter_s="", last_call=None):
+        """Brings up an editor and execute the resulting code.
 
         Usage:
 
@@ -672,8 +691,8 @@ class CodeMagics(Magics):
         defined it.
         """
         if last_call is None:
-            last_call = ['', '']
-        opts, args = self.parse_options(parameter_s, 'prxn:')
+            last_call = ["", ""]
+        opts, args = self.parse_options(parameter_s, "prxn:")
 
         try:
             filename, lineno, is_temp = self._find_edit_target(
@@ -697,32 +716,33 @@ class CodeMagics(Magics):
             is_temp = True
 
         # do actual editing here
-        print('Editing...', end=' ')
+        print("Editing...", end=" ")
         sys.stdout.flush()
         try:
             # Quote filenames that may have spaces in them
-            if ' ' in filename:
+            if " " in filename:
                 filename = "'%s'" % filename
             self.shell.hooks.editor(filename, lineno)
         except TryNext:
-            warn('Could not open editor')
+            warn("Could not open editor")
             return
 
         # XXX TODO: should this be generalized for all string vars?
         # For now, this is special-cased to blocks created by cpaste
-        if args.strip() == 'pasted_block':
-            with open(filename, 'r') as f:
-                self.shell.user_ns['pasted_block'] = f.read()
+        if args.strip() == "pasted_block":
+            with open(filename, "r") as f:
+                self.shell.user_ns["pasted_block"] = f.read()
 
-        if 'x' in opts:  # -x prevents actual execution
+        if "x" in opts:  # -x prevents actual execution
             print()
+            # should we return here?
         else:
-            print('done. Executing edited code...')
-            with preserve_keys(self.shell.user_ns, '__file__'):
+            print("done. Executing edited code...")
+            with preserve_keys(self.shell.user_ns, "__file__"):
                 if not is_temp:
-                    self.shell.user_ns['__file__'] = filename
-                if 'r' in opts:  # Untranslated IPython code
-                    with open(filename, 'r') as f:
+                    self.shell.user_ns["__file__"] = filename
+                if "r" in opts:  # Untranslated IPython code
+                    with open(filename, "r") as f:
                         source = f.read()
                     self.shell.run_cell(source, store_history=False)
                 else:
@@ -735,7 +755,7 @@ class CodeMagics(Magics):
                     return f.read()
             except IOError as msg:
                 if msg.filename == filename:
-                    warn('File not found. Did you forget to save?')
+                    warn("File not found. Did you forget to save?")
                     return
                 else:
                     self.shell.showtraceback()

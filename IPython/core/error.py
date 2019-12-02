@@ -211,3 +211,11 @@ class UnknownBackend(KeyError):
         return ("No event loop integration for {!r}. "
                 "Supported event loops are: {}").format(
                     self.name, ', '.join(backends + sorted(registered)))
+
+
+class ShimWarning(Warning):
+    """A warning to show when a module has moved, and a shim is in its place.
+
+    IPython/utils/shimmodule: Dec 02, 2019
+    """
+    pass

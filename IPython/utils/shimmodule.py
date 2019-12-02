@@ -1,5 +1,4 @@
-"""A shim module for deprecated imports
-"""
+"""A shim module for deprecated imports."""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -8,11 +7,7 @@ import types
 from importlib import import_module
 
 
-class ShimWarning(Warning):
-    """A warning to show when a module has moved, and a shim is in its place."""
-
-
-class ShimImporter(object):
+class ShimImporter:
     """Import hook for a shim.
 
     This ensures that submodule imports return the real target module,
@@ -29,7 +24,7 @@ class ShimImporter(object):
 
     def find_module(self, fullname, path=None):
         """Return self if we should be used to import the module."""
-        if fullname.startswith(self.src + '.'):
+        if fullname.startswith(self.src + "."):
             mirror_name = self._mirror_name(fullname)
             try:
                 mod = import_module(mirror_name)
@@ -61,7 +56,7 @@ class ShimModule(types.ModuleType):
         self._mirror = kwargs.pop("mirror")
         src = kwargs.pop("src", None)
         if src:
-            kwargs['name'] = src.rsplit('.', 1)[-1]
+            kwargs["name"] = src.rsplit(".", 1)[-1]
         super(ShimModule, self).__init__(*args, **kwargs)
         # add import hook for descendent modules
         if src:
@@ -86,7 +81,7 @@ class ShimModule(types.ModuleType):
         try:
             return mod.__all__
         except AttributeError:
-            return [name for name in dir(mod) if not name.startswith('_')]
+            return [name for name in dir(mod) if not name.startswith("_")]
 
     def __getattr__(self, key):
         # Use the equivalent of import_item(name), see below
