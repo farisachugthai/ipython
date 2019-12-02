@@ -48,19 +48,19 @@ class ProfileDir(LoggingConfigurable):
 
     """
 
-    security_dir_name = Unicode('security')
-    log_dir_name = Unicode('log')
-    startup_dir_name = Unicode('startup')
-    pid_dir_name = Unicode('pid')
-    static_dir_name = Unicode('static')
-    security_dir = Unicode(u'')
-    log_dir = Unicode(u'')
-    startup_dir = Unicode(u'')
-    pid_dir = Unicode(u'')
-    static_dir = Unicode(u'')
+    security_dir_name = Unicode("security")
+    log_dir_name = Unicode("log")
+    startup_dir_name = Unicode("startup")
+    pid_dir_name = Unicode("pid")
+    static_dir_name = Unicode("static")
+    security_dir = Unicode("")
+    log_dir = Unicode("")
+    startup_dir = Unicode("")
+    pid_dir = Unicode("")
+    static_dir = Unicode("")
 
     location = Unicode(
-        u'',
+        "",
         help="""Set the profile location directly. This overrides the logic used by the
         `profile` option.""",
     ).tag(config=True)
@@ -68,9 +68,9 @@ class ProfileDir(LoggingConfigurable):
     _location_isset = Bool(False)  # flag for detecting multiply set location
 
     def __repr__(self):
-        return '{!r}'.format(self.location)
+        return "{!r}".format(self.location)
 
-    @observe('location')
+    @observe("location")
     def _location_changed(self, change):
         """Handler for when the location of the profiledir changes.
 
@@ -90,7 +90,7 @@ class ProfileDir(LoggingConfigurable):
         if self._location_isset:
             raise RuntimeError("Cannot set profile location more than once.")
         self._location_isset = True
-        new = change['new']
+        new = change["new"]
         ensure_dir_exists(new)
 
         # ensure config files exist:
@@ -140,34 +140,36 @@ class ProfileDir(LoggingConfigurable):
 
         return True
 
-    @observe('log_dir')
+    @observe("log_dir")
     def check_log_dir(self, change=None):
         """Check if the log dir exists and if not create it."""
         self._mkdir(self.log_dir)
 
-    @observe('startup_dir')
+    @observe("startup_dir")
     def check_startup_dir(self, change=None):
         """Check the dir exists and create it otherwise."""
         self._mkdir(self.startup_dir)
 
-        readme = os.path.join(self.startup_dir, 'README')
-        src = os.path.join(get_ipython_package_dir(), u'core', u'profile',
-                           u'README_STARTUP')
+        readme = os.path.join(self.startup_dir, "README")
+        src = os.path.join(
+            get_ipython_package_dir(), "core", "profile", "README_STARTUP"
+        )
 
         if not os.path.exists(src):
             self.log.warning(
                 "Could not copy README_STARTUP to startup dir. Source file %s does not exist.",
-                src)
+                src,
+            )
 
         if os.path.exists(src) and not os.path.exists(readme):
             shutil.copy(src, readme)
 
-    @observe('security_dir')
+    @observe("security_dir")
     def check_security_dir(self, change=None):
         """If you feel like this is repetitive, then ask yourself."""
         self._mkdir(self.security_dir, 0o40700)
 
-    @observe('pid_dir')
+    @observe("pid_dir")
     def check_pid_dir(self, change=None):
         """Why didn't we only write 1 function and call it with different parameters?"""
         self._mkdir(self.pid_dir, 0o40700)
@@ -188,11 +190,12 @@ class ProfileDir(LoggingConfigurable):
         """
         dst = os.path.join(self.location, config_file)
         if os.path.isfile(dst) and not overwrite:
-            raise ProfileDirError('dst already exists and the "overwrite_config_files" \
-                                   setting is False')
+            raise ProfileDirError(
+                'dst already exists and the "overwrite_config_files" \
+                                   setting is False'
+            )
         if path is None:
-            path = os.path.join(get_ipython_package_dir(), u'core', u'profile',
-                                u'default')
+            path = os.path.join(get_ipython_package_dir(), "core", "profile", "default")
         src = os.path.join(path, config_file)
         shutil.copy(src, dst)
         return True
@@ -213,7 +216,7 @@ class ProfileDir(LoggingConfigurable):
         return cls(location=profile_dir, config=config)
 
     @classmethod
-    def create_profile_dir_by_name(cls, path, name=u'default', config=None):
+    def create_profile_dir_by_name(cls, path, name="default", config=None):
         """Create a profile dir by profile name and path.
 
         Parameters
@@ -228,13 +231,12 @@ class ProfileDir(LoggingConfigurable):
 
         """
         if not os.path.isdir(path):
-            raise ProfileDirError('Directory not found: %s' % path)
-        profile_dir = os.path.join(path, u'profile_' + name)
+            raise ProfileDirError("Directory not found: %s" % path)
+        profile_dir = os.path.join(path, "profile_" + name)
         return cls(location=profile_dir, config=config)
 
     @classmethod
-    def find_profile_dir_by_name(cls, ipython_dir, name=u'default',
-                                 config=None):
+    def find_profile_dir_by_name(cls, ipython_dir, name="default", config=None):
         """Find an existing profile dir by profile name, return its ProfileDir.
 
         This searches through a sequence of paths for a profile dir.  If it
@@ -257,15 +259,14 @@ class ProfileDir(LoggingConfigurable):
             Keyword parameters to pass to the shell.
 
         """
-        dirname = u'profile_' + name
+        dirname = "profile_" + name
         paths = [os.getcwd(), ipython_dir]
         for p in paths:
             profile_dir = os.path.join(p, dirname)
             if os.path.isdir(profile_dir):
                 return cls(location=profile_dir, config=config)
         else:
-            raise ProfileDirError('Profile directory not found in paths: %s' %
-                                  dirname)
+            raise ProfileDirError("Profile directory not found in paths: %s" % dirname)
 
     @classmethod
     def find_profile_dir(cls, profile_dir, config=None):
@@ -283,6 +284,5 @@ class ProfileDir(LoggingConfigurable):
         """
         profile_dir = expand_path(profile_dir)
         if not os.path.isdir(profile_dir):
-            raise ProfileDirError('Profile directory not found: %s' %
-                                  profile_dir)
+            raise ProfileDirError("Profile directory not found: %s" % profile_dir)
         return cls(location=profile_dir, config=config)

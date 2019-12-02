@@ -19,8 +19,12 @@ from traitlets.config.loader import Config
 
 from IPython import get_ipython
 from IPython.core import completer
-from IPython.core.completer import (Completion, _deduplicate_completions,
-                                    match_dict_keys, provisionalcompleter)
+from IPython.core.completer import (
+    Completion,
+    _deduplicate_completions,
+    match_dict_keys,
+    provisionalcompleter,
+)
 from IPython.external import decorators
 from IPython.testing import decorators as dec
 from IPython.utils.generics import complete_object
@@ -176,15 +180,15 @@ class TestCompleter(unittest.TestCase):
         """Test that errors from custom attribute completers are silenced."""
         ip = get_ipython()
 
-        _, matches = ip.complete('in')
-        assert matches.index('input') < matches.index('int')
+        _, matches = ip.complete("in")
+        assert matches.index("input") < matches.index("int")
 
         def complete_example(a):
-            return ['example2', 'example1']
+            return ["example2", "example1"]
 
-        ip.Completer.custom_completers.add_re('ex*', complete_example)
-        _, matches = ip.complete('ex')
-        assert matches.index('example2') < matches.index('example1')
+        ip.Completer.custom_completers.add_re("ex*", complete_example)
+        _, matches = ip.complete("ex")
+        assert matches.index("example2") < matches.index("example1")
 
     def test_unicode_completions(self):
         ip = get_ipython()
@@ -369,11 +373,11 @@ class TestCompleter(unittest.TestCase):
             with provisionalcompleter():
                 ip.Completer.use_jedi = jedi_status
                 matches = c.all_completions("TestCl")
-                assert matches == ['TestClass'], jedi_status
+                assert matches == ["TestClass"], jedi_status
                 matches = c.all_completions("TestClass.")
                 assert len(matches) > 2, jedi_status
                 matches = c.all_completions("TestClass.a")
-                assert matches == ['TestClass.a', 'TestClass.a1'], jedi_status
+                assert matches == ["TestClass.a", "TestClass.a1"], jedi_status
 
     def test_jedi(self):
         """

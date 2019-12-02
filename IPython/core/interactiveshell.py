@@ -724,7 +724,7 @@ class InteractiveShell(SingletonConfigurable):
         user_module=None,
         user_ns=None,
         custom_exceptions=((), None),
-        **kwargs
+        **kwargs,
     ):
         """This is where traits with a ``config_key`` argument are updated.
 
@@ -1942,7 +1942,7 @@ class InteractiveShell(SingletonConfigurable):
                     formatter,
                     info,
                     enable_html_pager=self.enable_html_pager,
-                    **kw
+                    **kw,
                 )
             else:
                 pmethod(info.obj, oname)
@@ -3092,10 +3092,10 @@ class InteractiveShell(SingletonConfigurable):
         # stb = self.InteractiveTB.get_exception_only(etype, evalue)
 
         exc_info = {
-            u"status": "error",
-            u"traceback": stb,
-            u"ename": etype.__name__,
-            u"evalue": evalue,
+            "status": "error",
+            "traceback": stb,
+            "ename": etype.__name__,
+            "evalue": evalue,
         }
 
         return exc_info
@@ -3164,7 +3164,7 @@ class InteractiveShell(SingletonConfigurable):
         fname=None,
         exit_ignore=False,
         raise_exceptions=False,
-        shell_futures=False
+        shell_futures=False,
     ):
         """A safe version of the builtin :func:`execfile`.
 

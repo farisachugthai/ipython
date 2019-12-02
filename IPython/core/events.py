@@ -70,7 +70,7 @@ class EventManager:
         self.callbacks = {n: [] for n in available_events}
 
     def __repr__(self):
-        return ''.join(self.__class__.__name)
+        return "".join(self.__class__.__name)
 
     def register(self, event, function):
         """Register a new event callback.
@@ -92,7 +92,7 @@ class EventManager:
 
         """
         if not callable(function):
-            raise TypeError('Need a callable, got %r' % function)
+            raise TypeError("Need a callable, got %r" % function)
         callback_proto = available_events.get(event)
         self.callbacks[event].append(callback_proto.adapt(function))
 
@@ -110,8 +110,8 @@ class EventManager:
                 pass
 
         raise ValueError(
-            'Function {!r} is not registered as a {} callback'.format(
-                function, event))
+            "Function {!r} is not registered as a {} callback".format(function, event)
+        )
 
     def trigger(self, event, *args, **kwargs):
         """Call callbacks for ``event``.

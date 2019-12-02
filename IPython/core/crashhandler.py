@@ -87,15 +87,17 @@ class CrashHandler:
     """
 
     message_template = _default_message_template
-    section_sep = '\n\n' + '*' * 75 + '\n\n'
+    section_sep = "\n\n" + "*" * 75 + "\n\n"
 
-    def __init__(self,
-                 app,
-                 contact_name=None,
-                 contact_email=None,
-                 bug_tracker=None,
-                 show_crash_traceback=True,
-                 call_pdb=False):
+    def __init__(
+        self,
+        app,
+        contact_name=None,
+        contact_email=None,
+        bug_tracker=None,
+        show_crash_traceback=True,
+        call_pdb=False,
+    ):
         """Create a new crash handler
 
         Parameters
@@ -128,11 +130,13 @@ class CrashHandler:
         self.call_pdb = call_pdb
         # self.call_pdb = True # dbg
         self.show_crash_traceback = show_crash_traceback
-        self.info = dict(app_name=app.name,
-                         contact_name=contact_name,
-                         contact_email=contact_email,
-                         bug_tracker=bug_tracker,
-                         crash_report_fname=self.crash_report_fname)
+        self.info = dict(
+            app_name=app.name,
+            contact_name=contact_name,
+            contact_email=contact_email,
+            bug_tracker=bug_tracker,
+            crash_report_fname=self.crash_report_fname,
+        )
 
     def __call__(self, etype, evalue, etb):
         """Handle an exception, call for compatible with sys.excepthook"""
@@ -143,7 +147,7 @@ class CrashHandler:
         sys.excepthook = sys.__excepthook__
 
         # Report tracebacks shouldn't use color in general (safer for users)
-        color_scheme = 'NoColor'
+        color_scheme = "NoColor"
 
         # Use this ONLY for developer debugging (keep commented out for release)
         # color_scheme = 'Linux'   # dbg
@@ -157,11 +161,9 @@ class CrashHandler:
         # write the report filename into the instance dict so it can get
         # properly expanded out in the user message template
         self.crash_report_fname = report_name
-        self.info['crash_report_fname'] = report_name
+        self.info["crash_report_fname"] = report_name
         TBhandler = ultratb.VerboseTB(
-            color_scheme=color_scheme,
-            long_header=1,
-            call_pdb=self.call_pdb,
+            color_scheme=color_scheme, long_header=1, call_pdb=self.call_pdb,
         )
         if self.call_pdb:
             TBhandler(etype, evalue, etb)
@@ -175,14 +177,14 @@ class CrashHandler:
 
         # and generate a complete report on disk
         try:
-            report = open(report_name, 'w')
+            report = open(report_name, "w")
         except BaseException:
-            print('Could not create crash report on disk.', file=sys.stderr)
+            print("Could not create crash report on disk.", file=sys.stderr)
             return
 
         with report:
             # Inform user on stderr of what happened
-            print('\n' + '*' * 70 + '\n', file=sys.stderr)
+            print("\n" + "*" * 70 + "\n", file=sys.stderr)
             print(self.message_template.format(**self.info), file=sys.stderr)
 
             # Construct report on disk
@@ -195,21 +197,21 @@ class CrashHandler:
 
         sec_sep = self.section_sep
 
-        report = ['*' * 75 + '\n\n' + 'IPython post-mortem report\n\n']
+        report = ["*" * 75 + "\n\n" + "IPython post-mortem report\n\n"]
         rpt_add = report.append
         # rpt_add(sys_info())
 
         try:
             config = pformat(self.app.config)
             rpt_add(sec_sep)
-            rpt_add('Application name: %s\n\n' % self.app_name)
-            rpt_add('Current user configuration structure:\n\n')
+            rpt_add("Application name: %s\n\n" % self.app_name)
+            rpt_add("Current user configuration structure:\n\n")
             rpt_add(config)
         except BaseException:
             pass
-        rpt_add(sec_sep + 'Crash traceback:\n\n' + traceback)
+        rpt_add(sec_sep + "Crash traceback:\n\n" + traceback)
 
-        return ''.join(report)
+        return "".join(report)
 
 
 def crash_handler_lite(etype, evalue, tb):
@@ -217,11 +219,14 @@ def crash_handler_lite(etype, evalue, tb):
     traceback.print_exception(etype, evalue, tb)
 
     from IPython.core.interactiveshell import InteractiveShell
+
     if InteractiveShell.initialized():
         # we are in a Shell environment, give %magic example
         config = "%config "
     else:
         # we are not in a shell, show generic config
         config = "c."
-    print(_lite_message_template.format(email=author_email, config=config),
-          file=sys.stderr)
+    print(
+        _lite_message_template.format(email=author_email, config=config),
+        file=sys.stderr,
+    )

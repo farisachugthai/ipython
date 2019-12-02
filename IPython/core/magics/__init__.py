@@ -22,6 +22,7 @@ from .execution import ExecutionMagics
 from .extension import ExtensionMagics
 from .history import HistoryMagics
 from .ipy_logging import LoggingMagics  # This module used to be called logging
+
 # ....guys we can't seriously be shadowing built-in module names like wtf
 from .namespace import NamespaceMagics
 from .osm import OSMagics

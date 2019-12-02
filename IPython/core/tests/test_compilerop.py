@@ -29,15 +29,15 @@ from IPython.core import compilerop
 
 
 def test_code_name():
-    code = 'x=1'
+    code = "x=1"
     name = compilerop.code_name(code)
-    nt.assert_true(name.startswith('<ipython-input-0'))
+    nt.assert_true(name.startswith("<ipython-input-0"))
 
 
 def test_code_name2():
-    code = 'x=1'
+    code = "x=1"
     name = compilerop.code_name(code, 9)
-    nt.assert_true(name.startswith('<ipython-input-9'))
+    nt.assert_true(name.startswith("<ipython-input-9"))
 
 
 def test_cache():
@@ -45,7 +45,7 @@ def test_cache():
     """
     cp = compilerop.CachingCompiler()
     ncache = len(linecache.cache)
-    cp.cache('x=1')
+    cp.cache("x=1")
     nt.assert_true(len(linecache.cache) > ncache)
 
 
@@ -58,7 +58,7 @@ def test_proper_default_encoding():
 def test_cache_unicode():
     cp = compilerop.CachingCompiler()
     ncache = len(linecache.cache)
-    cp.cache(u"t = 'žćčšđ'")
+    cp.cache("t = 'žćčšđ'")
     nt.assert_true(len(linecache.cache) > ncache)
 
 
@@ -67,11 +67,11 @@ def test_compiler_check_cache():
     """
     # Rather simple-minded tests that just exercise the API
     cp = compilerop.CachingCompiler()
-    cp.cache('x=1', 99)
+    cp.cache("x=1", 99)
     # Ensure now that after clearing the cache, our entries survive
     linecache.checkcache()
     for k in linecache.cache:
-        if k.startswith('<ipython-input-99'):
+        if k.startswith("<ipython-input-99"):
             break
     else:
-        raise AssertionError('Entry for input-99 missing from linecache')
+        raise AssertionError("Entry for input-99 missing from linecache")

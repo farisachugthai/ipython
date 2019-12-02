@@ -132,14 +132,14 @@ def list_profiles_in(path):
     # for python 3.6+ rewrite to: with os.scandir(path) as dirlist:
     files = os.scandir(path)
     for f in files:
-        if f.is_dir() and f.name.startswith('profile_'):
-            profiles.append(f.name.split('_', 1)[-1])
+        if f.is_dir() and f.name.startswith("profile_"):
+            profiles.append(f.name.split("_", 1)[-1])
     return profiles
 
 
 def list_bundled_profiles():
     """List profiles that are bundled with IPython."""
-    path = os.path.join(get_ipython_package_dir(), u'core', u'profile')
+    path = os.path.join(get_ipython_package_dir(), "core", "profile")
     profiles = []
 
     # for python 3.6+ rewrite to: with os.scandir(path) as dirlist:
@@ -163,33 +163,39 @@ class ProfileLocate(BaseIPythonApplication):
 
 
 class ProfileList(Application):
-    name = u'ipython-profile'
+    name = "ipython-profile"
     description = list_help
     examples = _list_examples
 
-    aliases = Dict({
-        'ipython-dir': 'ProfileList.ipython_dir',
-        'log-level': 'Application.log_level',
-    })
+    aliases = Dict(
+        {
+            "ipython-dir": "ProfileList.ipython_dir",
+            "log-level": "Application.log_level",
+        }
+    )
     flags = Dict(
-        dict(debug=({
-            'Application': {
-                'log_level': 0
-            }
-        }, "Set Application.log_level to 0, maximizing log output.")))
+        dict(
+            debug=(
+                {"Application": {"log_level": 0}},
+                "Set Application.log_level to 0, maximizing log output.",
+            )
+        )
+    )
 
-    ipython_dir = Unicode(get_ipython_dir(),
-                          help="""
+    ipython_dir = Unicode(
+        get_ipython_dir(),
+        help="""
         The name of the IPython directory. This directory is used for logging
         configuration (through profiles), history storage, etc. The default
         is usually $HOME/.ipython. This options can also be specified through
         the environment variable IPYTHONDIR.
-        """).tag(config=True)
+        """,
+    ).tag(config=True)
 
     def _print_profiles(self, profiles):
         """print list of profiles, indented."""
         for profile in profiles:
-            print('    %s' % profile)
+            print("    %s" % profile)
 
     def list_profile_dirs(self):
         """Lists profiles in the `IPYTHONDIR` and then the `os.path.curdir`."""
@@ -229,18 +235,16 @@ create_flags = {}
 create_flags.update(base_flags)
 # don't include '--init' flag, which implies running profile create in
 # other apps
-create_flags.pop('init')
-create_flags['reset'] = ({
-    'ProfileCreate': {
-        'overwrite': True
-    }
-}, "reset config files in this profile to the defaults.")
-create_flags['parallel'] = ({
-    'ProfileCreate': {
-        'parallel': True
-    }
-}, "Include the config files for parallel "
-    "computing apps (ipengine, ipcontroller, etc.)")
+create_flags.pop("init")
+create_flags["reset"] = (
+    {"ProfileCreate": {"overwrite": True}},
+    "reset config files in this profile to the defaults.",
+)
+create_flags["parallel"] = (
+    {"ProfileCreate": {"parallel": True}},
+    "Include the config files for parallel "
+    "computing apps (ipengine, ipcontroller, etc.)",
+)
 
 
 class ProfileCreate(BaseIPythonApplication):
@@ -257,7 +261,8 @@ class ProfileCreate(BaseIPythonApplication):
     this classes attributes and put them together! :D
 
     """
-    name = u'ipython-profile'
+
+    name = "ipython-profile"
     description = create_help
     examples = _create_examples
     auto_create = Bool(True)
@@ -271,10 +276,10 @@ class ProfileCreate(BaseIPythonApplication):
         return True
 
     parallel = Bool(
-        False, help="whether to include parallel computing config files").tag(
-        config=True)
+        False, help="whether to include parallel computing config files"
+    ).tag(config=True)
 
-    @observe('parallel')
+    @observe("parallel")
     def _parallel_changed(self, change):
         """Handler for if the ipyparallel files change.
 
@@ -286,10 +291,11 @@ class ProfileCreate(BaseIPythonApplication):
 
         """
         parallel_files = [
-            'ipcontroller_config.py', 'ipengine_config.py',
-            'ipcluster_config.py'
+            "ipcontroller_config.py",
+            "ipengine_config.py",
+            "ipcluster_config.py",
         ]
-        if change['new']:
+        if change["new"]:
             for cf in parallel_files:
                 self.config_files.append(cf)
         else:
@@ -321,16 +327,18 @@ class ProfileCreate(BaseIPythonApplication):
 
     def _import_app(self, app_path):
         """Import an app class."""
-        name = app_path.rsplit('.', 1)[-1]
+        name = app_path.rsplit(".", 1)[-1]
         try:
             app = import_module(app_path)
         except ImportError as e:
-            self.log.info("""Couldn't import {}, config file will be excluded
-                          The cause of the ImportError was {}""".format(e, e.__cause__()))
+            self.log.info(
+                """Couldn't import {}, config file will be excluded
+                          The cause of the ImportError was {}""".format(
+                    e, e.__cause__()
+                )
+            )
         except Exception:
-            self.log.warning('Unexpected error importing %s',
-                             name,
-                             exc_info=True)
+            self.log.warning("Unexpected error importing %s", name, exc_info=True)
         return app
 
     def init_config_files(self):
@@ -338,8 +346,9 @@ class ProfileCreate(BaseIPythonApplication):
         super().init_config_files()
         # use local imports, since these classes may import from here
         from IPython.terminal.ipapp import TerminalIPythonApp
+
         apps = [TerminalIPythonApp]
-        for app_path in ('ipykernel.kernelapp.IPKernelApp',):
+        for app_path in ("ipykernel.kernelapp.IPKernelApp",):
             app = self._import_app(app_path)
             if app is not None:
                 apps.append(app)
@@ -347,11 +356,10 @@ class ProfileCreate(BaseIPythonApplication):
             from ipyparallel.apps.ipcontrollerapp import IPControllerApp
             from ipyparallel.apps.ipengineapp import IPEngineApp
             from ipyparallel.apps.ipclusterapp import IPClusterStart
-            apps.extend([
-                IPControllerApp,
-                IPEngineApp,
-                IPClusterStart,
-            ])
+
+            apps.extend(
+                [IPControllerApp, IPEngineApp, IPClusterStart,]
+            )
         for App in apps:
             app = App()
             app.config.update(self.config)
@@ -373,7 +381,8 @@ class ProfileApp(Application):
     The object in this file doesn't define any attributes it uses in it's
     ow methods.o
     """
-    name = u'ipython profile'
+
+    name = "ipython profile"
     description = profile_help
     examples = _main_examples
 
@@ -382,12 +391,15 @@ class ProfileApp(Application):
             create=(ProfileCreate, ProfileCreate.description.splitlines()[0]),
             list=(ProfileList, ProfileList.description.splitlines()[0]),
             locate=(ProfileLocate, ProfileLocate.description.splitlines()[0]),
-        ))
+        )
+    )
 
     def start(self):
         if self.subapp is None:
-            print("No subcommand specified. Must specify one of: %s" %
-                  (self.subcommands.keys()))
+            print(
+                "No subcommand specified. Must specify one of: %s"
+                % (self.subcommands.keys())
+            )
             print()
             self.print_description()
             self.print_subcommands()

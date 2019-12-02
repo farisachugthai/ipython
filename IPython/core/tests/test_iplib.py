@@ -4,6 +4,7 @@
 import textwrap
 
 import nose.tools as nt
+
 # from nose.tools.nontrivial import nottest
 
 from IPython import get_ipython
@@ -23,8 +24,8 @@ def test_reset():
     nvars_hidden = len(ip.user_ns_hidden)
 
     # Now add a few variables to user_ns, and check that reset clears them
-    ip.user_ns['x'] = 1
-    ip.user_ns['y'] = 1
+    ip.user_ns["x"] = 1
+    ip.user_ns["y"] = 1
     ip.reset()
 
     # Finally, check that all namespaces have only as many variables as we
@@ -219,11 +220,12 @@ def test_run_cell():
     .. note:: needed to rename a variable that shadowed the
     builtin `complex`.
     """
-    ip.run_cell('a = 10\na+=1')
-    ip.run_cell('assert a == 11\nassert 1')
+    ip.run_cell("a = 10\na+=1")
+    ip.run_cell("assert a == 11\nassert 1")
 
-    nt.assert_equal(ip.user_ns['a'], 11)
-    complex_doctest = textwrap.dedent("""
+    nt.assert_equal(ip.user_ns["a"], 11)
+    complex_doctest = textwrap.dedent(
+        """
     if 1:
         print "hello"
         if 1:
@@ -238,6 +240,7 @@ def test_run_cell():
     if 4:
         print "bar"
 
-    """)
+    """
+    )
     # Simply verifies that this kind of input is run
     ip.run_cell(complex)

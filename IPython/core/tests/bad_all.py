@@ -14,5 +14,5 @@ def puppies():
 
 __all__ = [
     evil,  # Bad
-    'puppies',  # Good
+    "puppies",  # Good
 ]

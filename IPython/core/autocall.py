@@ -34,6 +34,7 @@ class IPyAutocall(object):
     This happens regardless of 'autocall' variable state. Use this to
     develop macro-like mechanisms.
     """
+
     _ip = None
     rewrite = True
 
@@ -52,6 +53,7 @@ class IPyAutocall(object):
 class ExitAutocall(IPyAutocall):
     """An autocallable object which will be added to the user namespace so that
     exit, exit(), quit or quit() are all valid ways to close the shell."""
+
     rewrite = False
 
     def __call__(self):

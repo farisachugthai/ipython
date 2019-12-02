@@ -30,7 +30,7 @@ class _FakeInput(object):
     def readline(self):
         line = next(self.lines)
         print(line)
-        return line + '\n'
+        return line + "\n"
 
 
 class PdbTestInput(object):
@@ -58,14 +58,14 @@ def test_longer_repr():
     except ImportError:
         from repr import repr as trepr  # Py 2
 
-    a = '1234567890' * 7
+    a = "1234567890" * 7
     ar = "'1234567890123456789012345678901234567890123456789012345678901234567890'"
     a_trunc = "'123456789012...8901234567890'"
     nt.assert_equal(trepr(a), a_trunc)
     # The creation of our tracer modifies the repr module's repr function
     # in-place, since that global is used directly by the stdlib's pdb module.
     with warnings.catch_warnings():
-        warnings.simplefilter('ignore', DeprecationWarning)
+        warnings.simplefilter("ignore", DeprecationWarning)
         debugger.Tracer()
     nt.assert_equal(trepr(a), ar)
 

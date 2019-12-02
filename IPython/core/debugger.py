@@ -60,14 +60,17 @@ import warnings
 from bdb import BdbQuit
 from pdb import Pdb
 
-from IPython.core.error import (BdbQuit_excepthook, BdbQuit_IPython_excepthook,
-                                UsageError)
+from IPython.core.error import (
+    BdbQuit_excepthook,
+    BdbQuit_IPython_excepthook,
+    UsageError,
+)
 from IPython.core.excolors import exception_colors
 from IPython.core.getipython import get_ipython
 from IPython.utils import PyColorize, coloransi, py3compat
 
 # We have to check this directly from sys.argv, config struct not yet available
-prompt = 'ipdb> '
+prompt = "ipdb> "
 
 # Allow the set_trace code to operate outside of an ipython instance, even if
 # it does so with some limitations.  The rest of this support is implemented in
@@ -78,16 +81,16 @@ prompt = 'ipdb> '
 def make_arrow(pad):
     """Generate the leading arrow in front of traceback or debugger."""
     if pad >= 2:
-        return '-' * (pad - 2) + '> '
+        return "-" * (pad - 2) + "> "
     elif pad == 1:
-        return '>'
-    return ''
+        return ">"
+    return ""
 
 
 def strip_indentation(multiline_string):
     """textwrap.dedent?"""
-    RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')
-    return RGX_EXTRA_INDENT.sub('', multiline_string)
+    RGX_EXTRA_INDENT = re.compile(r"(?<=\n)\s+")
+    return RGX_EXTRA_INDENT.sub("", multiline_string)
 
 
 def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
@@ -124,16 +127,18 @@ class CorePdb(Pdb):
 
     """
 
-    def __init__(self,
-                 color_scheme=None,
-                 completekey=None,
-                 stdin=None,
-                 stdout=None,
-                 context=5,
-                 aliases=None,
-                 prompt='IPdb> ',
-                 shell=None,
-                 **kwargs):
+    def __init__(
+        self,
+        color_scheme=None,
+        completekey=None,
+        stdin=None,
+        stdout=None,
+        context=5,
+        aliases=None,
+        prompt="IPdb> ",
+        shell=None,
+        **kwargs,
+    ):
         """Create a new IPython debugger.
 
         .. todo::
@@ -171,13 +176,14 @@ class CorePdb(Pdb):
         self.shell = shell or get_ipython()
 
         if self.shell is None:
-            save_main = sys.modules['__main__']
+            save_main = sys.modules["__main__"]
             # No IPython instance running, we must create one
             from IPython.terminal.interactiveshell import TerminalInteractiveShell
+
             self.shell = TerminalInteractiveShell.instance()
             # needed by any code which calls __import__("__main__") after
             # the debugger was entered. See also #9941.
-            sys.modules['__main__'] = save_main
+            sys.modules["__main__"] = save_main
 
         self.aliases = aliases or {}
 
@@ -197,21 +203,21 @@ class CorePdb(Pdb):
         C = coloransi.TermColors
         cst = self.color_scheme_table
 
-        cst['NoColor'].colors.prompt = C.NoColor
-        cst['NoColor'].colors.breakpoint_enabled = C.NoColor
-        cst['NoColor'].colors.breakpoint_disabled = C.NoColor
+        cst["NoColor"].colors.prompt = C.NoColor
+        cst["NoColor"].colors.breakpoint_enabled = C.NoColor
+        cst["NoColor"].colors.breakpoint_disabled = C.NoColor
 
-        cst['Linux'].colors.prompt = C.Green
-        cst['Linux'].colors.breakpoint_enabled = C.LightRed
-        cst['Linux'].colors.breakpoint_disabled = C.Red
+        cst["Linux"].colors.prompt = C.Green
+        cst["Linux"].colors.breakpoint_enabled = C.LightRed
+        cst["Linux"].colors.breakpoint_disabled = C.Red
 
-        cst['LightBG'].colors.prompt = C.Blue
-        cst['LightBG'].colors.breakpoint_enabled = C.LightRed
-        cst['LightBG'].colors.breakpoint_disabled = C.Red
+        cst["LightBG"].colors.prompt = C.Blue
+        cst["LightBG"].colors.breakpoint_enabled = C.LightRed
+        cst["LightBG"].colors.breakpoint_disabled = C.Red
 
-        cst['Neutral'].colors.prompt = C.Blue
-        cst['Neutral'].colors.breakpoint_enabled = C.LightRed
-        cst['Neutral'].colors.breakpoint_disabled = C.Red
+        cst["Neutral"].colors.prompt = C.Blue
+        cst["Neutral"].colors.breakpoint_enabled = C.LightRed
+        cst["Neutral"].colors.breakpoint_disabled = C.Red
 
         # Add a python parser so we can syntax highlight source while
         # debugging.
@@ -227,7 +233,7 @@ class CorePdb(Pdb):
         try:
             Pdb.interaction(self, frame, traceback)
         except KeyboardInterrupt:
-            self.stdout.write('\n' + self.shell.get_exception_only())
+            self.stdout.write("\n" + self.shell.get_exception_only())
 
     def new_do_up(self, arg):
         """So this calls the superclasses method directly. Should we turn into a super call? How do we handle this?"""
@@ -245,7 +251,7 @@ class CorePdb(Pdb):
 
     def new_do_quit(self, arg):
 
-        if hasattr(self, 'old_all_completions'):
+        if hasattr(self, "old_all_completions"):
             self.shell.Completer.all_completions = self.old_all_completions
 
         return Pdb.do_quit(self, arg)
@@ -273,10 +279,7 @@ class CorePdb(Pdb):
         except KeyboardInterrupt:
             pass
 
-    def print_stack_entry(self,
-                          frame_lineno,
-                          prompt_prefix='\n-> ',
-                          context=None):
+    def print_stack_entry(self, frame_lineno, prompt_prefix="\n-> ", context=None):
         if context is None:
             context = self.context
         try:
@@ -285,8 +288,7 @@ class CorePdb(Pdb):
                 raise ValueError("Context must be a positive integer")
         except (TypeError, ValueError):
             raise ValueError("Context must be a positive integer")
-        print(self.format_stack_entry(frame_lineno, '', context),
-              file=self.stdout)
+        print(self.format_stack_entry(frame_lineno, "", context), file=self.stdout)
 
         # vds: >>
         frame, lineno = frame_lineno
@@ -294,29 +296,28 @@ class CorePdb(Pdb):
         self.shell.hooks.synchronize_with_editor(filename, lineno, 0)
         # vds: <<
 
-    def format_stack_entry(self, frame_lineno, lprefix=': ', context=None):
+    def format_stack_entry(self, frame_lineno, lprefix=": ", context=None):
         try:
             which_frame = abs(self.context)
         except (TypeError, ValueError):
-            raise UsageError('context must be a positive integer.')
+            raise UsageError("context must be a positive integer.")
 
         ret = []
 
         Colors = self.color_scheme_table.active_colors
         ColorsNormal = Colors.Normal
-        tpl_link = u'%s%%s%s' % (Colors.filenameEm, ColorsNormal)
-        tpl_call = u'%s%%s%s%%s%s' % (Colors.vName, Colors.valEm, ColorsNormal)
-        tpl_line = u'%%s%s%%s %s%%s' % (Colors.lineno, ColorsNormal)
-        tpl_line_em = u'%%s%s%%s %s%%s%s' % (Colors.linenoEm, Colors.line,
-                                             ColorsNormal)
+        tpl_link = "%s%%s%s" % (Colors.filenameEm, ColorsNormal)
+        tpl_call = "%s%%s%s%%s%s" % (Colors.vName, Colors.valEm, ColorsNormal)
+        tpl_line = "%%s%s%%s %s%%s" % (Colors.lineno, ColorsNormal)
+        tpl_line_em = "%%s%s%%s %s%%s%s" % (Colors.linenoEm, Colors.line, ColorsNormal)
 
         frame, lineno = frame_lineno
 
-        return_value = ''
-        if '__return__' in frame.f_locals:
-            rv = frame.f_locals['__return__']
-            #return_value += '->'
-            return_value += reprlib.repr(rv) + '\n'
+        return_value = ""
+        if "__return__" in frame.f_locals:
+            rv = frame.f_locals["__return__"]
+            # return_value += '->'
+            return_value += reprlib.repr(rv) + "\n"
         ret.append(return_value)
 
         # s = filename + '(' + `lineno` + ')'
@@ -328,46 +329,43 @@ class CorePdb(Pdb):
         else:
             func = "<lambda>"
 
-        call = ''
-        if func != '?':
-            if '__args__' in frame.f_locals:
-                args = reprlib.repr(frame.f_locals['__args__'])
+        call = ""
+        if func != "?":
+            if "__args__" in frame.f_locals:
+                args = reprlib.repr(frame.f_locals["__args__"])
             else:
-                args = '()'
+                args = "()"
             call = tpl_call % (func, args)
 
         # The level info should be generated in the same format pdb uses, to
         # avoid breaking the pdbtrack functionality of python-mode in *emacs.
         if frame is self.curframe:
-            ret.append('> ')
+            ret.append("> ")
         else:
-            ret.append('  ')
-        ret.append(u'%s(%s)%s\n' % (link, lineno, call))
+            ret.append("  ")
+        ret.append("%s(%s)%s\n" % (link, lineno, call))
 
         start = lineno - 1 - context // 2
         lines = linecache.getlines(filename)
         start = min(start, len(lines) - context)
         start = max(start, 0)
-        lines = lines[start:start + context]
+        lines = lines[start : start + context]
 
         for i, line in enumerate(lines):
-            show_arrow = (start + 1 + i == lineno)
-            linetpl = (frame is self.curframe or show_arrow) \
-                and tpl_line_em \
-                or tpl_line
+            show_arrow = start + 1 + i == lineno
+            linetpl = (frame is self.curframe or show_arrow) and tpl_line_em or tpl_line
             ret.append(
-                self.__format_line(linetpl,
-                                   filename,
-                                   start + 1 + i,
-                                   line,
-                                   arrow=show_arrow))
-        return ''.join(ret)
+                self.__format_line(
+                    linetpl, filename, start + 1 + i, line, arrow=show_arrow
+                )
+            )
+        return "".join(ret)
 
     def __format_line(self, tpl_line, filename, lineno, line, arrow=False):
         bp_mark = ""
         bp_mark_color = ""
 
-        new_line, err = self.parser.format2(line, 'str')
+        new_line, err = self.parser.format2(line, "str")
         if not err:
             line = new_line
 
@@ -387,9 +385,9 @@ class CorePdb(Pdb):
         if arrow:
             # This is the line with the error
             pad = numbers_width - len(str(lineno)) - len(bp_mark)
-            num = '%s%s' % (make_arrow(pad), str(lineno))
+            num = "%s%s" % (make_arrow(pad), str(lineno))
         else:
-            num = '%*s' % (numbers_width - len(bp_mark), str(lineno))
+            num = "%*s" % (numbers_width - len(bp_mark), str(lineno))
 
         return tpl_line % (bp_mark_color + bp_mark, num, line)
 
@@ -398,9 +396,12 @@ class CorePdb(Pdb):
         try:
             Colors = self.color_scheme_table.active_colors
             ColorsNormal = Colors.Normal
-            tpl_line = '%%s%s%%s %s%%s' % (Colors.lineno, ColorsNormal)
-            tpl_line_em = '%%s%s%%s %s%%s%s' % (Colors.linenoEm, Colors.line,
-                                                ColorsNormal)
+            tpl_line = "%%s%s%%s %s%%s" % (Colors.lineno, ColorsNormal)
+            tpl_line_em = "%%s%s%%s %s%%s%s" % (
+                Colors.linenoEm,
+                Colors.line,
+                ColorsNormal,
+            )
             src = []
             if filename == "<string>" and hasattr(self, "_exec_filename"):
                 filename = self._exec_filename
@@ -411,31 +412,27 @@ class CorePdb(Pdb):
                     break
 
                 if lineno == self.curframe.f_lineno:
-                    line = self.__format_line(tpl_line_em,
-                                              filename,
-                                              lineno,
-                                              line,
-                                              arrow=True)
+                    line = self.__format_line(
+                        tpl_line_em, filename, lineno, line, arrow=True
+                    )
                 else:
-                    line = self.__format_line(tpl_line,
-                                              filename,
-                                              lineno,
-                                              line,
-                                              arrow=False)
+                    line = self.__format_line(
+                        tpl_line, filename, lineno, line, arrow=False
+                    )
 
                 src.append(line)
                 self.lineno = lineno
 
-            print(''.join(src), file=self.stdout)
+            print("".join(src), file=self.stdout)
 
         except KeyboardInterrupt:
             # pass well at least notify them.
-            print('Interrupted!')
+            print("Interrupted!")
 
     def do_list(self, arg):
         """Print lines of code from the current stack frame.
         """
-        self.lastcmd = 'list'
+        self.lastcmd = "list"
         last = None
         if arg:
             try:
@@ -450,7 +447,7 @@ class CorePdb(Pdb):
                 else:
                     first = max(1, int(x) - 5)
             except BaseException:
-                print('*** Error in argument:', repr(arg), file=self.stdout)
+                print("*** Error in argument:", repr(arg), file=self.stdout)
                 return
         elif self.lineno is None:
             first = max(1, self.curframe.f_lineno - 5)
@@ -482,7 +479,7 @@ class CorePdb(Pdb):
 
         Shows more lines than 'list' does.
         """
-        self.lastcmd = 'longlist'
+        self.lastcmd = "longlist"
         try:
             lines, lineno = self.getsourcelines(self.curframe)
         except OSError as err:
@@ -502,9 +499,9 @@ class CorePdb(Pdb):
         sys.settrace(None)
         globals = self.curframe.f_globals
         locals = self.curframe_locals
-        p = self.__class__(completekey=self.completekey,
-                           stdin=self.stdin,
-                           stdout=self.stdout)
+        p = self.__class__(
+            completekey=self.completekey, stdin=self.stdin, stdout=self.stdout
+        )
         p.use_rawinput = self.use_rawinput
         p.prompt = "(%s) " % self.prompt.strip()
         self.message("ENTERING RECURSIVE DEBUGGER")
@@ -518,49 +515,61 @@ class CorePdb(Pdb):
 
         The debugger interface to `%pdef`.
         """
-        namespaces = [('Locals', self.curframe.f_locals),
-                      ('Globals', self.curframe.f_globals)]
-        self.shell.find_line_magic('pdef')(arg, namespaces=namespaces)
+        namespaces = [
+            ("Locals", self.curframe.f_locals),
+            ("Globals", self.curframe.f_globals),
+        ]
+        self.shell.find_line_magic("pdef")(arg, namespaces=namespaces)
 
     def do_pdoc(self, arg):
         """Print the docstring for an object.
 
         The debugger interface to `%pdoc.`
         """
-        namespaces = [('Locals', self.curframe.f_locals),
-                      ('Globals', self.curframe.f_globals)]
-        self.shell.find_line_magic('pdoc')(arg, namespaces=namespaces)
+        namespaces = [
+            ("Locals", self.curframe.f_locals),
+            ("Globals", self.curframe.f_globals),
+        ]
+        self.shell.find_line_magic("pdoc")(arg, namespaces=namespaces)
 
     def do_pfile(self, arg):
         """Print (or run through pager) the file where an object is defined.
 
         The debugger interface to %pfile.
         """
-        namespaces = [('Locals', self.curframe.f_locals),
-                      ('Globals', self.curframe.f_globals)]
-        self.shell.find_line_magic('pfile')(arg, namespaces=namespaces)
+        namespaces = [
+            ("Locals", self.curframe.f_locals),
+            ("Globals", self.curframe.f_globals),
+        ]
+        self.shell.find_line_magic("pfile")(arg, namespaces=namespaces)
 
     def do_pinfo(self, arg):
         """Provide detailed information about an object.
 
         The debugger interface to %pinfo, i.e., obj?."""
-        namespaces = [('Locals', self.curframe.f_locals),
-                      ('Globals', self.curframe.f_globals)]
-        self.shell.find_line_magic('pinfo')(arg, namespaces=namespaces)
+        namespaces = [
+            ("Locals", self.curframe.f_locals),
+            ("Globals", self.curframe.f_globals),
+        ]
+        self.shell.find_line_magic("pinfo")(arg, namespaces=namespaces)
 
     def do_pinfo2(self, arg):
         """Provide extra detailed information about an object.
 
         The debugger interface to %pinfo2, i.e., obj??."""
-        namespaces = [('Locals', self.curframe.f_locals),
-                      ('Globals', self.curframe.f_globals)]
-        self.shell.find_line_magic('pinfo2')(arg, namespaces=namespaces)
+        namespaces = [
+            ("Locals", self.curframe.f_locals),
+            ("Globals", self.curframe.f_globals),
+        ]
+        self.shell.find_line_magic("pinfo2")(arg, namespaces=namespaces)
 
     def do_psource(self, arg):
         """Print (or run through pager) the source code for an object."""
-        namespaces = [('Locals', self.curframe.f_locals),
-                      ('Globals', self.curframe.f_globals)]
-        self.shell.find_line_magic('psource')(arg, namespaces=namespaces)
+        namespaces = [
+            ("Locals", self.curframe.f_locals),
+            ("Globals", self.curframe.f_globals),
+        ]
+        self.shell.find_line_magic("psource")(arg, namespaces=namespaces)
 
     def do_where(self, arg):
         """w(here)

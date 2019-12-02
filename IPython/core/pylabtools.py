@@ -12,23 +12,23 @@ from IPython.utils.decorators import flag_calls
 # If user specifies a GUI, that dictates the backend, otherwise we read the
 # user's mpl default from the mpl rc structure
 backends = {
-    'tk': 'TkAgg',
-    'gtk': 'GTKAgg',
-    'gtk3': 'GTK3Agg',
-    'wx': 'WXAgg',
-    'qt4': 'Qt4Agg',
-    'qt5': 'Qt5Agg',
-    'qt': 'Qt5Agg',
-    'osx': 'MacOSX',
-    'nbagg': 'nbAgg',
-    'notebook': 'nbAgg',
-    'agg': 'agg',
-    'svg': 'svg',
-    'pdf': 'pdf',
-    'ps': 'ps',
-    'inline': 'module://ipykernel.pylab.backend_inline',
-    'ipympl': 'module://ipympl.backend_nbagg',
-    'widget': 'module://ipympl.backend_nbagg',
+    "tk": "TkAgg",
+    "gtk": "GTKAgg",
+    "gtk3": "GTK3Agg",
+    "wx": "WXAgg",
+    "qt4": "Qt4Agg",
+    "qt5": "Qt5Agg",
+    "qt": "Qt5Agg",
+    "osx": "MacOSX",
+    "nbagg": "nbAgg",
+    "notebook": "nbAgg",
+    "agg": "agg",
+    "svg": "svg",
+    "pdf": "pdf",
+    "ps": "ps",
+    "inline": "module://ipykernel.pylab.backend_inline",
+    "ipympl": "module://ipympl.backend_nbagg",
+    "widget": "module://ipympl.backend_nbagg",
 }
 
 # We also need a reverse backends2guis mapping that will properly choose which
@@ -37,20 +37,20 @@ backends = {
 # few others that map to the same GUI manually:
 backend2gui = dict(zip(backends.values(), backends.keys()))
 # Our tests expect backend2gui to just return 'qt'
-backend2gui['Qt4Agg'] = 'qt'
+backend2gui["Qt4Agg"] = "qt"
 # In the reverse mapping, there are a few extra valid matplotlib backends that
 # map to the same GUI support
-backend2gui['GTK'] = backend2gui['GTKCairo'] = 'gtk'
-backend2gui['GTK3Cairo'] = 'gtk3'
-backend2gui['WX'] = 'wx'
-backend2gui['CocoaAgg'] = 'osx'
+backend2gui["GTK"] = backend2gui["GTKCairo"] = "gtk"
+backend2gui["GTK3Cairo"] = "gtk3"
+backend2gui["WX"] = "wx"
+backend2gui["CocoaAgg"] = "osx"
 # And some backends that don't need GUI integration
-del backend2gui['nbAgg']
-del backend2gui['agg']
-del backend2gui['svg']
-del backend2gui['pdf']
-del backend2gui['ps']
-del backend2gui['module://ipykernel.pylab.backend_inline']
+del backend2gui["nbAgg"]
+del backend2gui["agg"]
+del backend2gui["svg"]
+del backend2gui["pdf"]
+del backend2gui["ps"]
+del backend2gui["module://ipykernel.pylab.backend_inline"]
 
 
 # -----------------------------------------------------------------------------
@@ -71,6 +71,7 @@ def getfigs(*fig_nums):
         A tuple of ints giving the figure numbers of the figures to return.
     """
     from matplotlib._pylab_helpers import Gcf
+
     if not fig_nums:
         fig_managers = Gcf.get_all_fig_managers()
         return [fm.canvas.figure for fm in fig_managers]
@@ -79,7 +80,7 @@ def getfigs(*fig_nums):
         for num in fig_nums:
             f = Gcf.figs.get(num)
             if f is None:
-                print('Warning: figure %s not available.' % num)
+                print("Warning: figure %s not available." % num)
             else:
                 figs.append(f.canvas.figure)
         return figs
@@ -93,10 +94,11 @@ def figsize(sizex, sizey):
       matplotlib.rcParams['figure.figsize'] = [sizex, sizey]
     """
     import matplotlib
-    matplotlib.rcParams['figure.figsize'] = [sizex, sizey]
+
+    matplotlib.rcParams["figure.figsize"] = [sizex, sizey]
 
 
-def print_figure(fig, fmt='png', bbox_inches='tight', **kwargs):
+def print_figure(fig, fmt="png", bbox_inches="tight", **kwargs):
     """Print a figure to an image, and return the resulting file data
 
     Returned data will be bytes unless ``fmt='svg'``,
@@ -111,9 +113,9 @@ def print_figure(fig, fmt='png', bbox_inches='tight', **kwargs):
         return
 
     dpi = fig.dpi
-    if fmt == 'retina':
+    if fmt == "retina":
         dpi = dpi * 2
-        fmt = 'png'
+        fmt = "png"
 
     # build keyword args
     kw = {
@@ -129,14 +131,14 @@ def print_figure(fig, fmt='png', bbox_inches='tight', **kwargs):
     bytes_io = BytesIO()
     fig.canvas.print_figure(bytes_io, **kw)
     data = bytes_io.getvalue()
-    if fmt == 'svg':
-        data = data.decode('utf-8')
+    if fmt == "svg":
+        data = data.decode("utf-8")
     return data
 
 
 def retina_figure(fig, **kwargs):
     """format a figure as a pixel-doubled (retina) PNG"""
-    pngdata = print_figure(fig, fmt='retina', **kwargs)
+    pngdata = print_figure(fig, fmt="retina", **kwargs)
     # Make sure that retina_figure acts just like print_figure and returns
     # None when the figure is empty.
     if pngdata is None:
@@ -176,7 +178,7 @@ def mpl_runner(safe_execfile):
 
         # print '*** Matplotlib runner ***' # dbg
         # turn off rendering until end of script
-        is_interactive = matplotlib.rcParams['interactive']
+        is_interactive = matplotlib.rcParams["interactive"]
         matplotlib.interactive(False)
         safe_execfile(fname, *where, **kw)
         matplotlib.interactive(is_interactive)
@@ -221,10 +223,10 @@ def select_figure_formats(shell, formats, **kwargs):
     import matplotlib
     from matplotlib.figure import Figure
 
-    svg_formatter = shell.display_formatter.formatters['image/svg+xml']
-    png_formatter = shell.display_formatter.formatters['image/png']
-    jpg_formatter = shell.display_formatter.formatters['image/jpeg']
-    pdf_formatter = shell.display_formatter.formatters['application/pdf']
+    svg_formatter = shell.display_formatter.formatters["image/svg+xml"]
+    png_formatter = shell.display_formatter.formatters["image/png"]
+    jpg_formatter = shell.display_formatter.formatters["image/jpeg"]
+    pdf_formatter = shell.display_formatter.formatters["application/pdf"]
 
     if isinstance(formats, str):
         formats = {formats}
@@ -233,32 +235,27 @@ def select_figure_formats(shell, formats, **kwargs):
 
     [f.pop(Figure, None) for f in shell.display_formatter.formatters.values()]
     mplbackend = matplotlib.get_backend().lower()
-    if mplbackend == 'nbagg' or mplbackend == 'module://ipympl.backend_nbagg':
+    if mplbackend == "nbagg" or mplbackend == "module://ipympl.backend_nbagg":
         formatter = shell.display_formatter.ipython_display_formatter
         formatter.for_type(Figure, _reshow_nbagg_figure)
 
-    supported = {'png', 'png2x', 'retina', 'jpg', 'jpeg', 'svg', 'pdf'}
+    supported = {"png", "png2x", "retina", "jpg", "jpeg", "svg", "pdf"}
     bad = formats.difference(supported)
     if bad:
-        bs = "%s" % ','.join([repr(f) for f in bad])
-        gs = "%s" % ','.join([repr(f) for f in supported])
+        bs = "%s" % ",".join([repr(f) for f in bad])
+        gs = "%s" % ",".join([repr(f) for f in supported])
         raise ValueError("supported formats are: %s not %s" % (gs, bs))
 
-    if 'png' in formats:
-        png_formatter.for_type(Figure,
-                               lambda fig: print_figure(fig, 'png', **kwargs))
-    if 'retina' in formats or 'png2x' in formats:
-        png_formatter.for_type(
-            Figure, lambda fig: retina_figure(fig, **kwargs))
-    if 'jpg' in formats or 'jpeg' in formats:
-        jpg_formatter.for_type(Figure,
-                               lambda fig: print_figure(fig, 'jpg', **kwargs))
-    if 'svg' in formats:
-        svg_formatter.for_type(Figure,
-                               lambda fig: print_figure(fig, 'svg', **kwargs))
-    if 'pdf' in formats:
-        pdf_formatter.for_type(Figure,
-                               lambda fig: print_figure(fig, 'pdf', **kwargs))
+    if "png" in formats:
+        png_formatter.for_type(Figure, lambda fig: print_figure(fig, "png", **kwargs))
+    if "retina" in formats or "png2x" in formats:
+        png_formatter.for_type(Figure, lambda fig: retina_figure(fig, **kwargs))
+    if "jpg" in formats or "jpeg" in formats:
+        jpg_formatter.for_type(Figure, lambda fig: print_figure(fig, "jpg", **kwargs))
+    if "svg" in formats:
+        svg_formatter.for_type(Figure, lambda fig: print_figure(fig, "svg", **kwargs))
+    if "pdf" in formats:
+        pdf_formatter.for_type(Figure, lambda fig: print_figure(fig, "pdf", **kwargs))
 
 
 # -----------------------------------------------------------------------------
@@ -285,17 +282,17 @@ def find_gui_and_backend(gui=None, gui_select=None):
 
     import matplotlib
 
-    if gui and gui != 'auto':
+    if gui and gui != "auto":
         # select backend based on requested gui
         backend = backends[gui]
-        if gui == 'agg':
+        if gui == "agg":
             gui = None
     else:
         # We need to read the backend from the original data structure, *not*
         # from mpl.rcParams, since a prior invocation of %matplotlib may have
         # overwritten that.
         # WARNING: this assumes matplotlib 1.1 or newer!!
-        backend = matplotlib.rcParamsOrig['backend']
+        backend = matplotlib.rcParamsOrig["backend"]
         # In this case, we need to find what the appropriate gui selection call
         # should be for IPython, so we can activate inputhook accordingly
         gui = backend2gui.get(backend, None)
@@ -313,12 +310,13 @@ def activate_matplotlib(backend):
     """Activate the given backend and set interactive to True."""
 
     import matplotlib
+
     matplotlib.interactive(True)
 
     # Matplotlib had a bug where even switch_backend could not force
     # the rcParam to update. This needs to be set *before* the module
     # magic of switch_backend().
-    matplotlib.rcParams['backend'] = backend
+    matplotlib.rcParams["backend"] = backend
 
     # Due to circular imports, pyplot may be only partially initialised
     # when this function runs.
@@ -345,11 +343,13 @@ def import_pylab(user_ns, import_all=True):
     # Import numpy as np/pyplot as plt are conventions we're trying to
     # somewhat standardize on.  Making them available to users by default
     # will greatly help this.
-    s = ("import numpy\n"
-         "import matplotlib\n"
-         "from matplotlib import pylab, mlab, pyplot\n"
-         "np = numpy\n"
-         "plt = pyplot\n")
+    s = (
+        "import numpy\n"
+        "import matplotlib\n"
+        "from matplotlib import pylab, mlab, pyplot\n"
+        "np = numpy\n"
+        "plt = pyplot\n"
+    )
     exec(s, user_ns)
 
     if import_all:
@@ -357,11 +357,12 @@ def import_pylab(user_ns, import_all=True):
         exec(s, user_ns)
 
     # IPython symbols to add
-    user_ns['figsize'] = figsize
+    user_ns["figsize"] = figsize
     from IPython.core.display import display
+
     # Add display and getfigs to the user's namespace
-    user_ns['display'] = display
-    user_ns['getfigs'] = getfigs
+    user_ns["display"] = display
+    user_ns["getfigs"] = getfigs
 
 
 def configure_inline_support(shell, backend):
@@ -391,9 +392,10 @@ def configure_inline_support(shell, backend):
     if cfg not in shell.configurables:
         shell.configurables.append(cfg)
 
-    if backend == backends['inline']:
+    if backend == backends["inline"]:
         from ipykernel.pylab.backend_inline import flush_figures
-        shell.events.register('post_execute', flush_figures)
+
+        shell.events.register("post_execute", flush_figures)
 
         # Save rcParams that will be overwrittern
         shell._saved_rcParams = {}
@@ -404,11 +406,12 @@ def configure_inline_support(shell, backend):
         new_backend_name = "inline"
     else:
         from ipykernel.pylab.backend_inline import flush_figures
+
         try:
-            shell.events.unregister('post_execute', flush_figures)
+            shell.events.unregister("post_execute", flush_figures)
         except ValueError:
             pass
-        if hasattr(shell, '_saved_rcParams'):
+        if hasattr(shell, "_saved_rcParams"):
             matplotlib.rcParams.update(shell._saved_rcParams)
             del shell._saved_rcParams
         new_backend_name = "other"
@@ -419,6 +422,5 @@ def configure_inline_support(shell, backend):
     cur_backend = getattr(configure_inline_support, "current_backend", "unset")
     if new_backend_name != cur_backend:
         # Setup the default figure format
-        select_figure_formats(shell, cfg.figure_formats,
-                              **cfg.print_figure_kwargs)
+        select_figure_formats(shell, cfg.figure_formats, **cfg.print_figure_kwargs)
         configure_inline_support.current_backend = new_backend_name

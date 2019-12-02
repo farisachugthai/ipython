@@ -3,4 +3,4 @@ import warnings
 try:
     import nose
 except ImportError:
-    warnings.warning('Nose not installed!')
+    warnings.warning("Nose not installed!")

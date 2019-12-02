@@ -13,7 +13,7 @@
 
 # Our own packages
 from IPython.core.display import display, Javascript, Latex, SVG, HTML, Markdown
-from IPython.core.magic import (Magics, magics_class, cell_magic)
+from IPython.core.magic import Magics, magics_class, cell_magic
 from IPython.core import magic_arguments
 
 # -----------------------------------------------------------------------------
@@ -58,18 +58,20 @@ class DisplayMagics(Magics):
         display(SVG(cell))
 
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('--isolated',
-                              action='store_true',
-                              default=False,
-                              help="""Annotate the cell as 'isolated'.
-Isolated cells are rendered inside their own <iframe> tag""")
+    @magic_arguments.argument(
+        "--isolated",
+        action="store_true",
+        default=False,
+        help="""Annotate the cell as 'isolated'.
+Isolated cells are rendered inside their own <iframe> tag""",
+    )
     @cell_magic
     def html(self, line, cell):
         """Render the cell as a block of HTML"""
         args = magic_arguments.parse_argstring(self.html, line)
         html = HTML(cell)
         if args.isolated:
-            display(html, metadata={'text/html': {'isolated': True}})
+            display(html, metadata={"text/html": {"isolated": True}})
         else:
             display(html)
 

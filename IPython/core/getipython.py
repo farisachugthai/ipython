@@ -19,5 +19,6 @@ def get_ipython():
     Returns None if no InteractiveShell instance is registered.
     """
     from IPython.core.interactiveshell import InteractiveShell
+
     if InteractiveShell.initialized():
         return InteractiveShell.instance()

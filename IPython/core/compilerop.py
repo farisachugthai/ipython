@@ -46,9 +46,13 @@ from contextlib import contextmanager
 # -----------------------------------------------------------------------------
 # Constants
 # -----------------------------------------------------------------------------
-PyCF_MASK = functools.reduce(operator.or_,
-                             (getattr(__future__, fname).compiler_flag
-                              for fname in __future__.all_feature_names))
+PyCF_MASK = functools.reduce(
+    operator.or_,
+    (
+        getattr(__future__, fname).compiler_flag
+        for fname in __future__.all_feature_names
+    ),
+)
 
 # -----------------------------------------------------------------------------
 # Local utilities
@@ -64,7 +68,7 @@ def code_name(code, number=0):
     # Include the number and 12 characters of the hash in the name.  It's
     # pretty much impossible that in a single session we'll have collisions
     # even with truncated hashes, and the full one makes tracebacks too long
-    return '<ipython-input-{0}-{1}>'.format(number, hash_digest[:12])
+    return "<ipython-input-{0}-{1}>".format(number, hash_digest[:12])
 
 
 # -----------------------------------------------------------------------------
@@ -89,16 +93,16 @@ class CachingCompiler(codeop.Compile):
         # separate caches (one in each CachingCompiler instance), any call made
         # by Python itself to linecache.checkcache() would obliterate the
         # cached data from the other IPython instances.
-        if not hasattr(linecache, '_ipython_cache'):
+        if not hasattr(linecache, "_ipython_cache"):
             linecache._ipython_cache = {}
-        if not hasattr(linecache, '_checkcache_ori'):
+        if not hasattr(linecache, "_checkcache_ori"):
             linecache._checkcache_ori = linecache.checkcache
         # Now, we must monkeypatch the linecache directly so that parts of the
         # stdlib that call it outside our control go through our codepath
         # (otherwise we'd lose our tracebacks).
         linecache.checkcache = check_linecache_ipython
 
-    def ast_parse(self, source, filename='<unknown>', symbol='exec'):
+    def ast_parse(self, source, filename="<unknown>", symbol="exec"):
         """Parse code to an AST with the current compiler flags active.
 
         Arguments are exactly the same as ast.parse (in the standard library),
@@ -134,8 +138,12 @@ class CachingCompiler(codeop.Compile):
         argument to compilation, so that tracebacks are correctly hooked up.
         """
         name = code_name(code, number)
-        entry = (len(code), time.time(),
-                 [line + '\n' for line in code.splitlines()], name)
+        entry = (
+            len(code),
+            time.time(),
+            [line + "\n" for line in code.splitlines()],
+            name,
+        )
         linecache.cache[name] = entry
         linecache._ipython_cache[name] = entry
         return name

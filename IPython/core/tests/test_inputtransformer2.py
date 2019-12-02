@@ -12,60 +12,100 @@ from IPython.core.inputtransformer2 import make_tokens_by_line, _find_assign_op
 
 from textwrap import dedent
 
-MULTILINE_MAGIC = ("""\
+MULTILINE_MAGIC = (
+    """\
 a = f()
 %foo \\
 bar
 g()
-""".splitlines(keepends=True), (2, 0), """\
+""".splitlines(
+        keepends=True
+    ),
+    (2, 0),
+    """\
 a = f()
 get_ipython().run_line_magic('foo', ' bar')
 g()
-""".splitlines(keepends=True))
+""".splitlines(
+        keepends=True
+    ),
+)
 
-INDENTED_MAGIC = ("""\
+INDENTED_MAGIC = (
+    """\
 for a in range(5):
     %ls
-""".splitlines(keepends=True), (2, 4), """\
+""".splitlines(
+        keepends=True
+    ),
+    (2, 4),
+    """\
 for a in range(5):
     get_ipython().run_line_magic('ls', '')
-""".splitlines(keepends=True))
+""".splitlines(
+        keepends=True
+    ),
+)
 
-MULTILINE_MAGIC_ASSIGN = ("""\
+MULTILINE_MAGIC_ASSIGN = (
+    """\
 a = f()
 b = %foo \\
   bar
 g()
-""".splitlines(keepends=True), (2, 4), """\
+""".splitlines(
+        keepends=True
+    ),
+    (2, 4),
+    """\
 a = f()
 b = get_ipython().run_line_magic('foo', '   bar')
 g()
-""".splitlines(keepends=True))
+""".splitlines(
+        keepends=True
+    ),
+)
 
-MULTILINE_SYSTEM_ASSIGN = ("""\
+MULTILINE_SYSTEM_ASSIGN = (
+    """\
 a = f()
 b = !foo \\
   bar
 g()
-""".splitlines(keepends=True), (2, 4), """\
+""".splitlines(
+        keepends=True
+    ),
+    (2, 4),
+    """\
 a = f()
 b = get_ipython().getoutput('foo    bar')
 g()
-""".splitlines(keepends=True))
+""".splitlines(
+        keepends=True
+    ),
+)
 
 #####
 
-MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT = ("""\
+MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT = (
+    """\
 def test():
   for i in range(1):
     print(i)
   res =! ls
-""".splitlines(keepends=True), (4, 7), '''\
+""".splitlines(
+        keepends=True
+    ),
+    (4, 7),
+    """\
 def test():
   for i in range(1):
     print(i)
   res =get_ipython().getoutput(\' ls\')
-'''.splitlines(keepends=True))
+""".splitlines(
+        keepends=True
+    ),
+)
 
 ######
 
@@ -73,37 +113,54 @@ AUTOCALL_QUOTE = ([",f 1 2 3\n"], (1, 0), ['f("1", "2", "3")\n'])
 
 AUTOCALL_QUOTE2 = ([";f 1 2 3\n"], (1, 0), ['f("1 2 3")\n'])
 
-AUTOCALL_PAREN = (["/f 1 2 3\n"], (1, 0), ['f(1, 2, 3)\n'])
+AUTOCALL_PAREN = (["/f 1 2 3\n"], (1, 0), ["f(1, 2, 3)\n"])
 
-SIMPLE_HELP = (["foo?\n"], (1, 0),
-               ["get_ipython().run_line_magic('pinfo', 'foo')\n"])
+SIMPLE_HELP = (["foo?\n"], (1, 0), ["get_ipython().run_line_magic('pinfo', 'foo')\n"])
 
-DETAILED_HELP = (["foo??\n"], (1, 0),
-                 ["get_ipython().run_line_magic('pinfo2', 'foo')\n"])
+DETAILED_HELP = (
+    ["foo??\n"],
+    (1, 0),
+    ["get_ipython().run_line_magic('pinfo2', 'foo')\n"],
+)
 
-MAGIC_HELP = (["%foo?\n"], (1, 0),
-              ["get_ipython().run_line_magic('pinfo', '%foo')\n"])
+MAGIC_HELP = (["%foo?\n"], (1, 0), ["get_ipython().run_line_magic('pinfo', '%foo')\n"])
 
-HELP_IN_EXPR = (["a = b + c?\n"], (1, 0), [
-    "get_ipython().set_next_input('a = b + c');"
-    "get_ipython().run_line_magic('pinfo', 'c')\n"
-])
+HELP_IN_EXPR = (
+    ["a = b + c?\n"],
+    (1, 0),
+    [
+        "get_ipython().set_next_input('a = b + c');"
+        "get_ipython().run_line_magic('pinfo', 'c')\n"
+    ],
+)
 
-HELP_CONTINUED_LINE = ("""\
+HELP_CONTINUED_LINE = (
+    """\
 a = \\
 zip?
-""".splitlines(keepends=True), (1, 0), [
-    r"get_ipython().set_next_input('a = \\\nzip');get_ipython().run_line_magic('pinfo', 'zip')"
-    + "\n"
-])
+""".splitlines(
+        keepends=True
+    ),
+    (1, 0),
+    [
+        r"get_ipython().set_next_input('a = \\\nzip');get_ipython().run_line_magic('pinfo', 'zip')"
+        + "\n"
+    ],
+)
 
-HELP_MULTILINE = ("""\
+HELP_MULTILINE = (
+    """\
 (a,
 b) = zip?
-""".splitlines(keepends=True), (1, 0), [
-    r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')"
-    + "\n"
-])
+""".splitlines(
+        keepends=True
+    ),
+    (1, 0),
+    [
+        r"get_ipython().set_next_input('(a,\nb) = zip');get_ipython().run_line_magic('pinfo', 'zip')"
+        + "\n"
+    ],
+)
 
 
 def null_cleanup_transformer(lines):
@@ -118,6 +175,7 @@ def check_make_token_by_line_never_ends_empty():
     Check that not sequence of single or double characters ends up leading to en empty list of tokens
     """
     from string import printable
+
     for c in printable:
         nt.assert_not_equal(make_tokens_by_line(c)[-1], [])
         for k in printable:
@@ -146,16 +204,13 @@ def test_continued_line():
     lines = MULTILINE_MAGIC_ASSIGN[0]
     nt.assert_equal(ipt2.find_end_of_continued_line(lines, 1), 2)
 
-    nt.assert_equal(ipt2.assemble_continued_line(lines, (1, 5), 2),
-                    "foo    bar")
+    nt.assert_equal(ipt2.assemble_continued_line(lines, (1, 5), 2), "foo    bar")
 
 
 def test_find_assign_magic():
     check_find(ipt2.MagicAssign, MULTILINE_MAGIC_ASSIGN)
     check_find(ipt2.MagicAssign, MULTILINE_SYSTEM_ASSIGN, match=False)
-    check_find(ipt2.MagicAssign,
-               MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT,
-               match=False)
+    check_find(ipt2.MagicAssign, MULTILINE_SYSTEM_ASSIGN_AFTER_DEDENT, match=False)
 
 
 def test_transform_assign_magic():
@@ -221,8 +276,7 @@ def test_transform_help():
     nt.assert_equal(tf.transform(HELP_IN_EXPR[0]), HELP_IN_EXPR[2])
 
     tf = ipt2.HelpEnd((1, 0), (2, 3))
-    nt.assert_equal(tf.transform(HELP_CONTINUED_LINE[0]),
-                    HELP_CONTINUED_LINE[2])
+    nt.assert_equal(tf.transform(HELP_CONTINUED_LINE[0]), HELP_CONTINUED_LINE[2])
 
     tf = ipt2.HelpEnd((1, 0), (2, 8))
     nt.assert_equal(tf.transform(HELP_MULTILINE[0]), HELP_MULTILINE[2])
@@ -232,42 +286,45 @@ def test_find_assign_op_dedent():
     """
     be careful that empty token like dedent are not counted as parens
     """
+
     class Tk:
         def __init__(self, s):
             self.string = s
 
-    nt.assert_equal(_find_assign_op([Tk(s) for s in ('', 'a', '=', 'b')]), 2)
+    nt.assert_equal(_find_assign_op([Tk(s) for s in ("", "a", "=", "b")]), 2)
     nt.assert_equal(
-        _find_assign_op(
-            [Tk(s) for s in ('', '(', 'a', '=', 'b', ')', '=', '5')]), 6)
+        _find_assign_op([Tk(s) for s in ("", "(", "a", "=", "b", ")", "=", "5")]), 6
+    )
 
 
 def test_check_complete():
     cc = ipt2.TransformerManager().check_complete
-    nt.assert_equal(cc("a = 1"), ('complete', None))
-    nt.assert_equal(cc("for a in range(5):"), ('incomplete', 4))
-    nt.assert_equal(cc("for a in range(5):\n    if a > 0:"), ('incomplete', 8))
-    nt.assert_equal(cc("raise = 2"), ('invalid', None))
-    nt.assert_equal(cc("a = [1,\n2,"), ('incomplete', 0))
-    nt.assert_equal(cc(")"), ('incomplete', 0))
-    nt.assert_equal(cc("\\\r\n"), ('incomplete', 0))
-    nt.assert_equal(cc("a = '''\n   hi"), ('incomplete', 3))
-    nt.assert_equal(cc("def a():\n x=1\n global x"), ('invalid', None))
+    nt.assert_equal(cc("a = 1"), ("complete", None))
+    nt.assert_equal(cc("for a in range(5):"), ("incomplete", 4))
+    nt.assert_equal(cc("for a in range(5):\n    if a > 0:"), ("incomplete", 8))
+    nt.assert_equal(cc("raise = 2"), ("invalid", None))
+    nt.assert_equal(cc("a = [1,\n2,"), ("incomplete", 0))
+    nt.assert_equal(cc(")"), ("incomplete", 0))
+    nt.assert_equal(cc("\\\r\n"), ("incomplete", 0))
+    nt.assert_equal(cc("a = '''\n   hi"), ("incomplete", 3))
+    nt.assert_equal(cc("def a():\n x=1\n global x"), ("invalid", None))
     # Nothing allowed after backslash
-    nt.assert_equal(cc("a \\ "), ('invalid', None))
-    nt.assert_equal(cc("1\\\n+2"), ('complete', None))
-    nt.assert_equal(cc("exit"), ('complete', None))
+    nt.assert_equal(cc("a \\ "), ("invalid", None))
+    nt.assert_equal(cc("1\\\n+2"), ("complete", None))
+    nt.assert_equal(cc("exit"), ("complete", None))
 
-    example = dedent("""
+    example = dedent(
+        """
         if True:
-            a=1""")
+            a=1"""
+    )
 
-    nt.assert_equal(cc(example), ('incomplete', 4))
-    nt.assert_equal(cc(example + '\n'), ('complete', None))
-    nt.assert_equal(cc(example + '\n    '), ('complete', None))
+    nt.assert_equal(cc(example), ("incomplete", 4))
+    nt.assert_equal(cc(example + "\n"), ("complete", None))
+    nt.assert_equal(cc(example + "\n    "), ("complete", None))
 
     # no need to loop on all the letters/numbers.
-    short = '12abAB' + string.printable[62:]
+    short = "12abAB" + string.printable[62:]
     for c in short:
         # test does not raise:
         cc(c)
@@ -283,7 +340,7 @@ def test_check_complete_II():
 
     """
     cc = ipt2.TransformerManager().check_complete
-    nt.assert_equal(cc('''def foo():\n    """'''), ('incomplete', 4))
+    nt.assert_equal(cc('''def foo():\n    """'''), ("incomplete", 4))
 
 
 def test_null_cleanup_transformer():

@@ -80,10 +80,9 @@ def test_import_usage():
 
 
 class TestMetadata(unittest.TestCase):
-
     def check_installed(self):
         """In only 1 attempt please."""
-        self.assertIn('IPython', sys.modules)
+        self.assertIn("IPython", sys.modules)
 
     # actually how do we do this?
     # def check_name(self):

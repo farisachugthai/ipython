@@ -82,17 +82,20 @@ from IPython.core.error import TryNext
 # but over time we'll move here all the public API for user-accessible things.
 
 __all__ = [
-    'editor', 'synchronize_with_editor', 'shutdown_hook', 'late_startup_hook',
-    'show_in_pager', 'pre_prompt_hook', 'pre_run_code_hook', 'clipboard_get'
+    "editor",
+    "synchronize_with_editor",
+    "shutdown_hook",
+    "late_startup_hook",
+    "show_in_pager",
+    "pre_prompt_hook",
+    "pre_run_code_hook",
+    "clipboard_get",
 ]
 
 deprecated = {
-    'pre_run_code_hook':
-        "a callback for the 'pre_execute' or 'pre_run_cell' event",
-    'late_startup_hook':
-        "a callback for the 'shell_initialized' event",
-    'shutdown_hook':
-        "the atexit module",
+    "pre_run_code_hook": "a callback for the 'pre_execute' or 'pre_run_cell' event",
+    "late_startup_hook": "a callback for the 'shell_initialized' event",
+    "shutdown_hook": "the atexit module",
 }
 
 
@@ -113,20 +116,19 @@ def editor(self, filename, linenum=None, wait=True):
     >>> get_ipython().set_hook('editor', yourfunc).
 
     """
-    if not getattr(self, 'editor', None):
+    if not getattr(self, "editor", None):
         return
 
     editor = shlex.quote(self.editor)
 
     # marker for at which line to open the file (for existing objects)
-    if linenum is None or editor == 'notepad':
-        linemark = ''
+    if linenum is None or editor == "notepad":
+        linemark = ""
     else:
-        linemark = '+%d' % int(linenum)
+        linemark = "+%d" % int(linenum)
 
     # Call the actual editor
-    proc = subprocess.Popen('%s %s %s' % (editor, linemark, filename),
-                            shell=True)
+    proc = subprocess.Popen("%s %s %s" % (editor, linemark, filename), shell=True)
     if wait and proc.wait() != 0:
         raise TryNext()
 
@@ -176,7 +178,7 @@ class CommandChainDispatcher:
                 raise exc
 
     def __repr__(self):
-        return '{!r}\n{!r}'.format(self.__class__.__name__, self.chain)
+        return "{!r}\n{!r}".format(self.__class__.__name__, self.chain)
 
     def add(self, func, priority=0):
         """ Add a func to the cmd chain with given priority """
@@ -236,10 +238,14 @@ def pre_run_code_hook(self):
 def clipboard_get(self):
     """Get text from the clipboard."""
     from IPython.lib.clipboard import (
-        osx_clipboard_get, tkinter_clipboard_get, win32_clipboard_get)
-    if sys.platform == 'win32':
+        osx_clipboard_get,
+        tkinter_clipboard_get,
+        win32_clipboard_get,
+    )
+
+    if sys.platform == "win32":
         chain = [win32_clipboard_get, tkinter_clipboard_get]
-    elif sys.platform == 'darwin':
+    elif sys.platform == "darwin":
         chain = [osx_clipboard_get, tkinter_clipboard_get]
     else:
         chain = [tkinter_clipboard_get]

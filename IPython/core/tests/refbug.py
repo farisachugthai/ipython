@@ -27,21 +27,21 @@ from IPython import get_ipython
 # This needs to be here because nose and other test runners will import
 # this module. Importing this module has potential side effects that we
 # want to prevent.
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     ip = get_ipython()
 
-    if '_refbug_cache' not in ip.user_ns:
-        ip.user_ns['_refbug_cache'] = []
+    if "_refbug_cache" not in ip.user_ns:
+        ip.user_ns["_refbug_cache"] = []
 
-    aglobal = 'Hello'
+    aglobal = "Hello"
 
     def f():
         return aglobal
 
-    cache = ip.user_ns['_refbug_cache']
+    cache = ip.user_ns["_refbug_cache"]
     cache.append(f)
 
     def call_f():
         for func in cache:
-            print('lowercased:', func().lower())
+            print("lowercased:", func().lower())

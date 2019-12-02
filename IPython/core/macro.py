@@ -10,6 +10,7 @@ class Macro:
     Macro is just a callable that executes a string of IPython
     input when called.
     """
+
     coding_declaration = re.compile(r"#\s*coding[:=]\s*([-\w.]+)")
 
     def __init__(self, code, enc=None, lines=None):
@@ -29,10 +30,10 @@ class Macro:
         code = "\n".join(lines)
         if isinstance(code, bytes):
             code = code.decode(enc or DEFAULT_ENCODING)
-        self.value = code + '\n'
+        self.value = code + "\n"
 
     def __str__(self):
-        return 'IPython.macro.Macro(%s)' % repr(self.value)
+        return "IPython.macro.Macro(%s)" % repr(self.value)
 
     def __repr__(self):
         """Is it just me or are these backwards?
@@ -46,7 +47,7 @@ class Macro:
 
     def __getstate__(self):
         """ needed for safe pickling via %store """
-        return {'value': self.value}
+        return {"value": self.value}
 
     def __add__(self, other):
         """Compares a Macro instance with a str.

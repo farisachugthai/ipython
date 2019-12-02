@@ -17,7 +17,6 @@ from textwrap import dedent, indent
 
 
 class _AsyncIORunner:
-
     def __call__(self, coro):
         """
         Handler for asyncio autoawait
@@ -27,7 +26,7 @@ class _AsyncIORunner:
         return asyncio.get_event_loop().run_until_complete(coro)
 
     def __str__(self):
-        return 'asyncio'
+        return "asyncio"
 
 
 _asyncio_runner = _AsyncIORunner()
@@ -71,8 +70,9 @@ def _pseudo_sync_runner(coro):
     else:
         # TODO: do not raise but return an execution result with the right
         # info.
-        raise RuntimeError("{coro_name!r} needs a real async loop".format(
-            coro_name=coro.__name__))
+        raise RuntimeError(
+            "{coro_name!r} needs a real async loop".format(coro_name=coro.__name__)
+        )
 
 
 def _asyncify(code: str) -> str:
@@ -80,13 +80,15 @@ def _asyncify(code: str) -> str:
 
     And setup a bit of context to run it later.
     """
-    res = dedent("""
+    res = dedent(
+        """
     async def __wrapper__():
         try:
     {usercode}
         finally:
             locals()
-    """).format(usercode=indent(code, " " * 8))
+    """
+    ).format(usercode=indent(code, " " * 8))
     return res
 
 
@@ -99,7 +101,7 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
 
     def __init__(self):
         if sys.version_info >= (3, 8):
-            raise ValueError('DEPRECATED in Python 3.8+')
+            raise ValueError("DEPRECATED in Python 3.8+")
         self.depth = 0
         super().__init__()
 
@@ -107,7 +109,7 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
         func_types = (ast.FunctionDef, ast.AsyncFunctionDef)
         invalid_types_by_depth = {
             0: (ast.Return, ast.Yield, ast.YieldFrom),
-            1: (ast.Nonlocal,)
+            1: (ast.Nonlocal,),
         }
 
         should_traverse = self.depth < max(invalid_types_by_depth.keys())
@@ -150,11 +152,12 @@ def _should_be_async(cell: str) -> bool:
     """
     if sys.version_info > (3, 8):
         try:
-            code = compile(cell,
-                           "<>",
-                           "exec",
-                           flags=getattr(ast, 'PyCF_ALLOW_TOP_LEVEL_AWAIT',
-                                         0x0))
+            code = compile(
+                cell,
+                "<>",
+                "exec",
+                flags=getattr(ast, "PyCF_ALLOW_TOP_LEVEL_AWAIT", 0x0),
+            )
             return inspect.CO_COROUTINE & code.co_flags == inspect.CO_COROUTINE
         except SyntaxError:
             return False

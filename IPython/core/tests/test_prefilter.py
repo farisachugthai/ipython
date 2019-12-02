@@ -17,7 +17,7 @@ def test_prefilter():
 
     # pairs of (raw, expected correct) input
     pairs = [
-        ('2+2', '2+2'),
+        ("2+2", "2+2"),
     ]
 
     for raw, correct in pairs:
@@ -34,18 +34,18 @@ def test_prefilter_shadowed():
 
     try:
         # These should not be transformed - they are shadowed by other names
-        for name in ['if', 'zip', 'get_ipython']:  # keyword, builtin, global
+        for name in ["if", "zip", "get_ipython"]:  # keyword, builtin, global
             ip.register_magic_function(dummy_magic, magic_name=name)
-            res = ip.prefilter(name + ' foo')
-            nt.assert_equal(res, name + ' foo')
-            del ip.magics_manager.magics['line'][name]
+            res = ip.prefilter(name + " foo")
+            nt.assert_equal(res, name + " foo")
+            del ip.magics_manager.magics["line"][name]
 
         # These should be transformed
-        for name in ['fi', 'piz', 'nohtypi_teg']:
+        for name in ["fi", "piz", "nohtypi_teg"]:
             ip.register_magic_function(dummy_magic, magic_name=name)
-            res = ip.prefilter(name + ' foo')
-            nt.assert_not_equal(res, name + ' foo')
-            del ip.magics_manager.magics['line'][name]
+            res = ip.prefilter(name + " foo")
+            nt.assert_not_equal(res, name + " foo")
+            del ip.magics_manager.magics["line"][name]
 
     finally:
         ip.automagic = prev_automagic_state
@@ -53,35 +53,33 @@ def test_prefilter_shadowed():
 
 def test_autocall_binops():
     """See https://github.com/ipython/ipython/issues/81"""
-    ip.magic('autocall 2')
+    ip.magic("autocall 2")
 
     def f(x):
         return x
 
-    ip.user_ns['f'] = f
+    ip.user_ns["f"] = f
     try:
-        nt.assert_equal(ip.prefilter('f 1'), 'f(1)')
-        for t in ['f +1', 'f -1']:
+        nt.assert_equal(ip.prefilter("f 1"), "f(1)")
+        for t in ["f +1", "f -1"]:
             nt.assert_equal(ip.prefilter(t), t)
 
         # Run tests again with a more permissive exclude_regexp, which will
         # allow transformation of binary operations ('f -1' -> 'f(-1)').
         pm = ip.prefilter_manager
-        ac = AutocallChecker(shell=pm.shell,
-                             prefilter_manager=pm,
-                             config=pm.config)
+        ac = AutocallChecker(shell=pm.shell, prefilter_manager=pm, config=pm.config)
         try:
             ac.priority = 1
-            ac.exclude_regexp = r'^[,&^\|\*/]|^is |^not |^in |^and |^or '
+            ac.exclude_regexp = r"^[,&^\|\*/]|^is |^not |^in |^and |^or "
             pm.sort_checkers()
 
-            nt.assert_equal(ip.prefilter('f -1'), 'f(-1)')
-            nt.assert_equal(ip.prefilter('f +1'), 'f(+1)')
+            nt.assert_equal(ip.prefilter("f -1"), "f(-1)")
+            nt.assert_equal(ip.prefilter("f +1"), "f(+1)")
         finally:
             pm.unregister_checker(ac)
     finally:
-        ip.magic('autocall 0')
-        del ip.user_ns['f']
+        ip.magic("autocall 0")
+        del ip.user_ns["f"]
 
 
 def test_issue_114():
@@ -95,7 +93,7 @@ def test_issue_114():
     msp = ip.prefilter_manager.multi_line_specials
     ip.prefilter_manager.multi_line_specials = False
     try:
-        for mgk in ip.magics_manager.lsmagic()['line']:
+        for mgk in ip.magics_manager.lsmagic()["line"]:
             raw = template % mgk
             nt.assert_equal(ip.prefilter(raw), raw)
     finally:
@@ -106,21 +104,22 @@ def test_prefilter_attribute_errors():
     """Capture exceptions thrown by user objects on attribute access.
 
     See http://github.com/ipython/ipython/issues/988."""
+
     class X(object):
         def __getattr__(self, k):
-            raise ValueError('broken object')
+            raise ValueError("broken object")
 
         def __call__(self, x):
             return x
 
     # Create a callable broken object
-    ip.user_ns['x'] = X()
-    ip.magic('autocall 2')
+    ip.user_ns["x"] = X()
+    ip.magic("autocall 2")
     try:
         # Even if x throws an attribute error when looking at its rewrite
         # attribute, we should not crash.  So the test here is simply making
         # the prefilter call and not having an exception.
-        ip.prefilter('x 1')
+        ip.prefilter("x 1")
     finally:
-        del ip.user_ns['x']
-        ip.magic('autocall 0')
+        del ip.user_ns["x"]
+        ip.magic("autocall 0")

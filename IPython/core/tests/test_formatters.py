@@ -24,12 +24,12 @@ from IPython.utils.utils_io import capture_output
 
 class A(object):
     def __repr__(self):
-        return 'A()'
+        return "A()"
 
 
 class B(A):
     def __repr__(self):
-        return 'B()'
+        return "B()"
 
 
 class C:
@@ -47,29 +47,29 @@ class BadPretty(object):
 
 class GoodPretty(object):
     def _repr_pretty_(self, pp, cycle):
-        pp.text('foo')
+        pp.text("foo")
 
     def __repr__(self):
-        return 'GoodPretty()'
+        return "GoodPretty()"
 
 
 def foo_printer(obj, pp, cycle):
-    pp.text('foo')
+    pp.text("foo")
 
 
 def test_pretty():
     f = PlainTextFormatter()
     f.for_type(A, foo_printer)
-    nt.assert_equal(f(A()), 'foo')
-    nt.assert_equal(f(B()), 'B()')
-    nt.assert_equal(f(GoodPretty()), 'foo')
+    nt.assert_equal(f(A()), "foo")
+    nt.assert_equal(f(B()), "B()")
+    nt.assert_equal(f(GoodPretty()), "foo")
     # Just don't raise an exception for the following:
     f(BadPretty())
 
     f.pprint = False
-    nt.assert_equal(f(A()), 'A()')
-    nt.assert_equal(f(B()), 'B()')
-    nt.assert_equal(f(GoodPretty()), 'GoodPretty()')
+    nt.assert_equal(f(A()), "A()")
+    nt.assert_equal(f(B()), "B()")
+    nt.assert_equal(f(GoodPretty()), "GoodPretty()")
 
 
 def test_deferred():
@@ -83,24 +83,24 @@ def test_precision():
     f.float_precision = 0
     if numpy:
         po = numpy.get_printoptions()
-        nt.assert_equal(po['precision'], 0)
-    nt.assert_equal(f(pi), '3')
+        nt.assert_equal(po["precision"], 0)
+    nt.assert_equal(f(pi), "3")
     f.float_precision = 2
     if numpy:
         po = numpy.get_printoptions()
-        nt.assert_equal(po['precision'], 2)
-    nt.assert_equal(f(pi), '3.14')
-    f.float_precision = '%g'
+        nt.assert_equal(po["precision"], 2)
+    nt.assert_equal(f(pi), "3.14")
+    f.float_precision = "%g"
     if numpy:
         po = numpy.get_printoptions()
-        nt.assert_equal(po['precision'], 2)
-    nt.assert_equal(f(pi), '3.14159')
-    f.float_precision = '%e'
-    nt.assert_equal(f(pi), '3.141593e+00')
-    f.float_precision = ''
+        nt.assert_equal(po["precision"], 2)
+    nt.assert_equal(f(pi), "3.14159")
+    f.float_precision = "%e"
+    nt.assert_equal(f(pi), "3.141593e+00")
+    f.float_precision = ""
     if numpy:
         po = numpy.get_printoptions()
-        nt.assert_equal(po['precision'], 8)
+        nt.assert_equal(po["precision"], 8)
     nt.assert_equal(f(pi), repr(pi))
 
 
@@ -111,9 +111,9 @@ def test_bad_precision():
     def set_fp(p):
         f.float_precision = p
 
-    nt.assert_raises(ValueError, set_fp, '%')
-    nt.assert_raises(ValueError, set_fp, '%.3f%i')
-    nt.assert_raises(ValueError, set_fp, 'foo')
+    nt.assert_raises(ValueError, set_fp, "%")
+    nt.assert_raises(ValueError, set_fp, "%.3f%i")
+    nt.assert_raises(ValueError, set_fp, "foo")
     nt.assert_raises(ValueError, set_fp, -1)
 
 
@@ -134,7 +134,7 @@ def test_for_type():
 def test_for_type_string():
     f = PlainTextFormatter()
 
-    type_str = '%s.%s' % (C.__module__, 'C')
+    type_str = "%s.%s" % (C.__module__, "C")
 
     # initial return, None
     nt.assert_is(f.for_type(type_str, foo_printer), None)
@@ -152,14 +152,14 @@ def test_for_type_by_name():
     mod = C.__module__
 
     # initial return, None
-    nt.assert_is(f.for_type_by_name(mod, 'C', foo_printer), None)
+    nt.assert_is(f.for_type_by_name(mod, "C", foo_printer), None)
     # no func queries
-    nt.assert_is(f.for_type_by_name(mod, 'C'), foo_printer)
+    nt.assert_is(f.for_type_by_name(mod, "C"), foo_printer)
     # shouldn't change anything
-    nt.assert_is(f.for_type_by_name(mod, 'C'), foo_printer)
+    nt.assert_is(f.for_type_by_name(mod, "C"), foo_printer)
     # None should do the same
-    nt.assert_is(f.for_type_by_name(mod, 'C', None), foo_printer)
-    nt.assert_is(f.for_type_by_name(mod, 'C', None), foo_printer)
+    nt.assert_is(f.for_type_by_name(mod, "C", None), foo_printer)
+    nt.assert_is(f.for_type_by_name(mod, "C", None), foo_printer)
 
 
 def test_lookup():
@@ -173,7 +173,7 @@ def test_lookup():
 
 def test_lookup_string():
     f = PlainTextFormatter()
-    type_str = '%s.%s' % (C.__module__, 'C')
+    type_str = "%s.%s" % (C.__module__, "C")
 
     f.for_type(type_str, foo_printer)
     nt.assert_is(f.lookup(C()), foo_printer)
@@ -192,7 +192,7 @@ def test_lookup_by_type():
 
 def test_lookup_by_type_string():
     f = PlainTextFormatter()
-    type_str = '%s.%s' % (C.__module__, 'C')
+    type_str = "%s.%s" % (C.__module__, "C")
     f.for_type(type_str, foo_printer)
 
     # verify insertion
@@ -213,14 +213,14 @@ def test_lookup_by_type_string():
 def test_in_formatter():
     f = PlainTextFormatter()
     f.for_type(C, foo_printer)
-    type_str = '%s.%s' % (C.__module__, 'C')
+    type_str = "%s.%s" % (C.__module__, "C")
     nt.assert_in(C, f)
     nt.assert_in(type_str, f)
 
 
 def test_string_in_formatter():
     f = PlainTextFormatter()
-    type_str = '%s.%s' % (C.__module__, 'C')
+    type_str = "%s.%s" % (C.__module__, "C")
     f.for_type(type_str, foo_printer)
     nt.assert_in(type_str, f)
     nt.assert_in(C, f)
@@ -244,7 +244,7 @@ def test_pop():
 
 def test_pop_string():
     f = PlainTextFormatter()
-    type_str = '%s.%s' % (C.__module__, 'C')
+    type_str = "%s.%s" % (C.__module__, "C")
 
     with nt.assert_raises(KeyError):
         f.pop(type_str)
@@ -338,13 +338,13 @@ def test_bad_repr_traceback():
 
 class MakePDF(object):
     def _repr_pdf_(self):
-        return 'PDF'
+        return "PDF"
 
 
 def test_pdf_formatter():
     pdf = MakePDF()
     f = PDFFormatter()
-    nt.assert_equal(f(pdf), 'PDF')
+    nt.assert_equal(f(pdf), "PDF")
 
 
 def test_print_method_bound():
@@ -373,7 +373,7 @@ def test_print_method_weird():
     f = HTMLFormatter()
 
     text_hat = TextMagicHat()
-    nt.assert_equal(text_hat._repr_html_, '_repr_html_')
+    nt.assert_equal(text_hat._repr_html_, "_repr_html_")
     with capture_output() as captured:
         result = f(text_hat)
 
@@ -421,10 +421,10 @@ def test_pretty_max_seq_length():
     f = PlainTextFormatter(max_seq_length=1)
     lis = list(range(3))
     text = f(lis)
-    nt.assert_equal(text, '[0, ...]')
+    nt.assert_equal(text, "[0, ...]")
     f.max_seq_length = 0
     text = f(lis)
-    nt.assert_equal(text, '[0, 1, 2]')
+    nt.assert_equal(text, "[0, 1, 2]")
     text = f(list(range(1024)))
     lines = text.splitlines()
     nt.assert_equal(len(lines), 1024)
@@ -453,7 +453,7 @@ def test_ipython_display_formatter():
     no = NotSelfDisplaying()
 
     d, md = f.format(no)
-    nt.assert_equal(d, {'text/plain': repr(no)})
+    nt.assert_equal(d, {"text/plain": repr(no)})
     nt.assert_equal(md, {})
     nt.assert_equal(catcher, [])
 
@@ -468,7 +468,7 @@ def test_ipython_display_formatter():
 def test_json_as_string_deprecated():
     class JSONString(object):
         def _repr_json_(self):
-            return '{}'
+            return "{}"
 
     f = JSONFormatter()
     with warnings.catch_warnings(record=True) as w:
@@ -481,39 +481,44 @@ def test_repr_mime():
     class HasReprMime(object):
         def _repr_mimebundle_(self, include=None, exclude=None):
             return {
-                'application/json+test.v2': {
-                    'x': 'y'
-                },
-                'plain/text': '<HasReprMime>',
-                'image/png': 'i-overwrite'
+                "application/json+test.v2": {"x": "y"},
+                "plain/text": "<HasReprMime>",
+                "image/png": "i-overwrite",
             }
 
         def _repr_png_(self):
-            return 'should-be-overwritten'
+            return "should-be-overwritten"
 
         def _repr_html_(self):
-            return '<b>hi!</b>'
+            return "<b>hi!</b>"
 
     f = get_ipython().display_formatter
-    html_f = f.formatters['text/html']
+    html_f = f.formatters["text/html"]
     save_enabled = html_f.enabled
     html_f.enabled = True
     obj = HasReprMime()
     d, md = f.format(obj)
     html_f.enabled = save_enabled
 
-    nt.assert_equal(sorted(d), [
-        'application/json+test.v2', 'image/png', 'plain/text', 'text/html',
-        'text/plain'
-    ])
+    nt.assert_equal(
+        sorted(d),
+        [
+            "application/json+test.v2",
+            "image/png",
+            "plain/text",
+            "text/html",
+            "text/plain",
+        ],
+    )
     nt.assert_equal(md, {})
 
-    d, md = f.format(obj, include={'image/png'})
+    d, md = f.format(obj, include={"image/png"})
     nt.assert_equal(
-        list(d.keys()), ['image/png'],
-        'Include should filter out even things from repr_mimebundle')
-    nt.assert_equal(d['image/png'], 'i-overwrite',
-                    '_repr_mimebundle_ take precedence')
+        list(d.keys()),
+        ["image/png"],
+        "Include should filter out even things from repr_mimebundle",
+    )
+    nt.assert_equal(d["image/png"], "i-overwrite", "_repr_mimebundle_ take precedence")
 
 
 def test_pass_correct_include_exclude():
@@ -524,21 +529,17 @@ def test_pass_correct_include_exclude():
 
         def _repr_mimebundle_(self, include, exclude, **kwargs):
             if include and (include != self.include):
-                raise ValueError(
-                    'include got modified: display() may be broken.')
+                raise ValueError("include got modified: display() may be broken.")
             if exclude and (exclude != self.exclude):
-                raise ValueError(
-                    'exclude got modified: display() may be broken.')
+                raise ValueError("exclude got modified: display() may be broken.")
 
             return None
 
-    include = {'a', 'b', 'c'}
-    exclude = {'c', 'e', 'f'}
+    include = {"a", "b", "c"}
+    exclude = {"c", "e", "f"}
 
     f = get_ipython().display_formatter
-    f.format(Tester(include=include, exclude=exclude),
-             include=include,
-             exclude=exclude)
+    f.format(Tester(include=include, exclude=exclude), include=include, exclude=exclude)
     f.format(Tester(exclude=exclude), exclude=exclude)
     f.format(Tester(include=include), include=include)
 
@@ -547,24 +548,16 @@ def test_repr_mime_meta():
     class HasReprMimeMeta(object):
         def _repr_mimebundle_(self, include=None, exclude=None):
             data = {
-                'image/png': 'base64-image-data',
+                "image/png": "base64-image-data",
             }
-            metadata = {
-                'image/png': {
-                    'width': 5,
-                    'height': 10,
-                }
-            }
+            metadata = {"image/png": {"width": 5, "height": 10,}}
             return data, metadata
 
     f = get_ipython().display_formatter
     obj = HasReprMimeMeta()
     d, md = f.format(obj)
-    nt.assert_equal(sorted(d), ['image/png', 'text/plain'])
-    nt.assert_equal(md, {'image/png': {
-        'width': 5,
-        'height': 10,
-    }})
+    nt.assert_equal(sorted(d), ["image/png", "text/plain"])
+    nt.assert_equal(md, {"image/png": {"width": 5, "height": 10,}})
 
 
 def test_repr_mime_failure():
@@ -575,4 +568,4 @@ def test_repr_mime_failure():
     f = get_ipython().display_formatter
     obj = BadReprMime()
     d, md = f.format(obj)
-    nt.assert_in('text/plain', d)
+    nt.assert_in("text/plain", d)

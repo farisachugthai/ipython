@@ -25,13 +25,15 @@ from IPython.core.pylabtools import backends
 # -----------------------------------------------------------------------------
 
 magic_gui_arg = magic_arguments.argument(
-    'gui',
-    nargs='?',
+    "gui",
+    nargs="?",
     help="""Name of the matplotlib backend to use %s.
         If given, the corresponding matplotlib backend is used,
         otherwise it will be matplotlib's default
         (which you can set in your matplotlib config file).
-        """ % str(tuple(sorted(backends.keys()))))
+        """
+    % str(tuple(sorted(backends.keys()))),
+)
 
 
 @magics_class
@@ -41,12 +43,11 @@ class PylabMagics(Magics):
     @skip_doctest
     @line_magic
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('-l',
-                              '--list',
-                              action='store_true',
-                              help='Show available matplotlib backends')
+    @magic_arguments.argument(
+        "-l", "--list", action="store_true", help="Show available matplotlib backends"
+    )
     @magic_gui_arg
-    def matplotlib(self, line=''):
+    def matplotlib(self, line=""):
         """Set up matplotlib to work interactively.
 
         This function lets you activate matplotlib interactive support
@@ -105,16 +106,17 @@ class PylabMagics(Magics):
     @line_magic
     @magic_arguments.magic_arguments()
     @magic_arguments.argument(
-        '--no-import-all',
-        action='store_true',
+        "--no-import-all",
+        action="store_true",
         default=None,
         help="""Prevent IPython from performing ``import *`` into the interactive namespace.
 
         You can govern the default behavior of this flag with the
         InteractiveShellApp.pylab_import_all configurable.
-        """)
+        """,
+    )
     @magic_gui_arg
-    def pylab(self, line=''):
+    def pylab(self, line=""):
         """Load numpy and matplotlib to work interactively.
 
         This function lets you activate pylab (matplotlib, numpy and
@@ -155,15 +157,18 @@ class PylabMagics(Magics):
             # invert no-import flag
             import_all = not args.no_import_all
 
-        gui, backend, clobbered = self.shell.enable_pylab(args.gui,
-                                                          import_all=import_all)
+        gui, backend, clobbered = self.shell.enable_pylab(
+            args.gui, import_all=import_all
+        )
         self._show_matplotlib_backend(args.gui, backend)
         print("Populating the interactive namespace from numpy and matplotlib")
         if clobbered:
-            warn("pylab import has clobbered these variables: %s" % clobbered +
-                 "\n`%matplotlib` prevents importing * from pylab and numpy")
+            warn(
+                "pylab import has clobbered these variables: %s" % clobbered
+                + "\n`%matplotlib` prevents importing * from pylab and numpy"
+            )
 
     def _show_matplotlib_backend(self, gui, backend):
         """show matplotlib message backend message"""
-        if not gui or gui == 'auto':
+        if not gui or gui == "auto":
             print("Using matplotlib backend: %s" % backend)

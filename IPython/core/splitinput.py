@@ -48,7 +48,9 @@ line_split = re.compile(
              \s*(%{0,2}[\w\.\*]*)     # function/method, possibly with leading %
                                   # to correctly treat things like '?%magic'
              (.*?$|$)             # rest of line
-             """, re.VERBOSE)
+             """,
+    re.VERBOSE,
+)
 
 
 def split_user_input(line, pattern=None):
@@ -56,7 +58,7 @@ def split_user_input(line, pattern=None):
     and the rest.
     """
     # We need to ensure that the rest of this routine deals only with unicode
-    encoding = get_stream_enc(sys.stdin, 'utf-8')
+    encoding = get_stream_enc(sys.stdin, "utf-8")
     line = py3compat.cast_unicode(line, encoding)
 
     if pattern is None:
@@ -68,15 +70,15 @@ def split_user_input(line, pattern=None):
             ifun, the_rest = line.split(None, 1)
         except ValueError:
             # print "split failed for line '%s'" % line
-            ifun, the_rest = line, u''
-        pre = re.match(r'^(\s*)(.*)', line).groups()[0]
+            ifun, the_rest = line, ""
+        pre = re.match(r"^(\s*)(.*)", line).groups()[0]
         esc = ""
     else:
         pre, esc, ifun, the_rest = match.groups()
 
     # print 'line:<%s>' % line # dbg
     # print 'pre <%s> ifun <%s> rest <%s>' % (pre,ifun.strip(),the_rest) # dbg
-    return pre, esc or '', ifun.strip(), the_rest.lstrip()
+    return pre, esc or "", ifun.strip(), the_rest.lstrip()
 
 
 class LineInfo(object):
@@ -116,7 +118,7 @@ class LineInfo(object):
 
         self.pre_char = self.pre.strip()
         if self.pre_char:
-            self.pre_whitespace = ''  # No whitespace allowed before esc chars
+            self.pre_whitespace = ""  # No whitespace allowed before esc chars
         else:
             self.pre_whitespace = self.pre
 
@@ -136,5 +138,4 @@ class LineInfo(object):
         return ip._ofind(self.ifun)
 
     def __str__(self):
-        return "LineInfo [%s|%s|%s|%s]" % (self.pre, self.esc, self.ifun,
-                                           self.the_rest)
+        return "LineInfo [%s|%s|%s|%s]" % (self.pre, self.esc, self.ifun, self.the_rest)

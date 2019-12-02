@@ -35,8 +35,8 @@ def display_page(strng, start=0):
         data = strng
     else:
         if start:
-            strng = u'\n'.join(strng.splitlines()[start:])
-        data = {'text/plain': strng}
+            strng = "\n".join(strng.splitlines()[start:])
+        data = {"text/plain": strng}
     display(data, raw=True)
 
 
@@ -53,7 +53,7 @@ def page_dumb(strng, start=0, screen_lines=25):
     mode.
     """
     if isinstance(strng, dict):
-        strng = strng.get('text/plain', '')
+        strng = strng.get("text/plain", "")
     out_ln = strng.splitlines()[start:]
     screens = chop(out_ln, screen_lines - 1)
     if len(screens) == 1:
@@ -93,9 +93,8 @@ def _detect_screen_size(screen_lines_def):
     .. tip:: shutil.get_terminal_size
 
     """
-    TERM = os.environ.get('TERM', None)
-    if not ((TERM == 'xterm' or TERM == 'xterm-color') and
-            sys.platform != 'sunos5'):
+    TERM = os.environ.get("TERM", None)
+    if not ((TERM == "xterm" or TERM == "xterm-color") and sys.platform != "sunos5"):
         # curses causes problems on many terminals other than xterm, and
         # some termios calls lock up on Sun OS5.
         return screen_lines_def
@@ -110,7 +109,7 @@ def _detect_screen_size(screen_lines_def):
         term_flags = termios.tcgetattr(sys.stdout)
     except termios.error as err:
         # can fail on Linux 2.6, pager_page will catch the TypeError
-        raise TypeError('termios error: {0}'.format(err))
+        raise TypeError("termios error: {0}".format(err))
 
     try:
         scr = curses.initscr()
@@ -154,11 +153,11 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
     """
     # for compatibility with mime-bundle form:
     if isinstance(strng, dict):
-        strng = strng['text/plain']
+        strng = strng["text/plain"]
 
     # Ugly kludge, but calling curses.initscr() flat out crashes in emacs
-    TERM = os.environ.get('TERM', 'dumb')
-    if TERM in ['dumb', 'emacs'] and os.name != 'nt':
+    TERM = os.environ.get("TERM", "dumb")
+    if TERM in ["dumb", "emacs"] and os.name != "nt":
         print(strng)
         return
     # chop off the topmost part of the string we don't want to see
@@ -192,17 +191,17 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
         # value of a failed system command.  If any intermediate attempt
         # sets retval to 1, at the end we resort to our own page_dumb() pager.
         pager_cmd = get_pager_cmd(pager_cmd)
-        pager_cmd += ' ' + get_pager_start(pager_cmd, start)
-        if os.name == 'nt':
-            if pager_cmd.startswith('type'):
+        pager_cmd += " " + get_pager_start(pager_cmd, start)
+        if os.name == "nt":
+            if pager_cmd.startswith("type"):
                 # The default WinXP 'type' command is failing on complex
                 # strings.
                 retval = 1
             else:
-                fd, tmpname = tempfile.mkstemp('.txt')
+                fd, tmpname = tempfile.mkstemp(".txt")
                 try:
                     os.close(fd)
-                    with open(tmpname, 'wt') as tmpfile:
+                    with open(tmpname, "wt") as tmpfile:
                         tmpfile.write(strng)
                         cmd = "%s < %s" % (pager_cmd, tmpname)
                     # tmpfile needs to be closed for windows
@@ -216,11 +215,12 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
             try:
                 retval = None
                 # Emulate os.popen, but redirect stderr
-                proc = subprocess.Popen(pager_cmd,
-                                shell=True,
-                                stdin=subprocess.PIPE,
-                                stderr=subprocess.DEVNULL
-                                )
+                proc = subprocess.Popen(
+                    pager_cmd,
+                    shell=True,
+                    stdin=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL,
+                )
                 pager = os._wrap_close(io.TextIOWrapper(proc.stdin), proc)
                 try:
                     pager_encoding = pager.encoding or sys.stdout.encoding
@@ -228,7 +228,7 @@ def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
                 finally:
                     retval = pager.close()
             except IOError as msg:  # broken pipe when user quits
-                if msg.args == (32, 'Broken pipe'):
+                if msg.args == (32, "Broken pipe"):
                     retval = None
                 else:
                     retval = 1
@@ -256,8 +256,7 @@ def page(data, start=0, screen_lines=0, pager_cmd=None):
     ip = get_ipython()
     if ip:
         try:
-            ip.hooks.show_in_pager(
-                data, start=start, screen_lines=screen_lines)
+            ip.hooks.show_in_pager(data, start=start, screen_lines=screen_lines)
             return
         except TryNext:
             pass
@@ -282,19 +281,19 @@ def get_pager_cmd(pager_cmd=None):
         :envvar:`PAGER` and :envvar:`LESS` are set or not.
 
     """
-    if os.name == 'posix':
-        default_pager_cmd = 'less -R'  # -R for color control sequences
-    elif os.name in ['nt', 'dos']:
-        default_pager_cmd = 'type'
+    if os.name == "posix":
+        default_pager_cmd = "less -R"  # -R for color control sequences
+    elif os.name in ["nt", "dos"]:
+        default_pager_cmd = "type"
 
     if pager_cmd is None:
         try:
-            pager_cmd = os.environ['PAGER']
+            pager_cmd = os.environ["PAGER"]
         except OSError:
             pager_cmd = default_pager_cmd
 
-    if pager_cmd == 'less' and '-r' not in os.environ.get('LESS', '').lower():
-        pager_cmd += ' -R'
+    if pager_cmd == "less" and "-r" not in os.environ.get("LESS", "").lower():
+        pager_cmd += " -R"
 
     return pager_cmd
 
@@ -304,18 +303,18 @@ def get_pager_start(pager, start):
 
     This is the '+N' argument which less and more (under Unix) accept.
     """
-    if pager in ['less', 'more']:
+    if pager in ["less", "more"]:
         if start:
-            start_string = '+' + str(start)
+            start_string = "+" + str(start)
         else:
-            start_string = ''
+            start_string = ""
     else:
-        start_string = ''
+        start_string = ""
     return start_string
 
 
 # (X)emacs on win32 doesn't like to be bypassed with msvcrt.getch()
-if os.name == 'nt' and os.environ.get('TERM', 'dumb') != 'emacs':
+if os.name == "nt" and os.environ.get("TERM", "dumb") != "emacs":
     import msvcrt
 
     def page_more():
@@ -327,7 +326,7 @@ if os.name == 'nt' and os.environ.get('TERM', 'dumb') != 'emacs':
             True if need print more lines, False if quit.
 
         """
-        sys.stdout.write('---Return to continue, q to quit--- ')
+        sys.stdout.write("---Return to continue, q to quit--- ")
         ans = msvcrt.getwch()
         if ans in ("q", "Q"):
             result = False
@@ -335,12 +334,14 @@ if os.name == 'nt' and os.environ.get('TERM', 'dumb') != 'emacs':
             result = True
         sys.stdout.write("\b" * 37 + " " * 37 + "\b" * 37)
         return result
+
+
 else:
 
     def page_more():
         """Definitely needs a more thorough implementation. Waits for 'q' to quit."""
-        ans = input('---Return to continue, q to quit--- ')
-        if ans.lower().startswith('q'):
+        ans = input("---Return to continue, q to quit--- ")
+        if ans.lower().startswith("q"):
             return False
         else:
             return True

@@ -38,6 +38,7 @@ class TryNext(IPythonCoreError):
     Raise this in your hook function to indicate that the next hook handler
     should be used to handle the operation.
     """
+
     pass
 
 
@@ -47,6 +48,7 @@ class UsageError(IPythonCoreError):
     Something that probably won't warrant a full traceback, but should
     nevertheless interrupt a macro / batch file.
     """
+
     pass
 
 
@@ -68,6 +70,7 @@ class InputRejected(Exception):
 
 class AliasError(Exception):
     """Oct 24, 2019: Moved from `IPython.core.alias`."""
+
     pass
 
 
@@ -77,6 +80,7 @@ class InvalidAliasError(AliasError):
 
 class KillEmbedded(Exception):
     """This one's from `IPython.terminal.embed`."""
+
     pass
 
 
@@ -96,13 +100,12 @@ class ColorSwitchErr(UsageError):
         super().__traceback__(self)
 
     def __repr__(self):
-        return ''.format(self.__class__.__name)
+        return "".format(self.__class__.__name)
 
     def __call__(self, name):
-        return '{}:\nError changing {} color schemes.\n{}'.format(
-            repr(self),
-            name,
-            sys.exc_info())
+        return "{}:\nError changing {} color schemes.\n{}".format(
+            repr(self), name, sys.exc_info()
+        )
 
 
 class XmodeSwitchErr(ColorSwitchErr):
@@ -120,11 +123,13 @@ class XmodeSwitchErr(ColorSwitchErr):
 
 class ProvisionalWarning(DeprecationWarning):
     """Warning class for unstable features. Moved out of ./interactiveshell.py"""
+
     pass
 
 
 class SpaceInInput(Exception):
     """Interactiveshell."""
+
     pass
 
 
@@ -136,11 +141,13 @@ class ProvisionalCompleterWarning(FutureWarning):
 
     From completerlib.
     """
+
     pass
 
 
 class MacroToEdit(ValueError):
     """Used for exception handling in magic_edit. Nov 13, 2019: ./magics/code.py"""
+
     pass
 
 
@@ -160,7 +167,7 @@ if sys.version_info[0:2] < (3, 7):
             super().__init__()
 
         def __repr__(self):
-            return '{}\n{}'.format(self.__class__.__name__, self.__traceback__)
+            return "{}\n{}".format(self.__class__.__name__, self.__traceback__)
 
 
 def BdbQuit_excepthook(et, ev, tb, excepthook=None):
@@ -170,7 +177,7 @@ def BdbQuit_excepthook(et, ev, tb, excepthook=None):
     parameter.
     """
     if et == bdb.BdbQuit:
-        print('Exiting Debugger.')
+        print("Exiting Debugger.")
     elif excepthook is not None:
         excepthook(et, ev, tb)
     else:
@@ -179,7 +186,7 @@ def BdbQuit_excepthook(et, ev, tb, excepthook=None):
 
 
 def BdbQuit_IPython_excepthook():
-    print('Exiting Debugger.')
+    print("Exiting Debugger.")
 
 
 class DatabaseError(Exception):
@@ -208,9 +215,9 @@ class UnknownBackend(KeyError):
         self.name = name
 
     def __str__(self):
-        return ("No event loop integration for {!r}. "
-                "Supported event loops are: {}").format(
-                    self.name, ', '.join(backends + sorted(registered)))
+        return (
+            "No event loop integration for {!r}. " "Supported event loops are: {}"
+        ).format(self.name, ", ".join(backends + sorted(registered)))
 
 
 class ShimWarning(Warning):
@@ -218,4 +225,5 @@ class ShimWarning(Warning):
 
     IPython/utils/shimmodule: Dec 02, 2019
     """
+
     pass

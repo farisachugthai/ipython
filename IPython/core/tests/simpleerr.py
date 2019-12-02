@@ -10,27 +10,27 @@ def div0():
 
 
 def sysexit(stat, mode):
-    raise SystemExit(stat, 'Mode = %s' % mode)
+    raise SystemExit(stat, "Mode = %s" % mode)
 
 
 def bar(mode):
     """bar"""
-    if mode == 'div':
+    if mode == "div":
         div0()
-    elif mode == 'exit':
+    elif mode == "exit":
         try:
             stat = int(sys.argv[2])
         except BaseException:
             stat = 1
         sysexit(stat, mode)
     else:
-        raise ValueError('Unknown mode')
+        raise ValueError("Unknown mode")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         mode = sys.argv[1]
     except IndexError:
-        mode = 'div'
+        mode = "div"
 
     bar(mode)

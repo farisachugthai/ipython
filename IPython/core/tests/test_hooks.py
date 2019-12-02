@@ -44,14 +44,14 @@ class Fail(object):
 
 def test_command_chain_dispatcher_ff():
     """Test two failing hooks"""
-    fail1 = Fail(u'fail1')
-    fail2 = Fail(u'fail2')
+    fail1 = Fail("fail1")
+    fail2 = Fail("fail2")
     dp = CommandChainDispatcher([(0, fail1), (10, fail2)])
 
     try:
         dp()
     except TryNext as e:
-        nt.assert_equal(str(e), u'fail2')
+        nt.assert_equal(str(e), "fail2")
     else:
         assert False, "Expected exception was not raised."
 
@@ -61,20 +61,22 @@ def test_command_chain_dispatcher_ff():
 
 def test_command_chain_dispatcher_fofo():
     """Test a mixture of failing and succeeding hooks."""
-    fail1 = Fail(u'fail1')
-    fail2 = Fail(u'fail2')
-    okay1 = Okay(u'okay1')
-    okay2 = Okay(u'okay2')
+    fail1 = Fail("fail1")
+    fail2 = Fail("fail2")
+    okay1 = Okay("okay1")
+    okay2 = Okay("okay2")
 
-    dp = CommandChainDispatcher([
-        (0, fail1),
-        # (5, okay1), # add this later
-        (10, fail2),
-        (15, okay2)
-    ])
+    dp = CommandChainDispatcher(
+        [
+            (0, fail1),
+            # (5, okay1), # add this later
+            (10, fail2),
+            (15, okay2),
+        ]
+    )
     dp.add(okay1, 5)
 
-    nt.assert_equal(dp(), u'okay1')
+    nt.assert_equal(dp(), "okay1")
 
     nt.assert_true(fail1.called)
     nt.assert_true(okay1.called)
@@ -83,7 +85,7 @@ def test_command_chain_dispatcher_fofo():
 
 
 def test_command_chain_dispatcher_eq_priority():
-    okay1 = Okay(u'okay1')
-    okay2 = Okay(u'okay2')
+    okay1 = Okay("okay1")
+    okay2 = Okay("okay2")
     dp = CommandChainDispatcher([(1, okay1)])
     dp.add(okay2, 1)

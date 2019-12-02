@@ -161,11 +161,11 @@ def strip_initial_indent(lines):
     if indent_match:
         # First line was indented
         indent = indent_match.group()
-        yield first_line[len(indent):]
+        yield first_line[len(indent) :]
 
         for line in it:
             if line.startswith(indent):
-                yield line[len(indent):]
+                yield line[len(indent) :]
             else:
                 # Less indented than the first line - stop dedenting
                 yield line
@@ -228,20 +228,21 @@ class CodeMagics(Magics):
         force = "f" in opts
         append = "a" in opts
         mode = "a" if append else "w"
-        ext = u".ipy" if raw else u".py"
+        ext = ".ipy" if raw else ".py"
         fname, codefrom = args[0], " ".join(args[1:])
-        if not fname.endswith((u".py", u".ipy")):
+        if not fname.endswith((".py", ".ipy")):
             fname += ext
         file_exists = os.path.isfile(fname)
         if file_exists and not force and not append:
             try:
                 overwrite = self.shell.ask_yes_no(
-                    "File `%s` exists. Overwrite (y/[N])? " % fname,
-                    default="n")
+                    "File `%s` exists. Overwrite (y/[N])? " % fname, default="n"
+                )
             except StdinNotImplementedError:
                 print(
-                    "File `%s` exists. Use `%%save -f %s` to force overwrite" %
-                    (fname, parameter_s))
+                    "File `%s` exists. Use `%%save -f %s` to force overwrite"
+                    % (fname, parameter_s)
+                )
                 return
             if not overwrite:
                 print("Operation cancelled.")
@@ -254,11 +255,11 @@ class CodeMagics(Magics):
         out = cmds
         with codecs.open(fname, mode, encoding="utf-8") as f:
             if not file_exists or not append:
-                f.write(u"# coding: utf-8\n")
+                f.write("# coding: utf-8\n")
             f.write(out)
             # make sure we end on a newline
-            if not out.endswith(u"\n"):
-                f.write(u"\n")
+            if not out.endswith("\n"):
+                f.write("\n")
         print("The following commands were written to file `%s`:" % fname)
         print(cmds)
 
@@ -286,11 +287,13 @@ class CodeMagics(Magics):
             print(e.args[0])
             return
 
-        post_data = urlencode({
-            "title": opts.get("d", "Pasted from IPython"),
-            "syntax": "python3",
-            "content": code,
-        }).encode("utf-8")
+        post_data = urlencode(
+            {
+                "title": opts.get("d", "Pasted from IPython"),
+                "syntax": "python3",
+                "content": code,
+            }
+        ).encode("utf-8")
 
         response = urlopen("http://dpaste.com/api/v2/", post_data)
         return response.headers.get("Location")
@@ -346,8 +349,10 @@ class CodeMagics(Magics):
         opts, args = self.parse_options(arg_s, "yns:r:")
 
         if not args:
-            raise UsageError("Missing filename, URL, input history range, "
-                             "macro, or element in the user namespace.")
+            raise UsageError(
+                "Missing filename, URL, input history range, "
+                "macro, or element in the user namespace."
+            )
 
         search_ns = "n" in opts
 
@@ -364,8 +369,10 @@ class CodeMagics(Magics):
             if len(not_found) == 1:
                 warn("The symbol `%s` was not found" % not_found[0])
             elif len(not_found) > 1:
-                warn("The symbols %s were not found" %
-                     get_text_list(not_found, wrap_item_with="`"))
+                warn(
+                    "The symbols %s were not found"
+                    % get_text_list(not_found, wrap_item_with="`")
+                )
 
             contents = "\n".join(blocks)
 
@@ -374,8 +381,7 @@ class CodeMagics(Magics):
             lines = contents.split("\n")
             slices = extract_code_ranges(ranges)
             contents = [lines[slice(*slc)] for slc in slices]
-            contents = "\n".join(
-                strip_initial_indent(chain.from_iterable(contents)))
+            contents = "\n".join(strip_initial_indent(chain.from_iterable(contents)))
 
         l = len(contents)
 
@@ -384,8 +390,10 @@ class CodeMagics(Magics):
         if l > 200000 and "y" not in opts:
             try:
                 ans = self.shell.ask_yes_no(
-                    ("The text you're trying to load seems pretty big"
-                     " (%d characters). Continue (y/[N]) ?" % l),
+                    (
+                        "The text you're trying to load seems pretty big"
+                        " (%d characters). Continue (y/[N]) ?" % l
+                    ),
                     default="n",
                 )
             except StdinNotImplementedError:
@@ -403,6 +411,7 @@ class CodeMagics(Magics):
     @staticmethod
     def _find_edit_target(shell, args, opts, last_call):
         """Utility method used by magic_edit to find what to edit."""
+
         def make_filename(arg):
             """Make a filename from the given args"""
             try:
@@ -461,7 +470,8 @@ class CodeMagics(Magics):
                     if filename is None:
                         warn(
                             "Argument given (%s) can't be found as a variable "
-                            "or as a filename." % args)
+                            "or as a filename." % args
+                        )
                         return None, None, None
                     use_temp = False
 
@@ -473,20 +483,16 @@ class CodeMagics(Magics):
                     # For objects, try to edit the file where they are defined
                     filename = find_file(data)
                     if filename:
-                        if "fakemodule" in filename.lower(
-                        ) and inspect.isclass(data):
+                        if "fakemodule" in filename.lower() and inspect.isclass(data):
                             # class created by %edit? Try to find source
                             # by looking for method definitions instead, the
                             # __module__ in those classes is FakeModule.
-                            attrs = [
-                                getattr(data, aname) for aname in dir(data)
-                            ]
+                            attrs = [getattr(data, aname) for aname in dir(data)]
                             for attr in attrs:
                                 if not inspect.ismethod(attr):
                                     continue
                                 filename = find_file(attr)
-                                if filename and "fakemodule" not in filename.lower(
-                                ):
+                                if filename and "fakemodule" not in filename.lower():
                                     # change the attribute to be the edit
                                     # target instead
                                     data = attr
@@ -502,9 +508,10 @@ class CodeMagics(Magics):
                         datafile = 1
                         if filename is not None:
                             # only warn about this if we get a real name
-                            warn("Could not find file where `%s` is defined.\n"
-                                 "Opening a file named `%s`" %
-                                 (args, filename))
+                            warn(
+                                "Could not find file where `%s` is defined.\n"
+                                "Opening a file named `%s`" % (args, filename)
+                            )
                     # Now, make sure we can actually read the source (if it was
                     # in a temp file it's gone by now).
                     if datafile:
@@ -513,8 +520,10 @@ class CodeMagics(Magics):
                         if lineno is None:
                             filename = make_filename(args)
                             if filename is None:
-                                warn("The file where `%s` was defined "
-                                     "cannot be read or found." % data)
+                                warn(
+                                    "The file where `%s` was defined "
+                                    "cannot be read or found." % data
+                                )
                                 return None, None, None
                     use_temp = False
 
@@ -696,7 +705,8 @@ class CodeMagics(Magics):
 
         try:
             filename, lineno, is_temp = self._find_edit_target(
-                self.shell, args, opts, last_call)
+                self.shell, args, opts, last_call
+            )
         except MacroToEdit as e:
             self._edit_macro(args, e.args[0])
             return
@@ -704,7 +714,8 @@ class CodeMagics(Magics):
             print("Editing In[%i]" % e.index)
             args = str(e.index)
             filename, lineno, is_temp = self._find_edit_target(
-                self.shell, args, opts, last_call)
+                self.shell, args, opts, last_call
+            )
         if filename is None:
             # nothing was found, warnings have already been issued,
             # just give up.
@@ -746,8 +757,9 @@ class CodeMagics(Magics):
                         source = f.read()
                     self.shell.run_cell(source, store_history=False)
                 else:
-                    self.shell.safe_execfile(filename, self.shell.user_ns,
-                                             self.shell.user_ns)
+                    self.shell.safe_execfile(
+                        filename, self.shell.user_ns, self.shell.user_ns
+                    )
 
         if is_temp:
             try:

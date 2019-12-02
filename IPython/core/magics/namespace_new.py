@@ -7,7 +7,7 @@ from .packaging import _is_conda_workspace
 
 def conda():
     """Simpler re-implemented line magic."""
-    conda = shutil.which('conda')
-    if conda.endswith('bat'):
-        conda = 'call ' + conda
+    conda = shutil.which("conda")
+    if conda.endswith("bat"):
+        conda = "call " + conda
     # %sx conda

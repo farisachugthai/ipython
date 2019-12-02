@@ -31,10 +31,6 @@ def page(strng, start=0):
     if isinstance(strng, dict):
         data = strng
     else:
-        data = {'text/plain': strng}
-    payload = dict(
-        source='page',
-        data=data,
-        start=start,
-    )
+        data = {"text/plain": strng}
+    payload = dict(source="page", data=data, start=start,)
     shell.payload_manager.write_payload(payload)

@@ -43,6 +43,7 @@ def recursionlimit(frames):
     """
     decorator to set the recursion limit temporarily
     """
+
     def inner(test_function):
         def wrapper(*args, **kwargs):
             _orig_rec_limit = ultratb._FRAME_RECURSION_LIMIT
@@ -84,14 +85,14 @@ class ChangedPyFileTest(unittest.TestCase):
 
             # For some reason, this was failing on the *second* call after
             # changing the file, so we call f() twice.
-            with tt.AssertNotPrints("Internal Python error", channel='stderr'):
+            with tt.AssertNotPrints("Internal Python error", channel="stderr"):
                 with tt.AssertPrints("ZeroDivisionError"):
                     ip.run_cell("foo.f()")
                 with tt.AssertPrints("ZeroDivisionError"):
                     ip.run_cell("foo.f()")
 
 
-iso_8859_5_file = u'''# coding: iso-8859-5
+iso_8859_5_file = '''# coding: iso-8859-5
 
 def fail():
     """дбИЖ"""
@@ -103,8 +104,8 @@ class NonAsciiTest(unittest.TestCase):
     @onlyif_unicode_paths
     def test_nonascii_path(self):
         # Non-ascii directory name as well.
-        with TemporaryDirectory(suffix=u'é') as td:
-            fname = os.path.join(td, u"fooé.py")
+        with TemporaryDirectory(suffix="é") as td:
+            fname = os.path.join(td, "fooé.py")
             with open(fname, "w") as f:
                 f.write(file_1)
 
@@ -116,21 +117,21 @@ class NonAsciiTest(unittest.TestCase):
 
     def test_iso8859_5(self):
         with TemporaryDirectory() as td:
-            fname = os.path.join(td, 'dfghjkl.py')
+            fname = os.path.join(td, "dfghjkl.py")
 
-            with codecs.open(fname, 'w', encoding='iso-8859-5') as f:
+            with codecs.open(fname, "w", encoding="iso-8859-5") as f:
                 f.write(iso_8859_5_file)
 
             with prepended_to_syspath(td):
                 ip.run_cell("from dfghjkl import fail")
 
             with tt.AssertPrints("ZeroDivisionError"):
-                with tt.AssertPrints(u'дбИЖ', suppress=False):
-                    ip.run_cell('fail()')
+                with tt.AssertPrints("дбИЖ", suppress=False):
+                    ip.run_cell("fail()")
 
     def test_nonascii_msg(self):
-        cell = u"raise Exception('é')"
-        expected = u"Exception('é')"
+        cell = "raise Exception('é')"
+        expected = "Exception('é')"
         ip.run_cell("%xmode plain")
         with tt.AssertPrints(expected):
             ip.run_cell(cell)
@@ -144,7 +145,7 @@ class NonAsciiTest(unittest.TestCase):
             ip.run_cell(cell)
 
         ip.run_cell("%xmode minimal")
-        with tt.AssertPrints(u"Exception: é"):
+        with tt.AssertPrints("Exception: é"):
             ip.run_cell(cell)
 
         # Put this back into Context mode for later tests.
@@ -159,7 +160,8 @@ class NestedGenExprTestCase(unittest.TestCase):
     """
 
     def test_nested_genexpr(self):
-        code = dedent("""\
+        code = dedent(
+            """\
             class SpecificException(Exception):
                 pass
 
@@ -167,8 +169,9 @@ class NestedGenExprTestCase(unittest.TestCase):
                 raise SpecificException("Success!")
 
             sum(sum(foo(x) for _ in [0]) for x in [0])
-            """)
-        with tt.AssertPrints('SpecificException: Success!', suppress=False):
+            """
+        )
+        with tt.AssertPrints("SpecificException: Success!", suppress=False):
             ip.run_cell(code)
 
 
@@ -191,7 +194,7 @@ class IndentationErrorTest(unittest.TestCase):
 
             with tt.AssertPrints("IndentationError"):
                 with tt.AssertPrints("zoon()", suppress=False):
-                    ip.magic('run %s' % fname)
+                    ip.magic("run %s" % fname)
 
 
 se_file_1 = """1
@@ -235,20 +238,20 @@ bar()
         # Assert syntax error during runtime generate stacktrace
         with tt.AssertPrints(["foo()", "bar()"]):
             ip.run_cell(syntax_error_at_runtime)
-        del ip.user_ns['bar']
-        del ip.user_ns['foo']
+        del ip.user_ns["bar"]
+        del ip.user_ns["foo"]
 
     def test_changing_py_file(self):
         with TemporaryDirectory() as td:
             fname = os.path.join(td, "foo.py")
-            with open(fname, 'w') as f:
+            with open(fname, "w") as f:
                 f.write(se_file_1)
 
             with tt.AssertPrints(["7/", "SyntaxError"]):
                 ip.magic("run " + fname)
 
             # Modify the file
-            with open(fname, 'w') as f:
+            with open(fname, "w") as f:
                 f.write(se_file_2)
 
             # The SyntaxError should point to the correct line
@@ -259,9 +262,9 @@ bar()
         # SyntaxTB may be called with an error other than a SyntaxError
         # See e.g. gh-4361
         try:
-            raise ValueError('QWERTY')
+            raise ValueError("QWERTY")
         except ValueError:
-            with tt.AssertPrints('QWERTY'):
+            with tt.AssertPrints("QWERTY"):
                 ip.showsyntaxerror()
 
 
@@ -304,8 +307,9 @@ except Exception:
             ip.run_cell(self.EXCEPTION_DURING_HANDLING_CODE)
 
     def test_suppress_exception_chaining(self):
-        with tt.AssertNotPrints("ZeroDivisionError"), \
-                tt.AssertPrints("ValueError", suppress=False):
+        with tt.AssertNotPrints("ZeroDivisionError"), tt.AssertPrints(
+            "ValueError", suppress=False
+        ):
             ip.run_cell(self.SUPPRESS_CHAINING_CODE)
 
 
@@ -357,15 +361,14 @@ def r3o2():
         def capture_exc(*args, **kwargs):
             captured.append(sys.exc_info())
 
-        with mock.patch.object(ip, 'showtraceback', capture_exc):
+        with mock.patch.object(ip, "showtraceback", capture_exc):
             ip.run_cell("r3o2()")
 
         self.assertEqual(len(captured), 1)
         etype, evalue, tb = captured[0]
         self.assertIn("recursion", str(evalue))
 
-        records = ip.InteractiveTB.get_records(tb, 3,
-                                               ip.InteractiveTB.tb_offset)
+        records = ip.InteractiveTB.get_records(tb, 3, ip.InteractiveTB.tb_offset)
         for r in records[:10]:
             print(r[1:4])
 
@@ -403,28 +406,28 @@ def test_handlers():
 
     buff = io.StringIO()
 
-    buff.write('')
-    buff.write('*** Before ***')
+    buff.write("")
+    buff.write("*** Before ***")
     try:
         buff.write(spam(1, (2, 3)))
     except BaseException:
         traceback.print_exc(file=buff)
 
     handler = ColorTB(ostream=buff)
-    buff.write('*** ColorTB ***')
+    buff.write("*** ColorTB ***")
     try:
         buff.write(spam(1, (2, 3)))
     except BaseException:
         handler(*sys.exc_info())
-    buff.write('')
+    buff.write("")
 
     handler = VerboseTB(ostream=buff)
-    buff.write('*** VerboseTB ***')
+    buff.write("*** VerboseTB ***")
     try:
         buff.write(spam(1, (2, 3)))
     except BaseException:
         handler(*sys.exc_info())
-    buff.write('')
+    buff.write("")
 
 
 class TokenizeFailureTest(unittest.TestCase):
