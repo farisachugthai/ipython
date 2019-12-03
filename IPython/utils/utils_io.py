@@ -8,9 +8,6 @@ import tempfile
 import warnings
 from warnings import warn
 
-# Guys implicit relative imports???
-from IPython.utils.capture import CapturedIO, capture_output
-
 
 class IOStream:
     """Deprecated class but brought back because it's in the globaliptest file."""

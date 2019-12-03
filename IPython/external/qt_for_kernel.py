@@ -28,10 +28,9 @@ Import Priority:
 import os
 import sys
 
+from IPython.external.qt_loaders import (load_qt, loaded_api, QT_API_PYQT, QT_API_PYQT5, QT_API_PYQT_DEFAULT,
+                                         QT_API_PYQTv1, QT_API_PYSIDE, QT_API_PYSIDE2)
 from IPython.utils.version import check_version
-from IPython.external.qt_loaders import (load_qt, loaded_api, QT_API_PYSIDE,
-                                         QT_API_PYSIDE2, QT_API_PYQT, QT_API_PYQT5,
-                                         QT_API_PYQTv1, QT_API_PYQT_DEFAULT)
 
 _qt_apis = (QT_API_PYSIDE, QT_API_PYSIDE2, QT_API_PYQT, QT_API_PYQT5, QT_API_PYQTv1,
             QT_API_PYQT_DEFAULT)

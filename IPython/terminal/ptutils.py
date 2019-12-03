@@ -13,7 +13,7 @@ from wcwidth import wcwidth
 from IPython import get_ipython
 from IPython.core.completer import (provisionalcompleter, cursor_to_position,
                                     _deduplicate_completions)
-from IPython.lib.lexers import IPyLexer
+# from IPython.lib.lexers import IPyLexer
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.lexers import Lexer

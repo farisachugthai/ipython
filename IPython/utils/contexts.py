@@ -1,21 +1,13 @@
 """Miscellaneous context managers.
 
-So this is why we don't separate things on abstract unnecessary
-notions like "Is a decorator or not?
-
-I'm inside nvim0.5 and IPython HEAD. This isn't old software.
-
-But I can tell it hasn't been rewriting in like 10 years.
-
-This is now 1 class leave a mental now for when we can ove this to tempdir.
+This is now 1 class leave a mental now for when we can move this to tempdir.
 """
-import warnings
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
 
-class preserve_keys(object):
+class preserve_keys:
     """Preserve a set of keys in a dictionary.
 
     Upon entering the context manager the current values of the keys

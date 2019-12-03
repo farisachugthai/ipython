@@ -14,7 +14,6 @@ Default Dark scheme by Chris Kempson (http://chriskempson.com)
 # *****************************************************************************
 
 # As a better way to subclass Dict
-from abc import ABC
 from collections import defaultdict
 import copy
 import os
@@ -22,8 +21,7 @@ import os
 from IPython.utils.ipstruct import Struct
 from pygments.style import Style
 from pygments.token import (Keyword, Name, Comment, String, Error, Text,
-                            Number, Operator, Literal, Token,
-                            Generic, Escape)
+                            Number, Operator, Literal, Token)
 # TODO:
 # from pygments import highlight
 # from pygments.console import ansiformat
@@ -132,7 +130,13 @@ for name, value in color_templates:
 class ColorScheme:
     """Generic color scheme class. Just a name and a Struct."""
 
-    def __init__(self, name, colordict=None, **colormap):
+    def __init__(self, name, colordict=None, **colormap) -> object:
+        """
+
+        Returns
+        -------
+        dict-like object
+        """
         self.name = name
         if colordict is None:
             self.colors = Struct(**colormap)
@@ -177,8 +181,10 @@ class ColorSchemeTable(dict):
 
         we never bind the valid_schemes to the instance.
 
-        """
-        valid_schemes = ['linux', 'lightbg', 'nocolor', 'iforgetrn']
+j        """
+        # Yo pycharm recommended we add this...does it do anything?
+        super().__init__()
+        valid_schemes = ['linux', 'lightbg', 'nocolor', 'neutral']
         self.valid_schemes = valid_schemes
         # create object attributes to be set later
         self.active_scheme_name = ''
@@ -276,31 +282,35 @@ class DefaultDark(defaultdict):
 
     .. todo:: This raises
 
-    >>> TypeError: Can't instantiate abstract class DefaultDark with abstract methods __delitem__, __getitem__, __iter__, __len__, __setitem__
+    TypeError: Can't instantiate abstract class DefaultDark with abstract methods __delitem__, __getitem__, __iter__, __len__, __setitem__
 
     """
-    color_scheme = ColorScheme('default_dark', colordict={
-        'base00': '#181818',
-        'base01': '#282828',
-        'base02': '#383838',
-        'base03': '#585858',
-        'base04': '#b8b8b8',
-        'base05': '#d8d8d8',
-        'base06': '#e8e8e8',
-        'base07': '#f8f8f8',
-        'base08': '#ab4642',
-        'base09': '#dc9656',
-        'base0A': '#f7ca88',
-        'base0B': '#a1b56c',
-        'base0C': '#86c1b9',
-        'base0D': '#7cafc2',
-        'base0E': '#ba8baf',
-        'base0F': '#a16946',
-    })
+
+    def __init__(self):
+        super(DefaultDark, self).__init__()
+        self.color_scheme = ColorScheme('default_dark', colordict={
+            'base00': '#181818',
+            'base01': '#282828',
+            'base02': '#383838',
+            'base03': '#585858',
+            'base04': '#b8b8b8',
+            'base05': '#d8d8d8',
+            'base06': '#e8e8e8',
+            'base07': '#f8f8f8',
+            'base08': '#ab4642',
+            'base09': '#dc9656',
+            'base0A': '#f7ca88',
+            'base0B': '#a1b56c',
+            'base0C': '#86c1b9',
+            'base0D': '#7cafc2',
+            'base0E': '#ba8baf',
+            'base0F': '#a16946',
+        })
 
     @property
     def colors(self):
-        return styles
+        """Should be a property as we shouldn't be able to assign to this."""
+        return self.color_scheme
 
 
 class Base16Style(defaultdict):

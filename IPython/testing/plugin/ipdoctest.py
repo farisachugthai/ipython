@@ -13,6 +13,7 @@ Limitations:
   '_34==True', for example).  For IPython tests run via an external process the
   prompt numbers may be different, and IPython tests run as normal python code
   won't even have these special _NN variables set at all.
+
 """
 
 # -----------------------------------------------------------------------------
@@ -35,10 +36,12 @@ from inspect import getmodule
 
 # We are overriding the default doctest runner, so we need to import a few
 # things from doctest directly
-from doctest import (REPORTING_FLAGS, REPORT_ONLY_FIRST_FAILURE,
-                     _unittest_reportflags, DocTestRunner,
-                     _extract_future_flags, pdb, _OutputRedirectingPdb,
-                     _exception_traceback, linecache)
+from doctest import REPORTING_FLAGS, _unittest_reportflags, DocTestRunner
+
+try:
+    from IPython.core.getipython import get_ipython
+except Exception:
+    pass
 
 # Third-party modules
 
@@ -50,6 +53,7 @@ from nose.util import anyp, tolist
 # -----------------------------------------------------------------------------
 
 log = logging.getLogger(__name__)
+
 
 # -----------------------------------------------------------------------------
 # Classes and functions
@@ -588,18 +592,20 @@ SKIP = doctest.register_optionflag('SKIP')
 class IPDocTestRunner(doctest.DocTestRunner, object):
     """Test runner that synchronizes the IPython namespace with test globals.
     """
+    _ip = get_ipython()
 
     def run(self, test, compileflags=None, out=None, clear_globs=True):
+        """
+        Hack: ipython needs access to the execution context of the example,
+        so that it can propagate user variables loaded by %run into
+        test.globs.  We put them here into our modified %run as a function
+        attribute.  Our new %run will then only make the namespace update
+        when called (rather than unconditionally updating test.globs here
+        for all examples, most of which won't be calling %run anyway).
 
-        # Hack: ipython needs access to the execution context of the example,
-        # so that it can propagate user variables loaded by %run into
-        # test.globs.  We put them here into our modified %run as a function
-        # attribute.  Our new %run will then only make the namespace update
-        # when called (rather than unconditionally updating test.globs here
-        # for all examples, most of which won't be calling %run anyway).
-        #_ip._ipdoctest_test_globs = test.globs
-        #_ip._ipdoctest_test_filename = test.filename
-
+        _ip._ipdoctest_test_globs = test.globs
+        _ip._ipdoctest_test_filename = test.filename
+        """
         test.globs.update(_ip.user_ns)
 
         # Override terminal size to standardise traceback format

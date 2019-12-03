@@ -1,6 +1,13 @@
 # encoding: utf-8
 """
 Utilities for timing code execution.
+
+.. note::
+    There is no distinction of user/system time under windows, so we just use
+    time.perf_counter() for everything.
+
+    clocku = clocks = clock = time.perf_counter
+
 """
 
 # -----------------------------------------------------------------------------
@@ -23,6 +30,22 @@ import time
 # If possible (Unix), use the resource module instead of time.clock()
 try:
     import resource
+
+    # uh i'm guessing the else statement is a new feature of python then
+except ImportError:
+    # There is no distinction of user/system time under windows, so we just use
+    # time.perf_counter() for everything...
+    clocku = clocks = clock = time.perf_counter
+
+    def clock2():
+        """Under windows, system CPU time can't be measured.
+
+        This just returns perf_counter() and zero.
+        """
+        return time.perf_counter(), 0.0
+
+else:
+
 
     def clocku():
         """clocku() -> floating point number
@@ -57,16 +80,6 @@ try:
 
         Similar to clock(), but return a tuple of user/system times."""
         return resource.getrusage(resource.RUSAGE_SELF)[:2]
-except ImportError:
-    # There is no distinction of user/system time under windows, so we just use
-    # time.perff_counter() for everything...
-    clocku = clocks = clock = time.perf_counter
-
-    def clock2():
-        """Under windows, system CPU time can't be measured.
-
-        This just returns perf_counter() and zero."""
-        return time.perf_counter(), 0.0
 
 
 def timings_out(reps, func, *args, **kw):

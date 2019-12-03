@@ -11,9 +11,10 @@ be accessed directly from the outside
 import sys
 import types
 from functools import partial
-from importlib import import_module
 
 from IPython.utils.version import check_version
+if sys.version_info < (3, 7):
+    from IPython.core.error import ModuleNotFoundError
 
 # Available APIs.
 QT_API_PYQT = 'pyqt'  # Force version 2
@@ -130,7 +131,7 @@ def has_binding(api):
     for submod in required:
         try:
             spec = find_spec('%s.%s' % (module_name, submod))
-        except ImportError:
+        except (ImportError, ModuleNotFoundError):
             # Package (e.g. PyQt5) not found
             return False
         else:

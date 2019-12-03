@@ -257,8 +257,10 @@ if 'setuptools' in sys.modules:
         # find_entry_points(),
         'pygments.lexers': [
             'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
-            'ipython = IPython.lib.lexers:IPythonLexer',
+            'ipy = IPython.lib.lexers:IPyLexer',
             'ipython3 = IPython.lib.lexers:IPython3Lexer',
+            'ipython = IPython.lib.lexers:IPythonLexer',
+            'ipytraceback = IPython.lib.lexers:IPythonTracebackLexer',
         ],
     }
     setup_args['extras_require'] = extras_require

@@ -195,39 +195,41 @@ or :okwarning: options:
 # Imports
 # -----------------------------------------------------------------------------
 
-# Stdlib
+import ast
 import atexit
+import doctest
 import errno
+import logging
 import os
 import pathlib
+import shutil
 import re
 import sys
-import tempfile
-from typing import Dict, AnyStr, Any
 import ast
-import warnings
 import shutil
+import tempfile
+import warnings
+from typing import Any, AnyStr, Dict
 from io import StringIO
 
-# Third-party
-from docutils.parsers.rst import directives
-from docutils.parsers.rst import Directive
-from sphinx.application import Sphinx
+from docutils.parsers.rst import Directive, directives
+from sphinx import highlighting
 from sphinx.util.logging import getLogger
+from docutils.parsers.rst import Directive
 from sphinx.util.docutils import SphinxDirective
+from sphinx.application import Sphinx
 from sphinx import highlighting
 from traitlets.config import Config
 
-# Our own
-
-from IPython.sphinxext import configtraits, magics
 from IPython.core.interactiveshell import InteractiveShell
-from IPython.core.release import version_info
 from IPython.core.profiledir import ProfileDir
-# We should use the whole buffalo
-from IPython.lib.lexers import (IPyLexer, IPythonTracebackLexer,
-                                IPythonPartialTracebackLexer,
-                                IPythonConsoleLexer, IPythonLexer)
+from IPython.core.release import version_info
+from IPython.lib.lexers import IPyLexer
+# , IPythonConsoleLexer, IPythonLexer, IPythonPartialTracebackLexer, #
+# IPythonTracebackLexer)
+from IPython.sphinxext import magics
+
+# Our own
 
 # Note: Code duplication
 if sys.version_info < (3, 7):

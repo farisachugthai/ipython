@@ -6,11 +6,10 @@ This file is deprecated and will be removed in a future version.
 import builtins as builtin_mod
 import functools
 import os
-import sys
+import platform
 import re
 import shutil
 import types
-import platform
 
 from .encoding import DEFAULT_ENCODING
 
@@ -91,13 +90,6 @@ def safe_unicode(e):
         pass
 
     return u'Unrecoverably corrupt evalue'
-
-
-# shutil.which from Python 3.4
-# .....oh boy.
-def _shutil_which(cmd, *args, **kwargs):
-    # honestly just drop the other arguments we don't need them
-    return shutil.which(cmd)
 
 
 PY3 = True

@@ -20,6 +20,7 @@
 import asyncio
 import os
 import sys
+import traceback
 from warnings import warn
 
 from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
@@ -135,36 +136,6 @@ class TerminalInteractiveShell(InteractiveShell):
         Still reorganizing all class attributes and moving them to the top.
         This list is not comprehensive.
 
-    Attributes
-    ----------
-    mime_renderers : dict
-    space_for_menu : int
-    pt_app :
-        Bound instance of the `~prompt_toolkit.application.Application`
-    debugger_history
-        Simply initialized to None?? What is this C?
-    simple_prompt
-    confirm_exit
-    editing_mode
-    autoformatter : Instance
-        YAY new code!
-    mouse_support
-    highlighting_style
-    highlighting_style_overrides
-    true_color
-    editor
-    prompts_class
-    prompts
-    term_title
-    term_title_format
-    display_completions
-    highlight_matching_brackets
-    extra_open_editor_shortcuts
-    handle_return
-    enable_history_search
-    prompt_includes_vi_mode
-    completer
-
     """
     mime_renderers = Dict().tag(config=True)
 
@@ -177,8 +148,6 @@ class TerminalInteractiveShell(InteractiveShell):
 
     debugger_history = None
     rl_next_input = None
-
-
     simple_prompt = Bool(_use_simple_prompt,
                          help="""Use `raw_input` for the REPL, without
 completion and prompt colors.
@@ -207,7 +176,7 @@ environment variable is set, or the current terminal is not a tty.
     # TODO: Would it make more sense to use the
     # prompt_toolkit.enums.EditingMode class here?
     editing_mode = Unicode(
-        'emacs',
+        default_value=EditingMode.EMACS.lower(),
         help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
     ).tag(config=True)
 
@@ -222,7 +191,7 @@ environment variable is set, or the current terminal is not a tty.
 
     # We don't load the list of styles for the help string, because loading
     # Pygments plugins takes time and can cause unexpected errors.
-    highlighting_style = Union([Unicode('legacy'), Type(klass=Style)],
+    highlighting_style: Union = Union([Unicode('legacy'), Type(klass=Style)],
                                help="""The name or class of a Pygments style to use for syntax
         highlighting. To see available styles, run `pygmentize -L styles`."""
                                ).tag(config=True)
@@ -351,16 +320,18 @@ environment variable is set, or the current terminal is not a tty.
 
     enable_history_search = Bool(
         True,
-        help="Allows to enable/disable the prompt toolkit history search").tag(
-            config=True)
+        help="Allows to enable/disable the prompt toolkit history search"
+    ).tag(config=True)
 
     prompt_includes_vi_mode = Bool(
         True,
-        help="Display the current vi mode (when using vi editing mode).").tag(
-            config=True)
+        help="Display the current vi mode (when using vi editing mode)."
+    ).tag(config=True)
 
-    completer = Instance(IPythonPTCompleter, help='Completer for the shell',
-                         allow_none=True).tag(config=True)
+    completer = Instance(IPythonPTCompleter,
+                         help='Completer for the shell',
+                         allow_none=False
+                         ).tag(config=True)
 
     @observe('term_title')
     def init_term_title(self, change=None):
@@ -693,7 +664,7 @@ environment variable is set, or the current terminal is not a tty.
 
         Parameters
         -----------
-        DISPLAY_BANNER_DEPRECATED : str
+        display_banner : str
             Deprecated parameter don't worry about it.
 
         """
@@ -780,7 +751,7 @@ environment variable is set, or the current terminal is not a tty.
     _prompts_before = None
 
     @staticmethod
-    def execfile(self, fname, globs, locs=None):
+    def execfile(fname, globs, locs=None):
         """Nabbed from the setup.py. Honestly it's surprising that we don't have these sitting around."""
         locs = locs or globs
         with open(fname) as f:
@@ -811,6 +782,55 @@ environment variable is set, or the current terminal is not a tty.
             self.log.error('Profiledirerror')
         except BaseException as e:
             self.log.warning(e)
+
+    def showsyntaxerror(self, filename=None, **kwargs):
+        """Display the syntax error that just occurred.
+
+        Sorry JetBrains but I'm gonna opt out of deciphering the
+        interactive shell implementation, and rather then do so
+        simply copy paste your version :D
+
+        Parameters
+        ----------
+        **kwargs :
+
+        """
+        # Override for avoid using sys.excepthook PY-12600
+        exception_type, value, tb = sys.exc_info()
+        sys.last_type = exception_type
+        sys.last_value = value
+        sys.last_traceback = tb
+        if filename and exception_type is SyntaxError:
+            # Work hard to stuff the correct filename in the exception
+            try:
+                msg, (dummy_filename, lineno, offset, line) = value.args
+            except ValueError:
+                # Not the format we expect; leave it alone
+                pass
+            else:
+                # Stuff in the right filename
+                value = SyntaxError(msg, (filename, lineno, offset, line))
+                sys.last_value = value
+        _ = traceback.format_exception_only(exception_type, value)
+        sys.stderr.write(''.join(_))
+
+    def showtraceback(self):
+        """Display the exception that just occurred."""
+        # Override for avoid using sys.excepthook PY-12600
+        try:
+            exception_type, value, tb = sys.exc_info()
+            sys.last_type = exception_type
+            sys.last_value = value
+            sys.last_traceback = tb
+            tblist = traceback.extract_tb(tb)
+            del tblist[:1]
+            lines = traceback.format_list(tblist)
+            if lines:
+                lines.insert(0, "Traceback (most recent call last):\n")
+            lines.extend(traceback.format_exception_only(exception_type, value))
+        finally:
+            tblist = tb = None
+        sys.stderr.write(''.join(lines))
 
 
 InteractiveShellABC.register(TerminalInteractiveShell)
