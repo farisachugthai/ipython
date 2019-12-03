@@ -44,10 +44,7 @@ except ImportError:
         import _winreg as wreg
 
         # Add entries that needs to be stubbed by the testing code
-        (
-            wreg.OpenKey,
-            wreg.QueryValueEx,
-        ) = (None, None)
+        (wreg.OpenKey, wreg.QueryValueEx,) = (None, None)
 
 # -----------------------------------------------------------------------------
 # Globals
@@ -150,7 +147,8 @@ def test_get_home_dir_2():
     sys.frozen = True
     # fake filename for IPython.__init__
     IPython.__file__ = abspath(
-        join(HOME_TEST_DIR, "Library.zip/IPython/__init__.py")).lower()
+        join(HOME_TEST_DIR, "Library.zip/IPython/__init__.py")
+    ).lower()
 
     home_dir = path.get_home_dir(True)
     nt.assert_equal(home_dir, unfrozen)
@@ -205,7 +203,8 @@ def test_get_home_dir_8():
             pass
 
     with patch.object(wreg, "OpenKey", return_value=key()), patch.object(
-            wreg, "QueryValueEx", return_value=[abspath(HOME_TEST_DIR)]):
+        wreg, "QueryValueEx", return_value=[abspath(HOME_TEST_DIR)]
+    ):
         home_dir = path.get_home_dir()
     nt.assert_equal(home_dir, abspath(HOME_TEST_DIR))
 
@@ -278,8 +277,9 @@ def test_get_long_path_name_win32():
 
         # Make a long path. Expands the path of tmpdir prematurely as it may already have a long
         # path component, so ensure we include the long form of it
-        long_path = os.path.join(path.get_long_path_name(tmpdir),
-                                 "this is my long path name")
+        long_path = os.path.join(
+            path.get_long_path_name(tmpdir), "this is my long path name"
+        )
         os.makedirs(long_path)
 
         # Test to see if the short path evaluates correctly.
@@ -392,8 +392,10 @@ class TestShellGlob(unittest.TestCase):
             (["*c"], ["*c"]),
             (
                 ["*", "a*", "*b", "*c"],
-                self.filenames + self.filenames_start_with_a +
-                self.filenames_end_with_b + ["*c"],
+                self.filenames
+                + self.filenames_start_with_a
+                + self.filenames_end_with_b
+                + ["*c"],
             ),
             (["a[012]"], self.filenames_start_with_a),
         ]
@@ -410,9 +412,9 @@ class TestShellGlob(unittest.TestCase):
     @skip_if_not_win32
     def test_match_windows(self):
         for (patterns, matches) in self.common_cases() + [
-                # In windows, backslash is interpreted as path
-                # separator.  Therefore, you can't escape glob
-                # using it.
+            # In windows, backslash is interpreted as path
+            # separator.  Therefore, you can't escape glob
+            # using it.
             ([r"a\*", "a*"], [r"a\*"] + self.filenames_start_with_a),
             ([r"a\[012]"], [r"a\[012]"]),
         ]:
@@ -518,5 +520,4 @@ class TestLinkOrCopy(unittest.TestCase):
         path.link_or_copy(self.src, dst)
         path.link_or_copy(self.src, dst)
         self.assert_inode_equal(self.src, dst)
-        nt.assert_equal(sorted(os.listdir(self.tempdir.name)),
-                        ["src", "target"])
+        nt.assert_equal(sorted(os.listdir(self.tempdir.name)), ["src", "target"])

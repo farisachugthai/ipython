@@ -13,9 +13,12 @@ class IOStream:
     """Deprecated class but brought back because it's in the globaliptest file."""
 
     def __init__(self, stream, fallback=None):
-        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
-             DeprecationWarning, stacklevel=2)
-        if not hasattr(stream, 'write') or not hasattr(stream, 'flush'):
+        warn(
+            "IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if not hasattr(stream, "write") or not hasattr(stream, "flush"):
             if fallback is not None:
                 stream = fallback
             else:
@@ -25,7 +28,8 @@ class IOStream:
 
         # clone all methods not overridden:
         def clone(meth):
-            return not hasattr(self, meth) and not meth.startswith('_')
+            return not hasattr(self, meth) and not meth.startswith("_")
+
         for meth in filter(clone, dir(stream)):
             try:
                 val = getattr(stream, meth)
@@ -36,12 +40,15 @@ class IOStream:
 
     def __repr__(self):
         cls = self.__class__
-        tpl = '{mod}.{cls}({args})'
+        tpl = "{mod}.{cls}({args})"
         return tpl.format(mod=cls.__module__, cls=cls.__name__, args=self.stream)
 
     def write(self, data):
-        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
-             DeprecationWarning, stacklevel=2)
+        warn(
+            "IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         try:
             self._swrite(data)
         except:
@@ -49,15 +56,21 @@ class IOStream:
                 # print handles some unicode issues which may trip a plain
                 # write() call.  Emulate write() by using an empty end
                 # argument.
-                print(data, end='', file=self.stream)
+                print(data, end="", file=self.stream)
             except:
                 # if we get here, something is seriously broken.
-                print('ERROR - failed to write data to stream:', self.stream,
-                      file=sys.stderr)
+                print(
+                    "ERROR - failed to write data to stream:",
+                    self.stream,
+                    file=sys.stderr,
+                )
 
     def writelines(self, lines):
-        warn('IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead',
-             DeprecationWarning, stacklevel=2)
+        warn(
+            "IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if isinstance(lines, str):
             lines = [lines]
         for line in lines:
@@ -76,13 +89,13 @@ class IOStream:
 
 
 # setup stdin/stdout/stderr to sys.stdin/sys.stdout/sys.stderr
-devnull = open(os.devnull, 'w')
+devnull = open(os.devnull, "w")
 atexit.register(devnull.close)
 
 # io.std* are deprecated, but don't show our own deprecation warnings
 # during initialization of the deprecated API.
 with warnings.catch_warnings():
-    warnings.simplefilter('ignore', DeprecationWarning)
+    warnings.simplefilter("ignore", DeprecationWarning)
     stdin = IOStream(sys.stdin, fallback=devnull)
     stdout = IOStream(sys.stdout, fallback=devnull)
     stderr = IOStream(sys.stderr, fallback=devnull)
@@ -102,7 +115,7 @@ class Tee:
 
     """
 
-    def __init__(self, file_or_name, mode="w", channel='stdout'):
+    def __init__(self, file_or_name, mode="w", channel="stdout"):
         """Construct a new Tee object.
 
         Parameters
@@ -115,10 +128,10 @@ class Tee:
 
         channel : str, one of ['stdout', 'stderr']
         """
-        if channel not in ['stdout', 'stderr']:
-            raise ValueError('Invalid channel spec %s' % channel)
+        if channel not in ["stdout", "stderr"]:
+            raise ValueError("Invalid channel spec %s" % channel)
 
-        if hasattr(file_or_name, 'write') and hasattr(file_or_name, 'seek'):
+        if hasattr(file_or_name, "write") and hasattr(file_or_name, "seek"):
             self.file = file_or_name
         else:
             self.file = open(file_or_name, mode)
@@ -163,11 +176,11 @@ def ask_yes_no(prompt, default=None, interrupt=None):
 
     Valid answers are: y/yes/n/no (match is not case sensitive).
     """
-    answers = {'y': True, 'n': False, 'yes': True, 'no': False}
+    answers = {"y": True, "n": False, "yes": True, "no": False}
     ans = None
     while ans not in answers.keys():
         try:
-            ans = input(prompt + ' ').lower()
+            ans = input(prompt + " ").lower()
             if not ans:  # response was an empty string
                 ans = default
         except KeyboardInterrupt:
@@ -184,7 +197,7 @@ def ask_yes_no(prompt, default=None, interrupt=None):
     return answers[ans]
 
 
-def temp_pyfile(src, ext='.py'):
+def temp_pyfile(src, ext=".py"):
     """Make a temporary python file, return filename and filehandle.
 
     Parameters
@@ -202,7 +215,7 @@ def temp_pyfile(src, ext='.py'):
 
     """
     fname = tempfile.mkstemp(ext)[1]
-    with open(fname, 'w') as f:
+    with open(fname, "w") as f:
         f.write(src)
         f.flush()
     return fname

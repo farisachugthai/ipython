@@ -36,7 +36,7 @@ def flag_calls(func):
     func() was attempted and succeeded."""
 
     # don't wrap twice
-    if hasattr(func, 'called'):
+    if hasattr(func, "called"):
         return func
 
     def wrapper(*args, **kw):

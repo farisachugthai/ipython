@@ -12,11 +12,11 @@ from IPython.utils.tempdir import TemporaryWorkingDirectory
 
 
 def test_named_file_in_temporary_directory():
-    with NamedFileInTemporaryDirectory('filename') as file:
+    with NamedFileInTemporaryDirectory("filename") as file:
         name = file.name
         assert not file.closed
         assert os.path.exists(name)
-        file.write(b'test')
+        file.write(b"test")
     assert file.closed
     assert not os.path.exists(name)
 

@@ -42,7 +42,7 @@ def extract_vars(*names, **kw):
         [('x', 'hello'), ('y', 1)]
     """
 
-    depth = kw.get('depth', 0)
+    depth = kw.get("depth", 0)
 
     callerNS = sys._getframe(depth + 1).f_locals
     return dict((k, callerNS[k]) for k in names)
@@ -64,7 +64,7 @@ def extract_vars_above(*names):
     return dict((k, callerNS[k]) for k in names)
 
 
-def debugx(expr, pre_msg=''):
+def debugx(expr, pre_msg=""):
     """Print the value of an expression from the caller's frame.
 
     Takes an expression, evaluates it in the caller's frame and prints both
@@ -76,8 +76,10 @@ def debugx(expr, pre_msg=''):
     expr->value pair.
     """
     cf = sys._getframe(1)
-    print('[DBG:%s] %s%s -> %r' % (cf.f_code.co_name, pre_msg, expr,
-                                   eval(expr, cf.f_globals, cf.f_locals)))
+    print(
+        "[DBG:%s] %s%s -> %r"
+        % (cf.f_code.co_name, pre_msg, expr, eval(expr, cf.f_globals, cf.f_locals))
+    )
 
 
 # deactivate it by uncommenting the following line, which makes it a no-op
@@ -88,5 +90,5 @@ def extract_module_locals(depth=0):
     """Returns (module, locals) of the function `depth` frames away from the caller"""
     f = sys._getframe(depth + 1)
     global_ns = f.f_globals
-    module = sys.modules[global_ns['__name__']]
+    module = sys.modules[global_ns["__name__"]]
     return module, f.f_locals

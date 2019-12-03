@@ -18,7 +18,7 @@ Authors:
 # Imports
 # -----------------------------------------------------------------------------
 
-__all__ = ['Struct']
+__all__ = ["Struct"]
 
 # -----------------------------------------------------------------------------
 # Code
@@ -37,6 +37,7 @@ class Struct(dict):
     * Intelligent merging.
     * Overloaded operators.
     """
+
     _allownew = True
 
     def __init__(self, *args, **kw):
@@ -61,7 +62,7 @@ class Struct(dict):
         >>> sorted(s2.keys())
         ['a', 'b', 'c']
         """
-        object.__setattr__(self, '_allownew', True)
+        object.__setattr__(self, "_allownew", True)
         dict.__init__(self, *args, **kw)
 
     def __setitem__(self, key, value):
@@ -85,8 +86,8 @@ class Struct(dict):
         """
         if not self._allownew and key not in self:
             raise KeyError(
-                "can't create new attribute %s when allow_new_attr(False)" %
-                key)
+                "can't create new attribute %s when allow_new_attr(False)" % key
+            )
         dict.__setitem__(self, key, value)
 
     def __setattr__(self, key, value):
@@ -117,7 +118,8 @@ class Struct(dict):
             # self.__dict__
             if key in self.__dict__ or hasattr(Struct, key):
                 raise AttributeError(
-                    'attr %s is a protected member of class Struct.' % key)
+                    "attr %s is a protected member of class Struct." % key
+                )
         try:
             self.__setitem__(key, value)
         except KeyError as e:
@@ -269,7 +271,7 @@ class Struct(dict):
         This can be used to catch typos by verifying that the attribute user
         tries to change already exists in this Struct.
         """
-        object.__setattr__(self, '_allownew', allow)
+        object.__setattr__(self, "_allownew", allow)
 
     def merge(self, __loc_data__=None, __conflict_solve=None, **kw):
         """Merge two Structs with customizable conflict resolution.
@@ -375,7 +377,7 @@ class Struct(dict):
             return new + old  # note change of order!
 
         def add_s(old, new):
-            return old + ' ' + new
+            return old + " " + new
 
         # default policy is to keep current keys when there's a conflict
         conflict_solve = dict.fromkeys(self, preserve)
@@ -386,12 +388,15 @@ class Struct(dict):
         # strings for the three builtin policies and invert it.
         if __conflict_solve:
             inv_conflict_solve_user = __conflict_solve.copy()
-            for name, func in [('preserve', preserve), ('update', update),
-                               ('add', add), ('add_flip', add_flip),
-                               ('add_s', add_s)]:
+            for name, func in [
+                ("preserve", preserve),
+                ("update", update),
+                ("add", add),
+                ("add_flip", add_flip),
+                ("add_s", add_s),
+            ]:
                 if name in inv_conflict_solve_user.keys():
-                    inv_conflict_solve_user[func] = inv_conflict_solve_user[
-                        name]
+                    inv_conflict_solve_user[func] = inv_conflict_solve_user[name]
                     del inv_conflict_solve_user[name]
             conflict_solve.update(self.__dict_invert(inv_conflict_solve_user))
         for key in data_dict:

@@ -32,43 +32,28 @@ _mime_map = dict(
 )
 
 basic_data = {
-    'image/png': b'binarydata',
-    'text/html': "<b>bold</b>",
+    "image/png": b"binarydata",
+    "text/html": "<b>bold</b>",
 }
 basic_metadata = {
-    'image/png': {
-        'width': 10,
-        'height': 20,
-    },
+    "image/png": {"width": 10, "height": 20,},
 }
 
 full_data = {
-    'image/png': b'binarydata',
-    'image/jpeg': b'binarydata',
-    'image/svg+xml': "<svg>",
-    'text/html': "<b>bold</b>",
-    'application/javascript': "alert();",
-    'application/json': "{}",
+    "image/png": b"binarydata",
+    "image/jpeg": b"binarydata",
+    "image/svg+xml": "<svg>",
+    "text/html": "<b>bold</b>",
+    "application/javascript": "alert();",
+    "application/json": "{}",
 }
 full_metadata = {
-    'image/png': {
-        "png": "exists"
-    },
-    'image/jpeg': {
-        "jpeg": "exists"
-    },
-    'image/svg+xml': {
-        "svg": "exists"
-    },
-    'text/html': {
-        "html": "exists"
-    },
-    'application/javascript': {
-        "js": "exists"
-    },
-    'application/json': {
-        "json": "exists"
-    },
+    "image/png": {"png": "exists"},
+    "image/jpeg": {"jpeg": "exists"},
+    "image/svg+xml": {"svg": "exists"},
+    "text/html": {"html": "exists"},
+    "application/javascript": {"js": "exists"},
+    "application/json": {"json": "exists"},
 }
 
 hello_stdout = "hello, stdout"
@@ -91,9 +76,12 @@ def test_rich_output():
     data = basic_data
     metadata = basic_metadata
     rich = capture.RichOutput(data=data, metadata=metadata)
-    return nt.assert_equal, rich._repr_html_(), data['text/html']
-    return nt.assert_equal, rich._repr_png_(), (data['image/png'],
-                                                metadata['image/png'])
+    return nt.assert_equal, rich._repr_html_(), data["text/html"]
+    return (
+        nt.assert_equal,
+        rich._repr_png_(),
+        (data["image/png"], metadata["image/png"]),
+    )
     return nt.assert_equal, rich._repr_latex_(), None
     return nt.assert_equal, rich._repr_javascript_(), None
     return nt.assert_equal, rich._repr_svg_(), None
@@ -113,8 +101,7 @@ def test_rich_output_metadata():
     metadata = full_metadata
     rich = capture.RichOutput(data=data, metadata=metadata)
     for method, mime in _mime_map.items():
-        return nt.assert_equal, getattr(rich,
-                                        method)(), (data[mime], metadata[mime])
+        return nt.assert_equal, getattr(rich, method)(), (data[mime], metadata[mime])
 
 
 def test_rich_output_display():

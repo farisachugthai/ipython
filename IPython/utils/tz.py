@@ -40,6 +40,7 @@ UTC = tzUTC()
 
 def utc_aware(unaware):
     """decorator for adding UTC tzinfo to datetime's utcfoo methods"""
+
     def utc_method(*args, **kwargs):
         dt = unaware(*args, **kwargs)
         return dt.replace(tzinfo=UTC)

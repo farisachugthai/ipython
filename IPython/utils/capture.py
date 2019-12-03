@@ -21,10 +21,13 @@ class RichOutput:
 
     def display(self):
         from IPython.display import publish_display_data
-        publish_display_data(data=self.data,
-                             metadata=self.metadata,
-                             transient=self.transient,
-                             update=self.update)
+
+        publish_display_data(
+            data=self.data,
+            metadata=self.metadata,
+            transient=self.transient,
+            update=self.update,
+        )
 
     def _repr_mime_(self, mime):
         if mime not in self.data:
@@ -87,14 +90,14 @@ class CapturedIO:
     def stdout(self):
         """Captured :data:`sys.stdout`."""
         if not self._stdout:
-            return ''
+            return ""
         return self._stdout.getvalue()
 
     @property
     def stderr(self):
         """Captured :data:`sys.stderr`."""
         if not self._stderr:
-            return ''
+            return ""
         return self._stderr.getvalue()
 
     @property
@@ -124,6 +127,7 @@ class CapturedIO:
 
 class capture_output:
     """context manager for capturing stdout/err"""
+
     stdout = True
     stderr = True
     display = True
@@ -158,8 +162,7 @@ class capture_output:
             self.shell.display_pub = CapturingDisplayPublisher()
             outputs = self.shell.display_pub.outputs
             self.save_display_hook = sys.displayhook
-            sys.displayhook = CapturingDisplayHook(shell=self.shell,
-                                                   outputs=outputs)
+            sys.displayhook = CapturingDisplayHook(shell=self.shell, outputs=outputs)
 
         return CapturedIO(stdout, stderr, outputs)
 

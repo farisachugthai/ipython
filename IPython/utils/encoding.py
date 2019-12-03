@@ -28,7 +28,7 @@ def get_stream_enc(stream, default=None):
     a default if it doesn't exist or evaluates as False. ``default``
     is None if not provided.
     """
-    if not hasattr(stream, 'encoding') or not stream.encoding:
+    if not hasattr(stream, "encoding") or not stream.encoding:
         return default
     else:
         return stream.encoding
@@ -54,7 +54,7 @@ def getdefaultencoding(prefer_stream=True):
     enc = None
     if prefer_stream:
         enc = get_stream_enc(sys.stdin)
-    if not enc or enc == 'ascii':
+    if not enc or enc == "ascii":
         try:
             # There are reports of getpreferredencoding raising errors
             # in some cases, which may well be fixed, but let's be conservative
@@ -66,12 +66,14 @@ def getdefaultencoding(prefer_stream=True):
     # On windows `cp0` can be returned to indicate that there is no code page.
     # Since cp0 is an invalid encoding return instead cp1252 which is the
     # Western European default.
-    if enc == 'cp0':
+    if enc == "cp0":
         warnings.warn(
             "Invalid code page cp0 detected - using cp1252 instead."
             "If cp1252 is incorrect please ensure a valid code page "
-            "is defined for the process.", RuntimeWarning)
-        return 'cp1252'
+            "is defined for the process.",
+            RuntimeWarning,
+        )
+        return "cp1252"
     return enc
 
 

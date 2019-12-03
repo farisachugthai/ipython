@@ -15,14 +15,18 @@ import sys
 # This variable is part of the expected API of the module:
 ignore_termtitle = True
 
-if os.name == 'posix':
+if os.name == "posix":
 
     def _term_clear():
-        os.system('clear')
-elif sys.platform == 'win32':
+        os.system("clear")
+
+
+elif sys.platform == "win32":
 
     def _term_clear():
-        os.system('cls')
+        os.system("cls")
+
+
 else:
 
     def _term_clear():
@@ -56,20 +60,20 @@ def toggle_set_term_title(val=False):
 def _set_term_title_xterm(title):
     """Change virtual terminal title in xterm-workalikes."""
     # save the current title to the xterm "stack"
-    sys.stdout.write('\033[22;0t')
-    sys.stdout.write('\033]0;%s\007' % title)
+    sys.stdout.write("\033[22;0t")
+    sys.stdout.write("\033]0;%s\007" % title)
 
 
 def _restore_term_title_xterm():
     r"""All this is:: sys.stdout.write('\033[23;0t')."""
-    sys.stdout.write('\033[23;0t')
+    sys.stdout.write("\033[23;0t")
 
 
-if os.name == 'posix':
+if os.name == "posix":
     _set_term_title = _set_term_title_xterm
     _restore_term_title = _restore_term_title_xterm
 
-elif sys.platform == 'win32':
+elif sys.platform == "win32":
     try:
         import ctypes
 
@@ -79,6 +83,7 @@ elif sys.platform == 'win32':
         def _set_term_title(title):
             """Set terminal title using ctypes to access the Win32 APIs."""
             SetConsoleTitleW(title)
+
     except ImportError:
         ctypes = None
 

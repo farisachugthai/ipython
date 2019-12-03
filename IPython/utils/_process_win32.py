@@ -25,6 +25,7 @@ import sys
 import ctypes
 
 from ctypes import c_int, POINTER
+
 try:
     from ctypes.wintypes import LPCWSTR, HLOCAL
 except ImportError:
@@ -34,7 +35,11 @@ except ImportError:
 from subprocess import STDOUT
 
 # our own imports
-from ._process_common import read_no_interrupt, process_handler, arg_split as py_arg_split
+from ._process_common import (
+    read_no_interrupt,
+    process_handler,
+    arg_split as py_arg_split,
+)
 from . import py3compat
 
 
@@ -86,11 +91,10 @@ def _find_cmd(cmd):
     try:
         from win32api import SearchPath
     except ImportError:
-        raise ImportError(
-            'you need to have pywin32 installed for this to work')
+        raise ImportError("you need to have pywin32 installed for this to work")
     else:
-        PATH = os.environ['PATH']
-        extensions = ['.exe', '.com', '.bat', '.py']
+        PATH = os.environ["PATH"]
+        extensions = [".exe", ".com", ".bat", ".py"]
         path = None
         for ext in extensions:
             try:
@@ -106,12 +110,13 @@ def _find_cmd(cmd):
 def _system_body(p):
     """Callback for _system."""
     from .encoding import DEFAULT_ENCODING
+
     enc = DEFAULT_ENCODING
     for line in read_no_interrupt(p.stdout).splitlines():
-        line = line.decode(enc, 'replace')
+        line = line.decode(enc, "replace")
         print(line, file=sys.stdout)
     for line in read_no_interrupt(p.stderr).splitlines():
-        line = line.decode(enc, 'replace')
+        line = line.decode(enc, "replace")
         print(line, file=sys.stderr)
 
     # Wait to finish for returncode
@@ -169,7 +174,7 @@ def getoutput(cmd):
     if out is None:
         # out = b''
         # Wait why do we return bytes here?
-        out = ''
+        out = ""
     return out
 
 
@@ -198,14 +203,19 @@ try:
             return py_arg_split(commandline, posix=posix, strict=strict)
         argvn = c_int()
         result_pointer = CommandLineToArgvW(
-            py3compat.cast_unicode(commandline.lstrip()), ctypes.byref(argvn))
+            py3compat.cast_unicode(commandline.lstrip()), ctypes.byref(argvn)
+        )
         result_array_type = LPCWSTR * argvn.value
         result = [
-            arg for arg in result_array_type.from_address(
-                ctypes.addressof(result_pointer.contents))
+            arg
+            for arg in result_array_type.from_address(
+                ctypes.addressof(result_pointer.contents)
+            )
         ]
         retval = LocalFree(result_pointer)
         return result
+
+
 except AttributeError:
     arg_split = py_arg_split
 
@@ -227,5 +237,5 @@ def check_pid(pid):
     Uses ctypes. Added in a check that the attr exists so an accidental linux
     import doesn't throw us off.
     """
-    if getattr(ctypes, 'windll', None):
+    if getattr(ctypes, "windll", None):
         return bool(ctypes.windll.kernel32.OpenProcess(1, 0, pid))

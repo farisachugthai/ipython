@@ -7,12 +7,6 @@ from functools import singledispatch
 
 
 @singledispatch
-def inspect_object(obj):
-    """Called when you do obj?"""
-    raise TryNext
-
-
-@singledispatch
 def complete_object(obj, prev_completions):
     """Custom completer dispatching for python objects.
 
@@ -26,5 +20,7 @@ def complete_object(obj, prev_completions):
     This should return the list of attributes in obj. If you only wish to
     add to the attributes already discovered normally, return
     own_attrs + prev_completions.
+
+    Wow. This is imported at core.tests.test_completer *sigh*
     """
     raise TryNext

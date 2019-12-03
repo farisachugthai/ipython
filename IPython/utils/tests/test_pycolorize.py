@@ -50,12 +50,12 @@ class Bar(Super):
 
 def test_loop_colors():
 
-    for style in ('Linux', 'NoColor', 'LightBG', 'Neutral'):
+    for style in ("Linux", "NoColor", "LightBG", "Neutral"):
 
         def test_unicode_colorize():
             p = Parser(style=style)
-            f1 = p.format('1/0', 'str')
-            f2 = p.format(u'1/0', 'str')
+            f1 = p.format("1/0", "str")
+            f2 = p.format(u"1/0", "str")
             nt.assert_equal(f1, f2)
 
         def test_parse_sample():
@@ -66,13 +66,13 @@ def test_loop_colors():
             buf.seek(0)
             f1 = buf.read()
 
-            nt.assert_not_in('ERROR', f1)
+            nt.assert_not_in("ERROR", f1)
 
         def test_parse_error():
             p = Parser(style=style)
-            f1 = p.format(')', 'str')
-            if style != 'NoColor':
-                nt.assert_in('ERROR', f1)
+            f1 = p.format(")", "str")
+            if style != "NoColor":
+                nt.assert_in("ERROR", f1)
 
         return test_unicode_colorize
         return test_parse_sample

@@ -54,15 +54,12 @@ if sys.platform == "win32":
         try:
             import ctypes
         except ImportError:
-            raise ImportError(
-                "you need to have ctypes installed for this to work")
+            raise ImportError("you need to have ctypes installed for this to work")
         if not getattr(ctypes, "windll", None):
             return
 
         _GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
-        _GetLongPathName.argtypes = [
-            ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint
-        ]
+        _GetLongPathName.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint]
 
         buf = ctypes.create_unicode_buffer(260)
         rv = _GetLongPathName(path, buf, 260)
@@ -70,6 +67,7 @@ if sys.platform == "win32":
             return path
         else:
             return buf.value
+
 
 else:
 
@@ -114,7 +112,7 @@ def compress_user(path):
     """
     home = os.path.expanduser("~")
     if path.startswith(home):
-        path = "~" + path[len(home):]
+        path = "~" + path[len(home) :]
     return path
 
 
@@ -200,9 +198,9 @@ def filefind(filename, path_dirs=None):
         return filename
 
     if path_dirs is None:
-        path_dirs = ("", )
+        path_dirs = ("",)
     elif isinstance(path_dirs, str):
-        path_dirs = (path_dirs, )
+        path_dirs = (path_dirs,)
 
     for path in path_dirs:
         if path == ".":
@@ -211,8 +209,9 @@ def filefind(filename, path_dirs=None):
         if os.path.isfile(testname):
             return os.path.abspath(testname)
 
-    raise IOError("File %r does not exist in any of the search paths: %r" %
-                  (filename, path_dirs))
+    raise IOError(
+        "File %r does not exist in any of the search paths: %r" % (filename, path_dirs)
+    )
 
 
 def get_home_dir(require_writable=False):
@@ -231,8 +230,7 @@ def get_home_dir(require_writable=False):
 def get_xdg_dir():
     """Return the XDG_CONFIG_HOME, if it is defined and exists, else None."""
     env = os.environ
-    xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(
-        get_home_dir(), ".config")
+    xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(get_home_dir(), ".config")
     if xdg and _writable_dir(xdg):
         return xdg
 
@@ -246,8 +244,7 @@ def get_xdg_cache_dir():
 
     """
     env = os.environ
-    xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(
-        get_home_dir(), ".cache")
+    xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(get_home_dir(), ".cache")
     if xdg and _writable_dir(xdg):
         return xdg
 
@@ -280,6 +277,7 @@ def expand_path(s):
 
 def unescape_glob(string):
     """Unescape glob pattern in `string`."""
+
     def unescape(s):
         for pattern in "*[]!?":
             s = s.replace(r"\{0}".format(pattern), pattern)
@@ -386,7 +384,7 @@ def link_or_copy(src, dst):
             # http://bugs.python.org/issue21876
             return
 
-        new_dst = dst + "-temp-%04X" % (random.randint(1, 16**4), )
+        new_dst = dst + "-temp-%04X" % (random.randint(1, 16 ** 4),)
         try:
             link_or_copy(src, new_dst)
         except BaseException:

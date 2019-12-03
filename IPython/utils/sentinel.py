@@ -15,4 +15,4 @@ class Sentinel(object):
             self.__doc__ = docstring
 
     def __repr__(self):
-        return str(self.module) + '.' + self.name
+        return str(self.module) + "." + self.name

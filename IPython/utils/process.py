@@ -9,10 +9,11 @@ from ._process_common import getoutputerror, get_output_error_code, process_hand
 import os
 import shutil
 import sys
+
 # Frustratingly process.FindCmdError is used in a lot of different tests
 from subprocess import CalledProcessError as FindCmdError
 
-if sys.platform == 'win32':
+if sys.platform == "win32":
     from ._process_win32 import system, getoutput, arg_split, check_pid
 
 # What the actual hell is the cli platform
@@ -46,16 +47,16 @@ def find_cmd(cmd):
 
 def abbrev_cwd():
     """ Return abbreviated version of cwd, e.g. d:mydir """
-    cwd = os.getcwd().replace('\\', '/')
-    drivepart = ''
+    cwd = os.getcwd().replace("\\", "/")
+    drivepart = ""
     tail = cwd
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         if len(cwd) < 4:
             return cwd
         drivepart, tail = os.path.splitdrive(cwd)
 
-    parts = tail.split('/')
+    parts = tail.split("/")
     if len(parts) > 2:
-        tail = '/'.join(parts[-2:])
+        tail = "/".join(parts[-2:])
 
-    return drivepart + (cwd == '/' and '/' or tail)
+    return drivepart + (cwd == "/" and "/" or tail)

@@ -16,10 +16,13 @@ def expect_token(expected, cell, cursor_pos):
         else:
             offset += len(line) + 1
     column = cursor_pos - offset
-    line_with_cursor = '%s|%s' % (line[:column], line[column:])
+    line_with_cursor = "%s|%s" % (line[:column], line[column:])
     nt.assert_equal(
-        token, expected, "Expected %r, got %r in: %r (pos %i)" %
-        (expected, token, line_with_cursor, cursor_pos))
+        token,
+        expected,
+        "Expected %r, got %r in: %r (pos %i)"
+        % (expected, token, line_with_cursor, cursor_pos),
+    )
 
 
 def test_simple():
@@ -30,40 +33,47 @@ def test_simple():
 
 def test_function():
     cell = "foo(a=5, b='10')"
-    expected = 'foo'
+    expected = "foo"
     # up to `foo(|a=`
-    for i in range(cell.find('a=') + 1):
+    for i in range(cell.find("a=") + 1):
         expect_token("foo", cell, i)
     # find foo after `=`
-    for i in [cell.find('=') + 1, cell.rfind('=') + 1]:
+    for i in [cell.find("=") + 1, cell.rfind("=") + 1]:
         expect_token("foo", cell, i)
     # in between `5,|` and `|b=`
-    for i in range(cell.find(','), cell.find('b=')):
+    for i in range(cell.find(","), cell.find("b=")):
         expect_token("foo", cell, i)
 
 
 def test_multiline():
-    cell = '\n'.join(['a = 5', 'b = hello("string", there)'])
-    expected = 'hello'
+    cell = "\n".join(["a = 5", 'b = hello("string", there)'])
+    expected = "hello"
     start = cell.index(expected) + 1
     for i in range(start, start + len(expected)):
         expect_token(expected, cell, i)
-    expected = 'hello'
+    expected = "hello"
     start = cell.index(expected) + 1
     for i in range(start, start + len(expected)):
         expect_token(expected, cell, i)
 
 
 def test_multiline_token():
-    cell = '\n'.join([
-        '"""\n\nxxxxxxxxxx\n\n"""', '5, """', 'docstring', 'multiline token',
-        '""", [', '2, 3, "complicated"]', 'b = hello("string", there)'
-    ])
-    expected = 'hello'
+    cell = "\n".join(
+        [
+            '"""\n\nxxxxxxxxxx\n\n"""',
+            '5, """',
+            "docstring",
+            "multiline token",
+            '""", [',
+            '2, 3, "complicated"]',
+            'b = hello("string", there)',
+        ]
+    )
+    expected = "hello"
     start = cell.index(expected) + 1
     for i in range(start, start + len(expected)):
         expect_token(expected, cell, i)
-    expected = 'hello'
+    expected = "hello"
     start = cell.index(expected) + 1
     for i in range(start, start + len(expected)):
         expect_token(expected, cell, i)
@@ -71,32 +81,32 @@ def test_multiline_token():
 
 def test_nested_call():
     cell = "foo(bar(a=5), b=10)"
-    expected = 'foo'
-    start = cell.index('bar') + 1
+    expected = "foo"
+    start = cell.index("bar") + 1
     for i in range(start, start + 3):
         expect_token(expected, cell, i)
-    expected = 'bar'
-    start = cell.index('a=')
+    expected = "bar"
+    start = cell.index("a=")
     for i in range(start, start + 3):
         expect_token(expected, cell, i)
-    expected = 'foo'
-    start = cell.index(')') + 1
+    expected = "foo"
+    start = cell.index(")") + 1
     for i in range(start, len(cell) - 1):
         expect_token(expected, cell, i)
 
 
 def test_attrs():
     cell = "a = obj.attr.subattr"
-    expected = 'obj'
-    idx = cell.find('obj') + 1
+    expected = "obj"
+    idx = cell.find("obj") + 1
     for i in range(idx, idx + 3):
         expect_token(expected, cell, i)
-    idx = cell.find('.attr') + 2
-    expected = 'obj.attr'
+    idx = cell.find(".attr") + 2
+    expected = "obj.attr"
     for i in range(idx, idx + 4):
         expect_token(expected, cell, i)
-    idx = cell.find('.subattr') + 2
-    expected = 'obj.attr.subattr'
+    idx = cell.find(".subattr") + 2
+    expected = "obj.attr.subattr"
     for i in range(idx, len(cell)):
         expect_token(expected, cell, i)
 

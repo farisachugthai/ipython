@@ -20,8 +20,19 @@ import os
 
 from IPython.utils.ipstruct import Struct
 from pygments.style import Style
-from pygments.token import (Keyword, Name, Comment, String, Error, Text,
-                            Number, Operator, Literal, Token)
+from pygments.token import (
+    Keyword,
+    Name,
+    Comment,
+    String,
+    Error,
+    Text,
+    Number,
+    Operator,
+    Literal,
+    Token,
+)
+
 # TODO:
 # from pygments import highlight
 # from pygments.console import ansiformat
@@ -77,9 +88,9 @@ class TermColors:
 
     This class should be used as a mixin for building color schemes."""
 
-    NoColor = ''  # for color schemes in color-less terminals.
-    Normal = '\033[0m'  # Reset normal coloring
-    _base = '\033[%sm'  # Template for all other colors
+    NoColor = ""  # for color schemes in color-less terminals.
+    Normal = "\033[0m"  # Reset normal coloring
+    _base = "\033[%sm"  # Template for all other colors
 
 
 # Build the actual color table as a set of class attributes:
@@ -101,15 +112,15 @@ class InputTermColors:
 
     This class should be used as a mixin for building color schemes."""
 
-    NoColor = ''  # for color schemes in color-less terminals.
+    NoColor = ""  # for color schemes in color-less terminals.
 
-    if os.name == 'nt' and os.environ.get('TERM', 'dumb') == 'emacs':
+    if os.name == "nt" and os.environ.get("TERM", "dumb") == "emacs":
         # (X)emacs on W32 gets confused with \001 and \002 so we remove them
-        Normal = '\033[0m'  # Reset normal coloring
-        _base = '\033[%sm'  # Template for all other colors
+        Normal = "\033[0m"  # Reset normal coloring
+        _base = "\033[%sm"  # Template for all other colors
     else:
-        Normal = '\001\033[0m\002'  # Reset normal coloring
-        _base = '\001\033[%sm\002'  # Template for all other colors
+        Normal = "\001\033[0m\002"  # Reset normal coloring
+        _base = "\001\033[%sm\002"  # Template for all other colors
 
 
 # Build the actual color table as a set of class attributes:
@@ -119,12 +130,13 @@ make_color_table(InputTermColors)
 class NoColors:
     """This defines all the same names as the colour classes, but maps them to
     empty strings, so it can easily be substituted to turn off colours."""
-    NoColor = ''
-    Normal = ''
+
+    NoColor = ""
+    Normal = ""
 
 
 for name, value in color_templates:
-    setattr(NoColors, name, '')
+    setattr(NoColors, name, "")
 
 
 class ColorScheme:
@@ -184,10 +196,10 @@ class ColorSchemeTable(dict):
 j        """
         # Yo pycharm recommended we add this...does it do anything?
         super().__init__()
-        valid_schemes = ['linux', 'lightbg', 'nocolor', 'neutral']
+        valid_schemes = ["linux", "lightbg", "nocolor", "neutral"]
         self.valid_schemes = valid_schemes
         # create object attributes to be set later
-        self.active_scheme_name = ''
+        self.active_scheme_name = ""
         self.active_colors = None
 
         if scheme_list:
@@ -196,7 +208,7 @@ j        """
             self.scheme_list = valid_schemes
 
         if default_scheme is None:
-            self.active_scheme_name = 'LightBG'
+            self.active_scheme_name = "LightBG"
         else:
             self.active_scheme_name = default_scheme
 
@@ -207,9 +219,11 @@ j        """
         self.scheme_names = list(self.keys())
 
         if self.scheme_names is not None:
-            self.valid_schemes = [s.lower() for s in self.scheme_names if isinstance(s, str)]
+            self.valid_schemes = [
+                s.lower() for s in self.scheme_names if isinstance(s, str)
+            ]
         else:
-            self.scheme_names = ['linux', 'lightbg', 'nocolor', 'iforgetrn']
+            self.scheme_names = ["linux", "lightbg", "nocolor", "iforgetrn"]
 
     def copy(self):
         """Return full copy of object"""
@@ -226,7 +240,7 @@ j        """
         #     'ColorSchemeTable only accepts ColorScheme instances')
         if isinstance(new_scheme, dict):
             # let's just do the work ourselves stop raising errors
-            new_scheme = ColorScheme('tmp_name', new_scheme)
+            new_scheme = ColorScheme("tmp_name", new_scheme)
         if isinstance(new_scheme, str):
             # raise TypeError('We got a str when expecting a ColorScheme object')
             if new_scheme in self.valid_schemes:
@@ -244,7 +258,7 @@ j        """
 
         case sensitive now ignored.
         """
-        raise NotImplementedError('fuck it')
+        raise NotImplementedError("fuck it")
         # try:
         # scheme_idx = self.valid_schemes.index(scheme_test)
         # Seriously why the fuck does this use THIS many different variables
@@ -288,24 +302,27 @@ class DefaultDark(defaultdict):
 
     def __init__(self):
         super(DefaultDark, self).__init__()
-        self.color_scheme = ColorScheme('default_dark', colordict={
-            'base00': '#181818',
-            'base01': '#282828',
-            'base02': '#383838',
-            'base03': '#585858',
-            'base04': '#b8b8b8',
-            'base05': '#d8d8d8',
-            'base06': '#e8e8e8',
-            'base07': '#f8f8f8',
-            'base08': '#ab4642',
-            'base09': '#dc9656',
-            'base0A': '#f7ca88',
-            'base0B': '#a1b56c',
-            'base0C': '#86c1b9',
-            'base0D': '#7cafc2',
-            'base0E': '#ba8baf',
-            'base0F': '#a16946',
-        })
+        self.color_scheme = ColorScheme(
+            "default_dark",
+            colordict={
+                "base00": "#181818",
+                "base01": "#282828",
+                "base02": "#383838",
+                "base03": "#585858",
+                "base04": "#b8b8b8",
+                "base05": "#d8d8d8",
+                "base06": "#e8e8e8",
+                "base07": "#f8f8f8",
+                "base08": "#ab4642",
+                "base09": "#dc9656",
+                "base0A": "#f7ca88",
+                "base0B": "#a1b56c",
+                "base0C": "#86c1b9",
+                "base0D": "#7cafc2",
+                "base0E": "#ba8baf",
+                "base0F": "#a16946",
+            },
+        )
 
     @property
     def colors(self):
@@ -315,6 +332,7 @@ class DefaultDark(defaultdict):
 
 class Base16Style(defaultdict):
     """I feel like I did this really wrong."""
+
     # See http://pygments.org/docs/tokens/ for a description of the different
     # pygments tokens.
     background_color = "base00"
@@ -323,7 +341,7 @@ class Base16Style(defaultdict):
 
     styles = {
         Text: "base05",
-        Error: '%s bold' % "base08",
+        Error: "%s bold" % "base08",
         Comment: "base03",
         Keyword: "base0E",
         Keyword.Constant: "base09",
@@ -348,10 +366,10 @@ class Base16Style(defaultdict):
 
     overrides = {
         Token.Prompt: "base0B",
-        Token.PromptNum: '%s bold' % "base0B",
+        Token.PromptNum: "%s bold" % "base0B",
         Token.OutPrompt: "base08",
-        Token.OutPromptNum: '%s bold' % "base08",
-        Token.Menu.Completions.Completion: 'bg:%s %s' % ("base01", "base04"),
-        Token.Menu.Completions.Completion.Current: 'bg:%s %s' % ("base04", "base01"),
-        Token.MatchingBracket.Other: 'bg:%s %s' % ("base03", "base00")
+        Token.OutPromptNum: "%s bold" % "base08",
+        Token.Menu.Completions.Completion: "bg:%s %s" % ("base01", "base04"),
+        Token.Menu.Completions.Completion.Current: "bg:%s %s" % ("base04", "base01"),
+        Token.MatchingBracket.Other: "bg:%s %s" % ("base03", "base00"),
     }

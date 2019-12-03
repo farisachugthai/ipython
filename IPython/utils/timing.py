@@ -44,8 +44,8 @@ except ImportError:
         """
         return time.perf_counter(), 0.0
 
-else:
 
+else:
 
     def clocku():
         """clocku() -> floating point number
@@ -96,7 +96,7 @@ def timings_out(reps, func, *args, **kw):
     documentation for the time module for more details."""
 
     reps = int(reps)
-    assert reps >= 1, 'reps must be >= 1'
+    assert reps >= 1, "reps must be >= 1"
     if reps == 1:
         start = clock()
         out = func(*args, **kw)

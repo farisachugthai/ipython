@@ -35,15 +35,16 @@ from IPython.utils.encoding import DEFAULT_ENCODING
 def _find_cmd(cmd):
     """Find the full path to a command using which."""
 
-    path = sp.Popen(['/usr/bin/env', 'which', cmd],
-                    stdout=sp.PIPE,
-                    stderr=sp.PIPE).communicate()[0]
+    path = sp.Popen(
+        ["/usr/bin/env", "which", cmd], stdout=sp.PIPE, stderr=sp.PIPE
+    ).communicate()[0]
     return py3compat.decode(path)
 
 
 class ProcessHandler(object):
     """Execute subprocesses under the control of pexpect.
     """
+
     # Timeout in seconds to wait on each reading of the subprocess' output.
     # This should not be set too low to avoid cpu overusage from our side,
     # since we read in a loop whose period is controlled by this timeout.
@@ -62,20 +63,22 @@ class ProcessHandler(object):
     @property
     def sh(self):
         if self._sh is None:
-            self._sh = pexpect.which('sh')
+            self._sh = pexpect.which("sh")
             if self._sh is None:
                 raise OSError('"sh" shell not found')
 
         return self._sh
 
-    def __init__(self, logfile=None, read_timeout=None,
-                 terminate_timeout=None):
+    def __init__(self, logfile=None, read_timeout=None, terminate_timeout=None):
         """Arguments are used for pexpect calls."""
-        self.read_timeout = (ProcessHandler.read_timeout
-                             if read_timeout is None else read_timeout)
-        self.terminate_timeout = (ProcessHandler.terminate_timeout
-                                  if terminate_timeout is None else
-                                  terminate_timeout)
+        self.read_timeout = (
+            ProcessHandler.read_timeout if read_timeout is None else read_timeout
+        )
+        self.terminate_timeout = (
+            ProcessHandler.terminate_timeout
+            if terminate_timeout is None
+            else terminate_timeout
+        )
         self.logfile = sys.stdout if logfile is None else logfile
 
     def getoutput(self, cmd):
@@ -95,9 +98,9 @@ class ProcessHandler(object):
         correct order as would be seen if running the command in a terminal).
         """
         try:
-            return pexpect.run(self.sh, args=['-c', cmd]).replace('\r\n', '\n')
+            return pexpect.run(self.sh, args=["-c", cmd]).replace("\r\n", "\n")
         except KeyboardInterrupt:
-            print('^C', file=sys.stderr, end='')
+            print("^C", file=sys.stderr, end="")
 
     def getoutput_pexpect(self, cmd):
         """Run a command and return its stdout/stderr as a string.
@@ -116,9 +119,9 @@ class ProcessHandler(object):
         correct order as would be seen if running the command in a terminal).
         """
         try:
-            return pexpect.run(self.sh, args=['-c', cmd]).replace('\r\n', '\n')
+            return pexpect.run(self.sh, args=["-c", cmd]).replace("\r\n", "\n")
         except KeyboardInterrupt:
-            print('^C', file=sys.stderr, end='')
+            print("^C", file=sys.stderr, end="")
 
     def system(self, cmd):
         """Execute a command in a subshell.
@@ -152,18 +155,17 @@ class ProcessHandler(object):
             # can set pexpect's search window to be tiny and it won't matter.
             # We only search for the 'patterns' timeout or EOF, which aren't in
             # the text itself.
-            #child = pexpect.spawn(pcmd, searchwindowsize=1)
-            if hasattr(pexpect, 'spawnb'):
-                child = pexpect.spawnb(self.sh, args=['-c', cmd])  # Pexpect-U
+            # child = pexpect.spawn(pcmd, searchwindowsize=1)
+            if hasattr(pexpect, "spawnb"):
+                child = pexpect.spawnb(self.sh, args=["-c", cmd])  # Pexpect-U
             else:
-                child = pexpect.spawn(self.sh, args=['-c',
-                                                     cmd])  # Vanilla Pexpect
+                child = pexpect.spawn(self.sh, args=["-c", cmd])  # Vanilla Pexpect
             flush = sys.stdout.flush
             while True:
                 # res is the index of the pattern that caused the match, so we
                 # know whether we've finished (if we matched EOF) or not
                 res_idx = child.expect_list(patterns, self.read_timeout)
-                print(child.before[out_size:].decode(enc, 'replace'), end='')
+                print(child.before[out_size:].decode(enc, "replace"), end="")
                 flush()
                 if res_idx == EOF_index:
                     break
@@ -179,7 +181,7 @@ class ProcessHandler(object):
             try:
                 out_size = len(child.before)
                 child.expect_list(patterns, self.terminate_timeout)
-                print(child.before[out_size:].decode(enc, 'replace'), end='')
+                print(child.before[out_size:].decode(enc, "replace"), end="")
                 sys.stdout.flush()
             except KeyboardInterrupt:
                 # Impatient users tend to type it multiple times

@@ -9,7 +9,7 @@ from keyword import iskeyword
 
 import tokenize
 
-Token = namedtuple('Token', ['token', 'text', 'start', 'end', 'line'])
+Token = namedtuple("Token", ["token", "text", "start", "end", "line"])
 
 
 def generate_tokens(readline):
@@ -59,7 +59,7 @@ def line_at_cursor(cell, cursor_pos=0):
     lines = cell.splitlines(True)
     for line in lines:
         next_offset = offset + len(line)
-        if not line.endswith('\n'):
+        if not line.endswith("\n"):
             # If the last line doesn't have a trailing newline, treat it as if
             # it does so that the cursor at the end of the line still counts
             # as being on that line.
@@ -127,19 +127,23 @@ def token_at_cursor(cell, cursor_pos=0):
             break
 
         if tok.token == tokenize.NAME and not iskeyword(tok.text):
-            if names and tokens and tokens[-1].token == tokenize.OP and tokens[
-                    -1].text == '.':
+            if (
+                names
+                and tokens
+                and tokens[-1].token == tokenize.OP
+                and tokens[-1].text == "."
+            ):
                 names[-1] = "%s.%s" % (names[-1], tok.text)
             else:
                 names.append(tok.text)
         elif tok.token == tokenize.OP:
-            if tok.text == '=' and names:
+            if tok.text == "=" and names:
                 # don't inspect the lhs of an assignment
                 names.pop(-1)
-            if tok.text == '(' and names:
+            if tok.text == "(" and names:
                 # if we are inside a function call, inspect the function
                 call_names.append(names[-1])
-            elif tok.text == ')' and call_names:
+            elif tok.text == ")" and call_names:
                 call_names.pop(-1)
 
         tokens.append(tok)
@@ -153,4 +157,4 @@ def token_at_cursor(cell, cursor_pos=0):
     elif names:
         return names[-1]
     else:
-        return ''
+        return ""

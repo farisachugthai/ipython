@@ -13,7 +13,7 @@ cookie_re = re.compile(r"coding[:=]\s*([-\w.]+)", re.UNICODE)
 cookie_comment_re = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)", re.UNICODE)
 
 
-def source_to_unicode(txt, errors='replace', skip_encoding_cookie=True):
+def source_to_unicode(txt, errors="replace", skip_encoding_cookie=True):
     """Converts a bytes string with python source code to unicode.
 
     Unicode strings are passed through unchanged. Byte strings are checked
@@ -32,9 +32,8 @@ def source_to_unicode(txt, errors='replace', skip_encoding_cookie=True):
     except SyntaxError:
         encoding = "ascii"
     buffer.seek(0)
-    with TextIOWrapper(buffer, encoding, errors=errors,
-                       line_buffering=True) as text:
-        text.mode = 'r'
+    with TextIOWrapper(buffer, encoding, errors=errors, line_buffering=True) as text:
+        text.mode = "r"
         if skip_encoding_cookie:
             return u"".join(strip_encoding_cookie(text))
         else:
@@ -83,7 +82,7 @@ def read_py_file(filename, skip_encoding_cookie=True):
             return f.read()
 
 
-def read_py_url(url, errors='replace', skip_encoding_cookie=True):
+def read_py_url(url, errors="replace", skip_encoding_cookie=True):
     """Read a Python file from a URL, using the encoding declared inside the file.
 
     Parameters
@@ -104,6 +103,7 @@ def read_py_url(url, errors='replace', skip_encoding_cookie=True):
     """
     # Deferred import for faster start
     from urllib.request import urlopen
+
     response = urlopen(url)
     buffer = BytesIO(response.read())
     return source_to_unicode(buffer, errors, skip_encoding_cookie)
