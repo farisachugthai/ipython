@@ -2,6 +2,7 @@ import logging
 import os
 
 from .ipython_directive import IPythonDirective
+
 # Simple smoke test, needs to be converted to a proper automatic test.
 
 
@@ -163,9 +164,9 @@ array([[ inf,  nan,   2.,   3.],
     # options = dict(suppress=True)  # dbg
     options = {}
     for example in examples:
-        content = example.split('\n')
+        content = example.split("\n")
         IPythonDirective(
-            'debug',
+            "debug",
             arguments=None,
             options=options,
             content=content,
@@ -178,9 +179,9 @@ array([[ inf,  nan,   2.,   3.],
 
 
 # Run test suite as a script
-if __name__ == '__main__':
-    if not os.path.isdir('_static'):
-        os.mkdir('_static')
+if __name__ == "__main__":
+    if not os.path.isdir("_static"):
+        os.mkdir("_static")
     test()
     # still a terrible log message
-    logging.info('All OK? Check figures in _static/')
+    logging.info("All OK? Check figures in _static/")

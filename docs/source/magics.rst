@@ -177,7 +177,7 @@ directly on variables. For example, after doing ``import os``, you can use
 
 
 Command line completion
-+++++++++++++++++++++++
+-----------------------
 
 At any time, hitting :kbd:`TAB` will complete any available python commands or
 variable names, and show you a list of the possible completions if
@@ -186,7 +186,7 @@ current directory if no python names match what you've typed so far.
 
 
 Search command history
-++++++++++++++++++++++
+----------------------
 
 IPython provides two ways for searching through previous input and thus
 reduce the need for repetitive typing:
@@ -203,7 +203,7 @@ time you restart it. By default, the history file is named
 :file:`.ipython/profile_{name}/history.sqlite`.
 
 Autoindent
-++++++++++
+----------
 
 Starting with 5.0, IPython uses `prompt_toolkit` in place of :mod:`readline`,
 it thus can recognize lines ending in ':' and indent the next line,

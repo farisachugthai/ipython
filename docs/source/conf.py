@@ -20,10 +20,14 @@ import os
 from pathlib import Path
 import shutil
 import sys
+from typing import Dict, Any
 
+from IPython.sphinxext import configtraits, ipython_directive, magics  # noqa F401
+from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 import sphinx
 from sphinx.util.docfields import GroupedField
 from sphinx.util.logging import getLogger
+from sphinx.application import Sphinx
 
 # import numpydoc  # noqa F401
 try:
@@ -42,7 +46,6 @@ sphinxext = ipython_package.joinpath('sphinxext')
 if sphinxext.is_dir():
     sys.path.append(sphinxext.__fspath__())
 
-
 # http://read-the-docs.readthedocs.io/en/latest/faq.html
 ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -51,6 +54,7 @@ if ON_RTD:
 
 else:
     import sphinx_rtd_theme
+
     html_theme = "sphinx_rtd_theme"
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
@@ -81,30 +85,19 @@ extensions = [
     'configtraits',
 ]
 
-# lol who wants to see a really shoddy way of figuring something out
-try:
-    import IPython
-except BaseException:
-    import sphinx.ext.autoapi
-else:
+extensions.extend([
+    'IPython.sphinxext.ipython_directive',
+])
 
-    import IPython  # noqa F401
-    from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
-
-    extensions.extend([
-        'IPython.sphinxext.ipython_directive',
-    ])
-
-    autoapi_type = 'python'
-    autoapi_dirs = ['../../IPython']
-    autoapi_generate_api_docs = False
+# autoapi_type = 'python'
+# autoapi_dirs = ['../../IPython']
+# autoapi_generate_api_docs = False
 
 if shutil.which('dot'):
     extensions.append('sphinx.ext.graphviz')
 
 if PlotDirective is not None:
     extensions.append('matplotlib.sphinxext.plot_directive')
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -173,10 +166,9 @@ release = "%s" % iprelease['version']
 # Just the X.Y.Z part, no '-dev'
 version = iprelease['version'].split('-', 1)[0]
 
-
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-#today = ''
+# today = ''
 # Else, today_fmt is used as the format for a strftime call.
 today_fmt = '%B %d, %Y'
 
@@ -187,9 +179,8 @@ unused_docs = ['api/generated/IPython', 'api/generated/IPython.core']
 # relative to the source/ directory.
 exclude_patterns = ['**test**']
 
-
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+# add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
@@ -197,7 +188,7 @@ add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+# show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -220,11 +211,11 @@ highlight_language = 'ipython'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+# html_title = None
 
 # The name of an image file (within the static path) to place at the top of
 # the sidebar.
-#html_logo = None
+# html_logo = None
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -239,37 +230,36 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+# html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+# html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
 html_additional_pages = {
-    'interactive/htmlnotebook': 'notebook_redirect.html',
-    'interactive/notebook': 'notebook_redirect.html',
-    'interactive/nbconvert': 'notebook_redirect.html',
+    'interactive/htmlnotebook' : 'notebook_redirect.html',
+    'interactive/notebook'     : 'notebook_redirect.html',
+    'interactive/nbconvert'    : 'notebook_redirect.html',
     'interactive/public_server': 'notebook_redirect.html',
 }
 
 # If false, no module index is generated.
-#html_use_modindex = True
+# html_use_modindex = True
 
 # If true, the reST sources are included in the HTML build as _sources/<name>.
-#html_copy_source = True
+# html_copy_source = True
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-#html_use_opensearch = ''
+# html_use_opensearch = ''
 
 # If nonempty, this is the file name suffix for HTML files (e.g. ".xhtml").
-#html_file_suffix = ''
+# html_file_suffix = ''
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'ipythondoc'
-
 
 # Options for LaTeX output
 # ------------------------
@@ -293,21 +283,20 @@ latex_font_size = '11pt'
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+# latex_logo = None
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
-#latex_use_parts = False
+# latex_use_parts = False
 
 # Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
+# latex_preamble = ''
 
 # Documents to append as an appendix to all manuals.
-#latex_appendices = []
+# latex_appendices = []
 
 # If false, no module index is generated.
 latex_use_modindex = True
-
 
 # Options for texinfo output
 # --------------------------
@@ -329,7 +318,6 @@ manpages_url = 'https://linux.die.net/man/'
 
 man_show_urls = True
 
-
 # -- Extension configuration -------------------------------------------------
 
 # -- Numpydoc ----------------------------------------------
@@ -341,18 +329,18 @@ numpydoc_class_members_toctree = False
 
 # -- Options for intersphinx extension ---------------------------------------
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
-                       'rpy2': ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
-                       'jupyterclient': ('https://jupyter-client.readthedocs.io/en/latest/', None),
-                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/latest/', None),
-                       'jupyter': ('https://jupyter.readthedocs.io/en/latest/', None),
-                       'jedi': ('https://jedi.readthedocs.io/en/latest/', None),
-                       'traitlets': ('https://traitlets.readthedocs.io/en/latest/', None),
-                       'ipykernel': ('https://ipykernel.readthedocs.io/en/latest/', None),
+intersphinx_mapping = {'python'        : ('https://docs.python.org/3/', None),
+                       'rpy2'          : ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
+                       'jupyterclient' : ('https://jupyter-client.readthedocs.io/en/latest/', None),
+                       'ipyparallel'   : ('https://ipyparallel.readthedocs.io/en/latest/', None),
+                       'jupyter'       : ('https://jupyter.readthedocs.io/en/latest/', None),
+                       'jedi'          : ('https://jedi.readthedocs.io/en/latest/', None),
+                       'traitlets'     : ('https://traitlets.readthedocs.io/en/latest/', None),
+                       'ipykernel'     : ('https://ipykernel.readthedocs.io/en/latest/', None),
                        'prompt_toolkit': ('https://python-prompt-toolkit.readthedocs.io/en/stable/', None),
-                       'ipywidgets': ('https://ipywidgets.readthedocs.io/en/stable/', None),
-                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/stable/', None),
-                       'pip': ('https://pip.pypa.io/en/stable/', None)
+                       'ipywidgets'    : ('https://ipywidgets.readthedocs.io/en/stable/', None),
+                       'ipyparallel'   : ('https://ipyparallel.readthedocs.io/en/stable/', None),
+                       'pip'           : ('https://pip.pypa.io/en/stable/', None)
                        }
 
 # -- IPython directive -------------------------------------------------------
@@ -378,19 +366,18 @@ if sphinx.version_info < (1, 8):
     autodoc_default_flags = ['members', 'undoc-members']
 else:
     autodoc_default_options = {
-        'member-order': 'bysource',
-        'undoc-members': True,
+        'member-order'    : 'bysource',
+        'undoc-members'   : True,
         'show-inheritance': False,
         # might need to comment the below out
         # 'noindex': True,
     }
 
 apidoc_options = {
-    'members': False,
-    'undoc-members': True,
+    'members'         : False,
+    'undoc-members'   : True,
     'show-inheritance': False,
 }
-
 
 autodoc_inherit_docstrings = False
 # autosummary_generate = True
@@ -402,7 +389,6 @@ autodoc_member_order = u'bysource'
 
 autodoc_docstring_signature = True
 
-
 # Cleanup
 # -------
 # delete release info to avoid pickling errors from sphinx
@@ -410,10 +396,12 @@ autodoc_docstring_signature = True
 del iprelease
 
 
-def setup(app):
+def setup(app: "Sphinx") -> Dict[str, Any]:
     """Add in the Sphinx directive for `confval`.
 
     Also define the IPyLexer's while we're here.
+
+    12/03/19: Gonna add trait as a role.
     """
     app.add_object_type('confval', 'confval',
                         objname='configuration value',
@@ -425,3 +413,5 @@ def setup(app):
     fdesc = GroupedField('parameter', label='Parameters',
                          names=['param'], can_collapse=True)
     app.add_object_type('directive', 'dir', 'pair: %s; directive')
+
+    app.add_role

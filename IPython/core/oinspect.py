@@ -35,15 +35,14 @@ from IPython.utils import openpy, PyColorize
 from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
-from IPython.utils.wildcard import list_namespace, typestr2type
 
 from pygments import highlight
-from IPython.lib.lexers import IPyLexer as PythonLexer
+from IPython.lib.lexers import IPyLexer
 from pygments.formatters import HtmlFormatter
 
 
 def pylight(code):
-    return highlight(code, PythonLexer(), HtmlFormatter(noclasses=True))
+    return highlight(code, IPyLexer(), HtmlFormatter(noclasses=True))
 
 
 # builtin docstrings to ignore
@@ -842,17 +841,17 @@ class Inspector:
         - show_all(False): show all names, including those starting with
           underscores.
 
-        - list_types(False): list all available object types for object matching.
-
         """
         if ns_search is None:
             ns_search = []
         type_pattern = "all"
 
         # list all object types
-        if list_types:
-            page.page("\n".join(sorted(typestr2type)))
-            return
+        # if list_types:
+        # - list_types(False): list all available object types for object matching.
+        # temporarily not recognizing that option like
+        # page.page("\n".join(sorted(typestr2type)))
+        # return
 
         cmds = pattern.split()
         len_cmds = len(cmds)
@@ -880,10 +879,10 @@ class Inspector:
             if id(ns) in namespaces_seen:
                 continue
             namespaces_seen.add(id(ns))
-            tmp_res = list_namespace(
-                ns, type_pattern, filter, ignore_case=ignore_case, show_all=show_all
-            )
-            search_result.update(tmp_res)
+            # tmp_res = list_namespace(
+            #     ns, type_pattern, filter, ignore_case=ignore_case, show_all=show_all
+            # )
+            # search_result.update(tmp_res)
 
         page.page("\n".join(sorted(search_result)))
 

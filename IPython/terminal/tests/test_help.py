@@ -23,6 +23,7 @@ def test_profile_create_help():
 
 
 def test_locate_help():
+    """12/03/2019: All pass but this one. Unsure what the error message is even saying."""
     tt.help_all_output_test("locate")
 
 

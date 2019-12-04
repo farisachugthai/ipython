@@ -23,6 +23,7 @@ import sys
 import traceback
 from warnings import warn
 
+from IPython.core.completer import IPCompleter
 from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
 from IPython.core.profiledir import ProfileDir, ProfileDirError
 from IPython.utils.terminal import toggle_set_term_title, set_term_title, restore_term_title
@@ -30,6 +31,8 @@ from IPython.utils.process import abbrev_cwd
 from traitlets import (Bool, Unicode, Dict, Integer, observe, Instance, Type,
                        default, Enum, Union, Any, validate)
 
+# from prompt_toolkit.completion.base import ThreadedCompleter, merge_completers
+# from prompt_toolkit.completion.fuzzy_completer import FuzzyCompleter
 from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
 from prompt_toolkit.filters import (HasFocus, Condition, IsDone)
 from prompt_toolkit.formatted_text import PygmentsTokens
@@ -146,8 +149,6 @@ class TerminalInteractiveShell(InteractiveShell):
     pt_app = Any(help='Prompt toolkit PromptSession',
                       allow_none=True).tag(config=True)
 
-    debugger_history = None
-    rl_next_input = None
     simple_prompt = Bool(_use_simple_prompt,
                          help="""Use `raw_input` for the REPL, without
 completion and prompt colors.
@@ -192,9 +193,9 @@ environment variable is set, or the current terminal is not a tty.
     # We don't load the list of styles for the help string, because loading
     # Pygments plugins takes time and can cause unexpected errors.
     highlighting_style: Union = Union([Unicode('legacy'), Type(klass=Style)],
-                               help="""The name or class of a Pygments style to use for syntax
+                                      help="""The name or class of a Pygments style to use for syntax
         highlighting. To see available styles, run `pygmentize -L styles`."""
-                               ).tag(config=True)
+                                      ).tag(config=True)
 
     @validate('editing_mode')
     def _validate_editing_mode(self, proposal):
@@ -328,10 +329,11 @@ environment variable is set, or the current terminal is not a tty.
         help="Display the current vi mode (when using vi editing mode)."
     ).tag(config=True)
 
-    completer = Instance(IPythonPTCompleter,
-                         help='Completer for the shell',
-                         allow_none=False
-                         ).tag(config=True)
+    Completer = Any(help='Completer for the shell',
+                         # allow_none=False
+                         # tried setting it to both the string Completer and the
+                         # imported object IPythonPTCompleter and that didn't go well
+                    ).tag(config=True)
 
     @observe('term_title')
     def init_term_title(self, change=None):
@@ -346,6 +348,30 @@ environment variable is set, or the current terminal is not a tty.
         if self.term_title:
             restore_term_title()
 
+    def __init__(self, keep_running=True, rl_next_input=None, *args, **kwargs):
+        """Why is this class built so that every individual method calls it's super?
+
+        Added init_profile_dir because that felt important. It's in the super class.
+
+        Notes
+        -----
+        The super call is totally required.
+
+        """
+        self.init_term_title()
+        self.keep_running = keep_running
+        self.init_profile_dir()
+        self.debugger_history = InMemoryHistory()
+        self.rl_next_input = rl_next_input
+        # Set up keyboard shortcuts
+        # TODO: This should be a configurable
+        self.key_bindings = create_ipython_shortcuts(self)
+
+        # Pre-populate history from IPython's history database
+        self.history = InMemoryHistory()
+        self.init_prompt_toolkit_cli()
+        super().__init__(*args, **kwargs)
+
     def init_display_formatter(self):
         """We don't need to keep making weird ass super calls. Move to init?"""
         super().init_display_formatter()
@@ -353,6 +379,13 @@ environment variable is set, or the current terminal is not a tty.
         self.display_formatter.active_types = ['text/plain']
         # disable `_ipython_display_`
         self.display_formatter.ipython_display_formatter.enabled = False
+
+    def init_completer(self):
+        """Allow the user to choose their own completer."""
+        if self.Completer:
+            return
+        # self.Completer = IPCompleter(shell=self)
+        super().init_completer()
 
     def init_prompt_toolkit_cli(self):
         """The entry point for prompt_toolkit!
@@ -376,11 +409,6 @@ environment variable is set, or the current terminal is not a tty.
             self.prompt_for_code = prompt
             return
 
-        # Set up keyboard shortcuts
-        key_bindings = create_ipython_shortcuts(self)
-
-        # Pre-populate history from IPython's history database
-        history = InMemoryHistory()
         last_cell = u""
         if getattr(self, 'history_manager', None):
             if self.history_manager is not None:
@@ -389,11 +417,13 @@ environment variable is set, or the current terminal is not a tty.
                     # Ignore blank lines and consecutive duplicates
                     cell = cell.rstrip()
                     if cell and (cell != last_cell):
-                        history.append_string(cell)
+                        self.history.append_string(cell)
                         last_cell = cell
 
-        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
+        # TODO: What happens if we don't have a history manager?? init_history something i guess
 
+        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
+        self.completer = self.init_completer()
         self.style = DynamicStyle(lambda: self._style)
 
         editing_mode = getattr(EditingMode, self.editing_mode.upper())
@@ -401,9 +431,9 @@ environment variable is set, or the current terminal is not a tty.
         self.pt_loop = asyncio.new_event_loop()
         self.pt_app = PromptSession(
             editing_mode=editing_mode,
-            key_bindings=key_bindings,
-            history=history,
-            completer=self.completer,
+            key_bindings=self.key_bindings,
+            history=self.history,
+            completer=self.Completer,
             enable_history_search=self.enable_history_search,
             style=self.style,
             include_default_pygments_style=False,
@@ -597,23 +627,6 @@ environment variable is set, or the current terminal is not a tty.
         if os.name == 'posix':
             for cmd in ('clear', 'more', 'less', 'man'):
                 self.alias_manager.soft_define_alias(cmd, cmd)
-
-    def __init__(self, *args, **kwargs):
-        """Why is this class built so that every individual method calls it's super?
-
-        Added init_profile_dir because that felt important. It's in the super class.
-
-        Notes
-        -----
-        The super call is totally required.
-
-        """
-        super().__init__(*args, **kwargs)
-        self.init_prompt_toolkit_cli()
-        self.init_term_title()
-        self.keep_running = True
-        self.init_profile_dir()
-        self.debugger_history = InMemoryHistory()
 
     def ask_exit(self):
         self.keep_running = False
