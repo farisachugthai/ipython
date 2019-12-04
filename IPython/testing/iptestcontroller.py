@@ -25,9 +25,9 @@ from IPython.utils.py3compat import decode
 from IPython.utils.sysinfo import get_sys_info
 from IPython.utils.tempdir import TemporaryDirectory
 
-from .iptest import StreamCapturer, have
-from .iptest import test_group_names as py_test_group_names
-from .iptest import test_sections
+from IPython.testing.iptest import StreamCapturer, have
+from IPython.testing.iptest import test_group_names as py_test_group_names
+from IPython.testing.iptest import test_sections
 
 
 class TestController:

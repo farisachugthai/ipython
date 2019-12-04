@@ -1589,6 +1589,14 @@ class AutoFormattedTB(FormattedTB):
         Idk if it's defined in a superclass or something but temporarily I'm
         explicitly defining it here so I can keep track of it.
 
+        I think I found a replacement but I'm not sure. traceback has a function
+        called format_list which returns a list of str. Unpack it and we're good?
+
+    Attributes
+    -----------
+    pdb
+        Getting errors because the tests expect a pdb attribute on this class.
+
     """
 
     def __init__(

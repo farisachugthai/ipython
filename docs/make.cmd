@@ -7,7 +7,7 @@ SET SPHINXOPTS=
 SET SPHINXBUILD=sphinx-build
 SET SRCDIR=source
 SET PYTHON=python
-SET ALLSPHINXOPTS=-d build\doctrees -D latex_paper_size=%PAPER% %SPHINXOPTS% %SRCDIR%
+SET ALLSPHINXOPTS=-d build\doctrees %SPHINXOPTS% %SRCDIR%
 
 FOR %%X IN (%SPHINXBUILD%.exe) DO SET P=%%~$PATH:X
 
@@ -58,7 +58,6 @@ ECHO    html_noapi  same as above, without the time consuming API docs
 ECHO    jsapi       to make standalone HTML files for the Javascript API
 ECHO    pickle      to make pickle files (usable by e.g. sphinx-web)
 ECHO    htmlhelp    to make HTML files and a HTML help project
-ECHO    latex       to make LaTeX files, you can set PAPER=a4 or PAPER=letter
 ECHO    changes     to make an overview over all changed/added/deprecated items
 ECHO    linkcheck   to check all external links for integrity
 GOTO END

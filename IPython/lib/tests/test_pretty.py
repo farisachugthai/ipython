@@ -143,7 +143,7 @@ def test_sets():
     ]
     for obj, expected_output in zip(objects, expected):
         got_output = pretty.pretty(obj)
-        yield nt.assert_equal, got_output, expected_output
+        return nt.assert_equal, got_output, expected_output
 
 
 @skip_without('xxlimited')

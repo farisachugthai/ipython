@@ -25,7 +25,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 
 # IPython's own
-from traitlets.config import Configurable
+from traitlets.config import Configurable, Unicode
 from IPython.core import page
 from IPython.lib.lexers import IPyLexer
 from IPython.utils import openpy, PyColorize
@@ -223,7 +223,7 @@ def _mime_format(text, formatter=None):
 
 
 class Inspector(Configurable):
-    """Whew. Wth?
+    """Whew.
 
     Parameters
     ----------
@@ -248,7 +248,7 @@ class Inspector(Configurable):
         *args,
         **kwargs,
     ):
-        super().__init__()
+        super().__init__(*args, **kwargs)
         # All Colorable does is
         default_style = Unicode("LightBG").tag(config=True)
         # So let's just add that ourselves
@@ -257,14 +257,8 @@ class Inspector(Configurable):
         # self.format = self.parser.format
         self.str_detail_level = str_detail_level
 
-        # no idea if i set these 3 classes right but oh well
-        self.color_scheme = ColorSchemeTable()
-        self.Colors = TermColors
-        self.set_active_scheme = self.color_scheme.set_active_scheme
-
         self.parent = parent
         self.config = config
-        super().__init__()
 
     def _getdef(self, obj, oname=""):
         """Return the call signature for any callable object.
@@ -287,12 +281,15 @@ class Inspector(Configurable):
             self.color_table.active_colors.normal,
         )
 
-    def set_active_scheme(self, scheme):
+    def set_active_scheme(self, scheme=None):
         if scheme is not None:
-            self.color_table.set_active_scheme(scheme)
-            self.parser.color_table.set_active_scheme(scheme)
+            if getattr(self, 'color_table', None):
+                self.color_table.set_active_scheme(scheme)
+            else:
+                self.log('{} missing attribute "color_table"'.format(self.__class__.__name__))
+            # self.parser.color_table.set_active_scheme(scheme)
 
-    def noinfo(self, msg, oname):
+    def noinfo(self, msg, oname=None):
         """Generic message when no information is found."""
         print("No %s found" % msg, end=" ")
         if oname:
@@ -356,6 +353,7 @@ class Inspector(Configurable):
 
         In [6]: %pdoc obj2
         No documentation found for obj2
+
         """
         head = self.__head  # For convenience
         lines = []
@@ -586,6 +584,7 @@ class Inspector(Configurable):
         - oname: name of the variable pointing to the object.
 
         - formatter: callable (optional)
+
               A special formatter for docstrings.
 
               The formatter is a callable that takes a string as an input
@@ -599,6 +598,10 @@ class Inspector(Configurable):
           precomputed already.
 
         - detail_level: if set to 1, more information is given.
+
+        Hold on so why isn't detail_level a boolean???
+        Dude I've wondered what it was for so long.
+
         """
         info = self._get_info(obj, oname, formatter, info, detail_level)
         if not enable_html_pager:
@@ -627,7 +630,6 @@ class Inspector(Configurable):
         An object info dict with known fields from `info_fields`.
 
         """
-
         if info is None:
             ismagic = False
             isalias = False

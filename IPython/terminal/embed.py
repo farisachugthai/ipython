@@ -12,7 +12,8 @@ from IPython.core import ultratb, compilerop
 from IPython.core import magic_arguments
 from IPython.core.error import KillEmbedded
 from IPython.core.magic import Magics, magics_class, line_magic
-from IPython.core.interactiveshell import DummyMod, InteractiveShell
+from IPython.core.interactiveshell import InteractiveShell
+from core.interactiveshell import DummyMod
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 from IPython.utils.utils_io import ask_yes_no
 

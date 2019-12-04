@@ -71,7 +71,6 @@ Generally.
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
-import logging
 import shlex
 import subprocess
 import sys
@@ -157,7 +156,7 @@ class CommandChainDispatcher:
         """
         self.chain = chain or []
 
-    def __call__(self, *args, **kw):
+    def __call__(self, args=None, kw=None):
         """Command chain is called just like normal func.
 
         This will call all funcs in chain with the same args as were given to
@@ -198,17 +197,17 @@ def shutdown_hook(self):
 
     Typically, shutdown hooks should raise TryNext so all shutdown ops are done
     """
-    logging.debug("default shutdown hook ok")
+    self.log("default shutdown hook ok")
     return
 
 
-def late_startup_hook(self):
+def late_startup_hook(self, *args, **kwargs):
     """Executed after ipython has been constructed and configured."""
-    logging.debug("default startup hook ok")
+    self.log("default startup hook ok")
     return
 
 
-def show_in_pager(self, data, start, screen_lines):
+def show_in_pager(self, *, data=None, start=None, screen_lines=None):
     """Run a string through the pager.
 
     Idk what these parameters are though.

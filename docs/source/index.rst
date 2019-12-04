@@ -169,8 +169,17 @@ done some work in the classic Python REPL.
    inputtransforms
    callbacks
    extensions
-   sphinxext/index
    reference
+
+
+.. toctree::
+   :caption: Sphinx Extensions
+
+   sphinxext/ipython_sphinx_directive
+   sphinxext/doctest_handlers
+   sphinxext/lexer
+   sphinxext/developers_notes
+
 
 
 Developer's guide for third party tools and libraries
@@ -203,6 +212,9 @@ Developer's guide for third party tools and libraries
    api/index
    options/index
 
+
+What's New In IPython and About Us
+==================================
 
 .. toctree::
    :maxdepth: 2

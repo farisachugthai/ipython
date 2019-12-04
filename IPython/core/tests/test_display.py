@@ -11,7 +11,7 @@ import nose.tools as nt
 
 from IPython.core import display
 from IPython.core.getipython import get_ipython
-from IPython.utils.utils_io import capture_output
+from IPython.utils.capture import capture_output
 from IPython.utils.tempdir import NamedFileInTemporaryDirectory
 from IPython import paths as ipath
 from IPython.testing.tools import AssertPrints, AssertNotPrints
@@ -184,8 +184,7 @@ def test_set_matplotlib_formats_kwargs():
 
 
 def test_display_available():
-    """
-    Test that display is available without import
+    """Test that display is available without import.
 
     We don't really care if it's in builtin or anything else, but it should
     always be available.
@@ -364,7 +363,7 @@ def test_display_id():
     nt.assert_equal(pub.call_count, 3)
     args, kwargs = pub.call_args_list[0]
     nt.assert_equal(args, ())
-    nt.assert_equal(kwargs, {"data": {"text/plain": repr("x")}, "metadata": {},})
+    nt.assert_equal(kwargs, {"data": {"text/plain": repr("x")}, "metadata": {}, })
     args, kwargs = pub.call_args_list[1]
     nt.assert_equal(args, ())
     nt.assert_equal(
@@ -372,7 +371,7 @@ def test_display_id():
         {
             "data": {"text/plain": repr("y")},
             "metadata": {},
-            "transient": {"display_id": handle.display_id,},
+            "transient": {"display_id": handle.display_id, },
         },
     )
     args, kwargs = pub.call_args_list[2]
@@ -382,7 +381,7 @@ def test_display_id():
         {
             "data": {"text/plain": repr("z")},
             "metadata": {},
-            "transient": {"display_id": handle2.display_id,},
+            "transient": {"display_id": handle2.display_id, },
         },
     )
 
@@ -401,7 +400,7 @@ def test_update_display():
         {
             "data": {"text/plain": repr("x")},
             "metadata": {},
-            "transient": {"display_id": "1",},
+            "transient": {"display_id": "1", },
             "update": True,
         },
     )
@@ -412,7 +411,7 @@ def test_update_display():
         {
             "data": {"text/plain": repr("y")},
             "metadata": {},
-            "transient": {"display_id": "2",},
+            "transient": {"display_id": "2", },
             "update": True,
         },
     )
@@ -435,7 +434,7 @@ def test_display_handle():
         {
             "data": {"text/plain": repr("x")},
             "metadata": {},
-            "transient": {"display_id": handle.display_id,},
+            "transient": {"display_id": handle.display_id, },
         },
     )
     args, kwargs = pub.call_args_list[1]
@@ -445,7 +444,7 @@ def test_display_handle():
         {
             "data": {"text/plain": repr("y")},
             "metadata": {},
-            "transient": {"display_id": handle.display_id,},
+            "transient": {"display_id": handle.display_id, },
             "update": True,
         },
     )

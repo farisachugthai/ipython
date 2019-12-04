@@ -41,7 +41,7 @@ from IPython.core.magic import (
 from IPython.core.magics import execution, script, code, ipy_logging, osm
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
-from IPython.utils.utils_io import capture_output
+from IPython.utils.capture import capture_output
 from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
 from IPython.utils.process import find_cmd
 
@@ -819,10 +819,10 @@ class TestEnv(TestCase):
         with mock.patch.dict(
                 os.environ,
                 {
-                    "API_KEY"      : "abc123",
-                    "SECRET_THING" : "ssshhh",
+                    "API_KEY": "abc123",
+                    "SECRET_THING": "ssshhh",
                     "JUPYTER_TOKEN": "",
-                    "VAR"          : "abc",
+                    "VAR": "abc",
                 },
         ):
             env = _ip.magic("env")

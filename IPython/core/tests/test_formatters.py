@@ -19,7 +19,7 @@ from IPython.core.formatters import (
     DisplayFormatter,
     JSONFormatter,
 )
-from IPython.utils.utils_io import capture_output
+from IPython.utils.capture import capture_output
 
 
 class A(object):
@@ -540,6 +540,7 @@ def test_pass_correct_include_exclude():
         """
 
         """
+
         def __init__(self, include=None, exclude=None):
             self.include = include
             self.exclude = exclude
@@ -567,14 +568,14 @@ def test_repr_mime_meta():
             data = {
                 "image/png": "base64-image-data",
             }
-            metadata = {"image/png": {"width": 5, "height": 10,}}
+            metadata = {"image/png": {"width": 5, "height": 10, }}
             return data, metadata
 
     f = get_ipython().display_formatter
     obj = HasReprMimeMeta()
     d, md = f.format(obj)
     nt.assert_equal(sorted(d), ["image/png", "text/plain"])
-    nt.assert_equal(md, {"image/png": {"width": 5, "height": 10,}})
+    nt.assert_equal(md, {"image/png": {"width": 5, "height": 10, }})
 
 
 def test_repr_mime_failure():

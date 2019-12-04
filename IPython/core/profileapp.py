@@ -151,7 +151,11 @@ def list_bundled_profiles():
 
 
 class ProfileLocate(BaseIPythonApplication):
+    """A minimally useful class for printing the path to the profile dir."""
     description = """print the path to an IPython profile dir"""
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileLocate, self).__init__(*args, **kwargs)
 
     def parse_command_line(self, argv=None):
         """
@@ -169,6 +173,9 @@ class ProfileLocate(BaseIPythonApplication):
 
         """
         print(self.profile_dir.location)
+
+    def __repr__(self):
+        return self.start()
 
 
 class ProfileList(Application):
@@ -273,6 +280,9 @@ class ProfileCreate(BaseIPythonApplication):
     description = create_help
     examples = _create_examples
     auto_create = Bool(True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def _log_format_default(self):
         return "[ %(created)f : %(name)s : %(highlevel)s : %(message)s : ]"
@@ -392,6 +402,9 @@ class ProfileApp(Application):
     name = "ipython profile"
     description = profile_help
     examples = _main_examples
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     subcommands = Dict(
         {'create': (ProfileCreate, ProfileCreate.description.splitlines()[0]),

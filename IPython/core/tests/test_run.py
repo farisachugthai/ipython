@@ -29,7 +29,7 @@ from nose import SkipTest
 
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
-from IPython.utils.utils_io import capture_output
+from IPython.utils.capture import capture_output
 from IPython.utils.tempdir import TemporaryDirectory
 from IPython.core import debugger
 

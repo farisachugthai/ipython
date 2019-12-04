@@ -411,7 +411,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             # self.log.debug("IPython not interactive...")
             # we're about to sys.exit don't just mark that as debug
             self.log.error(
-                'IPython not interactive. Here is the last execution; result.\ n{}'
+                'IPython not interactive. Here is the last execution; result.\n{}'
                 .format(self.shell.last_execution_result))
             if not self.shell.last_execution_succeeded:
                 sys.exit(1)

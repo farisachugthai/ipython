@@ -172,7 +172,8 @@ def test_get_home_dir_4():
         del env["HOME"]
     # this should still succeed, but we don't care what the answer is
     home_dir = path.get_home_dir(False)
-    nt.assert_equal(home_dir, os.path.realpath(env["HOME"]))
+    # Of course they raises a KeyError we just deleted it??
+    # nt.assert_equal(home_dir, os.path.realpath(env["HOME"]))
 
 
 # now we just use pathlib. I suppose I should do some error handling

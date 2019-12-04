@@ -11,6 +11,7 @@ recurring bugs we seem to encounter with high-level interaction.
 import asyncio
 import ast
 import os
+import pprint
 import signal
 import shutil
 import sys
@@ -22,12 +23,12 @@ from os.path import join
 
 import nose.tools as nt
 
+from IPython.core.interactiveshell.execution import ExecutionResult
 from IPython.core.getipython import get_ipython
 from IPython.core.error import InputRejected
 
 # This import is never used?
 # from IPython.core.inputtransformer import InputTransformer
-from IPython.core import interactiveshell
 from IPython.testing.decorators import (
     skipif,
     skip_win32,
@@ -43,6 +44,7 @@ from IPython.utils.process import find_cmd
 # This is used by every single test, no point repeating it ad nauseam
 
 ip = get_ipython()
+
 
 # -----------------------------------------------------------------------------
 # Tests
@@ -74,7 +76,7 @@ class InteractiveShellTestCase(unittest.TestCase):
     def test_run_cell_multiline(self):
         """Multi-block, multi-line cells must execute correctly.
         """
-        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1",])
+        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1", ])
         res = ip.run_cell(src)
         self.assertEqual(ip.user_ns["x"], 2)
         self.assertEqual(ip.user_ns["y"], 3)
@@ -145,7 +147,7 @@ class InteractiveShellTestCase(unittest.TestCase):
         ip.run_cell("from __future__ import barry_as_FLUFL")
         try:
             ip.run_cell("prfunc_return_val = 1 <> 2")
-            assert "prfunc_return_val" in ip.user_ns
+            self.assertIn("prfunc_return_val", ip.user_ns)
         finally:
             # Reset compiler flags so we don't mess up other tests.
             ip.compile.reset_compiler_flags()
@@ -204,13 +206,13 @@ class InteractiveShellTestCase(unittest.TestCase):
         myvars = {"a": object(), "b": object(), "c": object()}
         ip.push(myvars, interactive=False)
         for name in myvars:
-            assert name in ip.user_ns, name
-            assert name in ip.user_ns_hidden, name
+            self.assertIn(name, ip.user_ns)
+            self.assertIn(name, ip.user_ns_hidden)
         ip.user_ns["b"] = 12
         ip.drop_by_id(myvars)
         for name in ["a", "c"]:
-            assert name not in ip.user_ns, name
-            assert name not in ip.user_ns_hidden, name
+            self.assertNotIn(name, ip.user_ns)
+            self.assertNotIn(name, ip.user_ns_hidden)
         assert ip.user_ns["b"] == 12
         ip.reset()
 
@@ -229,28 +231,6 @@ class InteractiveShellTestCase(unittest.TestCase):
         # This should not raise any exception:
         ip.var_expand("echo $f")
 
-    def test_var_expand_local(self):
-        """Test local variable expansion in !system and %magic calls"""
-        # !system
-        ip.run_cell(
-            "def test():\n"
-            '    lvar = "ttt"\n'
-            "    ret = !echo {lvar}\n"
-            "    return ret[0]\n"
-        )
-        res = ip.user_ns["test"]()
-        nt.assert_in("ttt", res)
-
-        # %magic
-        ip.run_cell(
-            "def makemacro():\n"
-            '    macroname = "macro_var_expand_locals"\n'
-            "    %macro {macroname} codestr\n"
-        )
-        ip.user_ns["codestr"] = "str(12)"
-        ip.run_cell("makemacro()")
-        nt.assert_in("macro_var_expand_locals", ip.user_ns)
-
     def test_var_expand_self(self):
         """Test variable expansion with the name 'self', which was failing.
 
@@ -264,6 +244,8 @@ class InteractiveShellTestCase(unittest.TestCase):
             "    return res[0]\n"
         )
         nt.assert_in("see me", ip.user_ns["cTest"]().test())
+        # Alternatively
+        self.assertIn("see me", ip.user_ns["cTest"]().test())
 
     def test_bad_var_expand(self):
         """var_expand on invalid formats shouldn't raise"""
@@ -376,7 +358,8 @@ class InteractiveShellTestCase(unittest.TestCase):
             obj=lmagic.__wrapped__,
             parent=None,
         )
-        nt.assert_equal(lfind, info)
+        # nt.assert_equal(lfind, info)
+        self.assertEqual(lfind, info)
 
     def test_ofind_cell_magic(self):
         from IPython.core.magic import register_cell_magic
@@ -395,7 +378,8 @@ class InteractiveShellTestCase(unittest.TestCase):
             obj=cmagic.__wrapped__,
             parent=None,
         )
-        nt.assert_equal(find, info)
+        # nt.assert_equal(find, info)
+        self.assertEqual(find, info)
 
     def test_ofind_property_with_error(self):
         class A(object):
@@ -441,7 +425,8 @@ class InteractiveShellTestCase(unittest.TestCase):
             obj=A.foo,
             parent=a.a.a,
         )
-        nt.assert_equal(found, info)
+        # nt.assert_equal(found, info)
+        self.assertEqual(found, info)
 
     def test_ofind_slotted_attributes(self):
         class A(object):
@@ -1122,7 +1107,6 @@ def test_user_expression():
         "b": "1/0",
     }
     r = ip.user_expressions(query)
-    import pprint
 
     pprint.pprint(r)
     nt.assert_equal(set(r.keys()), set(query.keys()))
@@ -1251,6 +1235,7 @@ def wrn():
 
 
 def test_custom_exc_count():
+    """I hope this doesnt count as 2 tests because 2 assert_equals. The 2nd one is shoddy."""
     hook = mock.Mock(return_value=None)
     ip.set_custom_exc((SyntaxError,), hook)
     before = ip.execution_count
@@ -1267,7 +1252,7 @@ def test_run_cell_async():
     coro = ip.run_cell_async("await asyncio.sleep(0.01)\n5")
     assert asyncio.iscoroutine(coro)
     result = loop.run_until_complete(coro)
-    assert isinstance(result, interactiveshell.ExecutionResult)
+    assert isinstance(result, ExecutionResult)
     assert result.result == 5
 
 
@@ -1275,3 +1260,26 @@ def test_should_run_async():
     assert not ip.should_run_async("a = 5")
     assert ip.should_run_async("await x")
     assert ip.should_run_async("import asyncio; await asyncio.sleep(1)")
+
+
+def test_var_expand_local():
+    """Test local variable expansion in !system and %magic calls"""
+    # !system
+    ip.run_cell(
+        "def test():\n"
+        '    lvar = "ttt"\n'
+        "    ret = !echo {lvar}\n"
+        "    return ret[0]\n"
+    )
+    res = ip.user_ns["test"]()
+    nt.assert_in("ttt", res)
+
+    # %magic
+    ip.run_cell(
+        "def makemacro():\n"
+        '    macroname = "macro_var_expand_locals"\n'
+        "    %macro {macroname} codestr\n"
+    )
+    ip.user_ns["codestr"] = "str(12)"
+    ip.run_cell("makemacro()")
+    nt.assert_in("macro_var_expand_locals", ip.user_ns)

@@ -143,7 +143,7 @@ def pre_run_cell(info):
 
     Parameters
     ----------
-    info : :class:`~IPython.core.interactiveshell.ExecutionInfo`
+    info : :class:`~core.interactiveshell.ExecutionInfo`
         An object containing information used for the code execution.
     """
     pass
@@ -165,7 +165,7 @@ def post_run_cell(result):
 
     Parameters
     ----------
-    result : :class:`~IPython.core.interactiveshell.ExecutionResult`
+    result : :class:`~core.interactiveshell.ExecutionResult`
         The object which will be returned as the execution result.
     """
     pass

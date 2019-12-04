@@ -8,6 +8,8 @@ import tempfile
 import warnings
 from warnings import warn
 
+from IPython.utils.capture import capture_output  # noqa
+
 
 class IOStream:
     """Deprecated class but brought back because it's in the globaliptest file."""

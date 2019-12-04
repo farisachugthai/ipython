@@ -166,8 +166,8 @@ if sys.version_info[0:2] < (3, 7):
 
         __module__ = "builtins"  # for py3
 
-        def __init__(self):
-            super().__init__()
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
 
         def __repr__(self):
             return "{}\n{}".format(self.__class__.__name__, self.__traceback__)
