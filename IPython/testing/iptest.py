@@ -122,12 +122,31 @@ else:
 # Monkeypatch Xunit to count known failures as skipped.
 # ------------------------------------------------------------------------------
 def monkeypatch_xunit():
+    """
+
+    Returns
+    -------
+
+    """
     try:
         dec.knownfailureif(True)(lambda: None)()
     except Exception as e:
         KnownFailureTest = type(e)
 
     def addError(self, test, err, capt=None):
+        """
+
+        Parameters
+        ----------
+        self :
+        test :
+        err :
+        capt :
+
+        Returns
+        -------
+
+        """
         if issubclass(err[0], KnownFailureTest):
             err = (SkipTest, ) + err[1:]
         return self.orig_addError(test, err, capt)
@@ -142,6 +161,16 @@ def monkeypatch_xunit():
 
 
 def extract_version(mod):
+    """
+
+    Parameters
+    ----------
+    mod :
+
+    Returns
+    -------
+
+    """
     return mod.__version__
 
 
@@ -201,6 +230,9 @@ test_group_names = [
 
 
 class TestSection(object):
+    """
+
+    """
     def __init__(self, name, includes):
         self.name = name
         self.includes = includes
@@ -209,15 +241,33 @@ class TestSection(object):
         self.enabled = True
 
     def exclude(self, module):
+        """
+
+        Parameters
+        ----------
+        module :
+        """
         if not module.startswith('IPython'):
             module = self.includes[0] + "." + module
         self.excludes.append(module.replace('.', os.sep))
 
     def requires(self, *packages):
+        """
+
+        Parameters
+        ----------
+        packages :
+        """
         self.dependencies.extend(packages)
 
     @property
     def will_run(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.enabled and all(have[p] for p in self.dependencies)
 
 
@@ -284,6 +334,9 @@ test_group_names.append('autoreload')
 
 
 def check_exclusions_exist():
+    """
+
+    """
     from IPython.paths import get_ipython_package_dir
     from warnings import warn
     parent = os.path.dirname(get_ipython_package_dir())
@@ -313,9 +366,23 @@ class ExclusionPlugin(Plugin):
         super(ExclusionPlugin, self).__init__()
 
     def options(self, parser, env=os.environ):
+        """
+
+        Parameters
+        ----------
+        parser :
+        env :
+        """
         Plugin.options(self, parser, env)
 
     def configure(self, options, config):
+        """
+
+        Parameters
+        ----------
+        options :
+        config :
+        """
         Plugin.configure(self, options, config)
         # Override nose trying to disable plugin.
         self.enabled = True
@@ -336,6 +403,9 @@ class ExclusionPlugin(Plugin):
 
 
 class StreamCapturer(Thread):
+    """
+
+    """
     daemon = True  # Don't hang if main thread crashes
     started = False
 
@@ -349,6 +419,9 @@ class StreamCapturer(Thread):
         self.stop = Event()
 
     def run(self):
+        """
+
+        """
         self.started = True
 
         while not self.stop.is_set():
@@ -363,15 +436,27 @@ class StreamCapturer(Thread):
         os.close(self.writefd)
 
     def reset_buffer(self):
+        """
+
+        """
         with self.buffer_lock:
             self.buffer.truncate(0)
             self.buffer.seek(0)
 
     def get_buffer(self):
+        """
+
+        Returns
+        -------
+
+        """
         with self.buffer_lock:
             return self.buffer.getvalue()
 
     def ensure_started(self):
+        """
+
+        """
         if not self.started:
             self.start()
 
@@ -386,6 +471,9 @@ class StreamCapturer(Thread):
 
 
 class SubprocessStreamCapturePlugin(Plugin):
+    """
+
+    """
     name = 'subprocstreams'
 
     def __init__(self):
@@ -397,6 +485,12 @@ class SubprocessStreamCapturePlugin(Plugin):
         nose.iptest_stdstreams_fileno = self.get_write_fileno
 
     def get_write_fileno(self):
+        """
+
+        Returns
+        -------
+
+        """
         if self.destination == 'capture':
             self.stream_capturer.ensure_started()
             return self.stream_capturer.writefd
@@ -406,16 +500,40 @@ class SubprocessStreamCapturePlugin(Plugin):
             return sys.__stdout__.fileno()
 
     def configure(self, options, config):
+        """
+
+        Parameters
+        ----------
+        options :
+        config :
+        """
         Plugin.configure(self, options, config)
         # Override nose trying to disable plugin.
         if self.destination == 'capture':
             self.enabled = True
 
     def startTest(self, test):
+        """
+
+        Parameters
+        ----------
+        test :
+        """
         # Reset log capture
         self.stream_capturer.reset_buffer()
 
     def formatFailure(self, test, err):
+        """
+
+        Parameters
+        ----------
+        test :
+        err :
+
+        Returns
+        -------
+
+        """
         # Show output
         ec, ev, tb = err
         captured = self.stream_capturer.get_buffer().decode('utf-8', 'replace')
@@ -432,6 +550,12 @@ class SubprocessStreamCapturePlugin(Plugin):
     formatError = formatFailure
 
     def finalize(self, result):
+        """
+
+        Parameters
+        ----------
+        result :
+        """
         self.stream_capturer.halt()
 
 

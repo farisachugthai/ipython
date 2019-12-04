@@ -55,22 +55,37 @@ def inputhook_wx1():
 
 
 class EventLoopTimer(wx.Timer):
+    """
+
+    """
     def __init__(self, func):
         self.func = func
         wx.Timer.__init__(self)
 
     def Notify(self):
+        """
+
+        """
         self.func()
 
 
 class EventLoopRunner(object):
     def Run(self, time):
+        """
+
+        Parameters
+        ----------
+        time :
+        """
         self.evtloop = wx.EventLoop()
         self.timer = EventLoopTimer(self.check_stdin)
         self.timer.Start(time)
         self.evtloop.Run()
 
     def check_stdin(self):
+        """
+
+        """
         if stdin_ready():
             self.timer.Stop()
             self.evtloop.Exit()

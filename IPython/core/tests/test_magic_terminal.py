@@ -85,11 +85,17 @@ class PasteTestCase(TestCase):
         ip.magic("paste " + flags)
 
     def setUp(self):
+        """
+
+        """
         # Inject fake clipboard hook but save original so we can restore it
         # later
         self.original_clip = ip.hooks.clipboard_get
 
     def tearDown(self):
+        """
+
+        """
         # Restore original hook
         ip.hooks.clipboard_get = self.original_clip
 

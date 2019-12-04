@@ -42,6 +42,16 @@ from pygments.formatters import HtmlFormatter
 
 
 def pylight(code):
+    """
+
+    Parameters
+    ----------
+    code :
+
+    Returns
+    -------
+
+    """
     return highlight(code, IPyLexer(), HtmlFormatter(noclasses=True))
 
 
@@ -410,7 +420,16 @@ class Inspector:
         return "\n".join(out)
 
     def format_mime(self, bundle):
+        """
 
+        Parameters
+        ----------
+        bundle :
+
+        Returns
+        -------
+
+        """
         text_plain = bundle["text/plain"]
 
         text = ""
@@ -452,6 +471,15 @@ class Inspector:
         }
 
         def append_field(bundle, title, key, formatter=None):
+            """
+
+            Parameters
+            ----------
+            bundle :
+            title :
+            key :
+            formatter :
+            """
             field = info[key]
             if field is not None:
                 formatted_field = _mime_format(field, formatter)
@@ -461,6 +489,16 @@ class Inspector:
                 )
 
         def code_formatter(text):
+            """
+
+            Parameters
+            ----------
+            text :
+
+            Returns
+            -------
+
+            """
             return {"text/plain": self.format(text), "text/html": pylight(text)}
 
         if info["isalias"]:

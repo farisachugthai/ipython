@@ -84,12 +84,29 @@ class IPythonPTCompleter(Completer):
 
     @property
     def ipy_completer(self):
+        """
+
+        Returns
+        -------
+
+        """
         if self._ipy_completer:
             return self._ipy_completer
         else:
             return self.shell.Completer
 
     def get_completions(self, document, complete_event):
+        """
+
+        Parameters
+        ----------
+        document :
+        complete_event :
+
+        Returns
+        -------
+
+        """
         if not document.current_line.strip():
             return
         # Some bits of our completion system may print stuff (e.g. if a module
@@ -177,6 +194,16 @@ class IPythonPTLexer(Lexer):
         }
 
     def lex_document(self, document):
+        """
+
+        Parameters
+        ----------
+        document :
+
+        Returns
+        -------
+
+        """
         text = document.text.lstrip()
 
         lexer = self.python_lexer

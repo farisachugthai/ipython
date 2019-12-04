@@ -50,7 +50,16 @@ class PayloadManager(Configurable):
         self._payload.append(data)
 
     def read_payload(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self._payload
 
     def clear_payload(self):
+        """
+
+        """
         self._payload = []

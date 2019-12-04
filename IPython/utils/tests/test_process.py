@@ -47,6 +47,12 @@ def test_find_cmd_ls():
 
 
 def has_pywin32():
+    """
+
+    Returns
+    -------
+
+    """
     try:
         import win32api
     except ImportError:

@@ -12,10 +12,19 @@ from IPython.core.displayhook import DisplayHook
 
 
 class Prompts:
+    """
+
+    """
     def __init__(self, shell):
         self.shell = shell
 
     def vi_mode(self):
+        """
+
+        Returns
+        -------
+
+        """
         if (getattr(self.shell.pt_app, 'editing_mode', None) == 'VI'
                 and self.shell.prompt_includes_vi_mode):
             return '[' + str(
@@ -23,6 +32,12 @@ class Prompts:
         return ''
 
     def in_prompt_tokens(self):
+        """
+
+        Returns
+        -------
+
+        """
         return [
             (Token.Prompt, self.vi_mode()),
             (Token.Prompt, 'In ['),
@@ -34,6 +49,16 @@ class Prompts:
         return fragment_list_width(self.in_prompt_tokens())
 
     def continuation_prompt_tokens(self, width=None):
+        """
+
+        Parameters
+        ----------
+        width :
+
+        Returns
+        -------
+
+        """
         if width is None:
             width = self._width()
         return [
@@ -41,12 +66,24 @@ class Prompts:
         ]
 
     def rewrite_prompt_tokens(self):
+        """
+
+        Returns
+        -------
+
+        """
         width = self._width()
         return [
             (Token.Prompt, ('-' * (width - 2)) + '> '),
         ]
 
     def out_prompt_tokens(self):
+        """
+
+        Returns
+        -------
+
+        """
         return [
             (Token.OutPrompt, 'Out['),
             (Token.OutPromptNum, str(self.shell.execution_count)),
@@ -56,17 +93,45 @@ class Prompts:
 
 class ClassicPrompts(Prompts):
     def in_prompt_tokens(self):
+        """
+
+        Returns
+        -------
+
+        """
         return [
             (Token.Prompt, '>>> '),
         ]
 
     def continuation_prompt_tokens(self, width=None):
+        """
+
+        Parameters
+        ----------
+        width :
+
+        Returns
+        -------
+
+        """
         return [(Token.Prompt, '... ')]
 
     def rewrite_prompt_tokens(self):
+        """
+
+        Returns
+        -------
+
+        """
         return []
 
     def out_prompt_tokens(self):
+        """
+
+        Returns
+        -------
+
+        """
         return []
 
 
@@ -74,6 +139,9 @@ class RichPromptDisplayHook(DisplayHook):
     """Subclass of base display hook using coloured prompt"""
 
     def write_output_prompt(self):
+        """
+
+        """
         sys.stdout.write(self.shell.separate_out)
         # If we're not displaying a prompt, it effectively ends with a newline,
         # because the output will be left-aligned.
@@ -96,12 +164,23 @@ class RichPromptDisplayHook(DisplayHook):
                 sys.stdout.write(prompt_txt)
 
     def write_format_data(self, format_dict, md_dict=None) -> None:
+        """
+
+        Parameters
+        ----------
+        format_dict :
+        md_dict :
+
+        Returns
+        -------
+
+        """
         if self.shell.mime_renderers:
 
             for mime, handler in self.shell.mime_renderers.items():
                 if mime in format_dict:
                     handler(format_dict[mime], None)
                     return
-                
+
         super().write_format_data(format_dict, md_dict)
 

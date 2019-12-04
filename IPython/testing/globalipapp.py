@@ -42,13 +42,28 @@ class StreamProxy(utils_io.IOStream):
 
     @property
     def stream(self):
+        """
+
+        Returns
+        -------
+
+        """
         return getattr(sys, self.name)
 
     def flush(self):
+        """
+
+        """
         self.stream.flush()
 
 
 def get_ipython():
+    """
+
+    Returns
+    -------
+
+    """
     # This will get replaced by the real thing once we start IPython below
     return start_ipython()
 
@@ -132,6 +147,15 @@ def start_ipython():
 
     # Override paging, so we don't require user interaction during the tests.
     def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
+        """
+
+        Parameters
+        ----------
+        strng :
+        start :
+        screen_lines :
+        pager_cmd :
+        """
         if isinstance(strng, dict):
             strng = strng.get('text/plain', '')
         print(strng)

@@ -230,6 +230,18 @@ def with_patch_inspect(f, *args, **kwargs):
 
     @functools.wraps
     def wrapped(f, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        f :
+        args :
+        kwargs :
+
+        Returns
+        -------
+
+        """
         save_findsource = inspect.findsource
         save_getargs = inspect.getargs
         inspect.findsource = findsource
@@ -784,6 +796,16 @@ def get_parts_of_chained_exception(evalue):
 
     @functools.wraps
     def get_chained_exception(exception_value):
+        """
+
+        Parameters
+        ----------
+        exception_value :
+
+        Returns
+        -------
+
+        """
         cause = getattr(exception_value, "__cause__", None)
         if cause:
             return cause
@@ -966,6 +988,18 @@ class VerboseTB(TBTools):
                 return "%s %s\n" % (link, call)
 
         def linereader(file=file, lnum=None, getline=linecache.getline):
+            """
+
+            Parameters
+            ----------
+            file :
+            lnum :
+            getline :
+
+            Returns
+            -------
+
+            """
             if lnum is None:
                 lnum = [lnum]
             line = getline(file, lnum[0])
@@ -1068,6 +1102,16 @@ class VerboseTB(TBTools):
             )
 
     def prepare_chained_exception_message(self, cause):
+        """
+
+        Parameters
+        ----------
+        cause :
+
+        Returns
+        -------
+
+        """
         direct_cause = (
             "\nThe above exception was the direct cause of the following exception:\n"
         )
@@ -1082,6 +1126,17 @@ class VerboseTB(TBTools):
         return message
 
     def prepare_header(self, etype, long_version=False):
+        """
+
+        Parameters
+        ----------
+        etype :
+        long_version :
+
+        Returns
+        -------
+
+        """
         exc = "%s" % etype
         width = min(75, get_terminal_size()[0])
         if long_version:
@@ -1111,6 +1166,17 @@ class VerboseTB(TBTools):
         return head
 
     def format_exception(self, etype, evalue):
+        """
+
+        Parameters
+        ----------
+        etype :
+        evalue :
+
+        Returns
+        -------
+
+        """
         try:
             etype_str, evalue_str = map(str, (etype, evalue))
         except BaseException:
@@ -1157,6 +1223,18 @@ class VerboseTB(TBTools):
         return [[head] + frames + ["".join(formatted_exception[0])]]
 
     def get_records(self, etb, number_of_lines_of_context, tb_offset):
+        """
+
+        Parameters
+        ----------
+        etb :
+        number_of_lines_of_context :
+        tb_offset :
+
+        Returns
+        -------
+
+        """
         try:
             # Try the default getinnerframes and Alex's: Alex's fixes some
             # problems, but it generates empty tracebacks for console errors
@@ -1288,6 +1366,12 @@ class VerboseTB(TBTools):
             del self.tb
 
     def handler(self, info=None):
+        """
+
+        Parameters
+        ----------
+        info :
+        """
         (etype, evalue, etb) = info or sys.exc_info()
         self.tb = etb
         ostream = self.ostream
@@ -1395,6 +1479,20 @@ class FormattedTB(VerboseTB, ListTB):
     def structured_traceback(
         self, etype, value, tb, tb_offset=None, number_of_lines_of_context=5
     ):
+        """
+
+        Parameters
+        ----------
+        etype :
+        value :
+        tb :
+        tb_offset :
+        number_of_lines_of_context :
+
+        Returns
+        -------
+
+        """
         tb_offset = self.tb_offset if tb_offset is None else tb_offset
         mode = self.mode
         if mode in self.verbose_modes:
@@ -1447,12 +1545,21 @@ class FormattedTB(VerboseTB, ListTB):
         self.set_mode(self.valid_modes[0])
 
     def context(self):
+        """
+
+        """
         self.set_mode(self.valid_modes[1])
 
     def verbose(self):
+        """
+
+        """
         self.set_mode(self.valid_modes[2])
 
     def minimal(self):
+        """
+
+        """
         self.set_mode(self.valid_modes[3])
 
 
@@ -1564,6 +1671,20 @@ class AutoFormattedTB(FormattedTB):
         tb_offset=None,
         number_of_lines_of_context=5,
     ):
+        """
+
+        Parameters
+        ----------
+        etype :
+        value :
+        tb :
+        tb_offset :
+        number_of_lines_of_context :
+
+        Returns
+        -------
+
+        """
         if etype is None:
             etype, value, tb = sys.exc_info()
         return FormattedTB.structured_traceback(
@@ -1701,8 +1822,30 @@ def text_repr(value):
 
 
 def eqrepr(value, repr=text_repr):
+    """
+
+    Parameters
+    ----------
+    value :
+    repr :
+
+    Returns
+    -------
+
+    """
     return "=%s" % repr(value)
 
 
 def nullrepr(value, repr=text_repr):
+    """
+
+    Parameters
+    ----------
+    value :
+    repr :
+
+    Returns
+    -------
+
+    """
     return ""

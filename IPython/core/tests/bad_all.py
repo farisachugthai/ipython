@@ -5,10 +5,16 @@ To test https://github.com/ipython/ipython/issues/9678
 
 
 def evil():
+    """
+
+    """
     pass
 
 
 def puppies():
+    """
+
+    """
     pass
 
 

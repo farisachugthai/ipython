@@ -15,26 +15,81 @@ from .encoding import DEFAULT_ENCODING
 
 
 def no_code(x, encoding=None):
+    """
+
+    Parameters
+    ----------
+    x :
+    encoding :
+
+    Returns
+    -------
+
+    """
     return x
 
 
 def decode(s, encoding=None):
+    """
+
+    Parameters
+    ----------
+    s :
+    encoding :
+
+    Returns
+    -------
+
+    """
     encoding = encoding or DEFAULT_ENCODING
     return s.decode(encoding, "replace")
 
 
 def encode(u, encoding=None):
+    """
+
+    Parameters
+    ----------
+    u :
+    encoding :
+
+    Returns
+    -------
+
+    """
     encoding = encoding or DEFAULT_ENCODING
     return u.encode(encoding, "replace")
 
 
 def cast_unicode(s, encoding=None):
+    """
+
+    Parameters
+    ----------
+    s :
+    encoding :
+
+    Returns
+    -------
+
+    """
     if isinstance(s, bytes):
         return decode(s, encoding)
     return s
 
 
 def cast_bytes(s, encoding=None):
+    """
+
+    Parameters
+    ----------
+    s :
+    encoding :
+
+    Returns
+    -------
+
+    """
     if not isinstance(s, bytes):
         return encode(s, encoding)
     return s
@@ -50,6 +105,16 @@ def buffer_to_bytes(buf):
 def _modify_str_or_docstring(str_change_func):
     @functools.wraps(str_change_func)
     def wrapper(func_or_str):
+        """
+
+        Parameters
+        ----------
+        func_or_str :
+
+        Returns
+        -------
+
+        """
         if isinstance(func_or_str, string_types):
             func = None
             doc = func_or_str
@@ -101,6 +166,16 @@ PY3 = True
 
 
 def input(prompt=""):
+    """
+
+    Parameters
+    ----------
+    prompt :
+
+    Returns
+    -------
+
+    """
     return builtin_mod.input(prompt)
 
 
@@ -121,6 +196,17 @@ which = shutil.which
 
 
 def isidentifier(s, dotted=False):
+    """
+
+    Parameters
+    ----------
+    s :
+    dotted :
+
+    Returns
+    -------
+
+    """
     if dotted:
         return all(isidentifier(a) for a in s.split("."))
     return s.isidentifier()
@@ -130,10 +216,30 @@ xrange = range
 
 
 def iteritems(d):
+    """
+
+    Parameters
+    ----------
+    d :
+
+    Returns
+    -------
+
+    """
     return iter(d.items())
 
 
 def itervalues(d):
+    """
+
+    Parameters
+    ----------
+    d :
+
+    Returns
+    -------
+
+    """
     return iter(d.values())
 
 
@@ -143,6 +249,15 @@ MethodType = types.MethodType
 
 
 def execfile(fname, glob, loc=None, compiler=None):
+    """
+
+    Parameters
+    ----------
+    fname :
+    glob :
+    loc :
+    compiler :
+    """
     loc = loc if (loc is not None) else glob
     with open(fname, "rb") as f:
         compiler = compiler or compile
@@ -182,6 +297,16 @@ def annotate(**kwargs):
         raise ValueError("annotations must be provided as keyword arguments")
 
     def dec(f):
+        """
+
+        Parameters
+        ----------
+        f :
+
+        Returns
+        -------
+
+        """
         if hasattr(f, "__annotations__"):
             for k, v in kwargs.items():
                 f.__annotations__[k] = v

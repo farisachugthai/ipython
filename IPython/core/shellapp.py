@@ -282,6 +282,16 @@ class InteractiveShellApp(Configurable):
         if self.pylab:
 
             def enable(key):
+                """
+
+                Parameters
+                ----------
+                key :
+
+                Returns
+                -------
+
+                """
                 return shell.enable_pylab(key, import_all=self.pylab_import_all)
 
         elif self.matplotlib:
@@ -581,4 +591,7 @@ class InteractiveShellApp(Configurable):
 class InteractiveShellAppABC(abc.ABCMeta):
     @abc.abstractmethod
     def init_shell(self):
+        """
+
+        """
         raise NotImplementedError("Override in subclasses")

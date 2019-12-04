@@ -40,6 +40,17 @@ def flag_calls(func):
         return func
 
     def wrapper(*args, **kw):
+        """
+
+        Parameters
+        ----------
+        args :
+        kw :
+
+        Returns
+        -------
+
+        """
         wrapper.called = False
         out = func(*args, **kw)
         wrapper.called = True

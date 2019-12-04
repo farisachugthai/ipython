@@ -37,11 +37,20 @@ if __name__ == "__main__":
     aglobal = "Hello"
 
     def f():
+        """
+
+        Returns
+        -------
+
+        """
         return aglobal
 
     cache = ip.user_ns["_refbug_cache"]
     cache.append(f)
 
     def call_f():
+        """
+
+        """
         for func in cache:
             print("lowercased:", func().lower())

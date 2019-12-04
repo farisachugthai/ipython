@@ -54,6 +54,14 @@ class GoodPretty(object):
 
 
 def foo_printer(obj, pp, cycle):
+    """
+
+    Parameters
+    ----------
+    obj :
+    pp :
+    cycle :
+    """
     pp.text("foo")
 
 
@@ -109,6 +117,12 @@ def test_bad_precision():
     f = PlainTextFormatter()
 
     def set_fp(p):
+        """
+
+        Parameters
+        ----------
+        p :
+        """
         f.float_precision = p
 
     nt.assert_raises(ValueError, set_fp, "%")
@@ -523,6 +537,9 @@ def test_repr_mime():
 
 def test_pass_correct_include_exclude():
     class Tester(object):
+        """
+
+        """
         def __init__(self, include=None, exclude=None):
             self.include = include
             self.exclude = exclude

@@ -61,6 +61,12 @@ def inputhook(inputhook_context):
         stop = [False]
 
         def done(*a):
+            """
+
+            Parameters
+            ----------
+            a :
+            """
             stop[0] = True
 
         root.createfilehandler(inputhook_context.fileno(), _tkinter.READABLE,

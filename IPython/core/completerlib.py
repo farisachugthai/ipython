@@ -29,7 +29,6 @@ import sys
 from time import time
 from zipimport import zipimporter
 
-
 # Our own imports
 from .completer import expand_user, compress_user
 from .error import TryNext
@@ -59,6 +58,7 @@ import_re = re.compile(
 
 # RE for the ipython %run command (python + ipython scripts)
 magic_run_re = re.compile(r".*(\.ipy|\.ipynb|\.py[w]?)$")
+
 
 # -----------------------------------------------------------------------------
 # Local utilities
@@ -92,7 +92,7 @@ def module_list(path=None):
         # recurse more than one level into subdirectories.
         files = []
         for root, dirs, nondirs in os.walk(path, followlinks=True):
-            subdir = root[len(path) + 1 :]
+            subdir = root[len(path) + 1:]
             if subdir:
                 files.extend(pjoin(subdir, f) for f in nondirs)
                 dirs[:] = []  # Do not recurse into additional subdirectories.
@@ -161,6 +161,18 @@ def get_root_modules():
 
 
 def is_importable(module, attr, only_modules):
+    """
+
+    Parameters
+    ----------
+    module :
+    attr :
+    only_modules :
+
+    Returns
+    -------
+
+    """
     if only_modules:
         return inspect.ismodule(getattr(module, attr))
     else:
@@ -223,6 +235,17 @@ def quick_completer(cmd, completions):
         completions = completions.split()
 
     def do_complete(self, event):
+        """
+
+        Parameters
+        ----------
+        self :
+        event :
+
+        Returns
+        -------
+
+        """
         return completions
 
     get_ipython().set_hook("complete_command", do_complete, str_key=cmd)
@@ -329,9 +352,9 @@ def magic_run_completer(self, event):
         pys = [
             f.replace("\\", "/")
             for f in lglob(relpath + "*.py")
-            + lglob(relpath + "*.ipy")
-            + lglob(relpath + "*.ipynb")
-            + lglob(relpath + "*.pyw")
+                     + lglob(relpath + "*.ipy")
+                     + lglob(relpath + "*.ipynb")
+                     + lglob(relpath + "*.pyw")
         ]
 
         matches = dirs + pys

@@ -79,6 +79,9 @@ class TestAssertPrints(unittest.TestCase):
 
     def test_failing(self):
         def func():
+            """
+
+            """
             with tt.AssertPrints("abc"):
                 print("acd")
                 print("def")
@@ -125,6 +128,9 @@ class Test_ipexec_validate(tt.TempFileMixin):
         tt.ipexec_validate(self.fname, expected_out=out, expected_err="C\r\nD")
 
     def tearDown(self):
+        """
+
+        """
         # tear down correctly the mixin,
         # unittest.TestCase.tearDown does nothing
         tt.TempFileMixin.tearDown(self)

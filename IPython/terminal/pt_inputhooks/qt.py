@@ -9,6 +9,16 @@ _already_warned = False
 
 
 def inputhook(context):
+    """
+
+    Parameters
+    ----------
+    context :
+
+    Returns
+    -------
+
+    """
     global _appref
     app = QtCore.QCoreApplication.instance()
     if not app:

@@ -37,6 +37,12 @@ old_syspath = sys.path
 
 
 def make_empty_file(fname):
+    """
+
+    Parameters
+    ----------
+    fname :
+    """
     open(fname, "w").close()
 
 

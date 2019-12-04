@@ -62,6 +62,12 @@ class ProcessHandler(object):
 
     @property
     def sh(self):
+        """
+
+        Returns
+        -------
+
+        """
         if self._sh is None:
             self._sh = pexpect.which("sh")
             if self._sh is None:
@@ -219,6 +225,16 @@ system = ProcessHandler().system
 
 
 def check_pid(pid):
+    """
+
+    Parameters
+    ----------
+    pid :
+
+    Returns
+    -------
+
+    """
     try:
         os.kill(pid, 0)
     except OSError as err:

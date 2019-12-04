@@ -10,6 +10,12 @@ def _main_quit(*args, **kwargs):
 
 
 def inputhook(context):
+    """
+
+    Parameters
+    ----------
+    context :
+    """
     GLib.io_add_watch(context.fileno(), GLib.PRIORITY_DEFAULT, GLib.IO_IN,
                       _main_quit)
     Gtk.main()

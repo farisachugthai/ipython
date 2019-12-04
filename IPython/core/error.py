@@ -186,6 +186,9 @@ def BdbQuit_excepthook(et, ev, tb, excepthook=None):
 
 
 def BdbQuit_IPython_excepthook():
+    """
+
+    """
     print("Exiting Debugger.")
 
 

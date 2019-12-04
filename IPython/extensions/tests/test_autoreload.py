@@ -39,7 +39,9 @@ noop = lambda *a, **kw: None
 
 
 class FakeShell:
+    """
 
+    """
     def __init__(self):
         self.ns = {}
         self.user_ns = self.ns
@@ -51,17 +53,42 @@ class FakeShell:
     register_magics = set_hook = noop
 
     def run_code(self, code):
+        """
+
+        Parameters
+        ----------
+        code :
+        """
         self.events.trigger('pre_run_cell')
         exec(code, self.user_ns)
         self.auto_magics.post_execute_hook()
 
     def push(self, items):
+        """
+
+        Parameters
+        ----------
+        items :
+        """
         self.ns.update(items)
 
     def magic_autoreload(self, parameter):
+        """
+
+        Parameters
+        ----------
+        parameter :
+        """
         self.auto_magics.autoreload(parameter)
 
     def magic_aimport(self, parameter, stream=None):
+        """
+
+        Parameters
+        ----------
+        parameter :
+        stream :
+        """
         self.auto_magics.aimport(parameter, stream=stream)
         self.auto_magics.post_execute_hook()
 
@@ -74,12 +101,18 @@ class Fixture(TestCase):
     filename_chars = "abcdefghijklmopqrstuvwxyz0123456789"
 
     def setUp(self):
+        """
+
+        """
         self.test_dir = tempfile.mkdtemp()
         self.old_sys_path = list(sys.path)
         sys.path.insert(0, self.test_dir)
         self.shell = FakeShell()
 
     def tearDown(self):
+        """
+
+        """
         shutil.rmtree(self.test_dir)
         sys.path = self.old_sys_path
 
@@ -88,8 +121,14 @@ class Fixture(TestCase):
         self.shell = None
 
     def get_module(self):
+        """
+
+        Returns
+        -------
+
+        """
         module_name = "tmpmod_" + \
-            "".join(random.sample(self.filename_chars, 20))
+                      "".join(random.sample(self.filename_chars, 20))
         if module_name in sys.modules:
             del sys.modules[module_name]
         file_name = os.path.join(self.test_dir, module_name + ".py")
@@ -119,11 +158,22 @@ class Fixture(TestCase):
             f.write(content)
 
     def new_module(self, code):
+        """
+
+        Parameters
+        ----------
+        code :
+
+        Returns
+        -------
+
+        """
         code = textwrap.dedent(code)
         mod_name, mod_fn = self.get_module()
         with open(mod_fn, 'w') as f:
             f.write(code)
         return mod_name, mod_fn
+
 
 # -----------------------------------------------------------------------------
 # Test automatic reloading
@@ -335,6 +385,9 @@ class Bar:    # old-style class: weakref doesn't work for it on Python < 2.7
         old_obj2 = mod.Bar()
 
         def check_module_contents():
+            """
+
+            """
             nt.assert_equal(mod.x, 9)
             nt.assert_equal(mod.z, 123)
 
@@ -391,6 +444,9 @@ class Bar:    # old-style class
 """)
 
         def check_module_contents():
+            """
+
+            """
             nt.assert_equal(mod.x, 10)
             nt.assert_false(hasattr(mod, 'z'))
 

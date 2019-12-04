@@ -429,6 +429,16 @@ class MacroChecker(PrefilterChecker):
     priority = Integer(250).tag(config=True)
 
     def check(self, line_info):
+        """
+
+        Parameters
+        ----------
+        line_info :
+
+        Returns
+        -------
+
+        """
         obj = self.shell.user_ns.get(line_info.ifun)
         if isinstance(obj, Macro):
             return self.prefilter_manager.get_handler_by_name("macro")
@@ -546,7 +556,9 @@ class AutocallChecker(PrefilterChecker):
 
 
 class PrefilterHandler(Configurable):
+    """
 
+    """
     handler_name = Unicode("normal")
     esc_strings = List([])
     shell = Instance(
@@ -594,6 +606,16 @@ class MacroHandler(PrefilterHandler):
     handler_name = Unicode("macro")
 
     def handle(self, line_info):
+        """
+
+        Parameters
+        ----------
+        line_info :
+
+        Returns
+        -------
+
+        """
         obj = self.shell.user_ns.get(line_info.ifun)
         pre_space = line_info.pre_whitespace
         line_sep = "\n" + pre_space

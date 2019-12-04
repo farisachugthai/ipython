@@ -104,6 +104,16 @@ try:
     import docrepr
 
     def sphinxify(doc):
+        """
+
+        Parameters
+        ----------
+        doc :
+
+        Returns
+        -------
+
+        """
         with TemporaryDirectory() as dirname:
             return {
                 "text/html": docrepr.sphinxify.sphinxify(doc, dirname),
@@ -122,6 +132,17 @@ else:
     from ast import Module as OriginalModule
 
     def Module(nodelist, type_ignores):
+        """
+
+        Parameters
+        ----------
+        nodelist :
+        type_ignores :
+
+        Returns
+        -------
+
+        """
         return OriginalModule(nodelist)
 
 
@@ -266,6 +287,13 @@ def softspace(file, newvalue):
 
 @undoc
 def no_op(*a, **kw):
+    """
+
+    Parameters
+    ----------
+    a :
+    kw :
+    """
     pass
 
 
@@ -276,6 +304,17 @@ class SeparateUnicode(Unicode):
     """
 
     def validate(self, obj, value):
+        """
+
+        Parameters
+        ----------
+        obj :
+        value :
+
+        Returns
+        -------
+
+        """
         if value == "0":
             value = ""
         value = value.replace("\\n", "\n")
@@ -357,6 +396,12 @@ class ExecutionResult:
 
     @property
     def success(self):
+        """
+
+        Returns
+        -------
+
+        """
         return (self.error_before_exec is None) and (self.error_in_exec is None)
 
     def raise_error(self):
@@ -594,6 +639,12 @@ class InteractiveShell(SingletonConfigurable):
 
     @property
     def input_transformers_cleanup(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.input_transformer_manager.cleanup_transforms
 
     input_transformers_post = List(
@@ -839,6 +890,16 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
 
     def init_ipython_dir(self, ipython_dir):
+        """
+
+        Parameters
+        ----------
+        ipython_dir :
+
+        Returns
+        -------
+
+        """
         if ipython_dir is not None:
             self.ipython_dir = ipython_dir
             return
@@ -846,6 +907,16 @@ class InteractiveShell(SingletonConfigurable):
         self.ipython_dir = get_ipython_dir()
 
     def init_profile_dir(self, profile_dir):
+        """
+
+        Parameters
+        ----------
+        profile_dir :
+
+        Returns
+        -------
+
+        """
         if profile_dir is not None:
             self.profile_dir = profile_dir
             return
@@ -922,6 +993,9 @@ class InteractiveShell(SingletonConfigurable):
         self.dir_stack = []
 
     def init_logger(self):
+        """
+
+        """
         self.logger = Logger(self.home_dir, logfname="ipython_log.py", logmode="rotate")
 
     def init_logstart(self):
@@ -1137,6 +1211,12 @@ class InteractiveShell(SingletonConfigurable):
 
     @property
     def banner(self):
+        """
+
+        Returns
+        -------
+
+        """
         banner = self.banner1
         if self.profile and self.profile != "default":
             banner += "\nIPython profile: %s\n" % self.profile
@@ -1145,6 +1225,12 @@ class InteractiveShell(SingletonConfigurable):
         return banner
 
     def show_banner(self, banner=None):
+        """
+
+        Parameters
+        ----------
+        banner :
+        """
         if banner is None:
             banner = self.banner
         sys.stdout.write(banner)
@@ -1238,6 +1324,9 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
 
     def init_events(self):
+        """
+
+        """
         self.events = EventManager(self, available_events)
         self.events.register("pre_execute", self._clear_warning_registry)
 
@@ -1412,6 +1501,12 @@ class InteractiveShell(SingletonConfigurable):
 
     @property
     def user_global_ns(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.user_module.__dict__
 
     def prepare_user_module(self, user_module=None, user_ns=None):
@@ -2140,6 +2235,14 @@ class InteractiveShell(SingletonConfigurable):
 
         @functools.wraps
         def dummy_handler(etype, value, tb):
+            """
+
+            Parameters
+            ----------
+            etype :
+            value :
+            tb :
+            """
             print("*** Simple custom exception handler ***")
             print("Exception type :", etype)
             print("Exception value:", value)
@@ -2692,6 +2795,14 @@ class InteractiveShell(SingletonConfigurable):
     # Defined here so that it's included in the documentation
     @functools.wraps(magic.MagicsManager.register_function)
     def register_magic_function(self, func, magic_kind="line", magic_name=None):
+        """
+
+        Parameters
+        ----------
+        func :
+        magic_kind :
+        magic_name :
+        """
         self.magics_manager.register_function(
             func, magic_kind=magic_kind, magic_name=magic_name
         )
@@ -3489,6 +3600,16 @@ class InteractiveShell(SingletonConfigurable):
             result.execution_count = self.execution_count
 
         def error_before_exec(value):
+            """
+
+            Parameters
+            ----------
+            value :
+
+            Returns
+            -------
+
+            """
             if store_history:
                 self.execution_count += 1
             result.error_before_exec = value
@@ -3803,6 +3924,16 @@ class InteractiveShell(SingletonConfigurable):
                 if sys.version_info > (3, 8):
 
                     def compare(code):
+                        """
+
+                        Parameters
+                        ----------
+                        code :
+
+                        Returns
+                        -------
+
+                        """
                         is_async = (
                             inspect.CO_COROUTINE & code.co_flags == inspect.CO_COROUTINE
                         )
@@ -3811,6 +3942,16 @@ class InteractiveShell(SingletonConfigurable):
                 else:
 
                     def compare(code):
+                        """
+
+                        Parameters
+                        ----------
+                        code :
+
+                        Returns
+                        -------
+
+                        """
                         return _async
 
                 # refactor that to just change the mod constructor.
@@ -4129,6 +4270,18 @@ class InteractiveShell(SingletonConfigurable):
         return filename
 
     def ask_yes_no(self, prompt, default=None, interrupt=None):
+        """
+
+        Parameters
+        ----------
+        prompt :
+        default :
+        interrupt :
+
+        Returns
+        -------
+
+        """
         if self.quiet:
             return True
         return ask_yes_no(prompt, default, interrupt)
@@ -4324,10 +4477,19 @@ class InteractiveShell(SingletonConfigurable):
         self.hooks.shutdown_hook()
 
     def cleanup(self):
+        """
+
+        """
         self.restore_sys_module_state()
 
     # Overridden in terminal subclass to change prompts
     def switch_doctest_mode(self, mode):
+        """
+
+        Parameters
+        ----------
+        mode :
+        """
         pass
 
 

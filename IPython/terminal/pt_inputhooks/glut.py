@@ -57,22 +57,38 @@ else:
 
 
 def glut_display():
+    """
+
+    """
     # Dummy display function
     pass
 
 
 def glut_idle():
+    """
+
+    """
     # Dummy idle function
     pass
 
 
 def glut_close():
+    """
+
+    """
     # Close function only hides the current window
     glut.glutHideWindow()
     glutMainLoopEvent()
 
 
 def glut_int_handler(signum, frame):
+    """
+
+    Parameters
+    ----------
+    signum :
+    frame :
+    """
     # Catch sigint and print the defaultipyt   message
     signal.signal(signal.SIGINT, signal.default_int_handler)
     print('\nKeyboardInterrupt')

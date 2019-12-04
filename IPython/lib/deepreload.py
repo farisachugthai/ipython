@@ -44,6 +44,12 @@ original_import = builtin_mod.__import__
 
 @contextmanager
 def replace_import_hook(new_import):
+    """
+
+    Parameters
+    ----------
+    new_import :
+    """
     saved_import = builtin_mod.__import__
     builtin_mod.__import__ = new_import
     try:

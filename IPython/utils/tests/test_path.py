@@ -200,6 +200,9 @@ def test_get_home_dir_8():
 
     class key:
         def Close(self):
+            """
+
+            """
             pass
 
     with patch.object(wreg, "OpenKey", return_value=key()), patch.object(
@@ -355,6 +358,9 @@ def test_unicode_in_filename():
 class TestShellGlob(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """
+
+        """
         cls.filenames_start_with_a = ["a0", "a1", "a2"]
         cls.filenames_end_with_b = ["0b", "1b", "2b"]
         cls.filenames = cls.filenames_start_with_a + cls.filenames_end_with_b
@@ -368,11 +374,17 @@ class TestShellGlob(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """
+
+        """
         cls.tempdir.cleanup()
 
     @classmethod
     @contextmanager
     def in_tempdir(cls):
+        """
+
+        """
         save = os.getcwd()
         try:
             os.chdir(cls.tempdir.name)
@@ -381,11 +393,24 @@ class TestShellGlob(unittest.TestCase):
             os.chdir(save)
 
     def check_match(self, patterns, matches):
+        """
+
+        Parameters
+        ----------
+        patterns :
+        matches :
+        """
         with self.in_tempdir():
             # glob returns unordered list. that's why sorted is required.
             nt.assert_equal(sorted(path.shellglob(patterns)), sorted(matches))
 
     def common_cases(self):
+        """
+
+        Returns
+        -------
+
+        """
         return [
             (["*"], self.filenames),
             (["a*"], self.filenames_start_with_a),
@@ -444,18 +469,41 @@ def test_ensure_dir_exists():
 
 class TestLinkOrCopy(unittest.TestCase):
     def setUp(self):
+        """
+
+        """
         self.tempdir = TemporaryDirectory()
         self.src = self.dst("src")
         with open(self.src, "w") as f:
             f.write("Hello, world!")
 
     def tearDown(self):
+        """
+
+        """
         self.tempdir.cleanup()
 
     def dst(self, *args):
+        """
+
+        Parameters
+        ----------
+        args :
+
+        Returns
+        -------
+
+        """
         return os.path.join(self.tempdir.name, *args)
 
     def assert_inode_not_equal(self, a, b):
+        """
+
+        Parameters
+        ----------
+        a :
+        b :
+        """
         nt.assert_not_equal(
             os.stat(a).st_ino,
             os.stat(b).st_ino,
@@ -463,6 +511,13 @@ class TestLinkOrCopy(unittest.TestCase):
         )
 
     def assert_inode_equal(self, a, b):
+        """
+
+        Parameters
+        ----------
+        a :
+        b :
+        """
         nt.assert_equal(
             os.stat(a).st_ino,
             os.stat(b).st_ino,
@@ -470,6 +525,13 @@ class TestLinkOrCopy(unittest.TestCase):
         )
 
     def assert_content_equal(self, a, b):
+        """
+
+        Parameters
+        ----------
+        a :
+        b :
+        """
         with open(a) as a_f:
             with open(b) as b_f:
                 nt.assert_equal(a_f.read(), b_f.read())

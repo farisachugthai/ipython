@@ -112,6 +112,12 @@ def test_cell_magic_not_found():
 
 def test_magic_error_status():
     def fail(shell):
+        """
+
+        Parameters
+        ----------
+        shell :
+        """
         1 / 0
 
     _ip.register_magic_function(fail)
@@ -155,7 +161,8 @@ def test_config_print_class():
 
 @nottest
 def test_rehashx():
-    """This test uses the db attribute which IPython hasn't had for years.""" """.earsr yn't had fo hasIPythonch hie wutribb attdhe ses tu esttThis """  # clear up everything
+    """This test uses the db attribute which IPython hasn't had for years.""" """.earsr yn't had fo hasIPythonch hie 
+    wutribb attdhe ses tu esttThis """  # clear up everything
     _ip.alias_manager.clear_aliases()
     del _ip.db["syscmdlist"]
 
@@ -405,6 +412,12 @@ class TestResetErrors(TestCase):
         class KernelMagics(Magics):
             @line_magic
             def less(self, shell):
+                """
+
+                Parameters
+                ----------
+                shell :
+                """
                 pass
 
         _ip.register_magics(KernelMagics)
@@ -688,6 +701,12 @@ def test_timeit_special_syntax():
 
     @register_line_magic
     def lmagic(line):
+        """
+
+        Parameters
+        ----------
+        line :
+        """
         ip = get_ipython()
         ip.user_ns["lmagic_out"] = line
 
@@ -733,6 +752,12 @@ def test_prun_special_syntax():
 
     @register_line_magic
     def lmagic(line):
+        """
+
+        Parameters
+        ----------
+        line :
+        """
         ip = get_ipython()
         ip.user_ns["lmagic_out"] = line
 
@@ -792,13 +817,13 @@ class TestEnv(TestCase):
         env = _ip.magic("env")
         hidden = "<hidden>"
         with mock.patch.dict(
-            os.environ,
-            {
-                "API_KEY": "abc123",
-                "SECRET_THING": "ssshhh",
-                "JUPYTER_TOKEN": "",
-                "VAR": "abc",
-            },
+                os.environ,
+                {
+                    "API_KEY"      : "abc123",
+                    "SECRET_THING" : "ssshhh",
+                    "JUPYTER_TOKEN": "",
+                    "VAR"          : "abc",
+                },
         ):
             env = _ip.magic("env")
         assert env["API_KEY"] == hidden
@@ -833,6 +858,12 @@ class TestEnv(TestCase):
 
 class CellMagicTestCase(TestCase):
     def check_ident(self, magic):
+        """
+
+        Parameters
+        ----------
+        magic :
+        """
         # Manually called, we get the result
         out = _ip.run_cell_magic(magic, "a", "b")
         nt.assert_equal(out, ("a", "b"))
@@ -845,6 +876,17 @@ class CellMagicTestCase(TestCase):
 
         @register_cell_magic
         def cellm(line, cell):
+            """
+
+            Parameters
+            ----------
+            line :
+            cell :
+
+            Returns
+            -------
+
+            """
             return line, cell
 
         self.check_ident("cellm")
@@ -853,6 +895,17 @@ class CellMagicTestCase(TestCase):
         """Cell magic manually registered"""
 
         def cellm(line, cell):
+            """
+
+            Parameters
+            ----------
+            line :
+            cell :
+
+            Returns
+            -------
+
+            """
             return line, cell
 
         _ip.register_magic_function(cellm, "cell", "cellm2")
@@ -865,6 +918,17 @@ class CellMagicTestCase(TestCase):
         class MyMagics(Magics):
             @cell_magic
             def cellm3(self, line, cell):
+                """
+
+                Parameters
+                ----------
+                line :
+                cell :
+
+                Returns
+                -------
+
+                """
                 return line, cell
 
         _ip.register_magics(MyMagics)
@@ -877,6 +941,17 @@ class CellMagicTestCase(TestCase):
         class MyMagics2(Magics):
             @cell_magic("cellm4")
             def cellm33(self, line, cell):
+                """
+
+                Parameters
+                ----------
+                line :
+                cell :
+
+                Returns
+                -------
+
+                """
                 return line, cell
 
         _ip.register_magics(MyMagics2)
@@ -891,7 +966,7 @@ def test_file():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -904,7 +979,7 @@ def test_file_single_quote():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "'file1'")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -917,7 +992,7 @@ def test_file_double_quote():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, '"file1"')
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -930,7 +1005,7 @@ def test_file_var_expand():
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
         ip.user_ns["filename"] = fname
-        ip.run_cell_magic("writefile", "$filename", "\n".join(["line1", "line2",]))
+        ip.run_cell_magic("writefile", "$filename", "\n".join(["line1", "line2", ]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -942,7 +1017,7 @@ def test_file_unicode():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
-        ip.run_cell_magic("writefile", fname, "\n".join(["liné1", "liné2",]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["liné1", "liné2", ]))
         with codecs.open(fname, encoding="utf-8") as f:
             s = f.read()
         nt.assert_in("liné1\n", s)
@@ -954,8 +1029,8 @@ def test_file_amend():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file2")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
-        ip.run_cell_magic("writefile", "-a %s" % fname, "\n".join(["line3", "line4",]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", "-a %s" % fname, "\n".join(["line3", "line4", ]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -967,7 +1042,7 @@ def test_file_spaces():
     ip = get_ipython()
     with TemporaryWorkingDirectory() as td:
         fname = "file name"
-        ip.run_cell_magic("file", '"%s"' % fname, "\n".join(["line1", "line2",]))
+        ip.run_cell_magic("file", '"%s"' % fname, "\n".join(["line1", "line2", ]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -1157,7 +1232,7 @@ def test_store():
 
 
 def _run_edit_test(
-    arg_s, exp_filename=None, exp_lineno=-1, exp_contents=None, exp_is_temp=None
+        arg_s, exp_filename=None, exp_lineno=-1, exp_contents=None, exp_is_temp=None
 ):
     ip = get_ipython()
     M = code.CodeMagics(ip)
@@ -1222,6 +1297,16 @@ def test_ls_magic():
 
 def test_strip_initial_indent():
     def sii(s):
+        """
+
+        Parameters
+        ----------
+        s :
+
+        Returns
+        -------
+
+        """
         lines = s.splitlines()
         return "\n".join(code.strip_initial_indent(lines))
 

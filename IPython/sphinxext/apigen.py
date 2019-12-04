@@ -74,6 +74,16 @@ class FuncClsScanner(ast.NodeVisitor):
 
     @staticmethod
     def has_undoc_decorator(node):
+        """
+
+        Parameters
+        ----------
+        node :
+
+        Returns
+        -------
+
+        """
         return any(
             isinstance(d, ast.Name) and d.id == "undoc" for d in node.decorator_list
         )
@@ -96,6 +106,12 @@ class FuncClsScanner(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+        """
         if (
             not (node.name.startswith("_") or self.has_undoc_decorator(node))
             and node.name not in self.functions
@@ -103,6 +119,12 @@ class FuncClsScanner(ast.NodeVisitor):
             self.functions.append(node.name)
 
     def visit_ClassDef(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+        """
         if (
             not (node.name.startswith("_") or self.has_undoc_decorator(node))
             and node.name not in self.classes_seen
@@ -116,6 +138,16 @@ class FuncClsScanner(ast.NodeVisitor):
             self.classes_seen.add(node.name)
 
     def scan(self, mod):
+        """
+
+        Parameters
+        ----------
+        mod :
+
+        Returns
+        -------
+
+        """
         self.visit(mod)
         return self.functions, self.classes
 
@@ -470,6 +502,13 @@ class ApiDocWriter:
         return sorted(modules)
 
     def write_modules_api(self, modules, outdir):
+        """
+
+        Parameters
+        ----------
+        modules :
+        outdir :
+        """
         # write the list
         written_modules = []
         for m in modules:

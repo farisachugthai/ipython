@@ -19,6 +19,9 @@ from io import StringIO
 
 
 class MyList(object):
+    """
+
+    """
     def __init__(self, content):
         self.content = content
 
@@ -43,6 +46,9 @@ class MyDict(dict):
 
 class MyObj(object):
     def somemethod(self):
+        """
+
+        """
         pass
 
 
@@ -252,6 +258,9 @@ class TestsPretty(unittest.TestCase):
 
 
 class MetaClass(type):
+    """
+
+    """
     def __new__(cls, name):
         return type.__new__(cls, name, (object, ), {'name': name})
 
@@ -284,6 +293,18 @@ def test_unicode_repr():
 
 def test_basic_class():
     def type_pprint_wrapper(obj, p, cycle):
+        """
+
+        Parameters
+        ----------
+        obj :
+        p :
+        cycle :
+
+        Returns
+        -------
+
+        """
         if obj is MyObj:
             type_pprint_wrapper.called = True
         return pretty._type_pprint(obj, p, cycle)
@@ -453,6 +474,16 @@ def test_function_pretty():
 
     # custom function
     def meaning_of_life(question=None):
+        """
+
+        Parameters
+        ----------
+        question :
+
+        Returns
+        -------
+
+        """
         if question:
             return 42
         return "Don't panic"

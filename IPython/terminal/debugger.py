@@ -31,6 +31,7 @@ from IPython.terminal.ptutils import IPythonPTCompleter
 from IPython.terminal.shortcuts import suspend_to_bg, cursor_in_leading_ws
 
 from prompt_toolkit import __version__ as ptk_version
+
 PTK3 = ptk_version.startswith('3.')
 
 
@@ -74,6 +75,12 @@ class TerminalPdb(CorePdb):
         self.pt_app = PromptSession(**options)
 
     def get_prompt_tokens(self):
+        """
+
+        Returns
+        -------
+
+        """
         return [(Token.Prompt, self.prompt)]
 
     def pt_init(self):
@@ -104,7 +111,6 @@ class TerminalPdb(CorePdb):
         kb.add(load_basic_bindings())
 
         return kb
-
 
     def cmdloop(self, intro=None):
         """Repeatedly issue a prompt, accept input, parse an initial prefix
@@ -156,6 +162,7 @@ def set_trace(frame=None):
 
 if __name__ == '__main__':
     import pdb
+
     old_trace_dispatch = pdb.Pdb.trace_dispatch
     pdb.Pdb = TerminalPdb
     pdb.Pdb.trace_dispatch = old_trace_dispatch

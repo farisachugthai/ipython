@@ -18,6 +18,7 @@ from IPython.utils import py3compat
 from IPython.utils.process import arg_split
 from traitlets import List, Dict, default
 
+
 # -----------------------------------------------------------------------------
 # Magic implementation classes
 # -----------------------------------------------------------------------------
@@ -106,7 +107,7 @@ class ScriptMagics(Magics):
         ]
         if os.name == "nt":
             defaults.extend(
-                ["cmd",]
+                ["cmd", ]
             )
 
         return defaults
@@ -142,6 +143,17 @@ class ScriptMagics(Magics):
         @magic_arguments.magic_arguments()
         @script_args
         def named_script_magic(line, cell):
+            """
+
+            Parameters
+            ----------
+            line :
+            cell :
+
+            Returns
+            -------
+
+            """
             # if line, add it as cl-flags
             if line:
                 line = "%s %s" % (script, line)

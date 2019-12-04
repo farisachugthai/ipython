@@ -47,9 +47,27 @@ class DummyDB:
 
     @staticmethod
     def execute(*args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        args :
+        kwargs :
+
+        Returns
+        -------
+
+        """
         return []
 
     def commit(self, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        args :
+        kwargs :
+        """
         pass
 
     def __enter__(self, *args, **kwargs):
@@ -132,17 +150,55 @@ class HistoryAccessorBase(LoggingConfigurable):
     """An abstract class for History Accessors """
 
     def get_tail(self, n=10, raw=True, output=False, include_latest=False):
+        """
+
+        Parameters
+        ----------
+        n :
+        raw :
+        output :
+        include_latest :
+        """
         raise NotImplementedError
 
     def search(
         self, pattern="*", raw=True, search_raw=True, output=False, n=None, unique=False
     ):
+        """
+
+        Parameters
+        ----------
+        pattern :
+        raw :
+        search_raw :
+        output :
+        n :
+        unique :
+        """
         raise NotImplementedError
 
     def get_range(self, session, start=1, stop=None, raw=True, output=False):
+        """
+
+        Parameters
+        ----------
+        session :
+        start :
+        stop :
+        raw :
+        output :
+        """
         raise NotImplementedError
 
     def get_range_by_str(self, rangestr, raw=True, output=False):
+        """
+
+        Parameters
+        ----------
+        rangestr :
+        raw :
+        output :
+        """
         raise NotImplementedError
 
 
@@ -913,6 +969,12 @@ class HistorySavingThread(threading.Thread):
 
     @needs_sqlite
     def run(self):
+        """
+
+        Returns
+        -------
+
+        """
         # We need a separate db connection per thread:
         try:
             self.db = sqlite3.connect(

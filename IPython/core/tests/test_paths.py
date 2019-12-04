@@ -44,6 +44,16 @@ def teardown_module():
 
 
 def patch_get_home_dir(dirpath):
+    """
+
+    Parameters
+    ----------
+    dirpath :
+
+    Returns
+    -------
+
+    """
     return patch.object(paths, "get_home_dir", return_value=dirpath)
 
 

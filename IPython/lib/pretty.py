@@ -114,6 +114,9 @@ def _safe_getattr(obj, attr, default=None):
 
 @undoc
 class CUnicodeIO(StringIO):
+    """
+
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         warn(("CUnicodeIO is deprecated since IPython 6.0. "
@@ -459,25 +462,60 @@ class RepresentationPrinter(PrettyPrinter):
 
 class Printable(object):
     def output(self, stream, output_width):
+        """
+
+        Parameters
+        ----------
+        stream :
+        output_width :
+
+        Returns
+        -------
+
+        """
         return output_width
 
 
 class Text(Printable):
+    """
+
+    """
     def __init__(self):
         self.objs = []
         self.width = 0
 
     def output(self, stream, output_width):
+        """
+
+        Parameters
+        ----------
+        stream :
+        output_width :
+
+        Returns
+        -------
+
+        """
         for obj in self.objs:
             stream.write(obj)
         return output_width + self.width
 
     def add(self, obj, width):
+        """
+
+        Parameters
+        ----------
+        obj :
+        width :
+        """
         self.objs.append(obj)
         self.width += width
 
 
 class Breakable(Printable):
+    """
+
+    """
     def __init__(self, seq, width, pretty):
         self.obj = seq
         self.width = width
@@ -487,6 +525,17 @@ class Breakable(Printable):
         self.group.breakables.append(self)
 
     def output(self, stream, output_width):
+        """
+
+        Parameters
+        ----------
+        stream :
+        output_width :
+
+        Returns
+        -------
+
+        """
         self.group.breakables.popleft()
         if self.group.want_break:
             stream.write(self.pretty.newline)
@@ -499,6 +548,9 @@ class Breakable(Printable):
 
 
 class Group(Printable):
+    """
+
+    """
     def __init__(self, depth):
         self.depth = depth
         self.breakables = deque()
@@ -506,18 +558,33 @@ class Group(Printable):
 
 
 class GroupQueue(object):
+    """
+
+    """
     def __init__(self, *groups):
         self.queue = []
         for group in groups:
             self.enq(group)
 
     def enq(self, group):
+        """
+
+        Parameters
+        ----------
+        group :
+        """
         depth = group.depth
         while depth > len(self.queue) - 1:
             self.queue.append([])
         self.queue[depth].append(group)
 
     def deq(self):
+        """
+
+        Returns
+        -------
+
+        """
         for stack in self.queue:
             for idx, group in enumerate(reversed(stack)):
                 if group.breakables:
@@ -529,6 +596,12 @@ class GroupQueue(object):
             del stack[:]
 
     def remove(self, group):
+        """
+
+        Parameters
+        ----------
+        group :
+        """
         try:
             self.queue[group.depth].remove(group)
         except ValueError:
@@ -580,6 +653,18 @@ def _seq_pprinter_factory(start, end):
     """
 
     def inner(obj, p, cycle):
+        """
+
+        Parameters
+        ----------
+        obj :
+        p :
+        cycle :
+
+        Returns
+        -------
+
+        """
         if cycle:
             return p.text(start + '...' + end)
         step = len(start)
@@ -603,6 +688,18 @@ def _set_pprinter_factory(start, end):
     """
 
     def inner(obj, p, cycle):
+        """
+
+        Parameters
+        ----------
+        obj :
+        p :
+        cycle :
+
+        Returns
+        -------
+
+        """
         if cycle:
             return p.text(start + '...' + end)
         if len(obj) == 0:
@@ -634,6 +731,18 @@ def _dict_pprinter_factory(start, end):
     """
 
     def inner(obj, p, cycle):
+        """
+
+        Parameters
+        ----------
+        obj :
+        p :
+        cycle :
+
+        Returns
+        -------
+
+        """
         if cycle:
             return p.text('{...}')
         step = len(start)
@@ -893,6 +1002,9 @@ if __name__ == '__main__':
     from random import randrange
 
     class Foo(object):
+        """
+
+        """
         def __init__(self):
             self.foo = 1
             self.bar = re.compile(r'\s+')
@@ -901,6 +1013,9 @@ if __name__ == '__main__':
             self.list = ["blub", "blah", self]
 
         def get_foo(self):
+            """
+
+            """
             print("foo")
 
     pprint(Foo(), verbose=True)

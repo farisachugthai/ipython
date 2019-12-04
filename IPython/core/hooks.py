@@ -257,4 +257,13 @@ def clipboard_get(self):
 
 
 def synchronize_with_editor(self, filename, linenum, column):
+    """
+
+    Parameters
+    ----------
+    self :
+    filename :
+    linenum :
+    column :
+    """
     pass

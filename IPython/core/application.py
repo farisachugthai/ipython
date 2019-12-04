@@ -135,6 +135,18 @@ class ProfileAwareConfigLoader(PyFileConfigLoader):
     """A Python file config loader that is aware of IPython profiles."""
 
     def load_subconfig(self, fname, path=None, profile=None):
+        """
+
+        Parameters
+        ----------
+        fname :
+        path :
+        profile :
+
+        Returns
+        -------
+
+        """
         if profile is not None:
             try:
                 profile_dir = ProfileDir.find_profile_dir_by_name(
@@ -317,6 +329,17 @@ class BaseIPythonApplication(Application):
     deprecated_subcommands = {}
 
     def initialize_subcommand(self, subc, argv=None):
+        """
+
+        Parameters
+        ----------
+        subc :
+        argv :
+
+        Returns
+        -------
+
+        """
         if subc in self.deprecated_subcommands:
             self.log.warning(
                 "Subcommand `ipython {sub}` is deprecated and will be removed "
@@ -334,6 +357,9 @@ class BaseIPythonApplication(Application):
         sys.excepthook = self.excepthook
 
         def unset_crashhandler():
+            """
+
+            """
             sys.excepthook = sys.__excepthook__
 
         atexit.register(unset_crashhandler)

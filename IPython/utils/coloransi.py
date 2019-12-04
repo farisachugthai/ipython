@@ -359,6 +359,12 @@ class Base16Style(defaultdict):
 
     @property
     def colors(self):
+        """
+
+        Returns
+        -------
+
+        """
         return styles
 
     # See https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/prompt_toolkit/styles/defaults.py

@@ -434,6 +434,16 @@ class NamespaceMagics(Magics):
         abbrevs = {"IPython.core.macro.Macro": "Macro"}
 
         def type_name(v):
+            """
+
+            Parameters
+            ----------
+            v :
+
+            Returns
+            -------
+
+            """
             tn = type(v).__name__
             return abbrevs.get(tn, tn)
 

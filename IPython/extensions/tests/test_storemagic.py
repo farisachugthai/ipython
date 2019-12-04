@@ -15,6 +15,9 @@ import nose.tools as nt
 
 
 def setup_module():
+    """
+
+    """
     ip.magic('load_ext storemagic')
 
 

@@ -29,6 +29,9 @@ reg = re.compile(r"^\w+\.\w+$")
 
 @magics_class
 class ConfigMagics(Magics):
+    """
+
+    """
     def __init__(self, shell):
         super(ConfigMagics, self).__init__(shell)
         self.configurables = []

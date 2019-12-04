@@ -45,6 +45,12 @@ class HistoryTrim(BaseIPythonApplication):
     aliases = Dict(dict(keep="HistoryTrim.keep"))
 
     def start(self):
+        """
+
+        Returns
+        -------
+
+        """
         profile_dir = self.profile_dir.location
         hist_file = os.path.join(profile_dir, "history.sqlite")
         con = sqlite3.connect(hist_file)
@@ -151,6 +157,9 @@ class HistoryClear(HistoryTrim):
     aliases = Dict()
 
     def start(self):
+        """
+
+        """
         if self.force or ask_yes_no(
             "Really delete all ipython history? ", default="no", interrupt="no"
         ):
@@ -169,6 +178,12 @@ class HistoryApp(Application):
     )
 
     def start(self):
+        """
+
+        Returns
+        -------
+
+        """
         if self.subapp is None:
             print(
                 "No subcommand specified. Must specify one of: %s"

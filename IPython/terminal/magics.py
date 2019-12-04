@@ -36,6 +36,9 @@ def get_pasted_lines(sentinel, l_input=py3compat.input, quiet=False):
 
 @magics_class
 class TerminalMagics(Magics):
+    """
+
+    """
     def __init__(self, shell):
         super(TerminalMagics, self).__init__(shell)
 
@@ -56,6 +59,16 @@ class TerminalMagics(Magics):
                 self.shell.using_paste_magics = False
 
     def preclean_input(self, block):
+        """
+
+        Parameters
+        ----------
+        block :
+
+        Returns
+        -------
+
+        """
         lines = block.splitlines()
         while lines and not lines[0].strip():
             lines = lines[1:]

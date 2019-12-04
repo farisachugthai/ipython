@@ -25,6 +25,13 @@ class KnownFailure(ErrorClassPlugin):
                            isfailure=False)
 
     def options(self, parser, env=os.environ):
+        """
+
+        Parameters
+        ----------
+        parser :
+        env :
+        """
         env_opt = 'NOSE_WITHOUT_KNOWNFAIL'
         parser.add_option('--no-knownfail', action='store_true',
                           dest='noKnownFail', default=env.get(env_opt, False),
@@ -32,6 +39,17 @@ class KnownFailure(ErrorClassPlugin):
                                'exceptions')
 
     def configure(self, options, conf):
+        """
+
+        Parameters
+        ----------
+        options :
+        conf :
+
+        Returns
+        -------
+
+        """
         if not self.can_configure:
             return
         self.conf = conf

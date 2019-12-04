@@ -82,6 +82,12 @@ class ExtensionManager(Configurable):
 
     @property
     def ipython_extension_dir(self):
+        """
+
+        Returns
+        -------
+
+        """
         return os.path.join(self.shell.ipython_dir, "extensions")
 
     def _on_ipython_dir_changed(self, change):

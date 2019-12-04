@@ -74,6 +74,12 @@ def teardown_module():
 # Test functions
 # -----------------------------------------------------------------------------
 def win32_without_pywin32():
+    """
+
+    Returns
+    -------
+
+    """
     if sys.platform == "win32":
         try:
             import pywin32
@@ -84,17 +90,31 @@ def win32_without_pywin32():
 
 class ProfileStartupTest(TestCase):
     def setUp(self):
+        """
+
+        """
         # create profile dir
         self.pd = ProfileDir.create_profile_dir_by_name(IP_TEST_DIR, "test")
         self.options = ["--ipython-dir", IP_TEST_DIR, "--profile", "test"]
         self.fname = os.path.join(TMP_TEST_DIR, "test.py")
 
     def tearDown(self):
+        """
+
+        """
         # We must remove this profile right away so its presence doesn't
         # confuse other tests.
         shutil.rmtree(self.pd.location)
 
     def init(self, startup_file, startup, test):
+        """
+
+        Parameters
+        ----------
+        startup_file :
+        startup :
+        test :
+        """
         # write startup python file
         with open(os.path.join(self.pd.startup_dir, startup_file), "w") as f:
             f.write(startup)
@@ -103,6 +123,12 @@ class ProfileStartupTest(TestCase):
             f.write(test)
 
     def validate(self, output):
+        """
+
+        Parameters
+        ----------
+        output :
+        """
         tt.ipexec_validate(self.fname, output, "", options=self.options)
 
     @dec.skipif(win32_without_pywin32(), "Test requires pywin32 on Windows")

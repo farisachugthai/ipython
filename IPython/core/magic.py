@@ -225,6 +225,18 @@ def _method_magic_marker(magic_kind):
             name = arg
 
             def mark(func, *a, **kw):
+                """
+
+                Parameters
+                ----------
+                func :
+                a :
+                kw :
+
+                Returns
+                -------
+
+                """
                 record_magic(magics, magic_kind, name, func.__name__)
                 return decorator(call, func)
 
@@ -284,6 +296,18 @@ def _function_magic_marker(magic_kind):
             name = arg
 
             def mark(func, *a, **kw):
+                """
+
+                Parameters
+                ----------
+                func :
+                a :
+                kw :
+
+                Returns
+                -------
+
+                """
                 ip.register_magic_function(func, magic_kind, name)
                 return decorator(call, func)
 

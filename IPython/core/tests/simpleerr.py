@@ -10,6 +10,13 @@ def div0():
 
 
 def sysexit(stat, mode):
+    """
+
+    Parameters
+    ----------
+    stat :
+    mode :
+    """
     raise SystemExit(stat, "Mode = %s" % mode)
 
 

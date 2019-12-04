@@ -195,11 +195,23 @@ class DemoError(Exception):
 
 
 def re_mark(mark):
+    """
+
+    Parameters
+    ----------
+    mark :
+
+    Returns
+    -------
+
+    """
     return re.compile(r'^\s*#\s+<demo>\s+%s\s*$' % mark, re.MULTILINE)
 
 
 class Demo(object):
+    """
 
+    """
     re_stop = re_mark(r'-*\s?stop\s?-*')
     re_silent = re_mark('silent')
     re_auto = re_mark('auto')
@@ -325,7 +337,18 @@ class Demo(object):
         # Clean the sources from all markup so it doesn't get displayed when
         # running the demo
         src_blocks = []
-        def auto_strip(s): return self.re_auto.sub('', s)
+        def auto_strip(s):
+            """
+
+            Parameters
+            ----------
+            s :
+
+            Returns
+            -------
+
+            """
+            return self.re_auto.sub('', s)
         for i, b in enumerate(src_b):
             if self._auto[i]:
                 src_blocks.append(auto_strip(b))
@@ -660,6 +683,18 @@ def slide(file_path,
           style="native",
           auto_all=False,
           delimiter='...'):
+    """
+
+    Parameters
+    ----------
+    file_path :
+    noclear :
+    format_rst :
+    formatter :
+    style :
+    auto_all :
+    delimiter :
+    """
     if noclear:
         demo_class = Demo
     else:

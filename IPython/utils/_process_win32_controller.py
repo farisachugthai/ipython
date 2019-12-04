@@ -278,10 +278,10 @@ class Win32ShellCommandController(object):
                 """
                 handles = HANDLE(), HANDLE()
                 if not CreatePipe(
-                    ctypes.byref(handles[0]),
-                    ctypes.byref(handles[1]),
-                    ctypes.byref(saAttr),
-                    0,
+                        ctypes.byref(handles[0]),
+                        ctypes.byref(handles[1]),
+                        ctypes.byref(saAttr),
+                        0,
                 ):
                     raise ctypes.WinError()
                 if not SetHandleInformation(handles[uninherit], HANDLE_FLAG_INHERIT, 0):
@@ -294,13 +294,13 @@ class Win32ShellCommandController(object):
             if mergeout:
                 c_hstderr = HANDLE()
                 if not DuplicateHandle(
-                    GetCurrentProcess(),
-                    c_hstdout,
-                    GetCurrentProcess(),
-                    ctypes.byref(c_hstderr),
-                    0,
-                    True,
-                    DUPLICATE_SAME_ACCESS,
+                        GetCurrentProcess(),
+                        c_hstdout,
+                        GetCurrentProcess(),
+                        ctypes.byref(c_hstderr),
+                        0,
+                        True,
+                        DUPLICATE_SAME_ACCESS,
                 ):
                     raise ctypes.WinError()
             else:
@@ -316,20 +316,20 @@ class Win32ShellCommandController(object):
             siStartInfo.hStdError = c_hstderr
             siStartInfo.dwFlags = STARTF_USESTDHANDLES
             dwCreationFlags = (
-                CREATE_SUSPENDED | CREATE_NO_WINDOW
+                    CREATE_SUSPENDED | CREATE_NO_WINDOW
             )  # | CREATE_NEW_CONSOLE
 
             if not CreateProcess(
-                None,
-                u"cmd.exe /c " + cmd,
-                None,
-                None,
-                True,
-                dwCreationFlags,
-                None,
-                None,
-                ctypes.byref(siStartInfo),
-                ctypes.byref(piProcInfo),
+                    None,
+                    u"cmd.exe /c " + cmd,
+                    None,
+                    None,
+                    True,
+                    dwCreationFlags,
+                    None,
+                    None,
+                    ctypes.byref(siStartInfo),
+                    ctypes.byref(piProcInfo),
             ):
                 raise ctypes.WinError()
 
@@ -409,14 +409,14 @@ class Win32ShellCommandController(object):
             while len(data) != 0:
                 # print("Calling writefile")
                 if not WriteFile(
-                    handle, data, len(data), ctypes.byref(bytesWritten), None
+                        handle, data, len(data), ctypes.byref(bytesWritten), None
                 ):
                     # This occurs at exit
                     if GetLastError() == ERROR_NO_DATA:
                         return
                     raise ctypes.WinError()
                 # print("Called writefile")
-                data = data[bytesWritten.value :]
+                data = data[bytesWritten.value:]
 
     def _stdout_thread(self, handle, func):
         # Allocate the output buffer
@@ -430,7 +430,7 @@ class Win32ShellCommandController(object):
                 else:
                     raise ctypes.WinError()
             # FIXME: Python3
-            s = data.value[0 : bytesRead.value]
+            s = data.value[0: bytesRead.value]
             # print("\nv: %s" % repr(s), file=sys.stderr)
             func(s.decode("utf_8", "replace"))
 

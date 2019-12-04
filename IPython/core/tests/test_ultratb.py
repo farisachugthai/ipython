@@ -35,6 +35,9 @@ file_2 = """def f():
 
 
 def setup_module():
+    """
+
+    """
     global ip
     ip = get_ipython()
 
@@ -45,7 +48,28 @@ def recursionlimit(frames):
     """
 
     def inner(test_function):
+        """
+
+        Parameters
+        ----------
+        test_function :
+
+        Returns
+        -------
+
+        """
         def wrapper(*args, **kwargs):
+            """
+
+            Parameters
+            ----------
+            args :
+            kwargs :
+
+            Returns
+            -------
+
+            """
             _orig_rec_limit = ultratb._FRAME_RECURSION_LIMIT
             ultratb._FRAME_RECURSION_LIMIT = 50
 
@@ -338,6 +362,9 @@ def r3o2():
 """
 
     def setUp(self):
+        """
+
+        """
         ip.run_cell(self.DEFINITIONS)
 
     def test_no_recursion(self):
@@ -359,6 +386,13 @@ def r3o2():
         captured = []
 
         def capture_exc(*args, **kwargs):
+            """
+
+            Parameters
+            ----------
+            args :
+            kwargs :
+            """
             captured.append(sys.exc_info())
 
         with mock.patch.object(ip, "showtraceback", capture_exc):
@@ -389,15 +423,42 @@ def r3o2():
 # module testing (minimal)
 def test_handlers():
     def spam(c, d_e):
+        """
+
+        Parameters
+        ----------
+        c :
+        d_e :
+        """
         (d, e) = d_e
         x = c + d
         y = c * d
         foo(x, y)
 
     def foo(a, b, bar=1):
+        """
+
+        Parameters
+        ----------
+        a :
+        b :
+        bar :
+        """
         eggs(a, b + bar)
 
     def eggs(f, g, z=None):
+        """
+
+        Parameters
+        ----------
+        f :
+        g :
+        z :
+
+        Returns
+        -------
+
+        """
         if z is None:
             z = globals()
         h = f + g

@@ -37,6 +37,9 @@ from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
 
 @contextmanager
 def greedy_completion():
+    """
+
+    """
     ip = get_ipython()
     greedy_original = ip.Completer.greedy
     try:
@@ -88,6 +91,13 @@ def test_protect_filename():
 
 
 def check_line_split(splitter, test_specs):
+    """
+
+    Parameters
+    ----------
+    splitter :
+    test_specs :
+    """
     for part1, part2, split in test_specs:
         cursor_pos = len(part1)
         line = part1 + part2
@@ -125,6 +135,9 @@ class NamedInstanceMetaclass(type):
 
 
 class NamedInstanceClass(metaclass=NamedInstanceMetaclass):
+    """
+
+    """
     def __init__(self, name):
         if not hasattr(self.__class__, "instances"):
             self.__class__.instances = {}
@@ -136,10 +149,23 @@ class NamedInstanceClass(metaclass=NamedInstanceMetaclass):
 
     @classmethod
     def get_instance(cls, name):
+        """
+
+        Parameters
+        ----------
+        name :
+
+        Returns
+        -------
+
+        """
         return cls.instances[name]
 
 
 class KeyCompletable:
+    """
+
+    """
     def __init__(self, things=()):
         self.things = things
 
@@ -156,6 +182,9 @@ class TestCompleter(unittest.TestCase):
         self._assertwarns.__enter__()
 
     def tearDown(self):
+        """
+
+        """
         try:
             self._assertwarns.__exit__(None, None, None)
         except AssertionError:
@@ -172,6 +201,13 @@ class TestCompleter(unittest.TestCase):
 
         @complete_object.register(A)
         def complete_A(a, existing_completions):
+            """
+
+            Parameters
+            ----------
+            a :
+            existing_completions :
+            """
             raise TypeError("this should be silenced")
 
         ip.complete("x.")
@@ -184,6 +220,16 @@ class TestCompleter(unittest.TestCase):
         assert matches.index("input") < matches.index("int")
 
         def complete_example(a):
+            """
+
+            Parameters
+            ----------
+            a :
+
+            Returns
+            -------
+
+            """
             return ["example2", "example1"]
 
         ip.Completer.custom_completers.add_re("ex*", complete_example)
@@ -261,6 +307,9 @@ class TestCompleter(unittest.TestCase):
 
     class CompletionSplitterTestCase(unittest.TestCase):
         def setUp(self):
+            """
+
+            """
             self.sp = completer.CompletionSplitter()
 
         def test_delim_setting(self):
@@ -872,6 +921,12 @@ class TestCompleter(unittest.TestCase):
         ip.user_ns["get"] = lambda: d
 
         def assert_no_completion(**kwargs):
+            """
+
+            Parameters
+            ----------
+            kwargs :
+            """
             _, matches = complete(**kwargs)
             nt.assert_not_in("abc", matches)
             nt.assert_not_in("abc'", matches)
@@ -880,6 +935,12 @@ class TestCompleter(unittest.TestCase):
             nt.assert_not_in("'abc']", matches)
 
         def assert_completion(**kwargs):
+            """
+
+            Parameters
+            ----------
+            kwargs :
+            """
             _, matches = complete(**kwargs)
             nt.assert_in("'abc'", matches)
             nt.assert_not_in("'abc']", matches)
@@ -897,6 +958,12 @@ class TestCompleter(unittest.TestCase):
 
         # greedy flag
         def assert_completion(**kwargs):
+            """
+
+            Parameters
+            ----------
+            kwargs :
+            """
             _, matches = complete(**kwargs)
             nt.assert_in("get()['abc']", matches)
 

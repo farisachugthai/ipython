@@ -39,6 +39,16 @@ _qt_apis = (QT_API_PYSIDE, QT_API_PYSIDE2, QT_API_PYQT, QT_API_PYQT5, QT_API_PYQ
 
 
 def matplotlib_options(mpl):
+    """
+
+    Parameters
+    ----------
+    mpl :
+
+    Returns
+    -------
+
+    """
     if mpl is None:
         return
     backend = mpl.rcParams.get('backend', None)

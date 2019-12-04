@@ -117,7 +117,9 @@ class EmbeddedMagics(Magics):
 
 
 class InteractiveShellEmbed(TerminalInteractiveShell):
+    """
 
+    """
     dummy_mode = Bool(False)
     exit_msg = Unicode('')
     embedded = CBool(True)
@@ -135,6 +137,12 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
 
     @property
     def embedded_active(self):
+        """
+
+        Returns
+        -------
+
+        """
         return (self._call_location_id not in InteractiveShellEmbed._inactive_locations)\
             and (self._init_location_id not in InteractiveShellEmbed._inactive_locations)
 
@@ -178,6 +186,9 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
         pass
 
     def init_magics(self):
+        """
+
+        """
         super().init_magics()
         self.register_magics(EmbeddedMagics)
 

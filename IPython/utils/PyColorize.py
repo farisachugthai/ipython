@@ -175,6 +175,12 @@ Undefined = object()
 
 
 def available_themes():
+    """
+
+    Returns
+    -------
+
+    """
     return [s for s in pygments.styles.get_all_styles()] + [
         "NoColor",
         "LightBG",
@@ -213,6 +219,18 @@ class Parser(Colorable):
             self.style = style
 
     def format(self, raw, out=None, scheme=Undefined):
+        """
+
+        Parameters
+        ----------
+        raw :
+        out :
+        scheme :
+
+        Returns
+        -------
+
+        """
         import warnings
 
         if scheme is not Undefined:

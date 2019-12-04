@@ -122,6 +122,16 @@ _use_simple_prompt = ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
 
 
 def black_reformat_handler(text_before_cursor):
+    """
+
+    Parameters
+    ----------
+    text_before_cursor :
+
+    Returns
+    -------
+
+    """
     import black
     formatted_text = black.format_str(
         text_before_cursor, mode=black.FileMode())
@@ -164,6 +174,12 @@ environment variable is set, or the current terminal is not a tty.
 
     @property
     def debugger_cls(self):
+        """
+
+        Returns
+        -------
+
+        """
         from .debugger import TerminalPdb, CorePdb
         return CorePdb if self.simple_prompt else TerminalPdb
 
@@ -252,6 +268,9 @@ environment variable is set, or the current terminal is not a tty.
         self.refresh_style()
 
     def refresh_style(self):
+        """
+
+        """
         self._style = self._make_style_from_name_or_cls(
             self.highlighting_style)
 
@@ -337,6 +356,12 @@ environment variable is set, or the current terminal is not a tty.
 
     @observe('term_title')
     def init_term_title(self, change=None):
+        """
+
+        Parameters
+        ----------
+        change :
+        """
         # Enable or disable the terminal title.
         if self.term_title:
             toggle_set_term_title(True)
@@ -345,6 +370,9 @@ environment variable is set, or the current terminal is not a tty.
             toggle_set_term_title(False)
 
     def restore_term_title(self):
+        """
+
+        """
         if self.term_title:
             restore_term_title()
 
@@ -397,6 +425,12 @@ environment variable is set, or the current terminal is not a tty.
             # Fall back to plain non-interactive output for tests.
             # This is very limited.
             def prompt():
+                """
+
+                Returns
+                -------
+
+                """
                 prompt_text = "".join(x[1]
                                       for x in self.prompts.in_prompt_tokens())
                 lines = [input(prompt_text)]
@@ -514,6 +548,12 @@ environment variable is set, or the current terminal is not a tty.
 
     @property
     def pt_complete_style(self):
+        """
+
+        Returns
+        -------
+
+        """
         return {
             'multicolumn': CompleteStyle.MULTI_COLUMN,
             'column': CompleteStyle.COLUMN,
@@ -606,6 +646,9 @@ environment variable is set, or the current terminal is not a tty.
         pass
 
     def init_magics(self):
+        """
+
+        """
         super().init_magics()
         self.register_magics(TerminalMagics)
 
@@ -629,6 +672,9 @@ environment variable is set, or the current terminal is not a tty.
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
     def ask_exit(self):
+        """
+
+        """
         self.keep_running = False
 
     def interact(self):
@@ -707,12 +753,24 @@ environment variable is set, or the current terminal is not a tty.
     _inputhook = None
 
     def inputhook(self, context):
+        """
+
+        Parameters
+        ----------
+        context :
+        """
         if self._inputhook is not None:
             self._inputhook(context)
 
     active_eventloop = None
 
     def enable_gui(self, gui=None):
+        """
+
+        Parameters
+        ----------
+        gui :
+        """
         if gui and (gui != 'inline'):
             self.active_eventloop, self._inputhook = get_inputhook_name_and_func(
                 gui)

@@ -80,7 +80,7 @@ class PromptStripper:
         if not lines:
             return lines
         if self.initial_re.match(lines[0]) or (
-            len(lines) > 1 and self.prompt_re.match(lines[1])
+                len(lines) > 1 and self.prompt_re.match(lines[1])
         ):
             return self._strip(lines)
         return lines
@@ -94,6 +94,16 @@ ipython_prompt = PromptStripper(re.compile(r"^(In \[\d+\]: |\s*\.{3,}: ?)"))
 
 
 def cell_magic(lines):
+    """
+
+    Parameters
+    ----------
+    lines :
+
+    Returns
+    -------
+
+    """
     if not lines or not lines[0].startswith("%%"):
         return lines
     if re.match(r"%%\w+\?", lines[0]):
@@ -159,7 +169,7 @@ def assemble_continued_line(lines, start: Tuple[int, int], end_line: int):
     Used to allow ``%magic`` and ``!system`` commands to be continued over
     multiple lines.
     """
-    parts = [lines[start[0]][start[1] :]] + lines[start[0] + 1 : end_line + 1]
+    parts = [lines[start[0]][start[1]:]] + lines[start[0] + 1: end_line + 1]
     return " ".join(
         [p[:-2] for p in parts[:-1]] + [parts[-1][:-1]]  # Strip backslash+newline
     )  # Strip newline from last line
@@ -190,6 +200,12 @@ class TokenTransformBase:
     priority = 10
 
     def sortby(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.start_line, self.start_col, self.priority
 
     def __init__(self, start):
@@ -228,10 +244,10 @@ class MagicAssign(TokenTransformBase):
         for line in tokens_by_line:
             assign_ix = _find_assign_op(line)
             if (
-                (assign_ix is not None)
-                and (len(line) >= assign_ix + 2)
-                and (line[assign_ix + 1].string == "%")
-                and (line[assign_ix + 2].type == tokenize.NAME)
+                    (assign_ix is not None)
+                    and (len(line) >= assign_ix + 2)
+                    and (line[assign_ix + 1].string == "%")
+                    and (line[assign_ix + 2].type == tokenize.NAME)
             ):
                 return cls(line[assign_ix + 1].start)
 
@@ -248,7 +264,7 @@ class MagicAssign(TokenTransformBase):
         lines_before = lines[:start_line]
         call = "get_ipython().run_line_magic({!r}, {!r})".format(magic_name, args)
         new_line = lhs + call + "\n"
-        lines_after = lines[end_line + 1 :]
+        lines_after = lines[end_line + 1:]
 
         return lines_before + [new_line] + lines_after
 
@@ -263,10 +279,10 @@ class SystemAssign(TokenTransformBase):
         for line in tokens_by_line:
             assign_ix = _find_assign_op(line)
             if (
-                (assign_ix is not None)
-                and not line[assign_ix].line.strip().startswith("=")
-                and (len(line) >= assign_ix + 2)
-                and (line[assign_ix + 1].type == tokenize.ERRORTOKEN)
+                    (assign_ix is not None)
+                    and not line[assign_ix].line.strip().startswith("=")
+                    and (len(line) >= assign_ix + 2)
+                    and (line[assign_ix + 1].type == tokenize.ERRORTOKEN)
             ):
                 ix = assign_ix + 1
 
@@ -291,7 +307,7 @@ class SystemAssign(TokenTransformBase):
         lines_before = lines[:start_line]
         call = "get_ipython().getoutput({!r})".format(cmd)
         new_line = lhs + call + "\n"
-        lines_after = lines[end_line + 1 :]
+        lines_after = lines[end_line + 1:]
 
         return lines_before + [new_line] + lines_after
 
@@ -329,8 +345,8 @@ def _make_help_call(target, esc, next_input=None):
         return "get_ipython().run_line_magic(%r, %r)" % (t_magic_name, t_magic_arg_s)
     else:
         return (
-            "get_ipython().set_next_input(%r);get_ipython().run_line_magic(%r, %r)"
-            % (next_input, t_magic_name, t_magic_arg_s)
+                "get_ipython().set_next_input(%r);get_ipython().run_line_magic(%r, %r)"
+                % (next_input, t_magic_name, t_magic_arg_s)
         )
 
 
@@ -381,14 +397,14 @@ def _tr_paren(content):
 
 
 tr = {
-    ESC_SHELL: "get_ipython().system({!r})".format,
+    ESC_SHELL : "get_ipython().system({!r})".format,
     ESC_SH_CAP: "get_ipython().getoutput({!r})".format,
-    ESC_HELP: _tr_help,
-    ESC_HELP2: _tr_help2,
-    ESC_MAGIC: _tr_magic,
-    ESC_QUOTE: _tr_quote,
+    ESC_HELP  : _tr_help,
+    ESC_HELP2 : _tr_help2,
+    ESC_MAGIC : _tr_magic,
+    ESC_QUOTE : _tr_quote,
     ESC_QUOTE2: _tr_quote2,
-    ESC_PAREN: _tr_paren,
+    ESC_PAREN : _tr_paren,
 }
 
 
@@ -432,7 +448,7 @@ class EscapedCommand(TokenTransformBase):
 
         lines_before = lines[:start_line]
         new_line = indent + call + "\n"
-        lines_after = lines[end_line + 1 :]
+        lines_after = lines[end_line + 1:]
 
         return lines_before + [new_line] + lines_after
 
@@ -476,10 +492,10 @@ class HelpEnd(TokenTransformBase):
     def transform(self, lines):
         """Transform a help command found by the ``find()`` classmethod.
         """
-        piece = "".join(lines[self.start_line : self.q_line + 1])
-        indent, content = piece[: self.start_col], piece[self.start_col :]
+        piece = "".join(lines[self.start_line: self.q_line + 1])
+        indent, content = piece[: self.start_col], piece[self.start_col:]
         lines_before = lines[: self.start_line]
-        lines_after = lines[self.q_line + 1 :]
+        lines_after = lines[self.q_line + 1:]
 
         m = _help_end_re.search(content)
         if not m:
@@ -516,7 +532,8 @@ def make_tokens_by_line(lines: List[str]):
     tokens_by_line = [[]]
     if len(lines) > 1 and not lines[0].endswith(("\n", "\r", "\r\n", "\x0b", "\x0c")):
         warnings.warn(
-            "`make_tokens_by_line` received a list of lines which do not have lineending markers ('\\n', '\\r', '\\r\\n', '\\x0b', '\\x0c'), behavior will be unspecified"
+            "`make_tokens_by_line` received a list of lines which do not have lineending markers ('\\n', '\\r', "
+            "'\\r\\n', '\\x0b', '\\x0c'), behavior will be unspecified"
         )
     parenlev = 0
     try:
@@ -611,6 +628,16 @@ class TransformerManager:
         return False, lines
 
     def do_token_transforms(self, lines):
+        """
+
+        Parameters
+        ----------
+        lines :
+
+        Returns
+        -------
+
+        """
         for _ in range(TRANSFORM_LOOP_LIMIT):
             changed, lines = self.do_one_token_transform(lines)
             if not changed:
@@ -737,12 +764,12 @@ class TransformerManager:
                 warnings.simplefilter("error", SyntaxWarning)
                 res = compile_command("".join(lines), symbol="exec")
         except (
-            SyntaxError,
-            OverflowError,
-            ValueError,
-            TypeError,
-            MemoryError,
-            SyntaxWarning,
+                SyntaxError,
+                OverflowError,
+                ValueError,
+                TypeError,
+                MemoryError,
+                SyntaxWarning,
         ):
             return "invalid", None
         else:
@@ -762,6 +789,16 @@ class TransformerManager:
 
 
 def find_last_indent(lines):
+    """
+
+    Parameters
+    ----------
+    lines :
+
+    Returns
+    -------
+
+    """
     m = _indent_re.match(lines[-1])
     if not m:
         return 0

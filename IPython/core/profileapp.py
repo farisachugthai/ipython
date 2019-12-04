@@ -154,11 +154,20 @@ class ProfileLocate(BaseIPythonApplication):
     description = """print the path to an IPython profile dir"""
 
     def parse_command_line(self, argv=None):
+        """
+
+        Parameters
+        ----------
+        argv :
+        """
         super(ProfileLocate, self).parse_command_line(argv)
         if self.extra_args:
             self.profile = self.extra_args[0]
 
     def start(self):
+        """
+
+        """
         print(self.profile_dir.location)
 
 
@@ -395,6 +404,12 @@ class ProfileApp(Application):
     )
 
     def start(self):
+        """
+
+        Returns
+        -------
+
+        """
         if self.subapp is None:
             print(
                 "No subcommand specified. Must specify one of: %s"

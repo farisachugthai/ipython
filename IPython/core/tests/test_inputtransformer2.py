@@ -183,6 +183,18 @@ def check_make_token_by_line_never_ends_empty():
 
 
 def check_find(transformer, case, match=True):
+    """
+
+    Parameters
+    ----------
+    transformer :
+    case :
+    match :
+
+    Returns
+    -------
+
+    """
     sample, expected_start, _ = case
     tbl = make_tokens_by_line(sample)
     res = transformer.find(tbl)
@@ -195,6 +207,13 @@ def check_find(transformer, case, match=True):
 
 
 def check_transform(transformer_cls, case):
+    """
+
+    Parameters
+    ----------
+    transformer_cls :
+    case :
+    """
     lines, start, expected = case
     transformer = transformer_cls(start)
     nt.assert_equal(transformer.transform(lines), expected)
@@ -288,6 +307,9 @@ def test_find_assign_op_dedent():
     """
 
     class Tk:
+        """
+
+        """
         def __init__(self, s):
             self.string = s
 

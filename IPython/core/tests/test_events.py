@@ -9,16 +9,28 @@ import IPython.testing.tools as tt
 
 @events._define_event
 def ping_received():
+    """
+
+    """
     pass
 
 
 @events._define_event
 def event_with_argument(argument):
+    """
+
+    Parameters
+    ----------
+    argument :
+    """
     pass
 
 
 class CallbackTests(unittest.TestCase):
     def setUp(self):
+        """
+
+        """
         self.em = events.EventManager(
             get_ipython(),
             {
@@ -40,9 +52,15 @@ class CallbackTests(unittest.TestCase):
 
     def test_bare_function_missed_unregister(self):
         def cb1():
+            """
+
+            """
             ...
 
         def cb2():
+            """
+
+            """
             ...
 
         self.em.register("ping_received", cb1)
@@ -65,15 +83,33 @@ class CallbackTests(unittest.TestCase):
         invoked = [False] * 3
 
         def func1(*_):
+            """
+
+            Parameters
+            ----------
+            _ :
+            """
             invoked[0] = True
             self.em.unregister("ping_received", func1)
             self.em.register("ping_received", func3)
 
         def func2(*_):
+            """
+
+            Parameters
+            ----------
+            _ :
+            """
             invoked[1] = True
             self.em.unregister("ping_received", func2)
 
         def func3(*_):
+            """
+
+            Parameters
+            ----------
+            _ :
+            """
             invoked[2] = True
 
         self.em.register("ping_received", func1)
@@ -87,6 +123,9 @@ class CallbackTests(unittest.TestCase):
         call_count = [0]
 
         def event_with_no_argument():
+            """
+
+            """
             call_count[0] += 1
 
         self.em.register("event_with_argument", event_with_no_argument)

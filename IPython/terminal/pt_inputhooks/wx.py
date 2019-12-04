@@ -15,6 +15,13 @@ def ignore_keyboardinterrupts(func):
     this case, we want to ignore interrupts.
     """
     def wrapper(*args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        args :
+        kwargs :
+        """
         try:
             func(*args, **kwargs)
         except KeyboardInterrupt:
@@ -46,16 +53,29 @@ def inputhook_wx1(context):
 
 
 class EventLoopTimer(wx.Timer):
+    """
+
+    """
     def __init__(self, func):
         self.func = func
         wx.Timer.__init__(self)
 
     def Notify(self):
+        """
+
+        """
         self.func()
 
 
 class EventLoopRunner:
     def Run(self, time, input_is_ready):
+        """
+
+        Parameters
+        ----------
+        time :
+        input_is_ready :
+        """
         self.input_is_ready = input_is_ready
         self.evtloop = wx.EventLoop()
         self.timer = EventLoopTimer(self.check_stdin)
@@ -63,6 +83,9 @@ class EventLoopRunner:
         self.evtloop.Run()
 
     def check_stdin(self):
+        """
+
+        """
         if self.input_is_ready():
             self.timer.Stop()
             self.evtloop.Exit()
@@ -200,6 +223,12 @@ def inputhook_wxphoenix(context):
     # Use a wx.Timer to periodically check whether input is ready - as soon as
     # it is, we exit the main loop
     def poll(ev):
+        """
+
+        Parameters
+        ----------
+        ev :
+        """
         if context.input_is_ready():
             app.ExitMainLoop()
 

@@ -28,6 +28,16 @@ class IOStream:
 
         # clone all methods not overridden:
         def clone(meth):
+            """
+
+            Parameters
+            ----------
+            meth :
+
+            Returns
+            -------
+
+            """
             return not hasattr(self, meth) and not meth.startswith("_")
 
         for meth in filter(clone, dir(stream)):
@@ -44,6 +54,12 @@ class IOStream:
         return tpl.format(mod=cls.__module__, cls=cls.__name__, args=self.stream)
 
     def write(self, data):
+        """
+
+        Parameters
+        ----------
+        data :
+        """
         warn(
             "IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead",
             DeprecationWarning,
@@ -66,6 +82,12 @@ class IOStream:
                 )
 
     def writelines(self, lines):
+        """
+
+        Parameters
+        ----------
+        lines :
+        """
         warn(
             "IOStream is deprecated since IPython 5.0, use sys.{stdin,stdout,stderr} instead",
             DeprecationWarning,
@@ -82,9 +104,18 @@ class IOStream:
 
     @property
     def closed(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.stream.closed
 
     def close(self):
+        """
+
+        """
         pass
 
 

@@ -13,6 +13,12 @@ import pyglet
 if sys.platform.startswith('linux'):
 
     def flip(window):
+        """
+
+        Parameters
+        ----------
+        window :
+        """
         try:
             window.flip()
         except AttributeError:
@@ -20,6 +26,12 @@ if sys.platform.startswith('linux'):
 else:
 
     def flip(window):
+        """
+
+        Parameters
+        ----------
+        window :
+        """
         window.flip()
 
 

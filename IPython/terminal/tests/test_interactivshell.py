@@ -68,6 +68,12 @@ class mock_input_helper(object):
         self.ip.prompt_for_code = self.orig_prompt_for_code
 
     def fake_input(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return next(self.testgen)
         except StopIteration:

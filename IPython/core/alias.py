@@ -306,6 +306,12 @@ class AliasManager(Configurable):
 
     @property
     def aliases(self):
+        """
+
+        Returns
+        -------
+
+        """
         return [
             (n, func.cmd)
             for (n, func) in self.linemagics.items()
@@ -366,6 +372,9 @@ class AliasManager(Configurable):
             raise ValueError("%s is not an alias" % name)
 
     def clear_aliases(self):
+        """
+
+        """
         for name, cmd in self.aliases:
             self.undefine_alias(name)
 

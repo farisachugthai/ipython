@@ -338,6 +338,13 @@ class InteractiveShellTestCase(unittest.TestCase):
         save_hook = trap.hook
 
         def failing_hook(*args, **kwargs):
+            """
+
+            Parameters
+            ----------
+            args :
+            kwargs :
+            """
             d["called"] = True
 
         try:
@@ -394,6 +401,9 @@ class InteractiveShellTestCase(unittest.TestCase):
         class A(object):
             @property
             def foo(self):
+                """
+
+                """
                 raise NotImplementedError()
 
         a = A()
@@ -413,6 +423,9 @@ class InteractiveShellTestCase(unittest.TestCase):
         class A(object):
             @property
             def foo(self):
+                """
+
+                """
                 raise NotImplementedError()
 
         a = A()
@@ -432,6 +445,9 @@ class InteractiveShellTestCase(unittest.TestCase):
 
     def test_ofind_slotted_attributes(self):
         class A(object):
+            """
+
+            """
             __slots__ = ["foo"]
 
             def __init__(self):
@@ -464,6 +480,12 @@ class InteractiveShellTestCase(unittest.TestCase):
         class A(object):
             @property
             def foo(self):
+                """
+
+                Returns
+                -------
+
+                """
                 return "bar"
 
         a = A()
@@ -476,6 +498,16 @@ class InteractiveShellTestCase(unittest.TestCase):
         called = []
 
         def my_handler(shell, etype, value, tb, tb_offset=None):
+            """
+
+            Parameters
+            ----------
+            shell :
+            etype :
+            value :
+            tb :
+            tb_offset :
+            """
             called.append(etype)
             shell.showtraceback((etype, value, tb), tb_offset=tb_offset)
 
@@ -492,6 +524,16 @@ class InteractiveShellTestCase(unittest.TestCase):
         called = []
 
         def my_handler(shell, etype, value, tb, tb_offset=None):
+            """
+
+            Parameters
+            ----------
+            shell :
+            etype :
+            value :
+            tb :
+            tb_offset :
+            """
             called.append(etype)
             shell.showtraceback((etype, value, tb), tb_offset=tb_offset)
 
@@ -567,6 +609,9 @@ class InteractiveShellTestCase(unittest.TestCase):
 class TestSafeExecfileNonAsciiPath(unittest.TestCase):
     @onlyif_unicode_paths
     def setUp(self):
+        """
+
+        """
         self.BASETESTDIR = tempfile.mkdtemp()
         self.TESTDIR = join(self.BASETESTDIR, "åäö")
         os.mkdir(self.TESTDIR)
@@ -577,6 +622,9 @@ class TestSafeExecfileNonAsciiPath(unittest.TestCase):
         self.fname = "åäötestscript.py"
 
     def tearDown(self):
+        """
+
+        """
         os.chdir(self.oldpath)
         shutil.rmtree(self.BASETESTDIR)
 
@@ -589,6 +637,9 @@ class TestSafeExecfileNonAsciiPath(unittest.TestCase):
 
 class ExitCodeChecks(tt.TempFileMixin):
     def setUp(self):
+        """
+
+        """
         self.system = ip.system_raw
 
     def test_exit_code_ok(self):
@@ -624,6 +675,9 @@ class ExitCodeChecks(tt.TempFileMixin):
 
 class TestSystemRaw(ExitCodeChecks):
     def setUp(self):
+        """
+
+        """
         super().setUp()
         self.system = ip.system_raw
 
@@ -652,6 +706,9 @@ class TestSystemRaw(ExitCodeChecks):
 
 class TestSystemPipedExitCode(ExitCodeChecks):
     def setUp(self):
+        """
+
+        """
         super().setUp()
         self.system = ip.system_piped
 
@@ -687,11 +744,31 @@ class Negator(ast.NodeTransformer):
 
     # for python 3.7 and earlier
     def visit_Num(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+
+        Returns
+        -------
+
+        """
         node.n = -node.n
         return node
 
     # for python 3.8+
     def visit_Constant(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+
+        Returns
+        -------
+
+        """
         if isinstance(node.value, int):
             return self.visit_Num(node)
         return node
@@ -699,10 +776,16 @@ class Negator(ast.NodeTransformer):
 
 class TestAstTransform(unittest.TestCase):
     def setUp(self):
+        """
+
+        """
         self.negator = Negator()
         ip.ast_transformers.append(self.negator)
 
     def tearDown(self):
+        """
+
+        """
         ip.ast_transformers.remove(self.negator)
 
     def test_run_cell(self):
@@ -718,6 +801,12 @@ class TestAstTransform(unittest.TestCase):
         called = set()
 
         def f(x):
+            """
+
+            Parameters
+            ----------
+            x :
+            """
             called.add(x)
 
         ip.push({"f": f})
@@ -735,6 +824,12 @@ class TestAstTransform(unittest.TestCase):
         called = []
 
         def f(x):
+            """
+
+            Parameters
+            ----------
+            x :
+            """
             called.append(x)
 
         ip.push({"f": f})
@@ -768,6 +863,16 @@ class IntegerWrapper(ast.NodeTransformer):
 
     # for Python 3.7 and earlier
     def visit_Num(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+
+        Returns
+        -------
+
+        """
         if isinstance(node.n, int):
             return ast.Call(
                 func=ast.Name(id="Integer", ctx=ast.Load()), args=[node], keywords=[]
@@ -776,6 +881,16 @@ class IntegerWrapper(ast.NodeTransformer):
 
     # For Python 3.8+
     def visit_Constant(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+
+        Returns
+        -------
+
+        """
         if isinstance(node.value, int):
             return self.visit_Num(node)
         return node
@@ -783,18 +898,37 @@ class IntegerWrapper(ast.NodeTransformer):
 
 class TestAstTransform2(unittest.TestCase):
     def setUp(self):
+        """
+
+        Returns
+        -------
+
+        """
         self.intwrapper = IntegerWrapper()
         ip.ast_transformers.append(self.intwrapper)
 
         self.calls = []
 
         def Integer(*args):
+            """
+
+            Parameters
+            ----------
+            args :
+
+            Returns
+            -------
+
+            """
             self.calls.append(args)
             return args
 
         ip.push({"Integer": Integer})
 
     def tearDown(self):
+        """
+
+        """
         ip.ast_transformers.remove(self.intwrapper)
         del ip.user_ns["Integer"]
 
@@ -810,6 +944,12 @@ class TestAstTransform2(unittest.TestCase):
         called = set()
 
         def f(x):
+            """
+
+            Parameters
+            ----------
+            x :
+            """
             called.add(x)
 
         ip.push({"f": f})
@@ -829,10 +969,26 @@ class ErrorTransformer(ast.NodeTransformer):
 
     # for Python 3.7 and earlier
     def visit_Num(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+        """
         raise ValueError("test")
 
     # for Python 3.8+
     def visit_Constant(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+
+        Returns
+        -------
+
+        """
         if isinstance(node.value, int):
             return self.visit_Num(node)
         return node
@@ -859,10 +1015,26 @@ class StringRejector(ast.NodeTransformer):
 
     # for python 3.7 and earlier
     def visit_Str(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+        """
         raise InputRejected("test")
 
     # 3.8 only
     def visit_Constant(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+
+        Returns
+        -------
+
+        """
         if isinstance(node.value, str):
             raise InputRejected("test")
         return node
@@ -870,10 +1042,16 @@ class StringRejector(ast.NodeTransformer):
 
 class TestAstTransformInputRejection(unittest.TestCase):
     def setUp(self):
+        """
+
+        """
         self.transformer = StringRejector()
         ip.ast_transformers.append(self.transformer)
 
     def tearDown(self):
+        """
+
+        """
         ip.ast_transformers.remove(self.transformer)
 
     def test_input_rejection(self):
@@ -968,6 +1146,16 @@ class TestSyntaxErrorTransformer(unittest.TestCase):
 
     @staticmethod
     def transformer(lines):
+        """
+
+        Parameters
+        ----------
+        lines :
+
+        Returns
+        -------
+
+        """
         for line in lines:
             pos = line.find("syntaxerror")
             if pos >= 0:
@@ -978,9 +1166,15 @@ class TestSyntaxErrorTransformer(unittest.TestCase):
         return lines
 
     def setUp(self):
+        """
+
+        """
         ip.input_transformers_post.append(self.transformer)
 
     def tearDown(self):
+        """
+
+        """
         ip.input_transformers_post.remove(self.transformer)
 
     def test_syntaxerror_input_transformer(self):

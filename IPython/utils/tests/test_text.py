@@ -101,6 +101,12 @@ def test_columnize_long():
 
 
 def eval_formatter_check(f):
+    """
+
+    Parameters
+    ----------
+    f :
+    """
     ns = dict(n=12, pi=math.pi, stuff="hello there", os=os, u=u"café", b="café")
     s = f.format("{n} {n//4} {stuff.split()[0]}", **ns)
     nt.assert_equal(s, "12 3 hello")
@@ -123,6 +129,12 @@ def eval_formatter_check(f):
 
 
 def eval_formatter_slicing_check(f):
+    """
+
+    Parameters
+    ----------
+    f :
+    """
     ns = dict(n=12, pi=math.pi, stuff="hello there", os=os)
     s = f.format(" {stuff.split()[:]} ", **ns)
     nt.assert_equal(s, " ['hello', 'there'] ")
@@ -135,6 +147,12 @@ def eval_formatter_slicing_check(f):
 
 
 def eval_formatter_no_slicing_check(f):
+    """
+
+    Parameters
+    ----------
+    f :
+    """
     ns = dict(n=12, pi=math.pi, stuff="hello there", os=os)
 
     s = f.format("{n:x} {pi**2:+f}", **ns)

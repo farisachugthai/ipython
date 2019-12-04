@@ -279,6 +279,16 @@ def unescape_glob(string):
     """Unescape glob pattern in `string`."""
 
     def unescape(s):
+        """
+
+        Parameters
+        ----------
+        s :
+
+        Returns
+        -------
+
+        """
         for pattern in "*[]!?":
             s = s.replace(r"\{0}".format(pattern), pattern)
         return s

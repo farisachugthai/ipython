@@ -65,6 +65,17 @@ else:
     from ast import Module as OriginalModule
 
     def Module(nodelist, type_ignores):
+        """
+
+        Parameters
+        ----------
+        nodelist :
+        type_ignores :
+
+        Returns
+        -------
+
+        """
         return OriginalModule(nodelist)
 
 
@@ -99,10 +110,22 @@ class TimeitResult:
 
     @property
     def average(self):
+        """
+
+        Returns
+        -------
+
+        """
         return math.fsum(self.timings) / len(self.timings)
 
     @property
     def stdev(self):
+        """
+
+        Returns
+        -------
+
+        """
         mean = self.average
         return (
             math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)
@@ -201,6 +224,13 @@ class ExecutionMagics(Magics):
         self.default_runner = None
 
     def profile_missing_notice(self, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        args :
+        kwargs :
+        """
         error(
             """\
 The profile module could not be found. It has been removed from the standard
@@ -527,6 +557,12 @@ python-profiler package from non-free."""
             # Switch exception reporting mode for this one call.
             # Ensure it is switched back.
             def xmode_switch_err(name):
+                """
+
+                Parameters
+                ----------
+                name :
+                """
                 warn(
                     "Error changing %s exception modes.\n%s" % (name, sys.exc_info()[1])
                 )
@@ -833,6 +869,9 @@ python-profiler package from non-free."""
                     if "m" in opts:
 
                         def run():
+                            """
+
+                            """
                             self.shell.safe_run_module(modulename, prog_ns)
 
                     else:
@@ -842,6 +881,9 @@ python-profiler package from non-free."""
                             runner = self.shell.safe_execfile
 
                         def run():
+                            """
+
+                            """
                             runner(filename, prog_ns, prog_ns, exit_ignore=exit_ignore)
 
                     if "t" in opts:

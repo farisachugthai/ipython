@@ -109,6 +109,16 @@ def skipif(skip_condition, msg=None):
 
     """
     def skip_decorator(f):
+        """
+
+        Parameters
+        ----------
+        f :
+
+        Returns
+        -------
+
+        """
         # Local import to avoid a hard nose dependency and only incur the
         # import time overhead at actual test-time.
         import nose
@@ -119,6 +129,12 @@ def skipif(skip_condition, msg=None):
         else:
 
             def skip_val():
+                """
+
+                Returns
+                -------
+
+                """
                 return skip_condition
 
         def get_msg(func, msg=None):
@@ -187,10 +203,22 @@ def onlyif(condition, msg):
     if callable(condition):
 
         def skip_condition():
+            """
+
+            Returns
+            -------
+
+            """
             return not condition()
     else:
 
         def skip_condition():
+            """
+
+            Returns
+            -------
+
+            """
             return not condition
 
     return skipif(skip_condition, msg)
@@ -247,6 +275,16 @@ skip_win32_py38 = skipif(sys.version_info > (3, 8) and os.name == 'nt')
 
 
 def skip_file_no_x11(name):
+    """
+
+    Parameters
+    ----------
+    name :
+
+    Returns
+    -------
+
+    """
     warnings.warn(
         "The function `skip_file_no_x11` is deprecated since IPython 4.0",
         DeprecationWarning,
@@ -259,6 +297,16 @@ def skip_file_no_x11(name):
 
 # generic skip without module
 def skip_without(mod):
+    """
+
+    Parameters
+    ----------
+    mod :
+
+    Returns
+    -------
+
+    """
     return skipif(module_not_available(mod), "This test requires %s" % mod)
 
 
@@ -275,6 +323,16 @@ skip_known_failure = knownfailureif(True, 'This test is known to fail')
 
 
 def null_deco(f):
+    """
+
+    Parameters
+    ----------
+    f :
+
+    Returns
+    -------
+
+    """
     return f
 
 

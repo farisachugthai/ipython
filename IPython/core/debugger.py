@@ -106,6 +106,17 @@ def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     """
 
     def wrapper(*args, **kw):
+        """
+
+        Parameters
+        ----------
+        args :
+        kw :
+
+        Returns
+        -------
+
+        """
         return new_fn(*args, **kw)
 
     if old_fn.__doc__:
@@ -230,6 +241,13 @@ class CorePdb(Pdb):
         self.parser.style = scheme
 
     def interaction(self, frame, traceback):
+        """
+
+        Parameters
+        ----------
+        frame :
+        traceback :
+        """
         try:
             Pdb.interaction(self, frame, traceback)
         except KeyboardInterrupt:
@@ -242,15 +260,36 @@ class CorePdb(Pdb):
     do_u = do_up = decorate_fn_with_doc(new_do_up, Pdb.do_up)
 
     def new_do_down(self, arg):
+        """
+
+        Parameters
+        ----------
+        arg :
+        """
         Pdb.do_down(self, arg)
 
     do_d = do_down = decorate_fn_with_doc(new_do_down, Pdb.do_down)
 
     def new_do_frame(self, arg):
+        """
+
+        Parameters
+        ----------
+        arg :
+        """
         Pdb.do_frame(self, arg)
 
     def new_do_quit(self, arg):
+        """
 
+        Parameters
+        ----------
+        arg :
+
+        Returns
+        -------
+
+        """
         if hasattr(self, "old_all_completions"):
             self.shell.Completer.all_completions = self.old_all_completions
 
@@ -265,6 +304,12 @@ class CorePdb(Pdb):
         return self.do_quit(arg)
 
     def print_stack_trace(self, context=None):
+        """
+
+        Parameters
+        ----------
+        context :
+        """
         if context is None:
             context = self.context
         try:
@@ -280,6 +325,14 @@ class CorePdb(Pdb):
             pass
 
     def print_stack_entry(self, frame_lineno, prompt_prefix="\n-> ", context=None):
+        """
+
+        Parameters
+        ----------
+        frame_lineno :
+        prompt_prefix :
+        context :
+        """
         if context is None:
             context = self.context
         try:
@@ -297,6 +350,18 @@ class CorePdb(Pdb):
         # vds: <<
 
     def format_stack_entry(self, frame_lineno, lprefix=": ", context=None):
+        """
+
+        Parameters
+        ----------
+        frame_lineno :
+        lprefix :
+        context :
+
+        Returns
+        -------
+
+        """
         try:
             which_frame = abs(self.context)
         except (TypeError, ValueError):
@@ -466,6 +531,16 @@ class CorePdb(Pdb):
     do_l = do_list
 
     def getsourcelines(self, obj):
+        """
+
+        Parameters
+        ----------
+        obj :
+
+        Returns
+        -------
+
+        """
         lines, lineno = inspect.findsource(obj)
         if inspect.isframe(obj) and obj.f_globals is obj.f_locals:
             # must be a module frame: do not try to cut a block out of it

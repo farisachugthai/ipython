@@ -161,11 +161,11 @@ def strip_initial_indent(lines):
     if indent_match:
         # First line was indented
         indent = indent_match.group()
-        yield first_line[len(indent) :]
+        yield first_line[len(indent):]
 
         for line in it:
             if line.startswith(indent):
-                yield line[len(indent) :]
+                yield line[len(indent):]
             else:
                 # Less indented than the first line - stop dedenting
                 yield line
@@ -289,8 +289,8 @@ class CodeMagics(Magics):
 
         post_data = urlencode(
             {
-                "title": opts.get("d", "Pasted from IPython"),
-                "syntax": "python3",
+                "title"  : opts.get("d", "Pasted from IPython"),
+                "syntax" : "python3",
                 "content": code,
             }
         ).encode("utf-8")
@@ -391,8 +391,8 @@ class CodeMagics(Magics):
             try:
                 ans = self.shell.ask_yes_no(
                     (
-                        "The text you're trying to load seems pretty big"
-                        " (%d characters). Continue (y/[N]) ?" % l
+                            "The text you're trying to load seems pretty big"
+                            " (%d characters). Continue (y/[N]) ?" % l
                     ),
                     default="n",
                 )

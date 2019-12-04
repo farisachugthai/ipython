@@ -80,6 +80,12 @@ if os.name == 'posix':
     import select
 
     def stdin_ready():
+        """
+
+        Returns
+        -------
+
+        """
         infds, outfds, erfds = select.select([sys.stdin], [], [], 0)
         if infds:
             return True
@@ -90,6 +96,12 @@ elif sys.platform == 'win32':
     import msvcrt
 
     def stdin_ready():
+        """
+
+        Returns
+        -------
+
+        """
         return msvcrt.kbhit()
 
 
@@ -99,22 +111,38 @@ elif sys.platform == 'win32':
 
 
 def glut_display():
+    """
+
+    """
     # Dummy display function
     pass
 
 
 def glut_idle():
+    """
+
+    """
     # Dummy idle function
     pass
 
 
 def glut_close():
+    """
+
+    """
     # Close function only hides the current window
     glut.glutHideWindow()
     glutMainLoopEvent()
 
 
 def glut_int_handler(signum, frame):
+    """
+
+    Parameters
+    ----------
+    signum :
+    frame :
+    """
     # Catch sigint and print the default message
     signal.signal(signal.SIGINT, signal.default_int_handler)
     print('\nKeyboardInterrupt')

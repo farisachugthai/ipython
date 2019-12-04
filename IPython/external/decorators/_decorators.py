@@ -54,15 +54,39 @@ def skipif(skip_condition, msg=None):
     """
 
     def skip_decorator(f):
+        """
+
+        Parameters
+        ----------
+        f :
+
+        Returns
+        -------
+
+        """
         # Local import to avoid a hard nose dependency and only incur the
         # import time overhead at actual test-time.
         import nose
 
         # Allow for both boolean or callable skip conditions.
         if callable(skip_condition):
-            def skip_val(): return skip_condition()
+            def skip_val():
+                """
+
+                Returns
+                -------
+
+                """
+                return skip_condition()
         else:
-            def skip_val(): return skip_condition
+            def skip_val():
+                """
+
+                Returns
+                -------
+
+                """
+                return skip_condition
 
         def get_msg(func, msg=None):
             """Skip message with information about function being skipped."""
@@ -130,11 +154,32 @@ def knownfailureif(fail_condition, msg=None):
         msg = 'Test skipped due to known failure'
 
     def knownfail_decorator(f):
+        """
+
+        Parameters
+        ----------
+        f :
+
+        Returns
+        -------
+
+        """
         # Local import to avoid a hard nose dependency and only incur the
         # import time overhead at actual test-time.
         import nose
 
         def knownfailer(*args, **kwargs):
+            """
+
+            Parameters
+            ----------
+            args :
+            kwargs :
+
+            Returns
+            -------
+
+            """
             if fail_condition:
                 raise KnownFailureTest(msg)
             else:

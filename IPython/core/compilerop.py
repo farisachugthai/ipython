@@ -150,6 +150,12 @@ class CachingCompiler(codeop.Compile):
 
     @contextmanager
     def extra_flags(self, flags):
+        """
+
+        Parameters
+        ----------
+        flags :
+        """
         # bits that we'll set to 1
         turn_on_bits = ~self.flags & flags
 

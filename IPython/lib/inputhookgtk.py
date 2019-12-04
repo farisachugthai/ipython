@@ -31,6 +31,12 @@ def _main_quit(*args, **kwargs):
 
 
 def inputhook_gtk():
+    """
+
+    Returns
+    -------
+
+    """
     gobject.io_add_watch(sys.stdin, gobject.IO_IN, _main_quit)
     gtk.main()
     return 0

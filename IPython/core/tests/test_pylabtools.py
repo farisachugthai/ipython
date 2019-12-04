@@ -155,12 +155,27 @@ def test_import_pylab():
 class TestPylabSwitch:
     class Shell(InteractiveShell):
         def enable_gui(self, gui):
+            """
+
+            Parameters
+            ----------
+            gui :
+            """
             pass
 
     def setup(self):
+        """
+
+        """
         import matplotlib
 
         def act_mpl(backend):
+            """
+
+            Parameters
+            ----------
+            backend :
+            """
             matplotlib.rcParams["backend"] = backend
 
         # Save rcParams since they get modified
@@ -178,6 +193,9 @@ class TestPylabSwitch:
         pt.configure_inline_support = lambda *a, **kw: None
 
     def teardown(self):
+        """
+
+        """
         pt.activate_matplotlib = self._save_am
         pt.import_pylab = self._save_ip
         pt.configure_inline_support = self._save_cis

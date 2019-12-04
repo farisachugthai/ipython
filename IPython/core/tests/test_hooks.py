@@ -18,6 +18,9 @@ from IPython.core.hooks import CommandChainDispatcher
 
 
 class Okay(object):
+    """
+
+    """
     def __init__(self, message):
         self.message = message
         self.called = False
@@ -28,6 +31,9 @@ class Okay(object):
 
 
 class Fail(object):
+    """
+
+    """
     def __init__(self, message):
         self.message = message
         self.called = False

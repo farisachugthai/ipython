@@ -22,6 +22,9 @@ from IPython.testing.decorators import onlyif_unicode_paths
 
 
 class MockEvent(object):
+    """
+
+    """
     def __init__(self, line):
         self.line = line
 
@@ -36,6 +39,9 @@ class Test_magic_run_completer(unittest.TestCase):
     dirs = ["adir/", "bdir/"]
 
     def setUp(self):
+        """
+
+        """
         self.BASETESTDIR = tempfile.mkdtemp()
         for fil in self.files:
             with open(join(self.BASETESTDIR, fil), "w") as sfile:
@@ -47,6 +53,9 @@ class Test_magic_run_completer(unittest.TestCase):
         os.chdir(self.BASETESTDIR)
 
     def tearDown(self):
+        """
+
+        """
         os.chdir(self.oldpath)
         shutil.rmtree(self.BASETESTDIR)
 
@@ -98,6 +107,9 @@ class Test_magic_run_completer(unittest.TestCase):
 class Test_magic_run_completer_nonascii(unittest.TestCase):
     @onlyif_unicode_paths
     def setUp(self):
+        """
+
+        """
         self.BASETESTDIR = tempfile.mkdtemp()
         for fil in ["aaø.py", "a.py", "b.py"]:
             with open(join(self.BASETESTDIR, fil), "w") as sfile:
@@ -106,6 +118,9 @@ class Test_magic_run_completer_nonascii(unittest.TestCase):
         os.chdir(self.BASETESTDIR)
 
     def tearDown(self):
+        """
+
+        """
         os.chdir(self.oldpath)
         shutil.rmtree(self.BASETESTDIR)
 

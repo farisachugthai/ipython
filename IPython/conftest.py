@@ -15,6 +15,12 @@ from .testing import tools
 
 # @pytest.fixture
 def get_ipython():
+    """
+
+    Returns
+    -------
+
+    """
     from .terminal.interactiveshell import TerminalInteractiveShell
     if TerminalInteractiveShell._instance:
         return TerminalInteractiveShell.instance()
@@ -29,6 +35,12 @@ def get_ipython():
 
 @pytest.fixture
 def ip():
+    """
+
+    Returns
+    -------
+
+    """
     return get_ipython()
 
 
@@ -45,6 +57,16 @@ def ip():
 
 
 def nopage(strng, start=0, screen_lines=0, pager_cmd=None, **kwargs):
+    """
+
+    Parameters
+    ----------
+    strng :
+    start :
+    screen_lines :
+    pager_cmd :
+    kwargs :
+    """
     if isinstance(strng, dict):
         strng = strng.get("text/plain", "")
     print(strng)
@@ -66,7 +88,9 @@ def xsys(self, cmd):
 # yields. so for now execute at import time.
 # @pytest.fixture(autouse=True, scope='session')
 def inject():
+    """
 
+    """
     builtins.get_ipython = get_ipython
     builtins._ip = get_ipython()
     builtins.ip = get_ipython()

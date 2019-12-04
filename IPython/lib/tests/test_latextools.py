@@ -19,7 +19,19 @@ def test_latex_to_png_dvipng_fails_when_no_cmd():
 
 
 def check_latex_to_png_dvipng_fails_when_no_cmd(command):
+    """
+
+    Parameters
+    ----------
+    command :
+    """
     def mock_find_cmd(arg):
+        """
+
+        Parameters
+        ----------
+        arg :
+        """
         if arg == command:
             raise CalledProcessError('arg: {} == command: {}', arg, command)
 
@@ -32,6 +44,16 @@ def test_latex_to_png_dvipng_runs():
     """Test that latex_to_png_dvipng just runs without error."""
 
     def mock_kpsewhich(filename):
+        """
+
+        Parameters
+        ----------
+        filename :
+
+        Returns
+        -------
+
+        """
         nt.assert_equal(filename, "breqn.sty")
         return None
 
@@ -47,6 +69,16 @@ def test_latex_to_png_mpl_runs():
     """Test that latex_to_png_mpl just runs without error."""
 
     def mock_kpsewhich(filename):
+        """
+
+        Parameters
+        ----------
+        filename :
+
+        Returns
+        -------
+
+        """
         nt.assert_equal(filename, "breqn.sty")
         return None
 
@@ -69,6 +101,12 @@ def test_genelatex_no_wrap():
     """
 
     def mock_kpsewhich(filename):
+        """
+
+        Parameters
+        ----------
+        filename :
+        """
         assert False, ("kpsewhich should not be called "
                        "(called with {0})".format(filename))
 
@@ -92,6 +130,16 @@ def test_genelatex_wrap_with_breqn():
     """
 
     def mock_kpsewhich(filename):
+        """
+
+        Parameters
+        ----------
+        filename :
+
+        Returns
+        -------
+
+        """
         nt.assert_equal(filename, "breqn.sty")
         return "path/to/breqn.sty"
 
@@ -118,6 +166,16 @@ def test_genelatex_wrap_without_breqn():
     """
 
     def mock_kpsewhich(filename):
+        """
+
+        Parameters
+        ----------
+        filename :
+
+        Returns
+        -------
+
+        """
         nt.assert_equal(filename, "breqn.sty")
         return None
 

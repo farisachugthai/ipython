@@ -31,6 +31,12 @@ def test_tee_simple():
 
 class TeeTestCase(unittest.TestCase):
     def tchan(self, channel):
+        """
+
+        Parameters
+        ----------
+        channel :
+        """
         trap = StringIO()
         chan = StringIO()
         text = "Hello"

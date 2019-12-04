@@ -48,6 +48,9 @@ def test_misbehaving_object_without_trait_names():
             raise KeyError("I should be caught")
 
         def some_method(self):
+            """
+
+            """
             pass
 
     class SillierWithDir(MisbehavingGetattr):

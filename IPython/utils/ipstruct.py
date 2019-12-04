@@ -232,6 +232,12 @@ class Struct(dict):
         return outdict
 
     def dict(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self
 
     def copy(self):
@@ -364,18 +370,73 @@ class Struct(dict):
         # policies for conflict resolution: two argument functions which return
         # the value that will go in the new struct
         def preserve(old, new):
+            """
+
+            Parameters
+            ----------
+            old :
+            new :
+
+            Returns
+            -------
+
+            """
             return old
 
         def update(old, new):
+            """
+
+            Parameters
+            ----------
+            old :
+            new :
+
+            Returns
+            -------
+
+            """
             return new
 
         def add(old, new):
+            """
+
+            Parameters
+            ----------
+            old :
+            new :
+
+            Returns
+            -------
+
+            """
             return old + new
 
         def add_flip(old, new):
+            """
+
+            Parameters
+            ----------
+            old :
+            new :
+
+            Returns
+            -------
+
+            """
             return new + old  # note change of order!
 
         def add_s(old, new):
+            """
+
+            Parameters
+            ----------
+            old :
+            new :
+
+            Returns
+            -------
+
+            """
             return old + " " + new
 
         # default policy is to keep current keys when there's a conflict

@@ -13,6 +13,9 @@ from io import StringIO
 
 
 class RichOutput:
+    """
+
+    """
     def __init__(self, data=None, metadata=None, transient=None, update=False):
         self.data = data or {}
         self.metadata = metadata or {}
@@ -20,6 +23,9 @@ class RichOutput:
         self.update = update
 
     def display(self):
+        """
+
+        """
         from IPython.display import publish_display_data
 
         publish_display_data(

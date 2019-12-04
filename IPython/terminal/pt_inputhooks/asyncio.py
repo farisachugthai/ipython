@@ -35,7 +35,16 @@ loop = asyncio.get_event_loop()
 
 
 def inputhook(context):
+    """
+
+    Parameters
+    ----------
+    context :
+    """
     def stop():
+        """
+
+        """
         loop.stop()
 
     fileno = context.fileno()

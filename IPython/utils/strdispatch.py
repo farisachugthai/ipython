@@ -57,6 +57,16 @@ class StrDispatch(object):
         return "<Strdispatch %s, %s>" % (self.strs, self.regexs)
 
     def s_matches(self, key):
+        """
+
+        Parameters
+        ----------
+        key :
+
+        Returns
+        -------
+
+        """
         if key not in self.strs:
             return
         for el in self.strs[key]:

@@ -34,6 +34,12 @@ if os.name == 'posix':
     import select
 
     def stdin_ready():
+        """
+
+        Returns
+        -------
+
+        """
         infds, outfds, erfds = select.select([sys.stdin], [], [], 0)
         if infds:
             return True
@@ -44,6 +50,12 @@ elif sys.platform == 'win32':
     import msvcrt
 
     def stdin_ready():
+        """
+
+        Returns
+        -------
+
+        """
         return msvcrt.kbhit()
 
 
@@ -54,6 +66,12 @@ elif sys.platform == 'win32':
 if sys.platform.startswith('linux'):
 
     def flip(window):
+        """
+
+        Parameters
+        ----------
+        window :
+        """
         try:
             window.flip()
         except AttributeError:
@@ -61,6 +79,12 @@ if sys.platform.startswith('linux'):
 else:
 
     def flip(window):
+        """
+
+        Parameters
+        ----------
+        window :
+        """
         window.flip()
 
 

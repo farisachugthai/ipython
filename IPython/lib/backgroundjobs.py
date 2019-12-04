@@ -102,16 +102,34 @@ class BackgroundJobManager:
 
     @property
     def running(self):
+        """
+
+        Returns
+        -------
+
+        """
         self._update_status()
         return self._running
 
     @property
     def dead(self):
+        """
+
+        Returns
+        -------
+
+        """
         self._update_status()
         return self._dead
 
     @property
     def completed(self):
+        """
+
+        Returns
+        -------
+
+        """
         self._update_status()
         return self._completed
 
@@ -357,6 +375,12 @@ class BackgroundJobManager:
             error('Job #%s not found' % num)
 
     def traceback(self, job=None):
+        """
+
+        Parameters
+        ----------
+        job :
+        """
         if job is None:
             self._update_status()
             for deadjob in self.dead:
@@ -440,9 +464,15 @@ class BackgroundJobBase(threading.Thread):
         return '<BackgroundJob #%d: %s>' % (self.num, self.strform)
 
     def traceback(self):
+        """
+
+        """
         print(self._tb)
 
     def run(self):
+        """
+
+        """
         try:
             self.status = BackgroundJobBase.stat_running
             self.stat_code = BackgroundJobBase.stat_running_c
@@ -480,6 +510,12 @@ class BackgroundJobExpr(BackgroundJobBase):
         self._init()
 
     def call(self):
+        """
+
+        Returns
+        -------
+
+        """
         return eval(self.code, self.glob, self.loc)
 
 
@@ -506,4 +542,10 @@ class BackgroundJobFunc(BackgroundJobBase):
         self._init()
 
     def call(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.func(*self.args, **self.kwargs)

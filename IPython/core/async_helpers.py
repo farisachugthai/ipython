@@ -35,6 +35,10 @@ _asyncio_runner = _AsyncIORunner()
 def _curio_runner(coroutine):
     """
     handler for curio autoawait
+
+    Parameters
+    ----------
+    coroutine :
     """
     import curio
 
@@ -42,6 +46,16 @@ def _curio_runner(coroutine):
 
 
 def _trio_runner(async_fn):
+    """
+
+    Parameters
+    ----------
+    async_fn :
+
+    Returns
+    -------
+
+    """
     import trio
 
     async def loc(coro):
@@ -106,6 +120,12 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
         super().__init__()
 
     def generic_visit(self, node):
+        """
+
+        Parameters
+        ----------
+        node :
+        """
         func_types = (ast.FunctionDef, ast.AsyncFunctionDef)
         invalid_types_by_depth = {
             0: (ast.Return, ast.Yield, ast.YieldFrom),
@@ -117,7 +137,7 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
             self.depth += 1
             super().generic_visit(node)
             self.depth -= 1
-        elif isinstance(node, invalid_types_by_depth[self.depth]):
+        elif isinstance(node, invalid_types_by_depth):
             raise SyntaxError()
         else:
             super().generic_visit(node)

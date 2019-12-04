@@ -75,6 +75,12 @@ class DisplayHook(Configurable):
 
     @property
     def prompt_count(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.shell.execution_count
 
     # -------------------------------------------------------------------------
@@ -256,6 +262,12 @@ class DisplayHook(Configurable):
                 self.shell.user_ns["_oh"][self.prompt_count] = result
 
     def fill_exec_result(self, result):
+        """
+
+        Parameters
+        ----------
+        result :
+        """
         if self.exec_result is not None:
             self.exec_result.result = result
 
@@ -350,6 +362,9 @@ class DisplayHook(Configurable):
 
 
 class CapturingDisplayHook:
+    """
+
+    """
     def __init__(self, shell, outputs=None):
         self.shell = shell
         if outputs is None:

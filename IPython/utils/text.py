@@ -41,6 +41,12 @@ class LSString(str):
     typically only understands whitespace-separated options for commands."""
 
     def get_list(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return self.__list
         except AttributeError:
@@ -50,6 +56,12 @@ class LSString(str):
     l = list = property(get_list)
 
     def get_spstr(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return self.__spstr
         except AttributeError:
@@ -59,11 +71,23 @@ class LSString(str):
     s = spstr = property(get_spstr)
 
     def get_nlstr(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self
 
     n = nlstr = property(get_nlstr)
 
     def get_paths(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return self.__paths
         except AttributeError:
@@ -100,11 +124,23 @@ class SList(list):
     cached."""
 
     def get_list(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self
 
     l = list = property(get_list)
 
     def get_spstr(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return self.__spstr
         except AttributeError:
@@ -114,6 +150,12 @@ class SList(list):
     s = spstr = property(get_spstr)
 
     def get_nlstr(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return self.__nlstr
         except AttributeError:
@@ -123,6 +165,12 @@ class SList(list):
     n = nlstr = property(get_nlstr)
 
     def get_paths(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return self.__paths
         except AttributeError:
@@ -148,6 +196,16 @@ class SList(list):
         """
 
         def match_target(s):
+            """
+
+            Parameters
+            ----------
+            s :
+
+            Returns
+            -------
+
+            """
             if field is None:
                 return s
             parts = s.split()
@@ -160,6 +218,16 @@ class SList(list):
         if isinstance(pattern, str):
 
             def pred(x):
+                """
+
+                Parameters
+                ----------
+                x :
+
+                Returns
+                -------
+
+                """
                 return re.search(pattern, x, re.IGNORECASE)
 
         else:
@@ -514,6 +582,18 @@ class EvalFormatter(Formatter):
     """
 
     def get_field(self, name, args, kwargs):
+        """
+
+        Parameters
+        ----------
+        name :
+        args :
+        kwargs :
+
+        Returns
+        -------
+
+        """
         v = eval(name, kwargs)
         return v, name
 
@@ -551,6 +631,18 @@ class FullEvalFormatter(Formatter):
     # and replace the format_spec code with slicing
 
     def vformat(self, format_string, args, kwargs):
+        """
+
+        Parameters
+        ----------
+        format_string :
+        args :
+        kwargs :
+
+        Returns
+        -------
+
+        """
         result = []
         for literal_text, field_name, format_spec, conversion in self.parse(
             format_string
@@ -607,6 +699,12 @@ class DollarFormatter(FullEvalFormatter):
     )
 
     def parse(self, fmt_string):
+        """
+
+        Parameters
+        ----------
+        fmt_string :
+        """
         for literal_txt, field_name, format_spec, conversion in Formatter.parse(
             self, fmt_string
         ):
@@ -785,6 +883,16 @@ def columnize(items, row_first=False, separator="  ", displaywidth=80, spread=Fa
     fmatrix = [filter(None, x) for x in matrix]
 
     def sjoin(x):
+        """
+
+        Parameters
+        ----------
+        x :
+
+        Returns
+        -------
+
+        """
         return separator.join(
             [y.ljust(w, " ") for y, w in zip(x, info["column_widths"])]
         )

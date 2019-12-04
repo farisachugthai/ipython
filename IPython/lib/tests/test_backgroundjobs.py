@@ -31,12 +31,32 @@ t_short = 0.0001  # very short interval to wait on jobs
 # Local utilities
 # -----------------------------------------------------------------------------
 def sleeper(interval=t_short, *a, **kw):
+    """
+
+    Parameters
+    ----------
+    interval :
+    a :
+    kw :
+
+    Returns
+    -------
+
+    """
     args = dict(interval=interval, other_args=a, kw_args=kw)
     time.sleep(interval)
     return args
 
 
 def crasher(interval=t_short, *a, **kw):
+    """
+
+    Parameters
+    ----------
+    interval :
+    a :
+    kw :
+    """
     time.sleep(interval)
     raise Exception("Dead job with interval %s" % interval)
 

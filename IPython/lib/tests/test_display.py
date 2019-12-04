@@ -129,6 +129,18 @@ def test_existing_path_FileLinks_alt_formatter():
     tf2 = NamedTemporaryFile(dir=td)
 
     def fake_formatter(dirname, fnames, included_suffixes):
+        """
+
+        Parameters
+        ----------
+        dirname :
+        fnames :
+        included_suffixes :
+
+        Returns
+        -------
+
+        """
         return ["hello", "world"]
 
     fl = display.FileLinks(td, notebook_display_formatter=fake_formatter)
@@ -164,6 +176,18 @@ def test_existing_path_FileLinks_repr_alt_formatter():
     tf2 = NamedTemporaryFile(dir=td)
 
     def fake_formatter(dirname, fnames, included_suffixes):
+        """
+
+        Parameters
+        ----------
+        dirname :
+        fnames :
+        included_suffixes :
+
+        Returns
+        -------
+
+        """
         return ["hello", "world"]
 
     fl = display.FileLinks(td, terminal_display_formatter=fake_formatter)
@@ -251,6 +275,12 @@ class TestAudioDataWithNumpy(TestCase):
 
 
 def simulate_numpy_not_installed():
+    """
+
+    Returns
+    -------
+
+    """
     try:
         import numpy
         return mock.patch('numpy.array', mock.MagicMock(
@@ -272,10 +302,30 @@ class TestAudioDataWithoutNumpy(TestAudioDataWithNumpy):
 
 @skipif_not_numpy
 def get_test_tone(scale=1):
+    """
+
+    Parameters
+    ----------
+    scale :
+
+    Returns
+    -------
+
+    """
     return numpy.sin(2 * numpy.pi * 440 * numpy.linspace(0, 1, 44100)) * scale
 
 
 def read_wav(data):
+    """
+
+    Parameters
+    ----------
+    data :
+
+    Returns
+    -------
+
+    """
     with wave.open(BytesIO(data)) as wave_file:
         wave_data = wave_file.readframes(wave_file.getnframes())
         num_samples = wave_file.getnframes() * wave_file.getnchannels()

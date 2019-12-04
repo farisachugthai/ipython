@@ -22,6 +22,18 @@ name_re = re.compile(r"[\w_]+")
 
 
 def parse_magic(env, sig, signode):
+    """
+
+    Parameters
+    ----------
+    env :
+    sig :
+    signode :
+
+    Returns
+    -------
+
+    """
     m = name_re.match(sig)
     if not m:
         logging.warning("Invalid magic %s", sig)
@@ -38,6 +50,20 @@ class LineMagicRole(XRefRole):
     prefix = "%"
 
     def process_link(self, env, refnode, has_explicit_title, title, target):
+        """
+
+        Parameters
+        ----------
+        env :
+        refnode :
+        has_explicit_title :
+        title :
+        target :
+
+        Returns
+        -------
+
+        """
         if not has_explicit_title:
             title = self.prefix + title.lstrip("%")
         target = target.lstrip("%")
@@ -45,6 +71,18 @@ class LineMagicRole(XRefRole):
 
 
 def parse_cell_magic(env, sig, signode):
+    """
+
+    Parameters
+    ----------
+    env :
+    sig :
+    signode :
+
+    Returns
+    -------
+
+    """
     m = name_re.match(sig)
     if not m:
         logging.warning("Invalid magic %s", sig)
@@ -62,7 +100,16 @@ class CellMagicRole(LineMagicRole):
 
 
 def setup(app: "Sphinx") -> Dict[str, Any]:
+    """
 
+    Parameters
+    ----------
+    app :
+
+    Returns
+    -------
+
+    """
     app.add_object_type("magic", "magic", "pair: %s; magic command", parse_magic)
     app.add_role_to_domain("std", "magic", LineMagicRole(), override=True)
 

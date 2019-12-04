@@ -193,6 +193,16 @@ class ModuleReloader:
         return top_module, top_name
 
     def filename_and_mtime(self, module):
+        """
+
+        Parameters
+        ----------
+        module :
+
+        Returns
+        -------
+
+        """
         if not hasattr(module, '__file__') or module.__file__ is None:
             return None, None
 
@@ -360,6 +370,17 @@ UPDATE_RULES.extend([(lambda a, b: isinstance2(a, b, types.MethodType),
 
 
 def update_generic(a, b):
+    """
+
+    Parameters
+    ----------
+    a :
+    b :
+
+    Returns
+    -------
+
+    """
     for type_check, update in UPDATE_RULES:
         if type_check(a, b):
             update(a, b)
@@ -368,6 +389,9 @@ def update_generic(a, b):
 
 
 class StrongRef:
+    """
+
+    """
     def __init__(self, obj):
         self.obj = obj
 
@@ -444,7 +468,9 @@ def superreload(module, reload=reload, old_objects=None):
 
 @magics_class
 class AutoreloadMagics(Magics):
+    """
 
+    """
     def __init__(self, *a, **kw):
         """Initialize the class.
 
@@ -554,6 +580,9 @@ class AutoreloadMagics(Magics):
                 self.shell.push({top_name: top_module})
 
     def pre_run_cell(self):
+        """
+
+        """
         if self._reloader.enabled:
             try:
                 self._reloader.check()

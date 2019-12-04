@@ -45,6 +45,14 @@ def install_editor(template, wait=False):
     #            run_template)))
 
     def call_editor(self, filename, line=0):
+        """
+
+        Parameters
+        ----------
+        self :
+        filename :
+        line :
+        """
         if line is None:
             line = 0
         cmd = template.format(filename=pipes.quote(filename), line=line)
@@ -114,16 +122,40 @@ def mate(exe=u'mate'):
 
 
 def emacs(exe=u'emacs'):
+    """
+
+    Parameters
+    ----------
+    exe :
+    """
     install_editor(exe + u' +{line} {filename}')
 
 
 def gnuclient(exe=u'gnuclient'):
+    """
+
+    Parameters
+    ----------
+    exe :
+    """
     install_editor(exe + u' -nw +{line} {filename}')
 
 
 def crimson_editor(exe=u'cedt.exe'):
+    """
+
+    Parameters
+    ----------
+    exe :
+    """
     install_editor(exe + u' /L:{line} {filename}')
 
 
 def kate(exe=u'kate'):
+    """
+
+    Parameters
+    ----------
+    exe :
+    """
     install_editor(exe + u' -u -l {line} {filename}')

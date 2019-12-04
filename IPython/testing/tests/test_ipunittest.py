@@ -76,6 +76,8 @@ In [26]: for i in range(4):
 In [27]: 3+4
 Out[27]: 7
 """
+
+
 @ipdoctest
 def ipdt_indented_test():
     """
@@ -102,6 +104,7 @@ class Foo(object):
     But rewriting the docstring with ip2py does, *but only if using nose
     --with-doctest*.  Do we want to have that as a dependency?
     """
+
     @ipdocstring
     def ipdt_method(self):
         """

@@ -24,6 +24,12 @@ from prompt_toolkit.key_binding import KeyBindings
 
 @Condition
 def cursor_in_leading_ws():
+    """
+
+    Returns
+    -------
+
+    """
     before = get_app().current_buffer.document.current_line_before_cursor
     return (not before) or before.isspace()
 
@@ -52,6 +58,12 @@ def create_ipython_shortcuts(shell):
                    & insert_mode))(return_handler)
 
     def reformat_and_execute(event):
+        """
+
+        Parameters
+        ----------
+        event :
+        """
         reformat_text_before_cursor(
             event.current_buffer, event.current_buffer.document, shell)
         event.current_buffer.validate_and_handle()
@@ -108,6 +120,14 @@ def create_ipython_shortcuts(shell):
 
 
 def reformat_text_before_cursor(buffer, document, shell):
+    """
+
+    Parameters
+    ----------
+    buffer :
+    document :
+    shell :
+    """
     text = buffer.delete_before_cursor(
         len(document.text[:document.cursor_position]))
     try:
@@ -186,12 +206,24 @@ def next_history_or_next_completion(event):
 
 
 def dismiss_completion(event):
+    """
+
+    Parameters
+    ----------
+    event :
+    """
     b = event.current_buffer
     if b.complete_state:
         b.cancel_completion()
 
 
 def reset_buffer(event):
+    """
+
+    Parameters
+    ----------
+    event :
+    """
     b = event.current_buffer
     if b.complete_state:
         b.cancel_completion()
@@ -200,6 +232,12 @@ def reset_buffer(event):
 
 
 def reset_search_buffer(event):
+    """
+
+    Parameters
+    ----------
+    event :
+    """
     if event.current_buffer.document.text:
         event.current_buffer.reset()
     else:
@@ -207,6 +245,12 @@ def reset_search_buffer(event):
 
 
 def suspend_to_bg(event):
+    """
+
+    Parameters
+    ----------
+    event :
+    """
     event.app.suspend_to_background()
 
 
@@ -216,6 +260,12 @@ def force_exit(event):
 
 
 def indent_buffer(event):
+    """
+
+    Parameters
+    ----------
+    event :
+    """
     event.current_buffer.insert_text(' ' * 4)
 
 
@@ -244,6 +294,12 @@ def newline_autoindent_outer(inputsplitter) -> Callable[..., None]:
 
 
 def open_input_in_editor(event):
+    """
+
+    Parameters
+    ----------
+    event :
+    """
     event.app.current_buffer.tempfile_suffix = ".py"
     event.app.current_buffer.open_in_editor()
 
@@ -254,6 +310,16 @@ if sys.platform == 'win32':
                                        tkinter_clipboard_get)
 
     def win_paste(event):
+        """
+
+        Parameters
+        ----------
+        event :
+
+        Returns
+        -------
+
+        """
         try:
             text = win32_clipboard_get()
         except TryNext:

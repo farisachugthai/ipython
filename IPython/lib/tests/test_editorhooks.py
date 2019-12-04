@@ -12,6 +12,17 @@ def test_install_editor():
     called = []
 
     def fake_popen(*args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        args :
+        kwargs :
+
+        Returns
+        -------
+
+        """
         called.append({
             'args': args,
             'kwargs': kwargs,

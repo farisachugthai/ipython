@@ -235,6 +235,12 @@ class Audio(DisplayObject):
                           element_id=self.element_id_attr())
 
     def src_attr(self):
+        """
+
+        Returns
+        -------
+
+        """
         import base64
         if self.embed and (self.data is not None):
             data = base64 = base64.b64encode(self.data).decode('ascii')
@@ -246,12 +252,24 @@ class Audio(DisplayObject):
             return ""
 
     def autoplay_attr(self):
+        """
+
+        Returns
+        -------
+
+        """
         if self.autoplay:
             return 'autoplay="autoplay"'
         else:
             return ''
 
     def element_id_attr(self):
+        """
+
+        Returns
+        -------
+
+        """
         if self.element_id:
             return 'id="{element_id}"'.format(element_id=self.element_id)
         else:
@@ -533,6 +551,18 @@ class FileLinks(FileLink):
         """
 
         def f(dirname, fnames, included_suffixes=None):
+            """
+
+            Parameters
+            ----------
+            dirname :
+            fnames :
+            included_suffixes :
+
+            Returns
+            -------
+
+            """
             result = []
             # begin by figuring out which filenames, if any,
             # are going to be displayed
@@ -579,6 +609,16 @@ class FileLinks(FileLink):
             # Working on a platform where the path separator is "\", so
             # must convert these to "/" for generating a URI
             def fp_cleaner(fp):
+                """
+
+                Parameters
+                ----------
+                fp :
+
+                Returns
+                -------
+
+                """
                 # Replace all occurrences of backslash ("\") with a forward
                 # slash ("/") - this is necessary on windows when a path is
                 # provided as input, but we must link to a URI

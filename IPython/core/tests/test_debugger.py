@@ -28,6 +28,12 @@ class _FakeInput(object):
         self.lines = iter(lines)
 
     def readline(self):
+        """
+
+        Returns
+        -------
+
+        """
         line = next(self.lines)
         print(line)
         return line + "\n"

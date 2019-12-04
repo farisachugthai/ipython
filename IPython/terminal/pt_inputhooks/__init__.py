@@ -43,6 +43,16 @@ def register(name, inputhook):
 
 
 def get_inputhook_name_and_func(gui):
+    """
+
+    Parameters
+    ----------
+    gui :
+
+    Returns
+    -------
+
+    """
     if gui in registered:
         return gui, registered[gui]
 

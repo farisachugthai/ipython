@@ -8,6 +8,9 @@
 
 
 class Sentinel(object):
+    """
+
+    """
     def __init__(self, name, module, docstring=None):
         self.name = name
         self.module = module

@@ -57,10 +57,22 @@ def refresh_variables(ip):
 
 
 def restore_dhist(ip):
+    """
+
+    Parameters
+    ----------
+    ip :
+    """
     ip.user_ns['_dh'] = ip.db.get('dhist', [])
 
 
 def restore_data(ip):
+    """
+
+    Parameters
+    ----------
+    ip :
+    """
     refresh_variables(ip)
     restore_aliases(ip)
     restore_dhist(ip)

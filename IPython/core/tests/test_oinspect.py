@@ -22,6 +22,9 @@ import nose.tools as nt
 
 
 def setup_module():
+    """
+
+    """
     global ip
     ip = get_ipython()
     global inspector
@@ -50,10 +53,27 @@ class Test(TestCase):
 # A couple of utilities to ensure these tests work the same from a source or a
 # binary install
 def pyfile(fname):
+    """
+
+    Parameters
+    ----------
+    fname :
+
+    Returns
+    -------
+
+    """
     return os.path.normcase(re.sub(".py[co]$", ".py", fname))
 
 
 def match_pyfiles(f1, f2):
+    """
+
+    Parameters
+    ----------
+    f1 :
+    f2 :
+    """
     nt.assert_equal(pyfile(f1), pyfile(f2))
 
 
@@ -64,7 +84,28 @@ def test_find_file():
 def test_find_file_decorated1():
     @decorator
     def noop1(f):
+        """
+
+        Parameters
+        ----------
+        f :
+
+        Returns
+        -------
+
+        """
         def wrapper(*a, **kw):
+            """
+
+            Parameters
+            ----------
+            a :
+            kw :
+
+            Returns
+            -------
+
+            """
             return f(*a, **kw)
 
         return wrapper
@@ -80,6 +121,18 @@ def test_find_file_decorated1():
 def test_find_file_decorated2():
     @decorator
     def noop2(f, *a, **kw):
+        """
+
+        Parameters
+        ----------
+        f :
+        a :
+        kw :
+
+        Returns
+        -------
+
+        """
         return f(*a, **kw)
 
     @noop2
@@ -242,6 +295,13 @@ def test_calldef_none():
 
 
 def f_kwarg(pos, *, kwonly):
+    """
+
+    Parameters
+    ----------
+    pos :
+    kwonly :
+    """
     pass
 
 
@@ -260,12 +320,24 @@ def test_getdoc():
         """standard docstring"""
 
         def getdoc(self):
+            """
+
+            Returns
+            -------
+
+            """
             return "custom docstring"
 
     class C(object):
         """standard docstring"""
 
         def getdoc(self):
+            """
+
+            Returns
+            -------
+
+            """
             return None
 
     a = A()
@@ -295,6 +367,12 @@ def test_property_sources():
     class A(object):
         @property
         def foo(self):
+            """
+
+            Returns
+            -------
+
+            """
             return "bar"
 
         foo = foo.setter(lambda self, v: setattr(self, "bar", v))
@@ -336,6 +414,9 @@ def test_property_docstring_is_in_info_for_detail_level_0():
 def test_pdef():
     # See gh-1914
     def foo():
+        """
+
+        """
         pass
 
     inspector.pdef(foo, "foo")
@@ -428,6 +509,12 @@ def test_builtin_init():
 
 def test_render_signature_short():
     def short_fun(a=1):
+        """
+
+        Parameters
+        ----------
+        a :
+        """
         pass
 
     sig = oinspect._render_signature(signature(short_fun), short_fun.__name__,)
@@ -442,6 +529,14 @@ def test_render_signature_long():
         and_another_long_one: bool = False,
         let_us_make_sure_this_is_looong: Optional[str] = None,
     ) -> bool:
+        """
+
+        Parameters
+        ----------
+        a_really_long_parameter :
+        and_another_long_one :
+        let_us_make_sure_this_is_looong :
+        """
         pass
 
     sig = oinspect._render_signature(signature(long_function), long_function.__name__,)

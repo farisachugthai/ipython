@@ -130,7 +130,7 @@ done some work in the classic Python REPL.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Tutorial
 
    tutorial/tutorial
@@ -197,7 +197,7 @@ Developer's guide for third party tools and libraries
 
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: API
 
    api/index
@@ -205,7 +205,7 @@ Developer's guide for third party tools and libraries
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :titlesonly:
    :caption: About us
 

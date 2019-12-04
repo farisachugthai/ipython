@@ -29,9 +29,29 @@ class tzUTC(tzinfo):
     """tzinfo object for UTC (zero offset)"""
 
     def utcoffset(self, d):
+        """
+
+        Parameters
+        ----------
+        d :
+
+        Returns
+        -------
+
+        """
         return ZERO
 
     def dst(self, d):
+        """
+
+        Parameters
+        ----------
+        d :
+
+        Returns
+        -------
+
+        """
         return ZERO
 
 
@@ -42,6 +62,17 @@ def utc_aware(unaware):
     """decorator for adding UTC tzinfo to datetime's utcfoo methods"""
 
     def utc_method(*args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        args :
+        kwargs :
+
+        Returns
+        -------
+
+        """
         dt = unaware(*args, **kwargs)
         return dt.replace(tzinfo=UTC)
 

@@ -1,5 +1,5 @@
 """
-Test for async helpers. 
+Test for async helpers.
 
 Should only trigger on python 3.5+ or will have syntax errors.
 """
@@ -297,6 +297,17 @@ class AsyncTest(TestCase):
         )
 
         def nest_case(context, case):
+            """
+
+            Parameters
+            ----------
+            context :
+            case :
+
+            Returns
+            -------
+
+            """
             # Detect indentation
             lines = context.strip().splitlines()
             prefix_len = 0
@@ -427,4 +438,7 @@ class AsyncTest(TestCase):
             res.raise_error()
 
     def tearDown(self):
+        """
+
+        """
         ip.loop_runner = "asyncio"

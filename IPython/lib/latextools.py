@@ -110,6 +110,19 @@ def latex_to_png(s, encode=False, backend=None, wrap=False, color='Black',
 
 
 def latex_to_png_mpl(s, wrap, color='Black', scale=1.0):
+    """
+
+    Parameters
+    ----------
+    s :
+    wrap :
+    color :
+    scale :
+
+    Returns
+    -------
+
+    """
     try:
         from matplotlib import mathtext
         from pyparsing import ParseFatalException
@@ -132,6 +145,19 @@ def latex_to_png_mpl(s, wrap, color='Black', scale=1.0):
 
 
 def latex_to_png_dvipng(s, wrap, color='Black', scale=1.0):
+    """
+
+    Parameters
+    ----------
+    s :
+    wrap :
+    color :
+    scale :
+
+    Returns
+    -------
+
+    """
     try:
         find_cmd('latex')
         find_cmd('dvipng')

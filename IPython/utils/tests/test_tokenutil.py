@@ -8,6 +8,14 @@ from IPython.utils.tokenutil import token_at_cursor, line_at_cursor
 
 
 def expect_token(expected, cell, cursor_pos):
+    """
+
+    Parameters
+    ----------
+    expected :
+    cell :
+    cursor_pos :
+    """
     token = token_at_cursor(cell, cursor_pos)
     offset = 0
     for line in cell.splitlines():

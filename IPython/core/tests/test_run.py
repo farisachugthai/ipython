@@ -166,16 +166,25 @@ def doctest_reset_del():
 
 class TestMagicRunPass(tt.TempFileMixin):
     def setUp(self):
+        """
+
+        """
         content = "a = [1,2,3]\nb = 1"
         self.mktmp(content)
         ip = get_ipython()
 
     def run_tmpfile(self):
+        """
+
+        """
         # This fails on Windows if self.tmpfile.name has spaces or "~" in it.
         # See below and ticket https://bugs.launchpad.net/bugs/366353
         ip.magic("run %s" % self.fname)
 
     def run_tmpfile_p(self):
+        """
+
+        """
         # This fails on Windows if self.tmpfile.name has spaces or "~" in it.
         # See below and ticket https://bugs.launchpad.net/bugs/366353
         ip.magic("run -p %s" % self.fname)
@@ -408,6 +417,13 @@ tclass.py: deleting object: C-third
 
 class TestMagicRunWithPackage(unittest.TestCase):
     def writefile(self, name, content):
+        """
+
+        Parameters
+        ----------
+        name :
+        content :
+        """
         path = os.path.join(self.tempdir.name, name)
         d = os.path.dirname(path)
         if not os.path.isdir(d):
@@ -416,6 +432,9 @@ class TestMagicRunWithPackage(unittest.TestCase):
             f.write(textwrap.dedent(content))
 
     def setUp(self):
+        """
+
+        """
         self.package = package = "tmp{0}".format(
             "".join([random.choice(string.ascii_letters) for i in range(10)])
         )
@@ -461,11 +480,21 @@ class TestMagicRunWithPackage(unittest.TestCase):
         )
 
     def tearDown(self):
+        """
+
+        """
         os.chdir(self.__orig_cwd)
         sys.path[:] = [p for p in sys.path if p != self.tempdir.name]
         self.tempdir.cleanup()
 
     def check_run_submodule(self, submodule, opts=""):
+        """
+
+        Parameters
+        ----------
+        submodule :
+        opts :
+        """
         ip.user_ns.pop("x", None)
         ip.magic("run {2} -m {0}.{1}".format(self.package, submodule, opts))
         self.assertEqual(
@@ -488,8 +517,25 @@ class TestMagicRunWithPackage(unittest.TestCase):
         self.check_run_submodule("relative", "-p")
 
     def with_fake_debugger(func):
+        """
+
+        Returns
+        -------
+
+        """
         @functools.wraps(func)
         def wrapper(*args, **kwds):
+            """
+
+            Parameters
+            ----------
+            args :
+            kwds :
+
+            Returns
+            -------
+
+            """
             with patch.object(debugger.Pdb, "run", staticmethod(eval)):
                 return func(*args, **kwds)
 

@@ -143,6 +143,16 @@ class CapturingDisplayPublisher(DisplayPublisher):
     def publish(
         self, data, metadata=None, source=None, *, transient=None, update=False
     ):
+        """
+
+        Parameters
+        ----------
+        data :
+        metadata :
+        source :
+        transient :
+        update :
+        """
         self.outputs.append(
             {
                 "data": data,
@@ -153,6 +163,12 @@ class CapturingDisplayPublisher(DisplayPublisher):
         )
 
     def clear_output(self, wait=False):
+        """
+
+        Parameters
+        ----------
+        wait :
+        """
         super(CapturingDisplayPublisher, self).clear_output(wait)
 
         # empty the list, *do not* reassign a new list

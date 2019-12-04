@@ -74,6 +74,13 @@ class TestController:
         pass
 
     def launch(self, buffer_output=False, capture_output=False):
+        """
+
+        Parameters
+        ----------
+        buffer_output :
+        capture_output :
+        """
         logging.debug('*** ENV:', self.env)
         logging.debug('*** CMD:', self.cmd)
         env = os.environ.copy()
@@ -90,6 +97,12 @@ class TestController:
                                         env=env)
 
     def wait(self):
+        """
+
+        Returns
+        -------
+
+        """
         self.process.wait()
         self.stdout_capturer.halt()
         self.stdout = self.stdout_capturer.get_buffer()
@@ -149,6 +162,9 @@ class PyTestController(TestController):
         self.options = options
 
     def setup(self):
+        """
+
+        """
         ipydir = TemporaryDirectory()
         self.dirs.append(ipydir)
         self.env['IPYTHONDIR'] = ipydir.name
@@ -191,16 +207,28 @@ class PyTestController(TestController):
 
     @property
     def will_run(self):
+        """
+
+        Returns
+        -------
+
+        """
         try:
             return test_sections[self.section].will_run
         except KeyError:
             return True
 
     def add_xunit(self):
+        """
+
+        """
         xunit_file = os.path.abspath(self.section + '.xunit.xml')
         self.cmd.extend(['--with-xunit', '--xunit-file', xunit_file])
 
     def add_coverage(self):
+        """
+
+        """
         try:
             sources = test_sections[self.section].includes
         except KeyError:
@@ -221,6 +249,12 @@ class PyTestController(TestController):
         self.pycmd = "import coverage; coverage.process_startup(); " + self.pycmd
 
     def launch(self, buffer_output=False):
+        """
+
+        Parameters
+        ----------
+        buffer_output :
+        """
         self.cmd[2] = self.pycmd
         super(PyTestController, self).launch(buffer_output=buffer_output)
 
@@ -329,6 +363,19 @@ def run_iptestall(options):
     to_run, not_run = prepare_controllers(options)
 
     def justify(ltext, rtext, width=70, fill='-'):
+        """
+
+        Parameters
+        ----------
+        ltext :
+        rtext :
+        width :
+        fill :
+
+        Returns
+        -------
+
+        """
         ltext += ' '
         rtext = (' ' + rtext).rjust(width - len(ltext), fill)
         return ltext + rtext
@@ -413,6 +460,12 @@ def run_iptestall(options):
 
             class CustomHtmlReporter(HtmlReporter):
                 def find_code_units(self, morfs):
+                    """
+
+                    Parameters
+                    ----------
+                    morfs :
+                    """
                     super(CustomHtmlReporter, self).find_code_units(morfs)
                     for cu in self.code_units:
                         nameparts = cu.name.split(os.sep)

@@ -250,6 +250,9 @@ class DocTestCase(doctests.DocTestCase):
 
     # Modified runTest from the default stdlib
     def runTest(self):
+        """
+
+        """
         test = self._dt_test
         runner = self._dt_runner
 
@@ -300,7 +303,9 @@ class DocTestCase(doctests.DocTestCase):
         super(DocTestCase, self).setUp()
 
     def tearDown(self):
+        """
 
+        """
         # Undo the test.globs reassignment we made, so that the parent class
         # teardown doesn't destroy the ipython namespace
         if isinstance(self._dt_test.examples[0], IPExample):
@@ -619,6 +624,12 @@ class DocFileCase(doctest.DocFileCase):
     """
 
     def address(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self._dt_test.filename, None, None
 
 
@@ -629,6 +640,13 @@ class ExtensionDoctest(doctests.Doctest):
     enabled = True
 
     def options(self, parser, env=os.environ):
+        """
+
+        Parameters
+        ----------
+        parser :
+        env :
+        """
         Plugin.options(self, parser, env)
         parser.add_option('--doctest-tests',
                           action='store_true',
@@ -651,6 +669,13 @@ class ExtensionDoctest(doctests.Doctest):
             parser.set_defaults(doctestExtension=tolist(env_setting))
 
     def configure(self, options, config):
+        """
+
+        Parameters
+        ----------
+        options :
+        config :
+        """
         Plugin.configure(self, options, config)
         # Pull standard doctest plugin out of config; we will do doctesting
         config.plugins.plugins = [
@@ -666,6 +691,16 @@ class ExtensionDoctest(doctests.Doctest):
         self.extraglobs = None
 
     def loadTestsFromExtensionModule(self, filename):
+        """
+
+        Parameters
+        ----------
+        filename :
+
+        Returns
+        -------
+
+        """
         bpath, mod = os.path.split(filename)
         modname = os.path.splitext(mod)[0]
         try:
@@ -680,6 +715,16 @@ class ExtensionDoctest(doctests.Doctest):
     # a  few modifications to control output checking.
 
     def loadTestsFromModule(self, module):
+        """
+
+        Parameters
+        ----------
+        module :
+
+        Returns
+        -------
+
+        """
         # print '*** ipdoctest - lTM',module  # dbg
 
         if not self.matches(module.__name__):
@@ -710,6 +755,12 @@ class ExtensionDoctest(doctests.Doctest):
                               checker=self.checker)
 
     def loadTestsFromFile(self, filename):
+        """
+
+        Parameters
+        ----------
+        filename :
+        """
         # print "ipdoctest - from file", filename # dbg
         if is_extension_module(filename):
             for t in self.loadTestsFromExtensionModule(filename):
@@ -757,6 +808,13 @@ class IPythonDoctest(ExtensionDoctest):
                                   checker=self.checker)
 
     def options(self, parser, env=os.environ):
+        """
+
+        Parameters
+        ----------
+        parser :
+        env :
+        """
         # print "Options for nose plugin:", self.name # dbg
         Plugin.options(self, parser, env)
         parser.add_option('--ipdoctest-tests',
@@ -780,6 +838,13 @@ class IPythonDoctest(ExtensionDoctest):
             parser.set_defaults(ipdoctest_extension=tolist(env_setting))
 
     def configure(self, options, config):
+        """
+
+        Parameters
+        ----------
+        options :
+        config :
+        """
         # print "Configuring nose plugin:", self.name # dbg
         Plugin.configure(self, options, config)
         # Pull standard doctest plugin out of config; we will do doctesting

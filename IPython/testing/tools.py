@@ -312,6 +312,9 @@ class TempFileMixin(unittest.TestCase):
         self.fname = fname
 
     def tearDown(self):
+        """
+
+        """
         # If the tmpfile wasn't made because of skipped tests, like in
         # win32, there's nothing to cleanup.
         if hasattr(self, 'tmps'):
@@ -456,6 +459,9 @@ class AssertNotPrints(AssertPrints):
 
 @contextmanager
 def mute_warn():
+    """
+
+    """
     from IPython.utils import warn
     save_warn = warn.warn
     warn.warn = lambda *a, **kw: None
@@ -493,6 +499,16 @@ def fake_input(inputs):
     it = iter(inputs)
 
     def mock_input(prompt=''):
+        """
+
+        Parameters
+        ----------
+        prompt :
+
+        Returns
+        -------
+
+        """
         try:
             return next(it)
         except StopIteration:

@@ -26,6 +26,12 @@ def test_prefilter():
 
 def test_prefilter_shadowed():
     def dummy_magic(line):
+        """
+
+        Parameters
+        ----------
+        line :
+        """
         pass
 
     prev_automagic_state = ip.automagic
@@ -56,6 +62,16 @@ def test_autocall_binops():
     ip.magic("autocall 2")
 
     def f(x):
+        """
+
+        Parameters
+        ----------
+        x :
+
+        Returns
+        -------
+
+        """
         return x
 
     ip.user_ns["f"] = f
