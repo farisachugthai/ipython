@@ -83,6 +83,7 @@ from IPython.core.usage import default_banner
 from IPython.paths import get_ipython_dir
 
 from IPython.testing.skipdoctest import skip_doctest
+
 from IPython.utils import PyColorize, openpy, utils_io
 from IPython.utils.decorators import undoc
 from IPython.utils.ipstruct import Struct
@@ -90,8 +91,6 @@ from IPython.utils.path import ensure_dir_exists, get_py_filename
 from IPython.utils.process import getoutput, system
 from IPython.utils.strdispatch import StrDispatch
 from IPython.utils.syspathcontext import prepended_to_syspath
-
-# Are we deliberately clobbering the stdlib.
 from IPython.utils.tempdir import TemporaryDirectory
 from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
 from IPython.utils.utils_io import ask_yes_no
@@ -2637,14 +2636,19 @@ class InteractiveShell(SingletonConfigurable):
     def init_completer(self):
         """Initialize the completion machinery.
 
-        This creates completion machinery that can be used by client code,
-        either interactively in-process (typically triggered by the readline
-        library), programmatically (such as in test suites) or out-of-process
-        (typically over the network by remote frontends).
+        This creates completion machinery that can be used by client code in
+        a few different ways:
+
+        - interactively in-process (typically triggered by the
+          :mod:`readline` library)
+
+        - programmatically (such as in test suites)
+
+        - out-of-process (typically over the network by remote frontends)
 
         Also worth noting that this defines the `Completer` attribute,
-        initializes the the IPCompleter object, defines the strdispatchers
-        attribute and makes no less than 6 calls to set_hook!
+        initializes the `IPCompleter` object, defines the strdispatchers
+        attribute and makes no less than 6 calls to 'set_hook'!
 
         So if you muck around with the hooks in this repo the completions
         will fry if you do so incorrectly!

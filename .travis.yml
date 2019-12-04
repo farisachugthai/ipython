@@ -13,6 +13,7 @@ sudo: false
 env:
   global:
     - PATH=$TRAVIS_BUILD_DIR/pandoc:$PATH
+    - LANG=C.UTF-8
 
 
 jobs:
@@ -79,19 +80,15 @@ install:
 
 
 script:
-  - cd /tmp && iptest --coverage xml && cd -
+  - iptest --coverage xml
   - pytest IPython
   - |
     if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       pip3 install -U -r docs/requirements.txt
-      python3 tools/fixup_whats_new_pr.py
-      # make -C docs/ html SPHINXOPTS="-W"
       sphinx-build -c docs/source -W --keep-going docs/source docs/build
     fi
 
 after_success:
-  - cp /tmp/ipy_coverage.xml ./
-  - cp /tmp/.coverage ./
   - codecov
 
 matrix:

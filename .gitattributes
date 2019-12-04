@@ -1,14 +1,30 @@
-IPython/.git_commit_info.ini export-subst
+# IPython/.git_commit_info.ini export-subst
 
 * text=auto eol=lf
-
-*.py diff=python
-*.js diff=javascript
-*.html diff=html
-
-*.png binary
-
 
 # *.png diff=exif
 # uncomment then run
 # $ git config diff.exif.textconv exiftool
+
+*.txt		text whitespace=trailing-space,space-before-tab
+*.rst		text whitespace=trailing-space,space-before-tab,tab-in-indent
+*.yml text
+*.html text
+
+# File type diffs
+
+*.py		text diff=python whitespace=trailing-space,space-before-tab,tab-in-indent
+*.ipynb     diff=python
+*.ipy       diff=python
+*.js        diff=javascript
+*.html      diff=html
+
+# Binary files
+*.png binary
+*.doctree   binary
+*.pickle    binary
+*.ttf binary
+*.svg binary
+*.pdf binary
+*.jp[e]?g binary
+

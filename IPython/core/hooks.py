@@ -217,6 +217,13 @@ def show_in_pager(self, data, start, screen_lines):
 
     .. note:: raising TryNext here will use the default paging functionality
 
+    Parameters
+    ----------
+    self :
+    data :
+    start :
+    screen_lines :
+
     """
     raise TryNext
 

@@ -437,9 +437,9 @@ class Completion:
         aware of.
         """
         return (
-                self.start == other.start
-                and self.end == other.end
-                and self.text == other.text
+            self.start == other.start
+            and self.end == other.end
+            and self.text == other.text
         )
 
     def __hash__(self):
@@ -565,7 +565,7 @@ else:
 GREEDY_DELIMS = " =\r\n"
 
 
-class CompletionSplitter(object):
+class CompletionSplitter:
     """An object to split an input line in a manner similar to readline.
 
     By having our own implementation, we can expose readline-like completion in
@@ -630,8 +630,6 @@ class Completer(Configurable):
              "Default to True if jedi is installed.",
     ).tag(config=True)
 
-    # The rarely seen in the wild example of every different kind of python
-    # quoting
     jedi_compute_type_timeout = Int(
         default_value=400,
         help="""Experimental: restrict time (in milliseconds) during which Jedi
@@ -1130,21 +1128,29 @@ class IPCompleter(Completer):
 
         Parameters
         ----------
-        shell
+        shell : object
             a pointer to the ipython shell itself.  This is needed
             because this completer knows about magic functions, and those can
             only be accessed via the ipython instance.
-
         namespace : dict, optional
             an optional dict where completions are performed.
-
+            As indicated by the signature of `Completer`, I believe that if
+            this is passed as `None`, we just use ``__main__`` (specifically
+            ``__main__.__dict__``).
         global_namespace : dict, optional
             secondary optional dict for completions, to
             handle cases (such as IPython embedded inside functions) where
             both Python scopes are visible.
-
         use_readline : bool, optional
             DEPRECATED, ignored since IPython 6.0, will have no effects
+        splitter : object
+            CompletionSplitter
+
+        Methods
+        -------
+        _greedy_changed
+            Note: Depends on `splitter` and :mod:`readline` being defined.
+
         """
         self.magic_escape = ESC_MAGIC
         self.splitter = CompletionSplitter()
@@ -1156,7 +1162,6 @@ class IPCompleter(Completer):
                 stacklevel=2,
             )
 
-        # _greedy_changed() depends on splitter and readline being defined:
         Completer.__init__(
             self,
             namespace=namespace,
@@ -1248,7 +1253,9 @@ class IPCompleter(Completer):
         only the parts after what's already been typed (instead of the
         full completions, as is normally done).  I don't think with the
         current (as of Python 2.3) Python readline it's possible to do
-        better."""
+        better.
+
+        """
 
         # chars that require escaping with backslash - i.e. chars
         # that readline treats incorrectly as delimiters, but we
@@ -1583,12 +1590,12 @@ class IPCompleter(Completer):
                 if text.endswith(".") and self.omit__names:
                     if self.omit__names == 1:
                         # true if txt is _not_ a __ name, false otherwise:
-                        no__name = lambda txt: re.match(r".*\.__.*?__", txt) is None
+                        def no__name(txt): return re.match(r".*\.__.*?__", txt) is None
                     else:
                         # true if txt is _not_ a _ name, false otherwise:
                         no__name = (
                             lambda txt: re.match(r"\._.*?", txt[txt.rindex("."):])
-                                        is None
+                            is None
                         )
                     matches = filter(no__name, matches)
             except NameError:
@@ -1804,7 +1811,7 @@ class IPCompleter(Completer):
                                   (?:\.(?!\d)\w+)*
                                   """
                 ),
-                True : re.compile(
+                True: re.compile(
                     dict_key_re_fmt
                     % """
                                  .+
@@ -2032,28 +2039,39 @@ class IPCompleter(Completer):
     def _completions(
             self, full_text: str, offset: int, *, _timeout
     ) -> Iterator[Completion]:
-        """Core completion module.Same signature as :any:`completions`, with the
-        extra `timeout` parameter (in seconds).
+        """Core completion function.
 
-        Computing jedi's completion ``.type`` can be quite expensive (it is a
+        Same signature as :any:`completions`, with the extra 'timeout'
+        parameter (in seconds).
+
+        Computing `jedi` completion ``.type`` can be quite expensive (it is a
         lazy property) and can require some warm-up, more warm up than just
-        computing the ``name`` of a completion. The warm-up can be:
+        computing the ``name`` of a completion. The warm-up can be from:
 
-            - Long warm-up the first time a module is encountered after
-              install/update: actually build parse/inference tree.
+            - The first time a module is encountered after
+              install/update. In which case:
 
-            - First time the module is encountered in a session: load tree from
-              disk.
+                - actually build parse/inference tree.
+
+            - First time the module is encountered in a session:
+
+                - load tree from disk.
 
         We don't want to block completions for tens of seconds so we give the
         completer a budget of ``_timeout`` seconds per invocation to compute
-        completions types, the completions that have not yet been computed will
-        be marked as "unknown" an will have a chance to be computed next round
-        are things get cached.
+        completions types.
 
-        Keep in mind that Jedi is not the only thing treating the completion so
-        keep the timeout short-ish as if we take more than 0.3 second we still
-        have lots of processing to do.
+        The completions that have not yet been computed will
+        be marked as "unknown", and will have a chance to be computed next
+        round when things get cached.
+
+        .. tip::
+            Keep in mind that Jedi is not the only thing calculating
+            the completion so keep the timeout short-ish as if we take more
+            than, for instance, 0.3 seconds, we still have a lot more
+            processing to do.
+
+        .. todo:: This method could probably be hugely enhanced by some comprehensions.
 
         """
         deadline = time.monotonic() + _timeout

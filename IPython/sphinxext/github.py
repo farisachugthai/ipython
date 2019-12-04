@@ -1,3 +1,4 @@
+# coding=utf-8
 """Define text roles for GitHub
 
 * ghissue - Issue

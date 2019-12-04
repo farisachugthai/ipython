@@ -1,5 +1,16 @@
 # encoding: utf-8
-"""IO capturing utilities."""
+"""IO capturing utilities.
+
+Examples
+--------
+If you have a CapturedIO object ``c``, these can be displayed in IPython
+using::
+
+    from IPython.display import display
+    for o in c.outputs:
+        display(o)
+
+"""
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -13,10 +24,19 @@ from io import StringIO
 
 
 class RichOutput:
-    """
+    """Seems to be a convenience object to work with IPython display."""
 
-    """
     def __init__(self, data=None, metadata=None, transient=None, update=False):
+        """Initialize with the required data.
+
+        Parameters
+        ----------
+        data :
+        metadata :
+        transient :
+        update :
+
+        """
         self.data = data or {}
         self.metadata = metadata or {}
         self.transient = transient or {}
@@ -24,7 +44,8 @@ class RichOutput:
 
     def display(self):
         """
-
+        Imports :func:`IPython.display.publish_display_data` and feeds
+        instance attributes to it.
         """
         from IPython.display import publish_display_data
 
@@ -36,6 +57,20 @@ class RichOutput:
         )
 
     def _repr_mime_(self, mime):
+        """I feel like you could make a factory function out of this.
+
+        This is the method that all those other _repr_* methods are calling.
+        If we had a list of accepted MIMEtypes, then we could just call them
+        based on the list. Idk how to implement that though.
+
+        Parameters
+        ----------
+        mime :
+
+        Returns
+        -------
+
+        """
         if mime not in self.data:
             return
         data = self.data[mime]
@@ -70,24 +105,31 @@ class RichOutput:
 
 
 class CapturedIO:
-    """Simple object for containing captured stdout/err and rich display StringIO objects
+    """Simple object for containing captured
+    :data:`sys.stdout`, :data:`sys.stderr` and rich display StringIO objects.
 
     Each instance `c` has three attributes:
 
-    - ``c.stdout`` : standard output as a string
-    - ``c.stderr`` : standard error as a string
-    - ``c.outputs``: a list of rich display outputs
+    Attributes
+    ----------
+    - 'c.stdout' : str
+        Standard output as a string
+    - 'c.stderr' : str
+        Standard error as a string
+    - 'c.outputs' : list
+        Rich display outputs
 
+    Methods
+    -------
     Additionally, there's a ``c.show()`` method which will print all of the
     above in the same order, and can be invoked simply via ``c()``.
+
     """
 
     def __init__(self, stdout, stderr, outputs=None):
         self._stdout = stdout
         self._stderr = stderr
-        if outputs is None:
-            outputs = []
-        self._outputs = outputs
+        self._outputs = outputs or []
 
     def __str__(self):
         return self.stdout
@@ -129,10 +171,27 @@ class CapturedIO:
             RichOutput(**kargs).display()
 
     __call__ = show
+    # TODO: can the above be rewritten like this?
+    # def __call__(self, *args, **kwargs):
+    #     self.__init__(self, *args, **kwargs)
+    #     return self.show()
 
 
 class capture_output:
-    """context manager for capturing stdout/err"""
+    """Context manager for capturing stdout/err.
+
+    .. tip::
+        Probably one of the more heavily used classes in the test
+        suite. Tread lightly if you modify!
+
+    .. todo:: Should this subclass :class:`contextlib.abstractcontextmanager`?
+
+    Note
+    ----
+    The existence of :func:`contextlib.redirect_stdout` and
+    :func:`contextlib.redirect_stderr`.
+
+    """
 
     stdout = True
     stderr = True

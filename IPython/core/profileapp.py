@@ -183,12 +183,10 @@ class ProfileList(Application):
         }
     )
     flags = Dict(
-        dict(
-            debug=(
-                {"Application": {"log_level": 0}},
-                "Set Application.log_level to 0, maximizing log output.",
-            )
-        )
+        {'debug': (
+            {"Application": {"log_level": 0}},
+            "Set Application.log_level to 0, maximizing log output.",
+        )}
     )
 
     ipython_dir = Unicode(
@@ -396,11 +394,9 @@ class ProfileApp(Application):
     examples = _main_examples
 
     subcommands = Dict(
-        dict(
-            create=(ProfileCreate, ProfileCreate.description.splitlines()[0]),
-            list=(ProfileList, ProfileList.description.splitlines()[0]),
-            locate=(ProfileLocate, ProfileLocate.description.splitlines()[0]),
-        )
+        {'create': (ProfileCreate, ProfileCreate.description.splitlines()[0]),
+         'list'  : (ProfileList, ProfileList.description.splitlines()[0]),
+         'locate': (ProfileLocate, ProfileLocate.description.splitlines()[0])}
     )
 
     def start(self):

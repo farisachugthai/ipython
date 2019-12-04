@@ -95,9 +95,10 @@ class ColorSwitchErr(UsageError):
                  stacklevel=2)
     """
 
+    @property
     def __traceback__(self):
         """So I think exceptions usually have this defined now right?"""
-        super().__traceback__(self)
+        return super().__traceback__
 
     def __repr__(self):
         return "".format(self.__class__.__name)
@@ -162,6 +163,8 @@ if sys.version_info[0:2] < (3, 7):
 
     class ModuleNotFoundError(ImportError):
         """Backport and define ModuleNotFound so we can catch it later."""
+
+        __module__ = "builtins"  # for py3
 
         def __init__(self):
             super().__init__()

@@ -18,11 +18,14 @@ serve to show the default value.
 import logging
 import os
 from pathlib import Path
+import re
 import shutil
 import sys
 from typing import Dict, Any
 
-from IPython.sphinxext import configtraits, ipython_directive, magics  # noqa F401
+from IPython import sphinxext  # noqa
+from IPython.sphinxext import (configtraits, ipython_directive,
+                               magics, github)  # noqa F401
 from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 import sphinx
 from sphinx.util.docfields import GroupedField
@@ -339,7 +342,6 @@ intersphinx_mapping = {'python'        : ('https://docs.python.org/3/', None),
                        'ipykernel'     : ('https://ipykernel.readthedocs.io/en/latest/', None),
                        'prompt_toolkit': ('https://python-prompt-toolkit.readthedocs.io/en/stable/', None),
                        'ipywidgets'    : ('https://ipywidgets.readthedocs.io/en/stable/', None),
-                       'ipyparallel'   : ('https://ipyparallel.readthedocs.io/en/stable/', None),
                        'pip'           : ('https://pip.pypa.io/en/stable/', None)
                        }
 
@@ -385,7 +387,8 @@ autodoc_inherit_docstrings = False
 autosummary_imported_members = False
 
 # autoclass_content = u'both'
-autodoc_member_order = u'bysource'
+# autodoc_member_order = u'bysource'
+autodoc_member_order = u'groupwise'
 
 autodoc_docstring_signature = True
 
@@ -396,7 +399,29 @@ autodoc_docstring_signature = True
 del iprelease
 
 
-def setup(app: "Sphinx") -> Dict[str, Any]:
+# Extension Interface
+# -----------------------
+
+from sphinx import addnodes  # noqa
+
+event_sig_re = re.compile(r'([a-zA-Z-]+)\s*\((.*)\)')
+
+
+def parse_event(env, sig, signode):
+    m = event_sig_re.match(sig)
+    if not m:
+        signode += addnodes.desc_name(sig, sig)
+        return sig
+    name, args = m.groups()
+    signode += addnodes.desc_name(name, name)
+    plist = addnodes.desc_parameterlist()
+    for arg in args.split(','):
+        arg = arg.strip()
+        plist += addnodes.desc_parameter(arg, arg)
+    signode += plist
+    return name
+
+def setup(app: "Sphinx") -> None:
     """Add in the Sphinx directive for `confval`.
 
     Also define the IPyLexer's while we're here.
@@ -410,8 +435,13 @@ def setup(app: "Sphinx") -> Dict[str, Any]:
     app.add_lexer('ipythontb', IPythonTracebackLexer)
     app.add_lexer('ipython', IPyLexer)
 
-    fdesc = GroupedField('parameter', label='Parameters',
+    fdesc = GroupedField('param', label='Parameters',
                          names=['param'], can_collapse=True)
     app.add_object_type('directive', 'dir', 'pair: %s; directive')
+    app.add_object_type('event', 'event', 'pair: %s; event', parse_event,
+                        doc_field_types=[fdesc])
 
-    app.add_role
+    # workaround for RTD
+    app.info = lambda *args, **kwargs: logger.info(*args, **kwargs)
+    app.warn = lambda *args, **kwargs: logger.warning(*args, **kwargs)
+    app.debug = lambda *args, **kwargs: logger.debug(*args, **kwargs)

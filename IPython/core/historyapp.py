@@ -40,9 +40,9 @@ class HistoryTrim(BaseIPythonApplication):
         config=True
     )
 
-    flags = Dict(dict(backup=({"HistoryTrim": {"backup": True}}, backup.help)))
+    flags = Dict({'backup': ({"HistoryTrim": {"backup": True}}, backup.help)})
 
-    aliases = Dict(dict(keep="HistoryTrim.keep"))
+    aliases = Dict({'keep': "HistoryTrim.keep"})
 
     def start(self):
         """
@@ -149,10 +149,7 @@ class HistoryClear(HistoryTrim):
     force = Bool(False, help="Don't prompt user for confirmation").tag(config=True)
 
     flags = Dict(
-        dict(
-            force=({"HistoryClear": {"force": True}}, force.help),
-            f=({"HistoryTrim": {"force": True}}, force.help),
-        )
+        {'force': ({"HistoryClear": {"force": True}}, force.help), 'f': ({"HistoryTrim": {"force": True}}, force.help)}
     )
     aliases = Dict()
 
@@ -171,10 +168,8 @@ class HistoryApp(Application):
     description = "Manage the IPython history database."
 
     subcommands = Dict(
-        dict(
-            trim=(HistoryTrim, HistoryTrim.description.splitlines()[0]),
-            clear=(HistoryClear, HistoryClear.description.splitlines()[0]),
-        )
+        {'trim' : (HistoryTrim, HistoryTrim.description.splitlines()[0]),
+         'clear': (HistoryClear, HistoryClear.description.splitlines()[0])}
     )
 
     def start(self):

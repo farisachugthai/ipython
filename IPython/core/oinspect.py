@@ -12,33 +12,27 @@ reference the name under which an object is being read.
 __all__ = ["Inspector", "InspectColors"]
 
 import ast
-import collections
 import inspect
-from inspect import (
-    signature,
-    getsource,
-    getfullargspec,
-    getabsfile as find_file,
-    formatargspec,
-    getdoc,
-)
-from itertools import zip_longest
 import linecache
-import sys
 import os
-from textwrap import dedent, indent
+import sys
 import types
-
-# IPython's own
-from IPython.core import page
-from IPython.utils import openpy, PyColorize
-from IPython.utils.coloransi import TermColors, ColorScheme, ColorSchemeTable
-from IPython.utils.dir2 import safe_hasattr
-from IPython.utils.path import compress_user
+from inspect import getabsfile as find_file, getdoc, getsource, signature
+from itertools import zip_longest
+from textwrap import dedent, indent
 
 from pygments import highlight
-from IPython.lib.lexers import IPyLexer
 from pygments.formatters import HtmlFormatter
+
+# IPython's own
+from traitlets.config import Configurable
+from IPython.core import page
+from IPython.lib.lexers import IPyLexer
+from IPython.utils import openpy, PyColorize
+from IPython.utils.coloransi import ColorSchemeTable, TermColors
+from IPython.utils.dir2 import safe_hasattr
+from IPython.utils.path import compress_user
+from IPython.utils.wildcard import typestr2type, list_namespace
 
 
 def pylight(code):
@@ -106,7 +100,13 @@ info_fields = [
 
 
 def object_info(**kw):
-    """Make an object info dict with all fields present."""
+    """Make an object info dict with all fields present.
+
+    Parameters
+    ----------
+    kw : dict
+
+    """
     infodict = dict(zip_longest(info_fields, [None]))
     infodict.update(kw)
     return infodict
@@ -181,9 +181,9 @@ def find_source_lines(obj):
                 fname = inspect.getabsfile(obj.__class__)
             except TypeError:
                 # Can happen for builtins
-                pass
+                fname = None
     except:
-        pass
+        fname = None
     return fname
 
 
@@ -222,7 +222,7 @@ def _mime_format(text, formatter=None):
             return dict(defaults, **formatted)
 
 
-class Inspector:
+class Inspector(Configurable):
     """Whew. Wth?
 
     Parameters
@@ -233,6 +233,8 @@ class Inspector:
     Note
     ----
     The Xonsh guy made it stop inheriting from Colorable!!!
+    I'm gonna make it still inherit from Configurable though.
+
     """
 
     def __init__(
@@ -246,10 +248,13 @@ class Inspector:
         *args,
         **kwargs,
     ):
+        super().__init__()
+        # All Colorable does is
+        default_style = Unicode("LightBG").tag(config=True)
+        # So let's just add that ourselves
         self.color_table = color_table
         # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         # self.format = self.parser.format
-        self.__head = None
         self.str_detail_level = str_detail_level
 
         # no idea if i set these 3 classes right but oh well
@@ -273,6 +278,19 @@ class Inspector:
         """
         hdef = _render_signature(signature(obj), oname)
         return hdef
+
+    def __head(self, h):
+        """Return a header string with proper colors."""
+        return "%s%s%s" % (
+            self.color_table.active_colors.header,
+            h,
+            self.color_table.active_colors.normal,
+        )
+
+    def set_active_scheme(self, scheme):
+        if scheme is not None:
+            self.color_table.set_active_scheme(scheme)
+            self.parser.color_table.set_active_scheme(scheme)
 
     def noinfo(self, msg, oname):
         """Generic message when no information is found."""
@@ -828,7 +846,7 @@ class Inspector:
                 if "varkw" not in argspec_dict:
                     argspec_dict["varkw"] = argspec_dict.pop("keywords")
 
-        # return object_info(**out)
+        return object_info(**out)
 
     @staticmethod
     def _source_contains_docstring(src, doc):
@@ -876,28 +894,20 @@ class Inspector:
         - show_all(False): show all names, including those starting with
           underscores.
 
+        - list_types(False): list all available object types for object
+          matching. temporarily not recognizing that option like
+
         """
         if ns_search is None:
             ns_search = []
         type_pattern = "all"
 
         # list all object types
-        # if list_types:
-        # - list_types(False): list all available object types for object matching.
-        # temporarily not recognizing that option like
-        # page.page("\n".join(sorted(typestr2type)))
-        # return
+        if list_types:
+            page.page("\n".join(sorted(typestr2type)))
+            return
 
         cmds = pattern.split()
-        len_cmds = len(cmds)
-        if len_cmds == 1:
-            # Only filter pattern given
-            filter = cmds[0]
-        elif len_cmds == 2:
-            # Both filter and type specified
-            filter, type_pattern = cmds
-        else:
-            raise ValueError("invalid argument string for psearch: <%s>" % pattern)
 
         # filter search namespaces
         for name in ns_search:
@@ -914,10 +924,10 @@ class Inspector:
             if id(ns) in namespaces_seen:
                 continue
             namespaces_seen.add(id(ns))
-            # tmp_res = list_namespace(
-            #     ns, type_pattern, filter, ignore_case=ignore_case, show_all=show_all
-            # )
-            # search_result.update(tmp_res)
+            tmp_res = list_namespace(
+                ns, type_pattern, filter, ignore_case=ignore_case, show_all=show_all
+            )
+            search_result.update(tmp_res)
 
         page.page("\n".join(sorted(search_result)))
 

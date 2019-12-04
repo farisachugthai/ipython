@@ -1,13 +1,15 @@
 # encoding: utf-8
-"""System command aliases.
+r"""System command aliases.
 
 .. data:: shell_line_split
 
     This is used as the pattern for calls to split_user_input.
+    It's a compiled regular expression.::
 
-It's a compiled regular expression.:
+        shell_line_split = re.compile(r'^(\s*)()(\S+)(.*$)')
 
-``shell_line_split = re.compile(r'^(\s*)()(\S+)(.*$)')``
+    But what's up with the empty group?
+
 
 Authors:
 

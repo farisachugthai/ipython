@@ -248,5 +248,15 @@ class StoreMagics(Magics):
                     db['autorestore/' + arg] = obj
                     print("Stored '%s' (%s)" % (arg, obj.__class__.__name__))
 
+    # Load the extension in IPython.
+    def register_magic(self, ip):
+        """Are you allowed to do this?"""
+        ip.register_magics(self)
+
+
+def load_ipython_extension(ip):
     """Load the extension in IPython."""
-    ip.register_magics(StoreMagics)
+    storemagic = StoreMagics(ip)
+    ip.register_magics(storemagic)
+    ip.events.register('pre_run_cell', storemagic.pre_run_cell)
+    ip.events.register('post_execute', storemagic.post_execute_hook)
