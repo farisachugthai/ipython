@@ -49,7 +49,6 @@ class NamespaceMagics(Magics):
         ----------
         namespaces :
         parameter_s :
-        todo
         """
         # print 'pinfo par: <%s>' % parameter_s  # dbg
         # detail_level: 0 -> obj? , 1 -> obj??
@@ -161,14 +160,6 @@ class NamespaceMagics(Magics):
         Arguments
         ---------
         parameter_s :
-        PATTERN
-            where PATTERN is a string containing * as a wildcard similar to its
-            use in a shell.  The pattern is matched in all namespaces on the
-            search path. By default objects starting with a single _ are not
-            matched, many IPython generated objects have a single
-            underscore. The default is case insensitive matching. Matching is
-            also done on the attributes of objects and not only on the objects
-            in a module.
 
         [OBJECT TYPE]
             Is the name of a python type from the types module. The name is
@@ -177,7 +168,6 @@ class NamespaceMagics(Magics):
             given type are matched. Using all here makes the pattern match all
             types (this is the default).
 
-        Options
         -------
           -a: makes the pattern match even objects whose names start with a
           single underscore.  These names are normally omitted from the
@@ -537,13 +527,9 @@ class NamespaceMagics(Magics):
         Parameters
         ----------
         parameter_s :
-        in : reset input history
 
-        out : reset output history
 
-        dhist : reset directory history
 
-        array : reset only variables that are NumPy arrays
 
         See Also
         --------

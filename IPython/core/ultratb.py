@@ -754,9 +754,8 @@ class ListTB(TBTools):
 
         Parameters
         ----------
+        evalue :
         etype : exception type
-        value : exception value
-            As returned by :func:`sys.exc_info`.
 
         """
         self.ostream.write("\n".join(traceback.format_exception_only(etype, evalue)))

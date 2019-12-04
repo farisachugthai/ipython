@@ -287,8 +287,7 @@ class Struct(dict):
 
         Parameters
         ----------
-        __loc_data : dict, Struct
-            The data to merge into self
+        __loc_data__ :
         __conflict_solve : dict
             The conflict policy dict.  The keys are binary functions used to
             resolve the conflict and the values are lists of strings naming

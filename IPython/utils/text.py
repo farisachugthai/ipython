@@ -688,10 +688,6 @@ def compute_item_matrix(items, row_first=False, empty=None, *args, **kwargs):
         column-first (default).
     empty : (default None)
         default value to fill list if needed
-    separator_size : int (default=2)
-        How much characters will be used as a separation between each columns.
-    displaywidth : int (default=80)
-        The width of the area onto which the columns should enter
 
     Returns
     -------

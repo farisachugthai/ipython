@@ -1955,6 +1955,7 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         ----------
+        detail_level :
         oname : object
             object to introspect.
         """
@@ -2127,7 +2128,6 @@ class InteractiveShell(SingletonConfigurable):
             exception or returns an invalid result, it will be immediately
             disabled.
 
-        WARNING: by putting in your own exception handler into IPython's main
         execution loop, you run a very good chance of nasty crashes.  This
         facility should only be used if you really know what you are doing.
 
@@ -2306,6 +2306,7 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         -----------
+        tb_offset :
         filename :
         running_compiled_code :
             As used by :meth:`showsyntaxerror`.
@@ -3944,8 +3945,7 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         ----------
-        source : string
-            Python input code, which can be multiline.
+        code :
 
         Returns
         -------
@@ -4109,6 +4109,7 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         ----------
+        prefix :
         data : str, optional
             If data is given, it gets written out to the temp file
             immediately, and the file is closed again.
@@ -4179,6 +4180,8 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         ----------
+        skip_encoding_cookie :
+        search_ns :
         target : str
             A string specifying code to retrieve. This will be tried
             respectively as:

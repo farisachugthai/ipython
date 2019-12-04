@@ -264,6 +264,9 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
 
         Parameters
         ----------
+        module :
+        display_banner :
+        global_ns :
         local_ns : module
             Working local namespace (a dict) and module (a module or similar
             object). If given as None, they are automatically taken from the scope

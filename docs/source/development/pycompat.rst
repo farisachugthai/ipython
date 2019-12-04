@@ -3,8 +3,9 @@
 Writing code for Python 2 and 3
 ===============================
 
-.. module:: IPython.utils.py3compat
-   :synopsis: Python 2 & 3 compatibility helpers
+.. commented out because the makefile gets it now
+.. .. module:: IPython.utils.py3compat
+   .. :synopsis: Python 2 & 3 compatibility helpers
 
 
 IPython 6 requires Python 3, so our compatibility module

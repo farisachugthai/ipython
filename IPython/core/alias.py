@@ -324,7 +324,8 @@ class AliasManager(Configurable):
 
         Parameters
         ----------
-        todo
+        name :
+        cmd :
 
         Raises
         ------

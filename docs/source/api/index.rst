@@ -27,6 +27,7 @@ and ``ipython_kernel_config.py`` files accept, and all of the core magics.
    kernel
    autoreload
    storemagic
+   magics
 
 
 .. toctree::

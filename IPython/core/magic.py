@@ -667,16 +667,6 @@ class Magics(Configurable):
             The arguments to parse.
         opt_str : str
             The options specification.
-        mode : str, default 'string'
-            If given as 'list', the argument string is returned as a list (split
-            on whitespace) instead of a string.
-        list_all : bool, default False
-            Put all option values in lists. Normally only options
-            appearing more than once are put in a list.
-        posix : bool, default True
-            Whether to split the input line in POSIX mode or not, as per the
-            conventions outlined in the :mod:`shlex` module from the standard
-            library.
 
         """
 

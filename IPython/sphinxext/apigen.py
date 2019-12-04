@@ -429,10 +429,6 @@ class ApiDocWriter:
     def discover_modules(self):
         """Return module sequence discovered from ``self.package_name``
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         mods : sequence

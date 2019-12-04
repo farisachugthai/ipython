@@ -83,17 +83,19 @@ class BaseAliases(Configurable):
 
     Examples
     --------
-    If you do this:
+    If you do this::
 
-    base_aliases = Dict({
-        'profile-dir': 'ProfileDir.location',
-        'profile': 'BaseIPythonApplication.profile',
-        'ipython-dir': 'BaseIPythonApplication.ipython_dir',
-        'log-level': 'Application.log_level',
-        'config': 'BaseIPythonApplication.extra_config_file',
-    }, allow_none=True).tag(config=None)
+        from traitlets.traitlets import Dict
+        base_aliases = Dict({
+            'profile-dir': 'ProfileDir.location',
+            'profile': 'BaseIPythonApplication.profile',
+            'ipython-dir': 'BaseIPythonApplication.ipython_dir',
+            'log-level': 'Application.log_level',
+            'config': 'BaseIPythonApplication.extra_config_file',
+        }, allow_none=True).tag(config=None)
 
     It'll complain that 'Dict' objects have no attribute update.
+
     """
 
     base_aliases = dict(
@@ -249,7 +251,7 @@ class BaseIPythonApplication(Application):
     def _ipython_dir_default(self):
         d = get_ipython_dir()
         self._ipython_dir_changed(
-            {"name": "ipython_dir", "old": d, "new": d,}
+            {"name": "ipython_dir", "old": d, "new": d, }
         )
         return d
 
@@ -383,12 +385,20 @@ class BaseIPythonApplication(Application):
         `suppress_errors` default value is to be `None` in which case the
         behavior default to the one of `traitlets.Application`.
 
-        The default value can be set :
-           - to `False` by setting 'IPYTHON_SUPPRESS_CONFIG_ERRORS' environment variable to '0', or 'false' (case insensitive).
-           - to `True` by setting 'IPYTHON_SUPPRESS_CONFIG_ERRORS' environment variable to '1' or 'true' (case insensitive).
-           - to `None` by setting 'IPYTHON_SUPPRESS_CONFIG_ERRORS' environment variable to '' (empty string) or leaving it unset.
+        The default value can be set:
 
-        Any other value are invalid, and will make IPython exit with a non-zero return code.
+           - to `False` by setting 'IPYTHON_SUPPRESS_CONFIG_ERRORS'
+             environment variable to '0', or 'false' (case insensitive).
+
+           - to `True` by setting 'IPYTHON_SUPPRESS_CONFIG_ERRORS'
+             environment variable to '1' or 'true' (case insensitive).
+
+           - to `None` by setting 'IPYTHON_SUPPRESS_CONFIG_ERRORS' environment
+             variable to '' (empty string) or leaving it unset.
+
+        Any other value are invalid, and will make IPython exit with a
+        non-zero return code.
+
         """
         if suppress_errors is None:
             suppress_env = os.environ.get("IPYTHON_SUPPRESS_CONFIG_ERRORS", None)
@@ -503,11 +513,10 @@ class BaseIPythonApplication(Application):
 
         Attributes
         ----------
-        self.copy_config_files : Bool
+        copy_config_files : bool
             Configuration parameter to specify whether to copy default config
             files into self.profile_dir.
-
-        self.overwrite : Bool
+        overwrite : bool
             Whether to overwrite existing files in `self.profile_dir`.
 
         """
@@ -544,7 +553,7 @@ class BaseIPythonApplication(Application):
                     )
 
     def stage_default_config_file(self):
-        """auto generate default config file, and stage it into the profile."""
+        """Auto generate default config file, and stage it into the profile."""
         s = self.generate_config_file()
         fname = os.path.join(self.profile_dir.location, self.config_file_name)
         if self.overwrite or not os.path.exists(fname):
@@ -554,7 +563,6 @@ class BaseIPythonApplication(Application):
 
     @catch_config_error
     def initialize(self, argv=None):
-        """All these initialize methods seem like great candidates to become class methods."""
         # don't hook up crash handler before parsing command-line
         self.parse_command_line(argv)
         self.init_crash_handler()

@@ -259,6 +259,7 @@ def block_parser(part, rgxin, rgxout, fmtin, fmtout):
 
     Parameters
     ----------
+    fmtout :
     part : str
         A string of IPython text, comprised of at most one input,
         one output, comments, and blank lines.
@@ -537,6 +538,7 @@ class EmbeddedSphinxShell:
 
         Parameters
         ----------
+        lineno :
         data : list?
             Unpacked to decorator, input, rest. Note no star?
 

@@ -301,9 +301,6 @@ class Inspector:
         -----------
         obj :
         oname :
-        formatter : function
-            A function to run the docstring through for specially
-            formatted docstrings.
 
         Examples
         --------

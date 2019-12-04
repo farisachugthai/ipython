@@ -323,32 +323,8 @@ def run_iptestall(options):
 
     Parameters
     ----------
+    options :
 
-    All parameters are passed as attributes of the options object.
-
-    testgroups : list of str
-      Run only these sections of the test suite. If empty, run all the available
-      sections.
-
-    fast : int or None
-      Run the test suite in parallel, using n simultaneous processes. If None
-      is passed, one process is used per CPU core. Default 1 (i.e. sequential)
-
-    inc_slow : bool
-      Include slow tests. By default, these tests aren't run.
-
-    url : unicode
-      Address:port to use when running the JS tests.
-
-    xunit : bool
-      Produce Xunit XML output. This is written to multiple foo.xunit.xml files.
-
-    coverage : bool or str
-      Measure code coverage from tests. True will store the raw coverage data,
-      or pass 'html' or 'xml' to get reports.
-
-    extra_args : list
-      Extra arguments to pass to the test subprocesses, e.g. '-v'
     """
     to_run, not_run = prepare_controllers(options)
 

@@ -93,8 +93,18 @@ The latest development version is always available from IPython's `GitHub
 repository <http://github.com/ipython/ipython>`_.
 
 
-Index
-=====
+Table of Contents Index
+=======================
+
+Here are the available sections of the complete IPython documentation.
+
+
+Introduction and Installation
+=============================
+
+This sections will guide you through installing IPython itself, and installing
+kernels for Jupyter if you wish to work with multiple version of Python,
+or multiple environments.
 
 .. toctree::
    :maxdepth: 2
@@ -103,11 +113,46 @@ Index
    overview
    install/index
 
+
+Tutorial
+========
+
+This section of IPython documentation will walk you through most of the IPython
+functionality. You do not need to have any deep knowledge of Python to read this
+tutorial, though some sections might make slightly more sense if you have already
+done some work in the classic Python REPL.
+
+.. note::
+
+    Some part of this documentation are more than a decade old so might be out
+    of date, we welcome any report of inaccuracy, and Pull Requests that make
+    that up to date.
+
+
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Tutorial
 
-   tutorial/index
+   tutorial/tutorial
+   tutorial/plotting
+   tutorial/shell
+   tutorial/autoawait
+   tutorial/tips
+   tutorial/python-ipython-diff
+
+
+.. seealso::
+
+    `A Qt Console for Jupyter <https://jupyter.org/qtconsole/>`__
+
+    `The Jupyter Notebook <http://jupyter-notebook.readthedocs.io/en/latest/>`__
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Configuration and customization
+
+   intro
    config
    magics
    custommagics
@@ -125,26 +170,38 @@ Index
    callbacks
    extensions
    sphinxext/index
+   reference
 
+
+Developer's guide for third party tools and libraries
+=====================================================
+
+.. important::
+
+    This guide contains information for developers of third party tools and
+    libraries that use IPython. Alternatively, documentation for core
+    **IPython** development can be found in the :doc:`../coredev/index`.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :titlesonly:
    :caption: Developer's Notes
 
-   options/index
-   development/index
+   development/licensing
+   development/how_ipython_works
+   development/wrapperkernels
+   development/execution
    building
    coredev
-   reference
    todo
 
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
    :caption: API
 
    api/index
+   options/index
 
 
 .. toctree::

@@ -637,8 +637,7 @@ class TransformerManager:
 
         Parameters
         ----------
-        source : string
-          Python input code, which can be multiline.
+        cell :
 
         Returns
         -------

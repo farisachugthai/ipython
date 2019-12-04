@@ -7,6 +7,7 @@ IPython Reference
 .. module:: reference
     :synopsis: Reference materials for IPython.
 
+.. highlight:: ipython
 
 .. _command_line_options:
 
@@ -15,7 +16,9 @@ Command-line usage
 
 You start IPython with the command:
 
-.. todo: check that my *off the top of my head* man syntax is right
+.. todo::
+    check that my *off the top of my head* man syntax is right
+    fuck it wasn't how do we fix this?
 
 .. program:: ipython [options] [-c <statement>] [-m <module>]
 

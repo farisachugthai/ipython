@@ -1,5 +1,4 @@
-"""
-IPython: tools for interactive and parallel computing in Python.
+"""IPython: tools for interactive and parallel computing in Python.
 
 https://ipython.org
 
@@ -149,9 +148,6 @@ def start_ipython(argv=None, **kwargs):
         If unspecified or None, IPython will parse command-line options
         from sys.argv.
         To prevent any command-line parsing, pass an empty list: `argv=[]`.
-    user_ns : dict, optional
-        Specify this dictionary to initialize the IPython user namespace
-        with particular values.
     ``**kwargs`` : dict, optional
         Any other kwargs will be passed to the Application constructor,
         such as `config`.
@@ -178,9 +174,6 @@ def start_kernel(argv=None, **kwargs):
         If unspecified or `None`, IPython will parse command-line options
         from `sys.argv`.
         To prevent any command-line parsing, pass an empty list: `argv=[]`.
-    user_ns : dict, optional
-        Specify this dictionary to initialize the IPython user namespace
-        with particular values.
     ``**kwargs`` : dict, optional
         Any other kwargs will be passed to the Application constructor,
         such as `config`.
@@ -203,9 +196,13 @@ def get_ipython():
 
     Get the global InteractiveShell instance.
 
-    :strikethrough:`Returns None if no InteractiveShell instance is registered.`
+    *Returns None if no InteractiveShell instance is registered.*
 
-    Returns None if no :class:`traitlets.config.Application` is registered!
+    Wellll not exactly.
+
+    :emphasis:`Returns None if no` :class:`traitlets.config.Application`
+    :emphasis:`is registered!`
+
     """
     # from IPython.core.interactiveshell import InteractiveShell
     from traitlets.config import Application

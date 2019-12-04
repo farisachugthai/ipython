@@ -183,9 +183,6 @@ def display(
     ----------
     objs : tuple of objects
         The Python objects to display.
-    raw : bool, optional
-        Are the objects to be displayed already mimetype-keyed dicts of raw display data,
-        or Python objects that need to be formatted before display? [default: False]
     include : list, tuple or set, optional
         A list of format type strings (MIME types) to include in the
         format data dict. If this is set *only* the format types included
@@ -444,11 +441,6 @@ def display_pretty(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw text data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
 
     """
     _display_mimetype("text/plain", objs, **kwargs)
@@ -465,11 +457,6 @@ def display_html(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw HTML data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
 
     """
     _display_mimetype("text/html", objs, **kwargs)
@@ -483,11 +470,6 @@ def display_markdown(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw markdown data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
     """
 
     _display_mimetype("text/markdown", objs, **kwargs)
@@ -501,11 +483,6 @@ def display_svg(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw svg data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
     """
     _display_mimetype("image/svg+xml", objs, **kwargs)
 
@@ -517,11 +494,6 @@ def display_png(*objs, **kwargs):
     ----------
     objs : tuple of objects
         The Python objects to display, or if raw=True raw png data to display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
 
     """
     _display_mimetype("image/png", objs, **kwargs)
@@ -535,11 +507,6 @@ def display_jpeg(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw JPEG data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict, optional
-        Metadata to be associated with the specific mimetype output.
 
     """
     _display_mimetype("image/jpeg", objs, **kwargs)
@@ -553,11 +520,6 @@ def display_latex(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw latex data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
     """
     _display_mimetype("text/latex", objs, **kwargs)
 
@@ -572,11 +534,6 @@ def display_json(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw json data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
     """
     _display_mimetype("application/json", objs, **kwargs)
 
@@ -589,11 +546,6 @@ def display_javascript(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw javascript data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
     """
     _display_mimetype("application/javascript", objs, **kwargs)
 
@@ -606,11 +558,6 @@ def display_pdf(*objs, **kwargs):
     objs : tuple of objects
         The Python objects to display, or if raw=True raw javascript data to
         display.
-    raw : bool
-        Are the data objects raw data or Python objects that need to be
-        formatted before display? [default: False]
-    metadata : dict (optional)
-        Metadata to be associated with the specific mimetype output.
     """
     _display_mimetype("application/pdf", objs, **kwargs)
 

@@ -401,6 +401,7 @@ def reset_completer(self, event):
 
     Parameters
     ----------
+    self :
     event : ?
 
     Returns

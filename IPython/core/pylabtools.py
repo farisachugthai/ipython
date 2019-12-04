@@ -65,10 +65,6 @@ def getfigs(*fig_nums):
     argument list contains references to invalid figures, a warning is printed
     but the function continues pasting further figures.
 
-    Parameters
-    ----------
-    figs : tuple
-        A tuple of ints giving the figure numbers of the figures to return.
     """
     from matplotlib._pylab_helpers import Gcf
 

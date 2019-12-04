@@ -126,8 +126,8 @@ def get_py_filename(name, force_win32=None):
 
     Parameters
     ----------
-    path : str (path-like)
-        Path to perform a tilde "compression" on.
+    name :
+    force_win32 :
 
     Returns
     -------
