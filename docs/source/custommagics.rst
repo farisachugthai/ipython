@@ -13,7 +13,7 @@ subdirectory of your default IPython profile.
 First, let us see the simplest case. The following shows how to create a line
 magic, a cell one and one that works in both modes, using just plain functions:
 
-.. sourcecode:: python
+.. sourcecode:: ipython
 
     from IPython.core.magic import (register_line_magic, register_cell_magic,
                                     register_line_cell_magic)
@@ -47,8 +47,8 @@ You can also create magics of all three kinds by inheriting from the
 :class:`IPython.core.magic.Magics` class.  This lets you create magics that can
 potentially hold state in between calls, and that have full access to the main
 IPython object:
-    
-.. sourcecode:: python
+
+.. sourcecode:: ipython
 
     # This code can be put in any Python module, it does not require IPython
     # itself to be running already.  It only creates the magics subclass but
@@ -101,7 +101,7 @@ If you want to create a class with a different constructor that holds
 additional state, then you should always call the parent constructor and
 instantiate the class yourself before registration:
 
-.. sourcecode:: python
+.. sourcecode:: ipython
 
     @magics_class
     class StatefulMagics(Magics):
@@ -111,7 +111,7 @@ instantiate the class yourself before registration:
             # You must call the parent constructor
             super(StatefulMagics, self).__init__(shell)
             self.data = data
-        
+
         # etc...
 
     def load_ipython_extension(ipython):
@@ -168,9 +168,9 @@ setuptools, distutils, or any other distribution tools like `flit
    $ cat example_magic/__init__.py
    """An example magic"""
    __version__ = '0.0.1'
-   
+
    from .abracadabra import Abracadabra
-   
+
    def load_ipython_extension(ipython):
        ipython.register_magics(Abracadabra)
 

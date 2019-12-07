@@ -45,15 +45,15 @@ from IPython.testing.decorators import skipif_not_numpy
 
 def test_instantiation_FileLink():
     """FileLink: Test class can be instantiated"""
-    fl = display.FileLink('example.txt')
+    fl = display.FileLink("example.txt")
     # TODO: remove if when only Python >= 3.6 is supported
-    fl = display.FileLink(pathlib.PurePath('example.txt'))
+    fl = display.FileLink(pathlib.PurePath("example.txt"))
 
 
 def test_warning_on_non_existent_path_FileLink():
     """FileLink: Calling _repr_html_ on non-existant files returns a warning."""
-    fl = display.FileLink('example.txt')
-    nt.assert_true(fl._repr_html_().startswith('Path (<tt>example.txt</tt>)'))
+    fl = display.FileLink("example.txt")
+    nt.assert_true(fl._repr_html_().startswith("Path (<tt>example.txt</tt>)"))
 
 
 def test_existing_path_FileLink():
@@ -91,14 +91,14 @@ def test_error_on_directory_to_FileLink():
 def test_instantiation_FileLinks():
     """FileLinks: Test class can be instantiated
     """
-    fls = display.FileLinks('example')
+    fls = display.FileLinks("example")
 
 
 def test_warning_on_non_existent_path_FileLinks():
     """FileLinks: Calling _repr_html_ on non-existent files returns a warning
     """
-    fls = display.FileLinks('example')
-    nt.assert_true(fls._repr_html_().startswith('Path (<tt>example</tt>)'))
+    fls = display.FileLinks("example")
+    nt.assert_true(fls._repr_html_().startswith("Path (<tt>example</tt>)"))
 
 
 def test_existing_path_FileLinks():
@@ -109,14 +109,18 @@ def test_existing_path_FileLinks():
     tf2 = NamedTemporaryFile(dir=td)
     fl = display.FileLinks(td)
     actual = fl._repr_html_()
-    actual = sorted(actual.split('\n'))
+    actual = sorted(actual.split("\n"))
     # the links should always have forward slashes, even on windows, so replace
     # backslashes with forward slashes here
-    expected = sorted(["%s/<br>" % td,
-                       "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
-                       (tf2.name.replace("\\", "/"), split(tf2.name)[1]),
-                       "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>" %
-                       (tf1.name.replace("\\", "/"), split(tf1.name)[1])])
+    expected = sorted(
+        [
+            "%s/<br>" % td,
+            "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>"
+            % (tf2.name.replace("\\", "/"), split(tf2.name)[1]),
+            "&nbsp;&nbsp;<a href='%s' target='_blank'>%s</a><br>"
+            % (tf1.name.replace("\\", "/"), split(tf1.name)[1]),
+        ]
+    )
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
 
@@ -145,7 +149,7 @@ def test_existing_path_FileLinks_alt_formatter():
 
     fl = display.FileLinks(td, notebook_display_formatter=fake_formatter)
     actual = fl._repr_html_()
-    actual = sorted(actual.split('\n'))
+    actual = sorted(actual.split("\n"))
     expected = sorted(["hello", "world"])
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
@@ -158,12 +162,10 @@ def test_existing_path_FileLinks_repr():
     tf2 = NamedTemporaryFile(dir=td)
     fl = display.FileLinks(td)
     actual = repr(fl)
-    actual = sorted(actual.split('\n'))
-    expected = sorted([
-        '%s/' % td,
-        '  %s' % split(tf1.name)[1],
-        '  %s' % split(tf2.name)[1]
-    ])
+    actual = sorted(actual.split("\n"))
+    expected = sorted(
+        ["%s/" % td, "  %s" % split(tf1.name)[1], "  %s" % split(tf2.name)[1]]
+    )
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
 
@@ -192,7 +194,7 @@ def test_existing_path_FileLinks_repr_alt_formatter():
 
     fl = display.FileLinks(td, terminal_display_formatter=fake_formatter)
     actual = repr(fl)
-    actual = sorted(actual.split('\n'))
+    actual = sorted(actual.split("\n"))
     expected = sorted(["hello", "world"])
     # We compare the sorted list of links here as that's more reliable
     nt.assert_equal(actual, expected)
@@ -215,21 +217,20 @@ def test_recursive_FileLinks():
     subtf = NamedTemporaryFile(dir=subtd)
     fl = display.FileLinks(td)
     actual = str(fl)
-    actual = actual.split('\n')
+    actual = actual.split("\n")
     nt.assert_equal(len(actual), 4, actual)
     fl = display.FileLinks(td, recursive=False)
     actual = str(fl)
-    actual = actual.split('\n')
+    actual = actual.split("\n")
     nt.assert_equal(len(actual), 2, actual)
 
 
 def test_audio_from_file():
-    path = pjoin(dirname(__file__), 'test.wav')
+    path = pjoin(dirname(__file__), "test.wav")
     display.Audio(filename=path)
 
 
 class TestAudioDataWithNumpy(TestCase):
-
     @skipif_not_numpy
     def test_audio_from_numpy_array(self):
         test_tone = get_test_tone()
@@ -267,11 +268,11 @@ class TestAudioDataWithNumpy(TestCase):
 
     def test_audio_data_without_normalization_raises_for_invalid_data(self):
         nt.assert_raises(
-            ValueError,
-            lambda: display.Audio([1.001], rate=44100, normalize=False))
+            ValueError, lambda: display.Audio([1.001], rate=44100, normalize=False)
+        )
         nt.assert_raises(
-            ValueError,
-            lambda: display.Audio([-1.001], rate=44100, normalize=False))
+            ValueError, lambda: display.Audio([-1.001], rate=44100, normalize=False)
+        )
 
 
 def simulate_numpy_not_installed():
@@ -283,8 +284,8 @@ def simulate_numpy_not_installed():
     """
     try:
         import numpy
-        return mock.patch('numpy.array', mock.MagicMock(
-            side_effect=ImportError))
+
+        return mock.patch("numpy.array", mock.MagicMock(side_effect=ImportError))
     except ModuleNotFoundError:
         return lambda x: x
 
@@ -296,8 +297,7 @@ class TestAudioDataWithoutNumpy(TestAudioDataWithNumpy):
     @skipif_not_numpy
     def test_audio_raises_for_nested_list(self):
         stereo_signal = [list(get_test_tone())] * 2
-        nt.assert_raises(
-            TypeError, lambda: display.Audio(stereo_signal, rate=44100))
+        nt.assert_raises(TypeError, lambda: display.Audio(stereo_signal, rate=44100))
 
 
 @skipif_not_numpy
@@ -329,9 +329,9 @@ def read_wav(data):
     with wave.open(BytesIO(data)) as wave_file:
         wave_data = wave_file.readframes(wave_file.getnframes())
         num_samples = wave_file.getnframes() * wave_file.getnchannels()
-        return struct.unpack('<%sh' % num_samples, wave_data)
+        return struct.unpack("<%sh" % num_samples, wave_data)
 
 
 def test_code_from_file():
     c = display.Code(filename=__file__)
-    assert c._repr_html_().startswith('<style>')
+    assert c._repr_html_().startswith("<style>")

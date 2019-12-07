@@ -20,10 +20,15 @@ API
 
 
 Callback prototypes
-------------------------------------------------------------------------------
+-------------------
 
 No-op functions which describe the names of available events and the
 signatures of callbacks for those events.
+
+Gonna point out that that dependency is only in the entire repository 1 time.
+
+In one of our functions, we call one of their functions. That's why the
+dependency is here.
 
 """
 from IPython.core.getipython import get_ipython
@@ -36,6 +41,7 @@ available_events = {}
 
 
 def _define_event(callback_function):
+    """The only function in IPython that uses backcall.callback_prototype."""
     callback_proto = callback_prototype(callback_function)
     available_events[callback_function.__name__] = callback_proto
     return callback_proto
@@ -70,7 +76,7 @@ class EventManager:
         self.callbacks = {n: [] for n in available_events}
 
     def __repr__(self):
-        return "".join(self.__class__.__name)
+        return "{}\t{}".format(self.__class__.__name, self.callbacks)
 
     def register(self, event, function):
         """Register a new event callback.

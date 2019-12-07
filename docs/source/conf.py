@@ -32,7 +32,7 @@ from sphinx.util.docfields import GroupedField
 from sphinx.util.logging import getLogger
 from sphinx.application import Sphinx
 
-# import numpydoc  # noqa F401
+import numpydoc  # noqa F401
 try:
     from matplotlib.sphinxext.plot_directive import PlotDirective
 except ImportError:
@@ -81,7 +81,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.napoleon',  # to preprocess docstrings
-    # 'numpydoc.numpydoc',
+    'numpydoc.numpydoc',
     # 'autoapi.extension',
     'github',  # for easy GitHub links
     'magics',
@@ -241,9 +241,9 @@ html_last_updated_fmt = '%b %d, %Y'
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
 html_additional_pages = {
-    'interactive/htmlnotebook' : 'notebook_redirect.html',
-    'interactive/notebook'     : 'notebook_redirect.html',
-    'interactive/nbconvert'    : 'notebook_redirect.html',
+    'interactive/htmlnotebook': 'notebook_redirect.html',
+    'interactive/notebook': 'notebook_redirect.html',
+    'interactive/nbconvert': 'notebook_redirect.html',
     'interactive/public_server': 'notebook_redirect.html',
 }
 
@@ -332,17 +332,17 @@ numpydoc_class_members_toctree = False
 
 # -- Options for intersphinx extension ---------------------------------------
 
-intersphinx_mapping = {'python'        : ('https://docs.python.org/3/', None),
-                       'rpy2'          : ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
-                       'jupyterclient' : ('https://jupyter-client.readthedocs.io/en/latest/', None),
-                       'ipyparallel'   : ('https://ipyparallel.readthedocs.io/en/latest/', None),
-                       'jupyter'       : ('https://jupyter.readthedocs.io/en/latest/', None),
-                       'jedi'          : ('https://jedi.readthedocs.io/en/latest/', None),
-                       'traitlets'     : ('https://traitlets.readthedocs.io/en/latest/', None),
-                       'ipykernel'     : ('https://ipykernel.readthedocs.io/en/latest/', None),
+intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
+                       'rpy2': ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
+                       'jupyterclient': ('https://jupyter-client.readthedocs.io/en/latest/', None),
+                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/latest/', None),
+                       'jupyter': ('https://jupyter.readthedocs.io/en/latest/', None),
+                       'jedi': ('https://jedi.readthedocs.io/en/latest/', None),
+                       'traitlets': ('https://traitlets.readthedocs.io/en/latest/', None),
+                       'ipykernel': ('https://ipykernel.readthedocs.io/en/latest/', None),
                        'prompt_toolkit': ('https://python-prompt-toolkit.readthedocs.io/en/stable/', None),
-                       'ipywidgets'    : ('https://ipywidgets.readthedocs.io/en/stable/', None),
-                       'pip'           : ('https://pip.pypa.io/en/stable/', None)
+                       'ipywidgets': ('https://ipywidgets.readthedocs.io/en/stable/', None),
+                       'pip': ('https://pip.pypa.io/en/stable/', None)
                        }
 
 # -- IPython directive -------------------------------------------------------
@@ -368,16 +368,16 @@ if sphinx.version_info < (1, 8):
     autodoc_default_flags = ['members', 'undoc-members']
 else:
     autodoc_default_options = {
-        'member-order'    : 'bysource',
-        'undoc-members'   : True,
+        'member-order': 'bysource',
+        'undoc-members': True,
         'show-inheritance': False,
         # might need to comment the below out
         # 'noindex': True,
     }
 
 apidoc_options = {
-    'members'         : False,
-    'undoc-members'   : True,
+    'members': False,
+    'undoc-members': True,
     'show-inheritance': False,
 }
 
@@ -420,6 +420,7 @@ def parse_event(env, sig, signode):
         plist += addnodes.desc_parameter(arg, arg)
     signode += plist
     return name
+
 
 def setup(app: "Sphinx") -> None:
     """Add in the Sphinx directive for `confval`.

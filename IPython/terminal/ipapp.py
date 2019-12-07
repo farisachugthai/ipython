@@ -16,7 +16,6 @@ line :command:`ipython` program.
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
 import logging
 import os
 import sys
@@ -32,16 +31,18 @@ from IPython.core.shellapp import (InteractiveShellApp, shell_aliases,
                                    shell_flags)
 
 from IPython.paths import get_ipython_dir
-from ..core.application import (BaseAliases, BaseIPythonApplication,
-                                base_aliases, base_flags)
-from .interactiveshell import TerminalInteractiveShell
+from IPython.core.application import (BaseAliases, BaseIPythonApplication,
+                                      base_aliases, base_flags)
+from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
 from traitlets import Bool, List, Type, default, observe
 from traitlets.config.application import boolean_flag, catch_config_error
 from traitlets.config.loader import Config
 
 # Ensure you comment this out later
-logging.basicConfig(level=logging.DEBUG)
+logging.Filter()
+logging.basicConfig(level=logging.WARNING,
+                    format="%(created)f : %(module)s : %(levelname)s : %(message)s")
 
 # This should probably be in ipapp.py.
 # From IPython/__init__
@@ -176,6 +177,12 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     Difference being that this allows more terminal specific configurations.
     However I still really don't get the difference between apps and shells.
 
+    As far as I can tell so far, apps are a more general concept as they
+    inherit from traitlets.config.Configurable and are the actual entry
+    point of this program.
+
+    .. bug:: Running ``ipython --profile=None`` crashes the application.
+
     Attributes
     ----------
     force_interact : Bool
@@ -272,17 +279,23 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         help="""If a command or file is given via the command-line,
         e.g. 'ipython foo.py', start an interactive shell after executing the
         file or command.
-        This is presented in the API as App.force_interact."""
-    ).tag(config=True)
+        Otherwise the shell will not run in interactive mode
+        unless the flag, representing 'App.force_interact', is given on the command line.
+        Defaults to False.""").tag(config=True)
 
     @observe('force_interact')
     def _force_interact_changed(self, change):
-        """Set self.interact to True if anything changes."""
         if change['new']:
             self.interact = True
 
     @observe('file_to_run', 'code_to_run', 'module_to_run')
     def _file_to_run_changed(self, change):
+        """It's possible that this block of code literally never executes.
+
+        Look at upstream/master and notice that their version of this
+        function is indented correctly.
+        Why doesn't that raise a SyntaxError?
+        """
         new = change['new']
         if new:
             self.something_to_run = True
@@ -293,8 +306,7 @@ ipython locate profile foo # print the path to the directory for profile `foo`
     something_to_run = Bool(False)
 
     def parse_command_line(self, argv=None):
-        """override to allow old '-pylab' flag with deprecation warning"""
-
+        """Override to allow old '-pylab' flag with deprecation warning"""
         argv = sys.argv[1:] if argv is None else argv
 
         if '-pylab' in argv:
@@ -328,7 +340,15 @@ ipython locate profile foo # print the path to the directory for profile `foo`
 
     @catch_config_error
     def initialize(self, argv=None):
-        """Do actions after construct, but before starting the app."""
+        """Do actions after construct, but before starting the app.
+
+        Returns
+        -------
+        None
+            If subapp is not None. Simply start the subapp as there's no need
+            to continue initializing.
+
+        """
         super().initialize(argv)
 
         if self.subapp is not None:
@@ -336,27 +356,20 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             return
 
         # only gets called like 1 or 2 times in startup but that gets old fast
-        # logging.info('{}: Extra args was:: {}'.format(
-        #     __file__, self.extra_args))
+        logging.info('{}: Extra args was:: {}'.format(
+            __file__, self.extra_args))
 
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]
-
         self._trycatch(self.init_path())
-        # self.init_path()
-
         # create the shell
-        # self.init_shell()
         self._trycatch(self.init_shell())
-
         # and draw the banner
-        # self.init_banner()
         self._trycatch(self.init_banner())
-
         # Now a variety of things that happen after the banner is printed.
         self.init_gui_pylab()
         self.init_extensions()
-        # now this is the one giving us trouble. gets called from shellapp
+        # Gets called from shellapp
         self.init_code()
 
     def init_shell(self):
@@ -367,6 +380,8 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         shell.display_banner should always be False for the terminal
         based app, because we call shell.show_banner() by hand below
         so the banner shows *before* all extension loading stuff.
+
+        Wait why doesn't master have the config listed as getting passed to the shell??
         """
         self.shell = self.interactive_shell_class.instance(
             parent=self,
@@ -400,9 +415,9 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         if hasattr(self, 'subapp'):
             if self.subapp is not None:
                 return self.subapp.start()
+        else:
+            logging.error('terminal/ipapp: InteractiveApp does not have subapp attribute')
 
-        self.initialize()
-        # self.parse_command_line(self.initialize())
         # perform any prexec steps:
         if self.interact:
             self.log.info("Starting IPython's mainloop...")
@@ -410,10 +425,12 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         else:
             # self.log.debug("IPython not interactive...")
             # we're about to sys.exit don't just mark that as debug
-            self.log.error(
+            self.log.warning(
                 'IPython not interactive. Here is the last execution; result.\n{}'
                 .format(self.shell.last_execution_result))
             if not self.shell.last_execution_succeeded:
+                self.log.error(
+                    'terminal/ipapp: The sys.exit came from InteractiveShellApp.start. Your welcome.')
                 sys.exit(1)
 
 

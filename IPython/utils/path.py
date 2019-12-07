@@ -2,162 +2,18 @@
 """Utilities for path handling.
 
 The lack of :mod:`pathlib` usage is a perfect sign of the age of this module.
-"""
 
-# Copyright (c) IPython Development Team.
-# Distributed under the terms of the Modified BSD License.
+Also I'm deleting filefind because it's copy pasted:
 
-import os
-import sys
-import errno
-import shutil
-import random
-import glob
-from warnings import warn
+*) Here
 
-from pathlib import Path
+*) Traitlets
 
-# from IPython.utils.process import system
-from os import system
+*) ipython_genutils
 
-# -----------------------------------------------------------------------------
-# Code
-# -----------------------------------------------------------------------------
+Here's the old docstring.
 
-
-def _writable_dir(path):
-    """Whether `path` is a directory, to which the user has write access."""
-    return os.path.isdir(path) and os.access(path, os.W_OK)
-
-
-if sys.platform == "win32":
-
-    def _get_long_path_name(path):
-        """Get a long path name (expand ~) on Windows using ctypes.
-
-        Parameters
-        ----------
-        path : str (path-like)
-            Path to perform tilde-expansion on.
-
-        Raises
-        ------
-        :exc:`ImportError`
-            If ctypes isn't installed.
-
-        Examples
-        --------
-        >>> get_long_path_name('c:\\docume~1')
-        'c:\\\\Documents and Settings'
-
-        """
-        try:
-            import ctypes
-        except ImportError:
-            raise ImportError("you need to have ctypes installed for this to work")
-        if not getattr(ctypes, "windll", None):
-            return
-
-        _GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
-        _GetLongPathName.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint]
-
-        buf = ctypes.create_unicode_buffer(260)
-        rv = _GetLongPathName(path, buf, 260)
-        if rv == 0 or rv > 260:
-            return path
-        else:
-            return buf.value
-
-
-else:
-
-    def _get_long_path_name(path):
-        """Dummy no-op."""
-        return path
-
-
-def get_long_path_name(path):
-    """Expand a path into its long form.
-
-    On Windows this expands any ~ in the paths. On other platforms, it is
-    a null operation.
-
-    Parameters
-    ----------
-    path : str (path-like)
-        Path to perform a tilde "compression" on.
-
-    Returns
-    -------
-    str (path-like)
-        Path with a tilde added.
-
-    """
-    return _get_long_path_name(path)
-
-
-def compress_user(path):
-    """Reverse of :func:`os.path.expanduser`
-
-    Parameters
-    ----------
-    path : str (path-like)
-        Path to perform a tilde "compression" on.
-
-    Returns
-    -------
-    str (path-like)
-        Path with a tilde added.
-
-    """
-    home = os.path.expanduser("~")
-    if path.startswith(home):
-        path = "~" + path[len(home) :]
-    return path
-
-
-def get_py_filename(name, force_win32=None):
-    """Return a valid python filename in the current directory.
-
-    If the given name is not a file, it adds '.py' and searches again.
-
-    .. note::
-        This function is used by the `%edit` magic. So pretty important.
-
-    Parameters
-    ----------
-    name :
-    force_win32 :
-
-    Returns
-    -------
-    name : str (path-like)
-        Path with a tilde added.
-
-    Raises
-    ------
-    :exc:`IOError`
-        With an informative message if the file isn't found.
-
-    """
-    name = os.path.expanduser(name)
-    if force_win32 is not None:
-        warn(
-            "The 'force_win32' argument to 'get_py_filename' is deprecated "
-            "since IPython 5.0 and should not be used anymore",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if not os.path.isfile(name) and not name.endswith(".py"):
-        name += ".py"
-    if os.path.isfile(name):
-        return name
-    else:
-        raise IOError("File `%r` not found." % name)
-
-
-def filefind(filename, path_dirs=None):
-    """Find a file by looking through a sequence of paths.
+.. function:: filefind
 
     This iterates through a sequence of paths looking for a file and returns
     the full, absolute path of the first occurrence of the file.  If no set of
@@ -190,28 +46,152 @@ def filefind(filename, path_dirs=None):
     -------
     Raises :exc:`IOError` or returns absolute path to file.
 
+
+Also worth pointing out I got rid of a bunch of absurd logic in this file.
+There was a functon wrapping 2 functions but it was all predicated on
+Windows being installed.
+
+So I deleted 2 of the functions and started the original function with.:
+
+    if not sys.platform() == 'Windows':
+        return
+
+"""
+# Copyright (c) IPython Development Team.
+# Distributed under the terms of the Modified BSD License.
+import errno
+import glob
+import os
+from pathlib import Path
+import random
+import shutil
+import sys
+from warnings import warn
+
+from ipython_genutils.path import filefind
+from IPython.utils.process import system
+
+# -----------------------------------------------------------------------------
+# Code
+# -----------------------------------------------------------------------------
+
+
+def _writable_dir(path):
+    """Whether `path` is a directory, to which the user has write access."""
+    return os.path.isdir(path) and os.access(path, os.W_OK)
+
+
+def get_long_path_name(path):
+    """Expand a path into its long form.
+
+    On Windows this expands any ~ in the paths using ctypes.
+    On other platforms, it is a null operation.
+
+    Parameters
+    ----------
+    path : str (path-like)
+        Path to perform a tilde "compression" on.
+
+    Returns
+    -------
+    str (path-like)
+        Path with a tilde added.
+
+    Raises
+    ------
+    :exc:`ImportError`
+        If ctypes isn't installed.
+    :exc:`OSError`
+        If ctypes doesn't have windll.
+
+    Examples
+    --------
+    >>> get_long_path_name('c:\\docume~1')
+    'c:\\\\Documents and Settings'
     """
-    # If paths are quoted, abspath gets confused, strip them...
-    filename = filename.strip('"').strip("'")
-    # If the input is an absolute path, just check it exists
-    if os.path.isabs(filename) and os.path.isfile(filename):
-        return filename
+    if not sys.platform == "win32":
+        return
 
-    if path_dirs is None:
-        path_dirs = ("",)
-    elif isinstance(path_dirs, str):
-        path_dirs = (path_dirs,)
+    try:
+        import ctypes
+    except ImportError:
+        raise ImportError("you need to have ctypes installed for this to work")
+    if not getattr(ctypes, "windll", None):
+        raise OSError("Ctypes doesn't have WinDLL available.")
 
-    for path in path_dirs:
-        if path == ".":
-            path = os.getcwd()
-        testname = expand_path(os.path.join(path, filename))
-        if os.path.isfile(testname):
-            return os.path.abspath(testname)
+    _GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
+    _GetLongPathName.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint]
 
-    raise IOError(
-        "File %r does not exist in any of the search paths: %r" % (filename, path_dirs)
-    )
+    buf = ctypes.create_unicode_buffer(260)
+    rv = _GetLongPathName(path, buf, 260)
+    if rv == 0 or rv > 260:
+        return path
+    else:
+        return buf.value
+
+
+def compress_user(path):
+    """Reverse of :func:`os.path.expanduser`.
+
+    Parameters
+    ----------
+    path : str (path-like)
+        Path to perform a tilde "compression" on.
+
+    Returns
+    -------
+    str (path-like)
+        Path with a tilde added.
+
+    """
+    home = os.path.expanduser("~")
+    if path.startswith(home):
+        path = "~" + path[len(home):]
+    return path
+
+
+def get_py_filename(name, force_win32=None):
+    """Return a valid python filename in the current directory.
+
+    If the given name is not a file, it adds '.py' and searches again.
+
+    .. note::
+        This function is used by the `%edit` magic. So pretty important.
+
+    Parameters
+    ----------
+    name : str (os.Pathlike)
+        Path to find.
+    force_win32 : bool
+        Not used anymore
+
+    Returns
+    -------
+    name : str (path-like)
+        Path with a tilde added.
+
+    Raises
+    ------
+    :exc:`OSError`
+        With an informative message if the file isn't found.
+
+    .. versionchanged:: 7.11.0.dev. Changed everything.
+
+        Uses pathlib instead of os.path.
+        IOError tmk got deprecated so raise OSError.
+        Is also recursive because that was an interesting way to do it IMO.
+        Now the functions only 4 lines! *And 30 lines of docstring. Aren't
+        I the worst?
+
+    """
+    name = Path(name).expanduser()
+    if name.is_file():
+        return str(name)
+    if name.stem != ".py":
+        name = Path(name + ".py")
+        get_py_filename(name)
+    else:
+        raise OSError("File `%r` not found." % name)
 
 
 def get_home_dir(require_writable=False):
@@ -220,10 +200,14 @@ def get_home_dir(require_writable=False):
     Parameters
     ----------
     require_writable : bool
-    [default: False]
+        [default: False]
+
+    Returns
+    -------
+    Path to your home dir
     """
     if require_writable:
-        print("Hey fix the function calling this.")
+        print("utils.path:get_home_dir Hey fix the function calling this.")
     return Path.home().__fspath__()
 
 
@@ -241,7 +225,6 @@ def get_xdg_cache_dir():
     This is only for non-OS X posix (Linux,Unix,etc.) systems.
     Why? I defined XDG_CACHE_HOME on my windows OS it's not like we're
     incapable of doing so?
-
     """
     env = os.environ
     xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(get_home_dir(), ".cache")
@@ -250,7 +233,17 @@ def get_xdg_cache_dir():
 
 
 def expand_path(s):
-    """Expand $VARS and ~names in a string, like a shell
+    r"""Expand $VARS and ~names in a string, like a shell.
+
+    Largely useful for Win32. On Unix this simply runs expanduser(expandvars(s)).
+
+    Notes
+    -----
+    This is a pretty subtle hack. When expand user is given a UNC path
+    on Windows (\\server\share$\%username%), os.path.expandvars, removes
+    the $ to get (\\server\share\%username%). I think it considered $
+    alone an empty var. But, we need the $ to remains there (it indicates
+    a hidden share).
 
     Examples
     --------
@@ -262,11 +255,6 @@ def expand_path(s):
        Out[3]: 'variable FOO is test'
 
     """
-    # This is a pretty subtle hack. When expand user is given a UNC path
-    # on Windows (\\server\share$\%username%), os.path.expandvars, removes
-    # the $ to get (\\server\share\%username%). I think it considered $
-    # alone an empty var. But, we need the $ to remains there (it indicates
-    # a hidden share).
     if os.name == "nt":
         s = s.replace("$\\", "IPYTHON_TEMP")
     s = os.path.expandvars(os.path.expanduser(s))
@@ -275,33 +263,21 @@ def expand_path(s):
     return s
 
 
-def unescape_glob(string):
-    """Unescape glob pattern in `string`."""
+def unescape_glob(s):
+    """Unescape glob pattern in `string`. Dont use the word string wtf?"""
+    for pattern in "*[]!?":
+        s = s.replace(r"\{0}".format(pattern), pattern)
 
-    def unescape(s):
-        """
-
-        Parameters
-        ----------
-        s :
-
-        Returns
-        -------
-
-        """
-        for pattern in "*[]!?":
-            s = s.replace(r"\{0}".format(pattern), pattern)
-        return s
-
-    return "\\".join(map(unescape, string.split("\\\\")))
+    return "\\".join(map(unescape, s.split("\\\\")))
 
 
 def shellglob(args):
-    """
-    Do glob expansion for each element in `args` and return a flattened list.
+    """Do glob expansion for each element in `args` and return a flattened list.
 
     Unmatched glob pattern will remain as-is in the returned list.
 
+    Pretty sure that this only exists to aide glob.glob in handling Windows
+    paths.
     """
     expanded = []
     # Do not unescape backslash in Windows as it is interpreted as
@@ -417,6 +393,11 @@ def ensure_dir_exists(path, mode=0o755):
     if another process is doing the same.
 
     The default permissions are 755, which differ from os.makedirs default of 777.
+
+    Note
+    ----
+    All this fucking does is call os.makedirs() and raise a bunch of errors.
+    This isn't very well implemented at all.
     """
     if not os.path.exists(path):
         try:

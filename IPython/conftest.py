@@ -1,3 +1,10 @@
+"""Set up IPython for pytest.
+
+.. versionchanged:: v7.11.0.dev
+
+    Stop calling inject directly.
+
+"""
 import types
 import sys
 import builtins
@@ -33,12 +40,13 @@ def get_ipython():
     return shell
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def ip():
     """
 
     Returns
     -------
+    :class:`IPython.core.interactiveshell.InteractiveShell` instance.
 
     """
     return get_ipython()
@@ -82,13 +90,13 @@ def xsys(self, cmd):
     sys.stdout.flush()
 
 
-# for things to work correctly we would need this as a session fixture;
-# unfortunately this will fail on some test that get executed as _collection_
-# time (before the fixture run), in particular parametrized test that contain
-# yields. so for now execute at import time.
-# @pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True, scope='session')
 def inject():
     """
+    for things to work correctly we would need this as a session fixture;
+    unfortunately this will fail on some test that get executed as _collection_
+    time (before the fixture run), in particular parametrized test that contain
+    yields. so for now execute at import time.
 
     """
     builtins.get_ipython = get_ipython
@@ -100,6 +108,3 @@ def inject():
 
     page.pager_page = nopage
     # yield
-
-
-inject()

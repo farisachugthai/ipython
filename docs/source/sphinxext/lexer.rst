@@ -3,6 +3,7 @@
 =========================
 IPython Console Lexer
 =========================
+
 .. module:: lexer
   :synopsis: Cover the IPyLexer classes.
 
@@ -152,9 +153,32 @@ Since the first line of the block did not begin with a standard IPython
 console prompt, the entire block is assumed to consist of IPython code
 instead.
 
+Use with Pygments
+==================
+
+In addition, Pygments has integrated our lexer with their program as can
+be observed in the output of ``pygmentize -l``:
+
+
+* ipy:
+    IPy session
+
+* ipython2, ipython:
+    IPython
+
+* ipython3:
+    IPython3
+
+* ipythonconsole:
+    IPython console session
+
+* ipythontb:
+    IPython Traceback
+
 
 See Also
 --------
+
 .. seealso::
 
    :mod:`IPython.sphinxext.ipython_console_highlighting`

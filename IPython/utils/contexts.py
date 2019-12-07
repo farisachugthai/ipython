@@ -1,6 +1,11 @@
 """Miscellaneous context managers.
 
-This is now 1 class leave a mental now for when we can move this to tempdir.
+This is now 1 class leave a mental note for when we can move this to tempdir.
+
+Worth noting this is used in ../core/shellapp.py in the _exec_file method.
+
+So pretty big.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -34,6 +39,7 @@ class preserve_keys:
     """
 
     def __init__(self, dictionary, *keys):
+        """Can this class inherit from contextlib or anything?"""
         self.dictionary = dictionary
         self.keys = keys
 

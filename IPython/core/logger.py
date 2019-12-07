@@ -1,5 +1,4 @@
-"""Logger class for IPython's logging facilities.
-"""
+"""Logger class for IPython's logging facilities."""
 
 # *****************************************************************************
 #       Copyright (C) 2001 Janko Hauser <jhauser@zscout.de> and
@@ -17,7 +16,10 @@ import codecs
 import glob
 import io
 import os
+from pathlib import Path
 import time
+
+from traitlets.config import Configurable, Bool
 
 # ****************************************************************************
 # FIXME: This class isn't a mixin anymore, but it still needs attributes from
@@ -230,3 +232,30 @@ which already exists. But you must first start the logging process with
 
     # For backwards compatibility, in case anyone was using this.
     close_log = logstop
+
+
+class LoggerManager(Configurable):
+    """Let's give cleanup a shot."""
+
+    log_raw_input = Bool(False,
+                         help="Whether to log raw or processed input").tag(config=True)
+
+    log_output = Bool(False, help="Whether to also log output.").tag(config=True)
+
+    timestamp = Bool(
+        False, help="Whether to put timestamps before each log entry.").tag(config=True)
+
+    log_active = Bool(False, help="activity control flags").tag(config=True)
+
+    def __init__(self, home=None, logfname="Logger.log", loghead=None, logmode=None, logfile=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.home = home or Path.home()
+        self.logfname = logfname
+        self.loghead = loghead
+        self.logmode = logmode
+        self.logfile = None
+
+    def todo(self):
+        """Go through logstart. Honestly now that we have 4 vars bound to the class
+        and 5 on the instance this should take be like 5 lines of code...."""
+        pass

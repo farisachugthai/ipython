@@ -11,6 +11,21 @@ object and then create the configurable objects, passing the config to them.
 
     System configuration data is placed in :envvar:`PROGRAMDATA`.
 
+Dude these lines from traitlets.config.application are SO enlightening. Explains
+a ton going on here.:
+
+    # subcommands for launching other applications
+    # if this is not empty, this will be a parent Application
+    # this must be a dict of two-tuples,
+    # the first element being the application class/import string
+    # and the second being the help string for the subcommand
+    subcommands = Dict()
+    # parse_command_line will initialize a subapp, if requested
+    subapp = Instance('traitlets.config.application.Application', allow_none=True)
+
+Also worth noting they have a LevelFormatter that you might wanna import
+and use here.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -72,32 +87,22 @@ else:
         IPYTHON_SUPPRESS_CONFIG_ERRORS = False
     else:
         sys.exit(
-            "Unsupported value for environment variable: 'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of  {'0', '1', 'false', 'true', ''}."
-            % _envvar
-        )
+            "Unsupported value for environment variable:"
+            "'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of"
+            "{'0', '1', 'false', 'true', ''}." % _envvar)
 
 
 # aliases and flags
 class BaseAliases(Configurable):
     """Globals into a configurable.
 
-    Examples
-    --------
-    If you do this::
+    Eh you didn't really do it right though.
 
-        from traitlets.traitlets import Dict
-        base_aliases = Dict({
-            'profile-dir': 'ProfileDir.location',
-            'profile': 'BaseIPythonApplication.profile',
-            'ipython-dir': 'BaseIPythonApplication.ipython_dir',
-            'log-level': 'Application.log_level',
-            'config': 'BaseIPythonApplication.extra_config_file',
-        }, allow_none=True).tag(config=None)
-
-    It'll complain that 'Dict' objects have no attribute update.
+    .. todo::
+        Could you work with collections.default_dict?
+        base_flags is a dict of dicts so it might not be too complicated.
 
     """
-
     base_aliases = dict(
         {
             "profile-dir": "ProfileDir.location",
@@ -110,7 +115,6 @@ class BaseAliases(Configurable):
 
 
 # Make it still available up until I can delete this.
-
 base_aliases = BaseAliases.base_aliases
 
 base_flags = dict(
@@ -166,19 +170,9 @@ class BaseIPythonApplication(Application):
     the terminal, in a web browser, in a GUI application or in
     any other manner.
 
-    .. todo:: What is this _in_init_profile_dir thing?
+    .. todo:: What is this _in_init_profile_dir thing? They're doing down in init_profile_dir?
 
-        They're doing down in init_profile_dir?
-
-    Attributes
-    ----------
-    name : str
-        The name of the application
-
-    ...
-        Many more to come.
     """
-
     name = "ipython"
     description = Unicode("IPython: an enhanced interactive Python shell.")
     version = Unicode(release.version)
@@ -317,7 +311,7 @@ class BaseIPythonApplication(Application):
         # ensure current working directory exists
         try:
             os.getcwd()
-        except OSError:  # guys don't catch baseexception on an OS call...
+        except OSError:
             # exit if cwd doesn't exist
             self.log.error("Current working directory doesn't exist.")
             self.exit(1)
@@ -474,8 +468,11 @@ class BaseIPythonApplication(Application):
                 )
 
     def init_profile_dir(self):
-        """Initialize the profile dir."""
+        """Initialize the profile dir.
 
+        What the actual fuck this is the nastiest series of if/try/except/if
+        loops I've seen in a while.
+        """
         self._in_init_profile_dir = True
         if self.profile_dir is not None:
             # already ran

@@ -71,7 +71,7 @@ def test_result():
     jobs = bg.BackgroundJobManager()
     j = jobs.new(sleeper)
     j.join()
-    nt.assert_equal(j.result['interval'], t_short)
+    nt.assert_equal(j.result["interval"], t_short)
 
 
 def test_flush():

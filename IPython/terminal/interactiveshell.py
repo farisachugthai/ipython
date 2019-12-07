@@ -16,22 +16,30 @@
     ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
 
 """
-
-import asyncio
-import os
-import sys
-import traceback
-from warnings import warn
-
-from IPython.core.completer import IPCompleter
-from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
-from IPython.core.profiledir import ProfileDir, ProfileDirError
-from IPython.utils.terminal import (
-    toggle_set_term_title,
-    set_term_title,
-    restore_term_title,
+from .shortcuts import create_ipython_shortcuts
+from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
+from .pt_inputhooks import get_inputhook_name_and_func
+from .magics import TerminalMagics
+from pygments.token import Token
+from pygments.style import Style
+from pygments.styles import get_style_by_name
+from prompt_toolkit import __version__ as ptk_version
+from prompt_toolkit.styles.pygments import (
+    style_from_pygments_cls,
+    style_from_pygments_dict,
 )
-from IPython.utils.process import abbrev_cwd
+from prompt_toolkit.styles import DynamicStyle, merge_styles
+from prompt_toolkit.shortcuts import PromptSession, CompleteStyle, print_formatted_text
+from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.output import ColorDepth
+from prompt_toolkit.layout.processors import (
+    ConditionalProcessor,
+    HighlightMatchingBracketProcessor,
+)
+from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.formatted_text import PygmentsTokens
+from prompt_toolkit.filters import HasFocus, Condition, IsDone
+from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
 from traitlets import (
     Bool,
     Unicode,
@@ -46,37 +54,30 @@ from traitlets import (
     Any,
     validate,
 )
+from IPython.utils.process import abbrev_cwd
+from IPython.utils.terminal import (
+    toggle_set_term_title,
+    set_term_title,
+    restore_term_title,
+)
+from IPython.core.profiledir import ProfileDir, ProfileDirError
+from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
+from IPython.core.completer import IPCompleter
+import asyncio
+import logging
+import os
+import sys
+import traceback
+from warnings import warn
+
+logging.basicConfig(level=logging.INFO)
+
 
 # from prompt_toolkit.completion.base import ThreadedCompleter, merge_completers
 # from prompt_toolkit.completion.fuzzy_completer import FuzzyCompleter
-from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
-from prompt_toolkit.filters import HasFocus, Condition, IsDone
-from prompt_toolkit.formatted_text import PygmentsTokens
-from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.layout.processors import (
-    ConditionalProcessor,
-    HighlightMatchingBracketProcessor,
-)
-from prompt_toolkit.output import ColorDepth
-from prompt_toolkit.patch_stdout import patch_stdout
-from prompt_toolkit.shortcuts import PromptSession, CompleteStyle, print_formatted_text
-from prompt_toolkit.styles import DynamicStyle, merge_styles
-from prompt_toolkit.styles.pygments import (
-    style_from_pygments_cls,
-    style_from_pygments_dict,
-)
-from prompt_toolkit import __version__ as ptk_version
 
-from pygments.styles import get_style_by_name
-from pygments.style import Style
-from pygments.token import Token
-
-from .magics import TerminalMagics
-from .pt_inputhooks import get_inputhook_name_and_func
-from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
 
 # from .ptutils import IPythonPTCompleter
-from .shortcuts import create_ipython_shortcuts
 
 DISPLAY_BANNER_DEPRECATED = object()
 PTK3 = ptk_version.startswith("3.")
@@ -223,7 +224,7 @@ environment variable is set, or the current terminal is not a tty.
     # TODO: Would it make more sense to use the
     # prompt_toolkit.enums.EditingMode class here?
     editing_mode = Unicode(
-        default_value=EditingMode.EMACS.lower(),
+        default_value='EditingMode.EMACS'.lower(),
         help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
     ).tag(config=True)
 
@@ -260,6 +261,16 @@ environment variable is set, or the current terminal is not a tty.
 
     @observe("editing_mode")
     def _editing_mode(self, change):
+        """Observes editing mode parameter.
+
+        Parameters
+        ----------
+        change : dict
+            See the traitlets documentation for an explanation of this parameter
+            as it's been special cased and doesn't behave as other possible
+            parameters to the observe decorator do.
+
+        """
         u_mode = change.new.upper()
         if self.pt_app:
             self.pt_app.editing_mode = u_mode
@@ -268,13 +279,24 @@ environment variable is set, or the current terminal is not a tty.
     def _autoformatter_changed(self, change):
         """Observe the autoformatter parameter of the config dict.
 
-        Parameters
-        ----------
-        change
-
         Raises
         ------
         :exc:`ValueError`
+
+        Notes
+        -----
+        Honestly haven't figured out where the reformat handler is implemented
+        yet.
+        Just wanted to note that :mod:`fileinput` was literally made for this.
+
+        From the Official Docs:
+
+            A FileInput instance can be used as a context manager in the
+            with statement. In this example, input is closed after the with
+            statement is exited, even if an exception occurs:
+
+                with FileInput(files=('spam.txt', 'eggs.txt')) as input:
+                    process(input)
 
         """
         formatter = change.new
@@ -301,9 +323,7 @@ environment variable is set, or the current terminal is not a tty.
         self.refresh_style()
 
     def refresh_style(self):
-        """
-
-        """
+        """Invokes :meth:`_make_style_from_name_or_cls` on 'highlighting_style'."""
         self._style = self._make_style_from_name_or_cls(
             self.highlighting_style)
 
@@ -461,12 +481,19 @@ environment variable is set, or the current terminal is not a tty.
 
         Originally didn't have a docstring so easy to over look but this is a
         really important method here.
+
+        Notes
+        -----
+        Whoo! Now the call to PromptSession is entirely made from attributes
+        of self. No more locals that make this all hard to read.
+
         """
         if self.simple_prompt:
-            # Fall back to plain non-interactive output for tests.
-            # This is very limited.
+
             def prompt():
-                """
+                """Fall back to plain non-interactive output for tests.
+
+                .. admonition:: This is very limited.
 
                 Returns
                 -------
@@ -477,8 +504,8 @@ environment variable is set, or the current terminal is not a tty.
                 try:
                     lines = [input(prompt_text)]
                 except IOError:
-                # we might be in a test runner in which case we're capture stdout as is. don't ask
-                # for stdin
+                    # we might be in a test runner in which case we're capture stdout as is. don't ask
+                    # for stdin
                     pass
 
                 prompt_continuation = "".join(
@@ -500,19 +527,20 @@ environment variable is set, or the current terminal is not a tty.
                     if cell and (cell != last_cell):
                         self.history.append_string(cell)
                         last_cell = cell
+        else:
+            logging.error('You do not have a history manager.')
 
-        # TODO: What happens if we don't have a history manager?? init_history something i guess
+        # TODO: What happens if we don't have a history manager??
+        # init_history something i guess
 
         self._style = self._make_style_from_name_or_cls(
             self.highlighting_style)
         # self.completer = self.init_completer()
         self.style = DynamicStyle(lambda: self._style)
 
-        editing_mode = getattr(EditingMode, self.editing_mode.upper())
-
         self.pt_loop = asyncio.new_event_loop()
         self.pt_app = PromptSession(
-            editing_mode=editing_mode,
+            editing_mode=self.editing_mode.upper(),
             key_bindings=self.key_bindings,
             history=self.history,
             completer=self.Completer,
@@ -606,10 +634,13 @@ environment variable is set, or the current terminal is not a tty.
 
     @property
     def pt_complete_style(self):
-        """
+        """Shows options for prompt toolkits completion styles.
+
+        prompt_toolkit.shortcuts.CompleteStyle[self.display_completions]
 
         Returns
         -------
+        Parameter 'display_completions'
 
         """
         return {
@@ -620,7 +651,7 @@ environment variable is set, or the current terminal is not a tty.
 
     @property
     def color_depth(self):
-        """ return (ColorDepth.TRUE_COLOR if self.true_color else None)."""
+        """Return (ColorDepth.TRUE_COLOR if self.true_color else None)."""
         return ColorDepth.TRUE_COLOR if self.true_color else None
 
     def _extra_prompt_options(self):
@@ -740,9 +771,7 @@ environment variable is set, or the current terminal is not a tty.
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
     def ask_exit(self):
-        """
-
-        """
+        """Sets 'keep_running' parameter to False."""
         self.keep_running = False
 
     def interact(self):

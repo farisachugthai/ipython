@@ -149,19 +149,23 @@ class IPythonPartialTracebackLexer(RegexLexer):
 
     Handles all the non-python output. This works for both Python 2.x and 3.x.
 
+    Notes
+    -----
+
+    From tokens['root']:
+
+        Tracebacks for syntax errors have a different style.
+        For both types of tracebacks, we mark the first line with
+        Generic.Traceback.  For syntax errors, we mark the filename
+        as we mark the filenames for non-syntax tracebacks.
+
+        These two regexps define how IPythonConsoleLexer finds a
+        traceback.
     """
     name = 'IPython Partial Traceback'
 
     tokens = {
         'root': [
-            # Tracebacks for syntax errors have a different style.
-            # For both types of tracebacks, we mark the first line with
-            # Generic.Traceback.  For syntax errors, we mark the filename
-            # as we mark the filenames for non-syntax tracebacks.
-            #
-            # These two regexps define how IPythonConsoleLexer finds a
-            # traceback.
-            #
             # Non-syntax traceback
             (r'^(\^C)?(-+\n)', bygroups(Error, Generic.Traceback)),
             # Syntax traceback
@@ -192,21 +196,20 @@ class IPythonPartialTracebackLexer(RegexLexer):
 
 
 class IPythonTracebackLexer(DelegatingLexer):
-    """
-    IPython traceback lexer.
+    """IPython traceback lexer.
 
     For doctests, the tracebacks can be snipped as much as desired with the
     exception to the lines that designate a traceback. For non-syntax error
     tracebacks, this is the line of hyphens. For syntax error tracebacks,
     this is the line which lists the File and line number.
 
+    The lexer inherits from DelegatingLexer.  The "root" lexer is an
+    appropriate IPython lexer, which depends on the value of the boolean
+    `python3`.  First, we parse with the partial IPython traceback lexer.
+    Then, any code marked with the "Other" token is delegated to the root
+    lexer.
+
     """
-    # The lexer inherits from DelegatingLexer.  The "root" lexer is an
-    # appropriate IPython lexer, which depends on the value of the boolean
-    # `python3`.  First, we parse with the partial IPython traceback lexer.
-    # Then, any code marked with the "Other" token is delegated to the root
-    # lexer.
-    #
     name = 'IPython Traceback'
     aliases = ['ipythontb']
 
