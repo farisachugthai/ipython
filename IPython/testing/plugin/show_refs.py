@@ -12,10 +12,10 @@ class C(object):
         # print 'deleting object...'  # dbg
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     c = C()
 
     c_refs = gc.get_referrers(c)
     ref_ids = list(map(id, c_refs))
 
-    print('c referrers:', list(map(type, c_refs)))
+    print("c referrers:", list(map(type, c_refs)))

@@ -59,21 +59,21 @@ class IPython2PythonConverter(object):
     implementation, but for now it only does prompt conversion."""
 
     def __init__(self):
-        self.rps1 = re.compile(r'In\ \[\d+\]: ')
-        self.rps2 = re.compile(r'\ \ \ \.\.\.+: ')
-        self.rout = re.compile(r'Out\[\d+\]: \s*?\n?')
-        self.pyps1 = '>>> '
-        self.pyps2 = '... '
-        self.rpyps1 = re.compile(r'(\s*%s)(.*)$' % self.pyps1)
-        self.rpyps2 = re.compile(r'(\s*%s)(.*)$' % self.pyps2)
+        self.rps1 = re.compile(r"In\ \[\d+\]: ")
+        self.rps2 = re.compile(r"\ \ \ \.\.\.+: ")
+        self.rout = re.compile(r"Out\[\d+\]: \s*?\n?")
+        self.pyps1 = ">>> "
+        self.pyps2 = "... "
+        self.rpyps1 = re.compile(r"(\s*%s)(.*)$" % self.pyps1)
+        self.rpyps2 = re.compile(r"(\s*%s)(.*)$" % self.pyps2)
 
     def __call__(self, ds):
         """Convert IPython prompts to python ones in a string."""
         from . import globalipapp
 
-        pyps1 = '>>> '
-        pyps2 = '... '
-        pyout = ''
+        pyps1 = ">>> "
+        pyps2 = "... "
+        pyout = ""
 
         dnew = ds
         dnew = self.rps1.sub(pyps1, dnew)
@@ -99,9 +99,9 @@ class IPython2PythonConverter(object):
                 continue
 
             newline(line)
-        newline('')  # ensure a closing newline, needed by doctest
+        newline("")  # ensure a closing newline, needed by doctest
         # print "PYSRC:", '\n'.join(out)  # dbg
-        return '\n'.join(out)
+        return "\n".join(out)
 
     # return dnew
 
@@ -159,7 +159,7 @@ class Doc2UnitTester(object):
                         err = "Invalid number of test results:" % failed
                         raise ValueError(err)
                     # Report a normal failure.
-                    self.fail('failed doctests: %s' % str(failed[0]))
+                    self.fail("failed doctests: %s" % str(failed[0]))
 
         # Rename it so test reports have the original signature.
         Tester.__name__ = func.__name__

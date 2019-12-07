@@ -14,10 +14,18 @@ import sys
 
 from pygments.token import Token
 from prompt_toolkit.enums import DEFAULT_BUFFER
-from prompt_toolkit.filters import (Condition, has_focus, has_selection,
-                                    vi_insert_mode, emacs_insert_mode)
+from prompt_toolkit.filters import (
+    Condition,
+    has_focus,
+    has_selection,
+    vi_insert_mode,
+    emacs_insert_mode,
+)
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.bindings.completion import display_completions_like_readline
+from prompt_toolkit.key_binding.bindings.completion import (
+    display_completions_like_readline,
+)
+
 # Nov 27, 2019: Just added this
 from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
 
@@ -32,7 +40,7 @@ from IPython.terminal.shortcuts import suspend_to_bg, cursor_in_leading_ws
 
 from prompt_toolkit import __version__ as ptk_version
 
-PTK3 = ptk_version.startswith('3.')
+PTK3 = ptk_version.startswith("3.")
 
 
 class TerminalPdb(CorePdb):
@@ -71,7 +79,7 @@ class TerminalPdb(CorePdb):
             color_depth=self.shell.color_depth,
         )
         if not PTK3:
-            options['inputhook'] = self.inputhook
+            options["inputhook"] = self.inputhook
         self.pt_app = PromptSession(**options)
 
     def get_prompt_tokens(self):
@@ -97,16 +105,17 @@ class TerminalPdb(CorePdb):
     def setup_prompt_keybindings(self):
         """Added more bindings."""
         kb = KeyBindings()
-        supports_suspend = Condition(lambda: hasattr(signal, 'SIGTSTP'))
-        kb.add('c-z', filter=supports_suspend)(suspend_to_bg)
+        supports_suspend = Condition(lambda: hasattr(signal, "SIGTSTP"))
+        kb.add("c-z", filter=supports_suspend)(suspend_to_bg)
 
-        if self.shell.display_completions == 'readlinelike':
-            kb.add('tab',
-                   filter=(has_focus(DEFAULT_BUFFER)
-                           & ~has_selection
-                           & vi_insert_mode | emacs_insert_mode
-                           & ~cursor_in_leading_ws
-                           ))(display_completions_like_readline)
+        if self.shell.display_completions == "readlinelike":
+            kb.add(
+                "tab",
+                filter=(
+                    has_focus(DEFAULT_BUFFER) & ~has_selection & vi_insert_mode
+                    | emacs_insert_mode & ~cursor_in_leading_ws
+                ),
+            )(display_completions_like_readline)
 
         kb.add(load_basic_bindings())
 
@@ -123,7 +132,7 @@ class TerminalPdb(CorePdb):
         in the init?
         """
         if not self.use_rawinput:
-            raise ValueError('Sorry ipdb does not support use_rawinput=False')
+            raise ValueError("Sorry ipdb does not support use_rawinput=False")
 
         self.preloop()
 
@@ -138,12 +147,14 @@ class TerminalPdb(CorePdb):
                     line = self.cmdqueue.pop(0)
                 else:
                     self._ptcomp.ipy_completer.namespace = self.curframe_locals
-                    self._ptcomp.ipy_completer.global_namespace = self.curframe.f_globals
+                    self._ptcomp.ipy_completer.global_namespace = (
+                        self.curframe.f_globals
+                    )
                     try:
                         # reset_current_buffer=True)
                         line = self.pt_app.prompt()
                     except EOFError:
-                        line = 'EOF'
+                        line = "EOF"
                 line = self.precmd(line)
                 stop = self.onecmd(line)
                 stop = self.postcmd(stop, line)
@@ -160,7 +171,7 @@ def set_trace(frame=None):
     TerminalPdb().set_trace(frame or sys._getframe().f_back)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import pdb
 
     old_trace_dispatch = pdb.Pdb.trace_dispatch

@@ -121,8 +121,10 @@ def get_default_editor():
     except KeyError:
         pass
     except UnicodeError:
-        warn("$EDITOR environment variable is not pure ASCII. Using platform "
-             "default editor.")
+        warn(
+            "$EDITOR environment variable is not pure ASCII. Using platform "
+            "default editor."
+        )
 
     if os.name == "posix":
         return "vi"  # the only one guaranteed to be there!
@@ -158,8 +160,7 @@ def black_reformat_handler(text_before_cursor):
     """
     import black
 
-    formatted_text = black.format_str(text_before_cursor,
-                                      mode=black.FileMode())
+    formatted_text = black.format_str(text_before_cursor, mode=black.FileMode())
     if not text_before_cursor.endswith("\n") and formatted_text.endswith("\n"):
         formatted_text = formatted_text[:-1]
     return formatted_text
@@ -184,8 +185,7 @@ class TerminalInteractiveShell(InteractiveShell):
         "to reserve for the completion menu",
     ).tag(config=True)
 
-    pt_app = Any(help="Prompt toolkit PromptSession",
-                 allow_none=True).tag(config=True)
+    pt_app = Any(help="Prompt toolkit PromptSession", allow_none=True).tag(config=True)
 
     simple_prompt = Bool(
         _use_simple_prompt,
@@ -224,7 +224,7 @@ environment variable is set, or the current terminal is not a tty.
     # TODO: Would it make more sense to use the
     # prompt_toolkit.enums.EditingMode class here?
     editing_mode = Unicode(
-        default_value='EditingMode.EMACS'.lower(),
+        default_value="EditingMode.EMACS".lower(),
         help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
     ).tag(config=True)
 
@@ -324,19 +324,20 @@ environment variable is set, or the current terminal is not a tty.
 
     def refresh_style(self):
         """Invokes :meth:`_make_style_from_name_or_cls` on 'highlighting_style'."""
-        self._style = self._make_style_from_name_or_cls(
-            self.highlighting_style)
+        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
 
     highlighting_style_overrides = Dict(
-        help="Override highlighting format for specific tokens").tag(
-            config=True)
+        help="Override highlighting format for specific tokens"
+    ).tag(config=True)
 
     true_color = Bool(
         False,
-        help=("Use 24bit colors instead of 256 colors in prompt highlighting. "
-              "If your terminal supports true color, the following command "
-              "should print 'TRUECOLOR' in orange: "
-              'printf "\\x1b[38;2;255;100;0mTRUECOLOR\\x1b[0m\\n"'),
+        help=(
+            "Use 24bit colors instead of 256 colors in prompt highlighting. "
+            "If your terminal supports true color, the following command "
+            "should print 'TRUECOLOR' in orange: "
+            'printf "\\x1b[38;2;255;100;0mTRUECOLOR\\x1b[0m\\n"'
+        ),
     ).tag(config=True)
 
     editor = Unicode(
@@ -345,12 +346,10 @@ environment variable is set, or the current terminal is not a tty.
     ).tag(config=True)
 
     prompts_class = Type(
-        Prompts,
-        help="Class used to generate Prompt token for prompt_toolkit").tag(
-            config=True)
+        Prompts, help="Class used to generate Prompt token for prompt_toolkit"
+    ).tag(config=True)
 
-    prompts = Instance(Prompts,
-                       help="I think it's just an alias for prompts_class")
+    prompts = Instance(Prompts, help="I think it's just an alias for prompts_class")
 
     @default("prompts")
     def _prompts_default(self):
@@ -360,28 +359,32 @@ environment variable is set, or the current terminal is not a tty.
     def _displayhook_class_default(self):
         return RichPromptDisplayHook
 
-    term_title = Bool(
-        True, help="Automatically set the terminal title").tag(config=True)
+    term_title = Bool(True, help="Automatically set the terminal title").tag(
+        config=True
+    )
 
     term_title_format = Unicode(
         "IPython: {cwd}",
-        help=("Customize the terminal title format."
-              "This is a python format string. "
-              "Available substitutions are: {cwd}."),
+        help=(
+            "Customize the terminal title format."
+            "This is a python format string. "
+            "Available substitutions are: {cwd}."
+        ),
     ).tag(config=True)
 
     display_completions = Enum(
         ("column", "multicolumn", "readlinelike"),
-        help=("Options for displaying tab completions, 'column', 'multicolumn', and "
-              "'readlinelike'. These options are for `prompt_toolkit`, see "
-              "`prompt_toolkit` documentation for more information."),
+        help=(
+            "Options for displaying tab completions, 'column', 'multicolumn', and "
+            "'readlinelike'. These options are for `prompt_toolkit`, see "
+            "`prompt_toolkit` documentation for more information."
+        ),
         default_value="multicolumn",
     ).tag(config=True)
 
-    highlight_matching_brackets = Bool(
-        True,
-        help="Highlight matching brackets.",
-    ).tag(config=True)
+    highlight_matching_brackets = Bool(True, help="Highlight matching brackets.",).tag(
+        config=True
+    )
 
     extra_open_editor_shortcuts = Bool(
         False,
@@ -397,14 +400,12 @@ environment variable is set, or the current terminal is not a tty.
     ).tag(config=True)
 
     enable_history_search = Bool(
-        True,
-        help="Allows to enable/disable the prompt toolkit history search").tag(
-            config=True)
+        True, help="Allows to enable/disable the prompt toolkit history search"
+    ).tag(config=True)
 
     prompt_includes_vi_mode = Bool(
-        True,
-        help="Display the current vi mode (when using vi editing mode).").tag(
-            config=True)
+        True, help="Display the current vi mode (when using vi editing mode)."
+    ).tag(config=True)
 
     Completer = Any(
         help="Completer for the shell",
@@ -471,10 +472,10 @@ environment variable is set, or the current terminal is not a tty.
     #     """Allow the user to choose their own completer."""
     #     if self.Completer:
     #         return
-        # self.Completer = IPCompleter(shell=self)
-        # Nope doesn't work. Or at least we have to configure more things
-        # Error raised on TerminalInteractiveShell not having user_ns???
-        # super().init_completer()
+    # self.Completer = IPCompleter(shell=self)
+    # Nope doesn't work. Or at least we have to configure more things
+    # Error raised on TerminalInteractiveShell not having user_ns???
+    # super().init_completer()
 
     def init_prompt_toolkit_cli(self):
         """The entry point for prompt_toolkit!
@@ -499,8 +500,7 @@ environment variable is set, or the current terminal is not a tty.
                 -------
 
                 """
-                prompt_text = "".join(x[1]
-                                      for x in self.prompts.in_prompt_tokens())
+                prompt_text = "".join(x[1] for x in self.prompts.in_prompt_tokens())
                 try:
                     lines = [input(prompt_text)]
                 except IOError:
@@ -509,7 +509,8 @@ environment variable is set, or the current terminal is not a tty.
                     pass
 
                 prompt_continuation = "".join(
-                    x[1] for x in self.prompts.continuation_prompt_tokens())
+                    x[1] for x in self.prompts.continuation_prompt_tokens()
+                )
                 while self.check_complete("\n".join(lines))[0] == "incomplete":
                     lines.append(input(prompt_continuation))
                 return "\n".join(lines)
@@ -521,20 +522,20 @@ environment variable is set, or the current terminal is not a tty.
         if getattr(self, "history_manager", None):
             if self.history_manager is not None:
                 for __, ___, cell in self.history_manager.get_tail(
-                        self.history_load_length, include_latest=True):
+                    self.history_load_length, include_latest=True
+                ):
                     # Ignore blank lines and consecutive duplicates
                     cell = cell.rstrip()
                     if cell and (cell != last_cell):
                         self.history.append_string(cell)
                         last_cell = cell
         else:
-            logging.error('You do not have a history manager.')
+            logging.error("You do not have a history manager.")
 
         # TODO: What happens if we don't have a history manager??
         # init_history something i guess
 
-        self._style = self._make_style_from_name_or_cls(
-            self.highlighting_style)
+        self._style = self._make_style_from_name_or_cls(self.highlighting_style)
         # self.completer = self.init_completer()
         self.style = DynamicStyle(lambda: self._style)
 
@@ -550,7 +551,8 @@ environment variable is set, or the current terminal is not a tty.
             mouse_support=self.mouse_support,
             enable_open_in_editor=self.extra_open_editor_shortcuts,
             color_depth=self.color_depth,
-            **self._extra_prompt_options())
+            **self._extra_prompt_options()
+        )
 
     def _make_style_from_name_or_cls(self, name_or_cls):
         """Small wrapper that make an IPython compatible style from a style name.
@@ -571,38 +573,32 @@ environment variable is set, or the current terminal is not a tty.
                 # and a light background, because we can't tell what the terminal
                 # looks like. These tweaks to the default theme help with that.
                 style_cls = get_style_by_name("default")
-                style_overrides.update({
-                    Token.Number:
-                    "#007700",
-                    Token.Operator:
-                    "noinherit",
-                    Token.String:
-                    "#BB6622",
-                    Token.Name.Function:
-                    "#2080D0",
-                    Token.Name.Class:
-                    "bold #2080D0",
-                    Token.Name.Namespace:
-                    "bold #2080D0",
-                    Token.Prompt:
-                    "#009900",
-                    Token.PromptNum:
-                    "#ansibrightgreen bold",
-                    Token.OutPrompt:
-                    "#990000",
-                    Token.OutPromptNum:
-                    "#ansibrightred bold",
-                })
+                style_overrides.update(
+                    {
+                        Token.Number: "#007700",
+                        Token.Operator: "noinherit",
+                        Token.String: "#BB6622",
+                        Token.Name.Function: "#2080D0",
+                        Token.Name.Class: "bold #2080D0",
+                        Token.Name.Namespace: "bold #2080D0",
+                        Token.Prompt: "#009900",
+                        Token.PromptNum: "#ansibrightgreen bold",
+                        Token.OutPrompt: "#990000",
+                        Token.OutPromptNum: "#ansibrightred bold",
+                    }
+                )
 
                 # Hack: Due to limited color support on the Windows console
                 # the prompt colors will be wrong without this
                 if os.name == "nt":
-                    style_overrides.update({
-                        Token.Prompt: "#ansidarkgreen",
-                        Token.PromptNum: "#ansigreen bold",
-                        Token.OutPrompt: "#ansidarkred",
-                        Token.OutPromptNum: "#ansired bold",
-                    })
+                    style_overrides.update(
+                        {
+                            Token.Prompt: "#ansidarkgreen",
+                            Token.PromptNum: "#ansigreen bold",
+                            Token.OutPrompt: "#ansidarkred",
+                            Token.OutPromptNum: "#ansired bold",
+                        }
+                    )
             elif legacy == "nocolor":
                 style_cls = _NoStyle
                 # hold up how is this missing from master
@@ -625,10 +621,12 @@ environment variable is set, or the current terminal is not a tty.
                 Token.OutPromptNum: "#ansibrightred bold",
             }
         style_overrides.update(self.highlighting_style_overrides)
-        style = merge_styles([
-            style_from_pygments_cls(style_cls),
-            style_from_pygments_dict(style_overrides),
-        ])
+        style = merge_styles(
+            [
+                style_from_pygments_cls(style_cls),
+                style_from_pygments_dict(style_overrides),
+            ]
+        )
 
         return style
 
@@ -656,6 +654,7 @@ environment variable is set, or the current terminal is not a tty.
 
     def _extra_prompt_options(self):
         """Return the current layout option for the current InteractiveShell."""
+
         def get_message():
             """return PygmentsTokens(self.prompts.in_prompt_tokens())."""
             return PygmentsTokens(self.prompts.in_prompt_tokens())
@@ -673,27 +672,22 @@ environment variable is set, or the current terminal is not a tty.
             get_message = get_message()
 
         options = {
-            "complete_in_thread":
-            False,
-            "lexer":
-            IPythonPTLexer(),
-            "reserve_space_for_menu":
-            self.space_for_menu,
-            "message":
-            get_message,
-            "prompt_continuation":
-            (lambda width, lineno, is_soft_wrap: PygmentsTokens(
-                self.prompts.continuation_prompt_tokens(width))),
-            "multiline":
-            True,
-            "complete_style":
-            self.pt_complete_style,
+            "complete_in_thread": False,
+            "lexer": IPythonPTLexer(),
+            "reserve_space_for_menu": self.space_for_menu,
+            "message": get_message,
+            "prompt_continuation": (
+                lambda width, lineno, is_soft_wrap: PygmentsTokens(
+                    self.prompts.continuation_prompt_tokens(width)
+                )
+            ),
+            "multiline": True,
+            "complete_style": self.pt_complete_style,
             # Highlight matching brackets, but only when this setting is
             # enabled, and only when the DEFAULT_BUFFER has the focus.
             "input_processors": [
                 ConditionalProcessor(
-                    processor=HighlightMatchingBracketProcessor(
-                        chars="[](){}"),
+                    processor=HighlightMatchingBracketProcessor(chars="[](){}"),
                     filter=HasFocus(DEFAULT_BUFFER)
                     & ~IsDone()
                     & Condition(lambda: self.highlight_matching_brackets),
@@ -725,8 +719,9 @@ environment variable is set, or the current terminal is not a tty.
             # Wait what is self.pt_loop?
             asyncio.set_event_loop(self.pt_loop)
             try:
-                text = self.pt_app.prompt(default=default,
-                                          **self._extra_prompt_options())
+                text = self.pt_app.prompt(
+                    default=default, **self._extra_prompt_options()
+                )
             finally:
                 # Restore the original event loop.
                 asyncio.set_event_loop(old_loop)
@@ -810,7 +805,8 @@ environment variable is set, or the current terminal is not a tty.
     def check_exit(self):
         """A quicker way of checking if the user really wants to exit."""
         if (not self.confirm_exit) or self.ask_yes_no(
-                "Do you really want to exit ([y]/n)?", "y", "n"):
+            "Do you really want to exit ([y]/n)?", "y", "n"
+        ):
             self.ask_exit()
 
     def mainloop(self, display_banner=DISPLAY_BANNER_DEPRECATED):
@@ -870,8 +866,7 @@ environment variable is set, or the current terminal is not a tty.
         gui :
         """
         if gui and (gui != "inline"):
-            self.active_eventloop, self._inputhook = get_inputhook_name_and_func(
-                gui)
+            self.active_eventloop, self._inputhook = get_inputhook_name_and_func(gui)
         else:
             self.active_eventloop = self._inputhook = None
 
@@ -912,9 +907,9 @@ environment variable is set, or the current terminal is not a tty.
 
         tokens = self.prompts.rewrite_prompt_tokens()
         if self.pt_app:
-            print_formatted_text(PygmentsTokens(tokens),
-                                 end="",
-                                 style=self.pt_app.app.style)
+            print_formatted_text(
+                PygmentsTokens(tokens), end="", style=self.pt_app.app.style
+            )
             print(cmd)
         else:
             prompt = "".join(s for t, s in tokens)
@@ -949,7 +944,8 @@ environment variable is set, or the current terminal is not a tty.
             return
         try:
             self.profile_dir = ProfileDir.create_profile_dir_by_name(
-                self.ipython_dir, "default")
+                self.ipython_dir, "default"
+            )
         except ProfileDirError:
             self.log.error("Profiledirerror")
         except BaseException as e:
@@ -1000,8 +996,7 @@ environment variable is set, or the current terminal is not a tty.
             lines = traceback.format_list(tblist)
             if lines:
                 lines.insert(0, "Traceback (most recent call last):\n")
-            lines.extend(traceback.format_exception_only(
-                exception_type, value))
+            lines.extend(traceback.format_exception_only(exception_type, value))
         finally:
             tblist = tb = None
         sys.stderr.write("".join(lines))

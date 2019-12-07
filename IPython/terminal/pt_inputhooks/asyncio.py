@@ -41,6 +41,7 @@ def inputhook(context):
     ----------
     context :
     """
+
     def stop():
         """
 

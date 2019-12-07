@@ -15,23 +15,23 @@ import os
 from IPython.core.error import UnknownBackend
 
 aliases = {
-    'qt4': 'qt',
-    'gtk2': 'gtk',
+    "qt4": "qt",
+    "gtk2": "gtk",
 }
 
 backends = [
-    'qt',
-    'qt4',
-    'qt5',
-    'gtk',
-    'gtk2',
-    'gtk3',
-    'tk',
-    'wx',
-    'pyglet',
-    'glut',
-    'osx',
-    'asyncio'
+    "qt",
+    "qt4",
+    "qt5",
+    "gtk",
+    "gtk2",
+    "gtk3",
+    "tk",
+    "wx",
+    "pyglet",
+    "glut",
+    "osx",
+    "asyncio",
 ]
 
 registered = {}
@@ -63,9 +63,9 @@ def get_inputhook_name_and_func(gui):
         return get_inputhook_name_and_func(aliases[gui])
 
     gui_mod = gui
-    if gui == 'qt5':
-        os.environ['QT_API'] = 'pyqt5'
-        gui_mod = 'qt'
+    if gui == "qt5":
+        os.environ["QT_API"] = "pyqt5"
+        gui_mod = "qt"
 
-    mod = importlib.import_module('IPython.terminal.pt_inputhooks.' + gui_mod)
+    mod = importlib.import_module("IPython.terminal.pt_inputhooks." + gui_mod)
     return gui, mod.inputhook

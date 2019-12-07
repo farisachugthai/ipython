@@ -69,8 +69,7 @@ def inputhook(inputhook_context):
             """
             stop[0] = True
 
-        root.createfilehandler(inputhook_context.fileno(), _tkinter.READABLE,
-                               done)
+        root.createfilehandler(inputhook_context.fileno(), _tkinter.READABLE, done)
 
         # Run the TK event loop as long as we don't receive input.
         while root.dooneevent(_tkinter.ALL_EVENTS):
@@ -89,10 +88,10 @@ def inputhook(inputhook_context):
                 pass
             # Sleep to make the CPU idle, but not too long, so that the UI
             # stays responsive.
-            time.sleep(.01)
+            time.sleep(0.01)
 
     if root is not None:
-        if hasattr(root, 'createfilehandler'):
+        if hasattr(root, "createfilehandler"):
             wait_using_filehandler()
         else:
             wait_using_polling()

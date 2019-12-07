@@ -18,12 +18,14 @@ def test(**kwargs):
     # Do the import internally, so that this function doesn't increase total
     # import time
     from .iptestcontroller import run_iptestall, default_options
+
     options = default_options()
     for name, val in kwargs.items():
         setattr(options, name, val)
     run_iptestall(options)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from IPython.testing import iptestcontroller
+
     iptestcontroller.main()

@@ -15,6 +15,7 @@ class Prompts:
     """
 
     """
+
     def __init__(self, shell):
         self.shell = shell
 
@@ -25,11 +26,12 @@ class Prompts:
         -------
 
         """
-        if (getattr(self.shell.pt_app, 'editing_mode', None) == 'VI'
-                and self.shell.prompt_includes_vi_mode):
-            return '[' + str(
-                self.shell.pt_app.app.vi_state.input_mode)[3:6] + '] '
-        return ''
+        if (
+            getattr(self.shell.pt_app, "editing_mode", None) == "VI"
+            and self.shell.prompt_includes_vi_mode
+        ):
+            return "[" + str(self.shell.pt_app.app.vi_state.input_mode)[3:6] + "] "
+        return ""
 
     def in_prompt_tokens(self):
         """
@@ -40,9 +42,9 @@ class Prompts:
         """
         return [
             (Token.Prompt, self.vi_mode()),
-            (Token.Prompt, 'In ['),
+            (Token.Prompt, "In ["),
             (Token.PromptNum, str(self.shell.execution_count)),
-            (Token.Prompt, ']: '),
+            (Token.Prompt, "]: "),
         ]
 
     def _width(self):
@@ -62,7 +64,7 @@ class Prompts:
         if width is None:
             width = self._width()
         return [
-            (Token.Prompt, (' ' * (width - 5)) + '...: '),
+            (Token.Prompt, (" " * (width - 5)) + "...: "),
         ]
 
     def rewrite_prompt_tokens(self):
@@ -74,7 +76,7 @@ class Prompts:
         """
         width = self._width()
         return [
-            (Token.Prompt, ('-' * (width - 2)) + '> '),
+            (Token.Prompt, ("-" * (width - 2)) + "> "),
         ]
 
     def out_prompt_tokens(self):
@@ -85,9 +87,9 @@ class Prompts:
 
         """
         return [
-            (Token.OutPrompt, 'Out['),
+            (Token.OutPrompt, "Out["),
             (Token.OutPromptNum, str(self.shell.execution_count)),
-            (Token.OutPrompt, ']: '),
+            (Token.OutPrompt, "]: "),
         ]
 
 
@@ -100,7 +102,7 @@ class ClassicPrompts(Prompts):
 
         """
         return [
-            (Token.Prompt, '>>> '),
+            (Token.Prompt, ">>> "),
         ]
 
     def continuation_prompt_tokens(self, width=None):
@@ -114,7 +116,7 @@ class ClassicPrompts(Prompts):
         -------
 
         """
-        return [(Token.Prompt, '... ')]
+        return [(Token.Prompt, "... ")]
 
     def rewrite_prompt_tokens(self):
         """
@@ -149,16 +151,14 @@ class RichPromptDisplayHook(DisplayHook):
 
         if self.do_full_cache:
             tokens = self.shell.prompts.out_prompt_tokens()
-            prompt_txt = ''.join(s for t, s in tokens)
-            if prompt_txt and not prompt_txt.endswith('\n'):
+            prompt_txt = "".join(s for t, s in tokens)
+            if prompt_txt and not prompt_txt.endswith("\n"):
                 # Ask for a newline before multiline output
                 self.prompt_end_newline = False
 
             if self.shell.pt_app:
                 print_formatted_text(
-                    PygmentsTokens(tokens),
-                    style=self.shell.pt_app.app.style,
-                    end='',
+                    PygmentsTokens(tokens), style=self.shell.pt_app.app.style, end="",
                 )
             else:
                 sys.stdout.write(prompt_txt)
@@ -183,4 +183,3 @@ class RichPromptDisplayHook(DisplayHook):
                     return
 
         super().write_format_data(format_dict, md_dict)
-

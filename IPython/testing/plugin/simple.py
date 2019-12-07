@@ -22,7 +22,7 @@ def pyfunc():
     ...
     0 1 1 2 2 3
     """
-    return 'pyfunc'
+    return "pyfunc"
 
 
 def ipyfunc2():
@@ -31,4 +31,4 @@ def ipyfunc2():
     >>> 1+1
     2
     """
-    return 'pyfunc2'
+    return "pyfunc2"

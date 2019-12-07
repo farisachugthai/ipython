@@ -29,26 +29,26 @@ from IPython.testing import tools as tt
 
 @dec.skip_win32
 def test_full_path_posix():
-    spath = '/foo/bar.py'
-    result = tt.full_path(spath, ['a.txt', 'b.txt'])
-    nt.assert_equal(result, ['/foo/a.txt', '/foo/b.txt'])
-    spath = '/foo'
-    result = tt.full_path(spath, ['a.txt', 'b.txt'])
-    nt.assert_equal(result, ['/a.txt', '/b.txt'])
-    result = tt.full_path(spath, 'a.txt')
-    nt.assert_equal(result, ['/a.txt'])
+    spath = "/foo/bar.py"
+    result = tt.full_path(spath, ["a.txt", "b.txt"])
+    nt.assert_equal(result, ["/foo/a.txt", "/foo/b.txt"])
+    spath = "/foo"
+    result = tt.full_path(spath, ["a.txt", "b.txt"])
+    nt.assert_equal(result, ["/a.txt", "/b.txt"])
+    result = tt.full_path(spath, "a.txt")
+    nt.assert_equal(result, ["/a.txt"])
 
 
 @dec.skip_if_not_win32
 def test_full_path_win32():
-    spath = 'c:\\foo\\bar.py'
-    result = tt.full_path(spath, ['a.txt', 'b.txt'])
-    nt.assert_equal(result, ['c:\\foo\\a.txt', 'c:\\foo\\b.txt'])
-    spath = 'c:\\foo'
-    result = tt.full_path(spath, ['a.txt', 'b.txt'])
-    nt.assert_equal(result, ['c:\\a.txt', 'c:\\b.txt'])
-    result = tt.full_path(spath, 'a.txt')
-    nt.assert_equal(result, ['c:\\a.txt'])
+    spath = "c:\\foo\\bar.py"
+    result = tt.full_path(spath, ["a.txt", "b.txt"])
+    nt.assert_equal(result, ["c:\\foo\\a.txt", "c:\\foo\\b.txt"])
+    spath = "c:\\foo"
+    result = tt.full_path(spath, ["a.txt", "b.txt"])
+    nt.assert_equal(result, ["c:\\a.txt", "c:\\b.txt"])
+    result = tt.full_path(spath, "a.txt")
+    nt.assert_equal(result, ["c:\\a.txt"])
 
 
 def test_parser():
@@ -62,7 +62,7 @@ def test_parser():
 
 
 def test_temp_pyfile():
-    src = 'pass\n'
+    src = "pass\n"
     fname = tt.temp_pyfile(src)
     assert os.path.isfile(fname)
     with open(fname) as fh2:
@@ -108,22 +108,26 @@ class Test_ipexec_validate(tt.TempFileMixin):
     def test_exception_path(self):
         """Test exception path in exception_validate.
         """
-        self.mktmp("import sys\n"
-                   "print('A')\n"
-                   "print('B')\n"
-                   "print('C', file=sys.stderr)\n"
-                   "print('D', file=sys.stderr)\n")
+        self.mktmp(
+            "import sys\n"
+            "print('A')\n"
+            "print('B')\n"
+            "print('C', file=sys.stderr)\n"
+            "print('D', file=sys.stderr)\n"
+        )
         out = "A\nB"
         tt.ipexec_validate(self.fname, expected_out=out, expected_err="C\nD")
 
     def test_exception_path2(self):
         """Test exception path in exception_validate, expecting windows line endings.
         """
-        self.mktmp("import sys\n"
-                   "print('A')\n"
-                   "print('B')\n"
-                   "print('C', file=sys.stderr)\n"
-                   "print('D', file=sys.stderr)\n")
+        self.mktmp(
+            "import sys\n"
+            "print('A')\n"
+            "print('B')\n"
+            "print('C', file=sys.stderr)\n"
+            "print('D', file=sys.stderr)\n"
+        )
         out = "A\r\nB"
         tt.ipexec_validate(self.fname, expected_out=out, expected_err="C\r\nD")
 

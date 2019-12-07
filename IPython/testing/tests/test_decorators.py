@@ -35,7 +35,7 @@ def getargspec(obj):
     elif inspect.ismethod(obj):
         func_obj = obj.__func__
     else:
-        raise TypeError('arg is not a Python function')
+        raise TypeError("arg is not a Python function")
     args, varargs, varkw = inspect.getargs(func_obj.__code__)
     return args, varargs, varkw, func_obj.__defaults__
 
@@ -56,7 +56,7 @@ def test_deliberately_broken():
     1 / 0
 
 
-@dec.skip('Testing the skip decorator')
+@dec.skip("Testing the skip decorator")
 def test_deliberately_broken2():
     """Another deliberately broken test - we want to skip this one."""
     1 / 0
@@ -70,9 +70,9 @@ def doctest_bad(x, y=1, **k):
     >>> 1+1
     3
     """
-    print('x:', x)
-    print('y:', y)
-    print('k:', k)
+    print("x:", x)
+    print("y:", y)
+    print("k:", k)
 
 
 def call_doctest_bad():
@@ -119,7 +119,7 @@ class FooClass(object):
         >>> f = FooClass(3)
         junk
         """
-        print('Making a FooClass.')
+        print("Making a FooClass.")
         self.x = x
 
     def bar(self, y):
@@ -148,26 +148,24 @@ def test_skip_dt_decorator2():
     """Doctest-skipping decorator should preserve function signature.
     """
     # Hardcoded correct answer
-    dtargs = (['x', 'y'], None, 'k', (1, ))
+    dtargs = (["x", "y"], None, "k", (1,))
     # Introspect out the value
     dtargsr = getargspec(doctest_bad)
-    assert dtargsr == dtargs, \
-        "Incorrectly reconstructed args for doctest_bad: %s" % (dtargsr,)
+    assert dtargsr == dtargs, "Incorrectly reconstructed args for doctest_bad: %s" % (
+        dtargsr,
+    )
 
 
 @dec.skip_linux
 def test_linux():
-    nt.assert_false(sys.platform.startswith('linux'),
-                    "This test can't run under linux")
+    nt.assert_false(sys.platform.startswith("linux"), "This test can't run under linux")
 
 
 @dec.skip_win32
 def test_win32():
-    nt.assert_not_equal(sys.platform, 'win32',
-                        "This test can't run under windows")
+    nt.assert_not_equal(sys.platform, "win32", "This test can't run under windows")
 
 
 @dec.skip_osx
 def test_osx():
-    nt.assert_not_equal(sys.platform, 'darwin',
-                        "This test can't run under osx")
+    nt.assert_not_equal(sys.platform, "darwin", "This test can't run under osx")

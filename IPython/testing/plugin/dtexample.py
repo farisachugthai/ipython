@@ -22,7 +22,7 @@ def pyfunc():
     ...
     0 1 1 2 2 3
     """
-    return 'pyfunc'
+    return "pyfunc"
 
 
 def ipfunc():
@@ -71,7 +71,7 @@ def ipfunc():
     In [9]: ipfunc()
     Out[9]: 'ipfunc'
     """
-    return 'ipfunc'
+    return "ipfunc"
 
 
 def ranfunc():
@@ -101,7 +101,7 @@ def ranfunc():
        >>> ranfunc()
        'ranfunc'
     """
-    return 'ranfunc'
+    return "ranfunc"
 
 
 def random_all():
@@ -141,7 +141,7 @@ def iprand():
     In [9]: iprand()
     Out[9]: 'iprand'
     """
-    return 'iprand'
+    return "iprand"
 
 
 def iprand_all():
@@ -158,4 +158,4 @@ def iprand_all():
     In [9]: iprand_all()
     Out[9]: 'junk'
     """
-    return 'iprand_all'
+    return "iprand_all"

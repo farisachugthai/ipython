@@ -30,30 +30,32 @@ glut_fps = 60
 
 # Display mode : double buffeed + rgba + depth
 # Should probably be an IPython option
-glut_display_mode = (glut.GLUT_DOUBLE | glut.GLUT_RGBA | glut.GLUT_DEPTH)
+glut_display_mode = glut.GLUT_DOUBLE | glut.GLUT_RGBA | glut.GLUT_DEPTH
 
 glutMainLoopEvent = None
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     try:
         glutCheckLoop = platform.createBaseFunction(
-            'glutCheckLoop',
+            "glutCheckLoop",
             dll=platform.GLUT,
             resultType=None,
             argTypes=[],
-            doc='glutCheckLoop(  ) -> None',
+            doc="glutCheckLoop(  ) -> None",
             argNames=(),
         )
     except AttributeError:
         raise RuntimeError(
-            '''Your glut implementation does not allow interactive sessions'''
-            '''Consider installing freeglut.''')
+            """Your glut implementation does not allow interactive sessions"""
+            """Consider installing freeglut."""
+        )
     glutMainLoopEvent = glutCheckLoop
 elif glut.HAVE_FREEGLUT:
     glutMainLoopEvent = glut.glutMainLoopEvent
 else:
     raise RuntimeError(
-        '''Your glut implementation does not allow interactive sessions. '''
-        '''Consider installing freeglut.''')
+        """Your glut implementation does not allow interactive sessions. """
+        """Consider installing freeglut."""
+    )
 
 
 def glut_display():
@@ -91,7 +93,7 @@ def glut_int_handler(signum, frame):
     """
     # Catch sigint and print the defaultipyt   message
     signal.signal(signal.SIGINT, signal.default_int_handler)
-    print('\nKeyboardInterrupt')
+    print("\nKeyboardInterrupt")
     # Need to reprint the prompt at this stage
 
 
@@ -100,9 +102,10 @@ glut.glutInit(sys.argv)
 glut.glutInitDisplayMode(glut_display_mode)
 # This is specific to freeglut
 if bool(glut.glutSetOption):
-    glut.glutSetOption(glut.GLUT_ACTION_ON_WINDOW_CLOSE,
-                       glut.GLUT_ACTION_GLUTMAINLOOP_RETURNS)
-glut.glutCreateWindow(b'ipython')
+    glut.glutSetOption(
+        glut.GLUT_ACTION_ON_WINDOW_CLOSE, glut.GLUT_ACTION_GLUTMAINLOOP_RETURNS
+    )
+glut.glutCreateWindow(b"ipython")
 glut.glutReshapeWindow(1, 1)
 glut.glutHideWindow()
 glut.glutWMCloseFunc(glut_close)

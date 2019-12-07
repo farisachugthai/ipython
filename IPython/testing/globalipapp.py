@@ -37,7 +37,7 @@ class StreamProxy(utils_io.IOStream):
             "StreamProxy is deprecated and unused as of IPython 5",
             DeprecationWarning,
             stacklevel=2,
-            )
+        )
         self.name = name
 
     @property
@@ -78,9 +78,7 @@ def xsys(self, cmd):
     """
     # We use getoutput, but we need to strip it because pexpect captures
     # the trailing newline differently from commands.getoutput
-    print(self.getoutput(cmd, split=False, depth=1).rstrip(),
-          end='',
-          file=sys.stdout)
+    print(self.getoutput(cmd, split=False, depth=1).rstrip(), end="", file=sys.stdout)
     sys.stdout.flush()
 
 
@@ -96,21 +94,21 @@ def start_ipython():
     global get_ipython
 
     # This function should only ever run once!
-    if hasattr(start_ipython, 'already_called'):
+    if hasattr(start_ipython, "already_called"):
         return
     start_ipython.already_called = True
 
     # Store certain global objects that IPython modifies
     _displayhook = sys.displayhook
     _excepthook = sys.excepthook
-    _main = sys.modules.get('__main__')
+    _main = sys.modules.get("__main__")
 
     # Create custom argv and namespaces for our IPython to be test-friendly
     config = tools.default_config()
     config.TerminalInteractiveShell.simple_prompt = True
 
     # Create and initialize our test-friendly IPython instance.
-    shell = TerminalInteractiveShell.instance(config=config, )
+    shell = TerminalInteractiveShell.instance(config=config,)
 
     # A few more tweaks needed for playing nicely with doctests...
 
@@ -132,7 +130,7 @@ def start_ipython():
 
     # Deactivate the various python system hooks added by ipython for
     # interactive convenience so we don't confuse the doctest system
-    sys.modules['__main__'] = _main
+    sys.modules["__main__"] = _main
     sys.displayhook = _displayhook
     sys.excepthook = _excepthook
 
@@ -157,7 +155,7 @@ def start_ipython():
         pager_cmd :
         """
         if isinstance(strng, dict):
-            strng = strng.get('text/plain', '')
+            strng = strng.get("text/plain", "")
         print(strng)
 
     page.orig_page = page.pager_page

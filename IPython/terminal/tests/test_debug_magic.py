@@ -28,13 +28,15 @@ def test_debug_magic_passes_through_generators():
     """
     import pexpect
     import re
-    in_prompt = re.compile(br'In ?\[\d+\]:')
-    ipdb_prompt = 'ipdb>'
+
+    in_prompt = re.compile(br"In ?\[\d+\]:")
+    ipdb_prompt = "ipdb>"
     env = os.environ.copy()
     child = pexpect.spawn(
         sys.executable,
-        ['-m', 'IPython', '--colors=nocolor', '--simple-prompt'],
-        env=env)
+        ["-m", "IPython", "--colors=nocolor", "--simple-prompt"],
+        env=env,
+    )
     child.timeout = 15 * IPYTHON_TESTING_TIMEOUT_SCALE
 
     child.expect(in_prompt)
@@ -54,28 +56,28 @@ def test_debug_magic_passes_through_generators():
     child.sendline("    pass")
     child.sendline("")
 
-    child.expect('Exception:')
+    child.expect("Exception:")
 
     child.expect(in_prompt)
-    child.sendline(r'%debug')
-    child.expect('----> 2     raise Exception')
+    child.sendline(r"%debug")
+    child.expect("----> 2     raise Exception")
 
     child.expect(ipdb_prompt)
-    child.sendline('u')
-    child.expect_exact(r'----> 1 gen = (f(x) for x in [0])')
+    child.sendline("u")
+    child.expect_exact(r"----> 1 gen = (f(x) for x in [0])")
 
     child.expect(ipdb_prompt)
-    child.sendline('u')
-    child.expect_exact('----> 1 for x in gen:')
+    child.sendline("u")
+    child.expect_exact("----> 1 for x in gen:")
 
     child.expect(ipdb_prompt)
-    child.sendline('u')
-    child.expect_exact('*** Oldest frame')
+    child.sendline("u")
+    child.expect_exact("*** Oldest frame")
 
     child.expect(ipdb_prompt)
-    child.sendline('exit')
+    child.sendline("exit")
 
     child.expect(in_prompt)
-    child.sendline('exit')
+    child.sendline("exit")
 
     child.close()
