@@ -42,13 +42,14 @@ class FakeShell:
     """
 
     """
+
     def __init__(self):
         self.ns = {}
         self.user_ns = self.ns
         self.user_ns_hidden = {}
-        self.events = EventManager(self, {'pre_run_cell', pre_run_cell})
+        self.events = EventManager(self, {"pre_run_cell", pre_run_cell})
         self.auto_magics = AutoreloadMagics(shell=self)
-        self.events.register('pre_run_cell', self.auto_magics.pre_run_cell)
+        self.events.register("pre_run_cell", self.auto_magics.pre_run_cell)
 
     register_magics = set_hook = noop
 
@@ -59,7 +60,7 @@ class FakeShell:
         ----------
         code :
         """
-        self.events.trigger('pre_run_cell')
+        self.events.trigger("pre_run_cell")
         exec(code, self.user_ns)
         self.auto_magics.post_execute_hook()
 
@@ -127,8 +128,7 @@ class Fixture(TestCase):
         -------
 
         """
-        module_name = "tmpmod_" + \
-                      "".join(random.sample(self.filename_chars, 20))
+        module_name = "tmpmod_" + "".join(random.sample(self.filename_chars, 20))
         if module_name in sys.modules:
             del sys.modules[module_name]
         file_name = os.path.join(self.test_dir, module_name + ".py")
@@ -154,7 +154,7 @@ class Fixture(TestCase):
         time.sleep(1.05)
 
         # Write
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             f.write(content)
 
     def new_module(self, code):
@@ -170,7 +170,7 @@ class Fixture(TestCase):
         """
         code = textwrap.dedent(code)
         mod_name, mod_fn = self.get_module()
-        with open(mod_fn, 'w') as f:
+        with open(mod_fn, "w") as f:
             f.write(code)
         return mod_name, mod_fn
 
@@ -193,25 +193,36 @@ def pickle_get_current_class(obj):
 
 
 class TestAutoreload(Fixture):
-
     def test_reload_enums(self):
         import enum
-        mod_name, mod_fn = self.new_module(textwrap.dedent("""
+
+        mod_name, mod_fn = self.new_module(
+            textwrap.dedent(
+                """
                                 from enum import Enum
                                 class MyEnum(Enum):
                                     A = 'A'
                                     B = 'B'
-                            """))
+                            """
+            )
+        )
         self.shell.magic_autoreload("2")
         self.shell.magic_aimport(mod_name)
-        self.write_file(mod_fn, textwrap.dedent("""
+        self.write_file(
+            mod_fn,
+            textwrap.dedent(
+                """
                                 from enum import Enum
                                 class MyEnum(Enum):
                                     A = 'A'
                                     B = 'B'
                                     C = 'C'
-                            """))
-        with tt.AssertNotPrints(('[autoreload of %s failed:' % mod_name), channel='stderr'):
+                            """
+            ),
+        )
+        with tt.AssertNotPrints(
+            ("[autoreload of %s failed:" % mod_name), channel="stderr"
+        ):
             self.shell.run_code("pass")  # trigger another reload
 
     def test_reload_class_type(self):
@@ -252,7 +263,9 @@ class TestAutoreload(Fixture):
 
     def test_reload_class_attributes(self):
         self.shell.magic_autoreload("2")
-        mod_name, mod_fn = self.new_module(textwrap.dedent("""
+        mod_name, mod_fn = self.new_module(
+            textwrap.dedent(
+                """
                                 class MyClass:
 
                                     def __init__(self, a=10):
@@ -264,8 +277,8 @@ class TestAutoreload(Fixture):
                                         print('compute square')
                                         return self.a*self.a
                             """
-                                                           )
-                                           )
+            )
+        )
         self.shell.run_code("from %s import MyClass" % mod_name)
         self.shell.run_code("first = MyClass(5)")
         self.shell.run_code("first.square()")
@@ -298,28 +311,24 @@ class TestAutoreload(Fixture):
 
         self.shell.run_code("second = MyClass(5)")
 
-        for object_name in {'first', 'second'}:
+        for object_name in {"first", "second"}:
             self.shell.run_code(
-                "{object_name}.power(5)".format(
-                    object_name=object_name))
+                "{object_name}.power(5)".format(object_name=object_name)
+            )
             with nt.assert_raises(AttributeError):
                 self.shell.run_code(
-                    "{object_name}.cube()".format(
-                        object_name=object_name))
+                    "{object_name}.cube()".format(object_name=object_name)
+                )
             with nt.assert_raises(AttributeError):
                 self.shell.run_code(
-                    "{object_name}.square()".format(
-                        object_name=object_name))
-            self.shell.run_code(
-                "{object_name}.b".format(
-                    object_name=object_name))
-            self.shell.run_code(
-                "{object_name}.a".format(
-                    object_name=object_name))
+                    "{object_name}.square()".format(object_name=object_name)
+                )
+            self.shell.run_code("{object_name}.b".format(object_name=object_name))
+            self.shell.run_code("{object_name}.a".format(object_name=object_name))
             with nt.assert_raises(AttributeError):
                 self.shell.run_code(
-                    "{object_name}.toto".format(
-                        object_name=object_name))
+                    "{object_name}.toto".format(object_name=object_name)
+                )
 
     def _check_smoketest(self, use_aimport=True):
         """
@@ -327,7 +336,8 @@ class TestAutoreload(Fixture):
         '%autoreload 1' or '%autoreload 2'
         """
 
-        mod_name, mod_fn = self.new_module("""
+        mod_name, mod_fn = self.new_module(
+            """
 x = 9
 
 z = 123  # this item will be deleted
@@ -350,7 +360,8 @@ class Baz(object):
 class Bar:    # old-style class: weakref doesn't work for it on Python < 2.7
     def foo(self):
         return 1
-""")
+"""
+        )
 
         #
         # Import module, and mark for reloading
@@ -360,9 +371,7 @@ class Bar:    # old-style class: weakref doesn't work for it on Python < 2.7
             self.shell.magic_aimport(mod_name)
             stream = StringIO()
             self.shell.magic_aimport("", stream=stream)
-            nt.assert_in(
-                ("Modules to reload:\n%s" %
-                 mod_name), stream.getvalue())
+            nt.assert_in(("Modules to reload:\n%s" % mod_name), stream.getvalue())
 
             with nt.assert_raises(ImportError):
                 self.shell.magic_aimport("tmpmod_as318989e89ds")
@@ -371,8 +380,9 @@ class Bar:    # old-style class: weakref doesn't work for it on Python < 2.7
             self.shell.run_code("import %s" % mod_name)
             stream = StringIO()
             self.shell.magic_aimport("", stream=stream)
-            nt.assert_true("Modules to reload:\nall-except-skipped" in
-                           stream.getvalue())
+            nt.assert_true(
+                "Modules to reload:\nall-except-skipped" in stream.getvalue()
+            )
         nt.assert_in(mod_name, self.shell.ns)
 
         mod = sys.modules[mod_name]
@@ -410,20 +420,29 @@ class Bar:    # old-style class: weakref doesn't work for it on Python < 2.7
         # Simulate a failed reload: no reload should occur and exactly
         # one error message should be printed
         #
-        self.write_file(mod_fn, """
+        self.write_file(
+            mod_fn,
+            """
 a syntax error
-""")
+""",
+        )
 
-        with tt.AssertPrints(('[autoreload of %s failed:' % mod_name), channel='stderr'):
+        with tt.AssertPrints(
+            ("[autoreload of %s failed:" % mod_name), channel="stderr"
+        ):
             self.shell.run_code("pass")  # trigger reload
-        with tt.AssertNotPrints(('[autoreload of %s failed:' % mod_name), channel='stderr'):
+        with tt.AssertNotPrints(
+            ("[autoreload of %s failed:" % mod_name), channel="stderr"
+        ):
             self.shell.run_code("pass")  # trigger another reload
         check_module_contents()
 
         #
         # Rewrite module (this time reload should succeed)
         #
-        self.write_file(mod_fn, """
+        self.write_file(
+            mod_fn,
+            """
 x = 10
 
 def foo(y):
@@ -441,14 +460,15 @@ class Baz(object):
 class Bar:    # old-style class
     def foo(self):
         return 2
-""")
+""",
+        )
 
         def check_module_contents():
             """
 
             """
             nt.assert_equal(mod.x, 10)
-            nt.assert_false(hasattr(mod, 'z'))
+            nt.assert_false(hasattr(mod, "z"))
 
             nt.assert_equal(old_foo(0), 4)  # superreload magic!
             nt.assert_equal(mod.foo(0), 4)
@@ -460,8 +480,8 @@ class Bar:    # old-style class
             nt.assert_equal(old_obj.quux, 43)
             nt.assert_equal(obj.quux, 43)
 
-            nt.assert_false(hasattr(old_obj, 'zzz'))
-            nt.assert_false(hasattr(obj, 'zzz'))
+            nt.assert_false(hasattr(old_obj, "zzz"))
+            nt.assert_false(hasattr(obj, "zzz"))
 
             obj2 = mod.Bar()
             nt.assert_equal(old_obj2.foo(), 2)
@@ -485,17 +505,19 @@ class Bar:    # old-style class
             self.shell.magic_aimport("-" + mod_name)
             stream = StringIO()
             self.shell.magic_aimport("", stream=stream)
-            nt.assert_true(("Modules to skip:\n%s" % mod_name) in
-                           stream.getvalue())
+            nt.assert_true(("Modules to skip:\n%s" % mod_name) in stream.getvalue())
 
             # This should succeed, although no such module exists
             self.shell.magic_aimport("-tmpmod_as318989e89ds")
         else:
             self.shell.magic_autoreload("0")
 
-        self.write_file(mod_fn, """
+        self.write_file(
+            mod_fn,
+            """
 x = -99
-""")
+""",
+        )
 
         self.shell.run_code("pass")  # trigger reload
         self.shell.run_code("pass")

@@ -27,11 +27,11 @@ from traitlets import Bool
 
 def restore_aliases(ip, alias=None):
     """Whoo so I guess we just found a use for the ``db`` attribute!."""
-    staliases = ip.db.get('stored_aliases', {})
+    staliases = ip.db.get("stored_aliases", {})
     if alias is None:
         for k, v in staliases.items():
             # print "restore alias",k,v # dbg
-            #self.alias_table[k] = v
+            # self.alias_table[k] = v
             ip.alias_manager.define_alias(k, v)
     else:
         ip.alias_manager.define_alias(alias, staliases[alias])
@@ -42,14 +42,16 @@ def refresh_variables(ip):
     # we need a commmunity rule that abbreviations make code impossible to follow
     # like mixins from 4 different directories isn't bad enough i have to decipher
     # code because someone didn't feel like typing 5 letters
-    for key in ip.db.keys('autorestore/*'):
+    for key in ip.db.keys("autorestore/*"):
         # strip autorestore
         justkey = os.path.basename(key)
         try:
             obj = ip.db[key]
         except KeyError:
             print(
-                "Unable to restore variable '%s', ignoring (use %%store -d to forget!)" % justkey)
+                "Unable to restore variable '%s', ignoring (use %%store -d to forget!)"
+                % justkey
+            )
             print("The error was:", sys.exc_info()[0])
         else:
             # print "restored",justkey,"=",obj #dbg
@@ -63,7 +65,7 @@ def restore_dhist(ip):
     ----------
     ip :
     """
-    ip.user_ns['_dh'] = ip.db.get('dhist', [])
+    ip.user_ns["_dh"] = ip.db.get("dhist", [])
 
 
 def restore_data(ip):
@@ -85,10 +87,12 @@ class StoreMagics(Magics):
     Provides the %store magic.
     """
 
-    autorestore = Bool(False, help="""If True, any %store-d variables will be automatically restored
+    autorestore = Bool(
+        False,
+        help="""If True, any %store-d variables will be automatically restored
         when IPython starts.
-        """
-                       ).tag(config=True)
+        """,
+    ).tag(config=True)
 
     def __init__(self, shell):
         super().__init__(shell=shell)
@@ -97,7 +101,7 @@ class StoreMagics(Magics):
             restore_data(self.shell)
 
     @line_magic
-    def store(self, parameter_s=''):
+    def store(self, parameter_s=""):
         """Lightweight persistence for python variables.
 
         Example::
@@ -140,31 +144,31 @@ class StoreMagics(Magics):
         To remove an alias from the storage, use the %unalias magic.
         """
 
-        opts, argsl = self.parse_options(parameter_s, 'drz', mode='string')
+        opts, argsl = self.parse_options(parameter_s, "drz", mode="string")
         args = argsl.split()
         ip = self.shell
         db = ip.db
         # delete
-        if 'd' in opts:
+        if "d" in opts:
             try:
                 todel = args[0]
             except IndexError:
-                raise UsageError('You must provide the variable to forget')
+                raise UsageError("You must provide the variable to forget")
             else:
                 try:
-                    del db['autorestore/' + todel]
+                    del db["autorestore/" + todel]
                 except:
                     raise UsageError("Can't delete variable '%s'" % todel)
         # reset
-        elif 'z' in opts:
-            for k in db.keys('autorestore/*'):
+        elif "z" in opts:
+            for k in db.keys("autorestore/*"):
                 del db[k]
 
-        elif 'r' in opts:
+        elif "r" in opts:
             if args:
                 for arg in args:
                     try:
-                        obj = db['autorestore/' + arg]
+                        obj = db["autorestore/" + arg]
                     except KeyError:
                         try:
                             restore_aliases(ip, alias=arg)
@@ -177,42 +181,45 @@ class StoreMagics(Magics):
 
         # run without arguments -> list variables & values
         elif not args:
-            vars = db.keys('autorestore/*')
+            vars = db.keys("autorestore/*")
             vars.sort()
             if vars:
                 size = max(map(len, vars))
             else:
                 size = 0
 
-            print('Stored variables and their in-db values:')
-            fmt = '%-'+str(size)+'s -> %s'
+            print("Stored variables and their in-db values:")
+            fmt = "%-" + str(size) + "s -> %s"
             get = db.get
             for var in vars:
                 justkey = os.path.basename(var)
                 # print 30 first characters from every var
-                print(fmt % (justkey, repr(get(var, '<unavailable>'))[:50]))
+                print(fmt % (justkey, repr(get(var, "<unavailable>"))[:50]))
 
         # default action - store the variable
         else:
             # %store foo >file.txt or >>file.txt
-            if len(args) > 1 and args[1].startswith('>'):
-                fnam = os.path.expanduser(args[1].lstrip('>').lstrip())
-                if args[1].startswith('>>'):
-                    fil = open(fnam, 'a')
+            if len(args) > 1 and args[1].startswith(">"):
+                fnam = os.path.expanduser(args[1].lstrip(">").lstrip())
+                if args[1].startswith(">>"):
+                    fil = open(fnam, "a")
                 else:
-                    fil = open(fnam, 'w')
+                    fil = open(fnam, "w")
                 with fil:
                     obj = ip.ev(args[0])
-                    print("Writing '%s' (%s) to file '%s'." % (args[0],
-                                                               obj.__class__.__name__, fnam))
+                    print(
+                        "Writing '%s' (%s) to file '%s'."
+                        % (args[0], obj.__class__.__name__, fnam)
+                    )
 
                     if not isinstance(obj, str):
                         from pprint import pprint
+
                         pprint(obj, fil)
                     else:
                         fil.write(obj)
-                        if not obj.endswith('\n'):
-                            fil.write('\n')
+                        if not obj.endswith("\n"):
+                            fil.write("\n")
 
                 return
 
@@ -228,24 +235,29 @@ class StoreMagics(Magics):
                     except ValueError:
                         raise UsageError("Unknown variable '%s'" % name)
 
-                    staliases = db.get('stored_aliases', {})
+                    staliases = db.get("stored_aliases", {})
                     staliases[name] = cmd
-                    db['stored_aliases'] = staliases
+                    db["stored_aliases"] = staliases
                     print("Alias stored: %s (%s)" % (name, cmd))
                     return
 
                 else:
-                    modname = getattr(inspect.getmodule(obj), '__name__', '')
-                    if modname == '__main__':
-                        print(textwrap.dedent("""\
+                    modname = getattr(inspect.getmodule(obj), "__name__", "")
+                    if modname == "__main__":
+                        print(
+                            textwrap.dedent(
+                                """\
                         Warning:%s is %s
                         Proper storage of interactively declared classes (or instances
                         of those classes) is not possible! Only instances
                         of classes in real modules on file system can be %%store'd.
-                        """ % (arg, obj)))
+                        """
+                                % (arg, obj)
+                            )
+                        )
                         return
-                    #pickled = pickle.dumps(obj)
-                    db['autorestore/' + arg] = obj
+                    # pickled = pickle.dumps(obj)
+                    db["autorestore/" + arg] = obj
                     print("Stored '%s' (%s)" % (arg, obj.__class__.__name__))
 
     # Load the extension in IPython.
@@ -258,5 +270,5 @@ def load_ipython_extension(ip):
     """Load the extension in IPython."""
     storemagic = StoreMagics(ip)
     ip.register_magics(storemagic)
-    ip.events.register('pre_run_cell', storemagic.pre_run_cell)
-    ip.events.register('post_execute', storemagic.post_execute_hook)
+    ip.events.register("pre_run_cell", storemagic.pre_run_cell)
+    ip.events.register("post_execute", storemagic.post_execute_hook)

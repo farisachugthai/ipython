@@ -47,36 +47,38 @@ glut_fps = 60
 
 # Display mode : double buffeed + rgba + depth
 # Should probably be an IPython option
-glut_display_mode = (glut.GLUT_DOUBLE | glut.GLUT_RGBA | glut.GLUT_DEPTH)
+glut_display_mode = glut.GLUT_DOUBLE | glut.GLUT_RGBA | glut.GLUT_DEPTH
 
 glutMainLoopEvent = None
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     try:
         glutCheckLoop = platform.createBaseFunction(
-            'glutCheckLoop',
+            "glutCheckLoop",
             dll=platform.GLUT,
             resultType=None,
             argTypes=[],
-            doc='glutCheckLoop(  ) -> None',
+            doc="glutCheckLoop(  ) -> None",
             argNames=(),
         )
     except AttributeError:
         raise RuntimeError(
-            '''Your glut implementation does not allow interactive sessions'''
-            '''Consider installing freeglut.''')
+            """Your glut implementation does not allow interactive sessions"""
+            """Consider installing freeglut."""
+        )
     glutMainLoopEvent = glutCheckLoop
 elif glut.HAVE_FREEGLUT:
     glutMainLoopEvent = glut.glutMainLoopEvent
 else:
     raise RuntimeError(
-        '''Your glut implementation does not allow interactive sessions. '''
-        '''Consider installing freeglut.''')
+        """Your glut implementation does not allow interactive sessions. """
+        """Consider installing freeglut."""
+    )
 
 # -----------------------------------------------------------------------------
 # Platform-dependent imports and functions
 # -----------------------------------------------------------------------------
 
-if os.name == 'posix':
+if os.name == "posix":
     import select
 
     def stdin_ready():
@@ -92,7 +94,8 @@ if os.name == 'posix':
         else:
             return False
 
-elif sys.platform == 'win32':
+
+elif sys.platform == "win32":
     import msvcrt
 
     def stdin_ready():
@@ -145,7 +148,7 @@ def glut_int_handler(signum, frame):
     """
     # Catch sigint and print the default message
     signal.signal(signal.SIGINT, signal.default_int_handler)
-    print('\nKeyboardInterrupt')
+    print("\nKeyboardInterrupt")
     # Need to reprint the prompt at this stage
 
 

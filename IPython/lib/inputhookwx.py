@@ -58,6 +58,7 @@ class EventLoopTimer(wx.Timer):
     """
 
     """
+
     def __init__(self, func):
         self.func = func
         wx.Timer.__init__(self)
@@ -174,7 +175,7 @@ def inputhook_wx3():
     return 0
 
 
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     # On OSX, evtloop.Pending() always returns True, regardless of there being
     # any events pending. As such we can't use implementations 1 or 3 of the
     # inputhook as those depend on a pending/dispatch loop.

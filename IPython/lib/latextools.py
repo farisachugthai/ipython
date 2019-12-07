@@ -47,18 +47,18 @@ class LaTeXTool(SingletonConfigurable):
     ).tag(config=True)
 
     packages = List(
-        ['amsmath', 'amsthm', 'amssymb', 'bm'],
+        ["amsmath", "amsthm", "amssymb", "bm"],
         help="A list of packages to use for dvipng backend. "
         "'breqn' will be automatically appended when use_breqn=True.",
     ).tag(config=True)
 
     preamble = Unicode(
         help="Additional preamble to use when generating LaTeX source "
-        "for dvipng backend.", ).tag(config=True)
+        "for dvipng backend.",
+    ).tag(config=True)
 
 
-def latex_to_png(s, encode=False, backend=None, wrap=False, color='Black',
-                 scale=1.0):
+def latex_to_png(s, encode=False, backend=None, wrap=False, color="Black", scale=1.0):
     """Render a LaTeX string to PNG.
 
     Parameters
@@ -85,31 +85,30 @@ def latex_to_png(s, encode=False, backend=None, wrap=False, color='Black',
         backend = allowed_backends[0]
     if backend not in allowed_backends:
         return None
-    if backend == 'matplotlib':
+    if backend == "matplotlib":
         f = latex_to_png_mpl
-    elif backend == 'dvipng':
+    elif backend == "dvipng":
         f = latex_to_png_dvipng
-        if color.startswith('#'):
+        if color.startswith("#"):
             # Convert hex RGB color to LaTeX RGB color.
             if len(color) == 7:
                 try:
-                    color = "RGB {}".format(" ".join([str(int(x, 16)) for x in
-                                                      textwrap.wrap(color[1:], 2)]))
+                    color = "RGB {}".format(
+                        " ".join([str(int(x, 16)) for x in textwrap.wrap(color[1:], 2)])
+                    )
                 except ValueError:
-                    raise ValueError(
-                        'Invalid color specification {}.'.format(color))
+                    raise ValueError("Invalid color specification {}.".format(color))
             else:
-                raise ValueError(
-                    'Invalid color specification {}.'.format(color))
+                raise ValueError("Invalid color specification {}.".format(color))
     else:
-        raise ValueError('No such backend {0}'.format(backend))
+        raise ValueError("No such backend {0}".format(backend))
     bin_data = f(s, wrap, color, scale)
     if encode and bin_data:
         bin_data = encodebytes(bin_data)
     return bin_data
 
 
-def latex_to_png_mpl(s, wrap, color='Black', scale=1.0):
+def latex_to_png_mpl(s, wrap, color="Black", scale=1.0):
     """
 
     Parameters
@@ -130,12 +129,12 @@ def latex_to_png_mpl(s, wrap, color='Black', scale=1.0):
         return None
 
     # mpl mathtext doesn't support display math, force inline
-    s = s.replace('$$', '$')
+    s = s.replace("$$", "$")
     if wrap:
-        s = u'${0}$'.format(s)
+        s = u"${0}$".format(s)
 
     try:
-        mt = mathtext.MathTextParser('bitmap')
+        mt = mathtext.MathTextParser("bitmap")
         f = BytesIO()
         dpi = 120 * scale
         mt.to_png(f, s, fontsize=12, dpi=dpi, color=color)
@@ -144,7 +143,7 @@ def latex_to_png_mpl(s, wrap, color='Black', scale=1.0):
         return None
 
 
-def latex_to_png_dvipng(s, wrap, color='Black', scale=1.0):
+def latex_to_png_dvipng(s, wrap, color="Black", scale=1.0):
     """
 
     Parameters
@@ -159,8 +158,8 @@ def latex_to_png_dvipng(s, wrap, color='Black', scale=1.0):
 
     """
     try:
-        find_cmd('latex')
-        find_cmd('dvipng')
+        find_cmd("latex")
+        find_cmd("dvipng")
     except FindCmdError:
         return None
     try:
@@ -169,18 +168,36 @@ def latex_to_png_dvipng(s, wrap, color='Black', scale=1.0):
         dvifile = os.path.join(workdir, "tmp.dvi")
         outfile = os.path.join(workdir, "tmp.png")
 
-        with open(tmpfile, "w", encoding='utf8') as f:
+        with open(tmpfile, "w", encoding="utf8") as f:
             f.writelines(genelatex(s, wrap))
 
-        with open(os.devnull, 'wb') as devnull:
+        with open(os.devnull, "wb") as devnull:
             subprocess.check_call(
                 ["latex", "-halt-on-error", "-interaction", "batchmode", tmpfile],
-                cwd=workdir, stdout=devnull, stderr=devnull)
+                cwd=workdir,
+                stdout=devnull,
+                stderr=devnull,
+            )
 
             subprocess.check_call(
-                ["dvipng", "-T", "tight", "-x", "1500", "-z", "9",
-                 "-bg", "transparent", "-o", outfile, dvifile], cwd=workdir,
-                stdout=devnull, stderr=devnull)
+                [
+                    "dvipng",
+                    "-T",
+                    "tight",
+                    "-x",
+                    "1500",
+                    "-z",
+                    "9",
+                    "-bg",
+                    "transparent",
+                    "-o",
+                    outfile,
+                    dvifile,
+                ],
+                cwd=workdir,
+                stdout=devnull,
+                stderr=devnull,
+            )
 
             resolution = round(150 * scale)
 
@@ -196,11 +213,11 @@ def kpsewhich(filename):
     """Invoke kpsewhich command with an argument `filename`."""
     try:
         find_cmd("kpsewhich")
-        proc = subprocess.Popen(["kpsewhich", filename],
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+        proc = subprocess.Popen(
+            ["kpsewhich", filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         (stdout, stderr) = proc.communicate()
-        return stdout.strip().decode('utf8', 'replace')
+        return stdout.strip().decode("utf8", "replace")
     except FindCmdError:
         pass
 
@@ -209,31 +226,31 @@ def genelatex(body, wrap):
     """Generate LaTeX document for dvipng backend."""
     lt = LaTeXTool.instance()
     breqn = wrap and lt.use_breqn and kpsewhich("breqn.sty")
-    yield r'\documentclass{article}'
+    yield r"\documentclass{article}"
     packages = lt.packages
     if breqn:
-        packages = packages + ['breqn']
+        packages = packages + ["breqn"]
     for pack in packages:
-        yield r'\usepackage{{{0}}}'.format(pack)
-    yield r'\pagestyle{empty}'
+        yield r"\usepackage{{{0}}}".format(pack)
+    yield r"\pagestyle{empty}"
     if lt.preamble:
         yield lt.preamble
-    yield r'\begin{document}'
+    yield r"\begin{document}"
     if breqn:
-        yield r'\begin{dmath*}'
+        yield r"\begin{dmath*}"
         yield body
-        yield r'\end{dmath*}'
+        yield r"\end{dmath*}"
     elif wrap:
-        yield u'$${0}$$'.format(body)
+        yield u"$${0}$$".format(body)
     else:
         yield body
-    yield u'\\end{document}'
+    yield u"\\end{document}"
 
 
 _data_uri_template_png = u"""<img src="data:image/png;base64,%s" alt=%s />"""
 
 
-def latex_to_html(s, alt='image'):
+def latex_to_html(s, alt="image"):
     """Render LaTeX to HTML with embedded PNG data using data URIs.
 
     Parameters
@@ -243,6 +260,6 @@ def latex_to_html(s, alt='image'):
     alt : str
         The alt text to use for the HTML.
     """
-    base64_data = latex_to_png(s, encode=True).decode('ascii')
+    base64_data = latex_to_png(s, encode=True).decode("ascii")
     if base64_data:
         return _data_uri_template_png % (base64_data, alt)

@@ -70,6 +70,7 @@ def skipif(skip_condition, msg=None):
 
         # Allow for both boolean or callable skip conditions.
         if callable(skip_condition):
+
             def skip_val():
                 """
 
@@ -78,7 +79,9 @@ def skipif(skip_condition, msg=None):
 
                 """
                 return skip_condition()
+
         else:
+
             def skip_val():
                 """
 
@@ -91,9 +94,9 @@ def skipif(skip_condition, msg=None):
         def get_msg(func, msg=None):
             """Skip message with information about function being skipped."""
             if msg is None:
-                out = 'Test skipped due to test condition'
+                out = "Test skipped due to test condition"
             else:
-                out = '\n' + msg
+                out = "\n" + msg
 
             return "Skipping test: %s%s" % (func.__name__, out)
 
@@ -151,7 +154,7 @@ def knownfailureif(fail_condition, msg=None):
 
     """
     if msg is None:
-        msg = 'Test skipped due to known failure'
+        msg = "Test skipped due to known failure"
 
     def knownfail_decorator(f):
         """
@@ -184,6 +187,7 @@ def knownfailureif(fail_condition, msg=None):
                 raise KnownFailureTest(msg)
             else:
                 return f(*args, **kwargs)
+
         return nose.tools.make_decorator(f)(knownfailer)
 
     return knownfail_decorator

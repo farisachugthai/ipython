@@ -187,7 +187,8 @@ import pygments
 from IPython.utils.text import marquee
 from IPython.utils import openpy
 from IPython.utils import py3compat
-__all__ = ['Demo', 'IPythonDemo', 'LineDemo', 'IPythonLineDemo', 'DemoError']
+
+__all__ = ["Demo", "IPythonDemo", "LineDemo", "IPythonLineDemo", "DemoError"]
 
 
 class DemoError(Exception):
@@ -205,26 +206,29 @@ def re_mark(mark):
     -------
 
     """
-    return re.compile(r'^\s*#\s+<demo>\s+%s\s*$' % mark, re.MULTILINE)
+    return re.compile(r"^\s*#\s+<demo>\s+%s\s*$" % mark, re.MULTILINE)
 
 
 class Demo(object):
     """
 
     """
-    re_stop = re_mark(r'-*\s?stop\s?-*')
-    re_silent = re_mark('silent')
-    re_auto = re_mark('auto')
-    re_auto_all = re_mark('auto_all')
 
-    def __init__(self,
-                 src,
-                 title='',
-                 arg_str='',
-                 auto_all=None,
-                 format_rst=False,
-                 formatter='terminal',
-                 style='default'):
+    re_stop = re_mark(r"-*\s?stop\s?-*")
+    re_silent = re_mark("silent")
+    re_auto = re_mark("auto")
+    re_auto_all = re_mark("auto_all")
+
+    def __init__(
+        self,
+        src,
+        title="",
+        arg_str="",
+        auto_all=None,
+        format_rst=False,
+        formatter="terminal",
+        style="default",
+    ):
         """Make a new demo object.  To run the demo, simply call the object.
 
         See the module docstring for full details and an example (you can use
@@ -263,14 +267,14 @@ class Demo(object):
         if hasattr(src, "read"):
             # It seems to be a file or a file-like object
             self.fname = "from a file-like object"
-            if title == '':
+            if title == "":
                 self.title = "from a file-like object"
             else:
                 self.title = title
         else:
             # Assume it's a string or something that can be converted to one
             self.fname = src
-            if title == '':
+            if title == "":
                 (filepath, filename) = os.path.split(src)
                 self.title = filename
             else:
@@ -280,8 +284,7 @@ class Demo(object):
         self.src = src
 
         try:
-            ip = get_ipython(
-            )  # this is in builtins whenever IPython is running
+            ip = get_ipython()  # this is in builtins whenever IPython is running
             self.inside_ipython = True
         except NameError:
             self.inside_ipython = False
@@ -297,8 +300,9 @@ class Demo(object):
             self.ip_run_cell = ip.run_cell
             self.shell = ip
 
-        self.formatter = pygments.formatters.get_formatter_by_name(formatter,
-                                                                   style=style)
+        self.formatter = pygments.formatters.get_formatter_by_name(
+            formatter, style=style
+        )
         self.python_lexer = pygments.lexers.get_lexer_by_name("py3")
         self.format_rst = format_rst
         if format_rst:
@@ -310,7 +314,7 @@ class Demo(object):
     def fload(self):
         """Load file object."""
         # read data and parse into blocks
-        if hasattr(self, 'fobj') and self.fobj is not None:
+        if hasattr(self, "fobj") and self.fobj is not None:
             self.fobj.close()
         if hasattr(self.src, "read"):
             # It seems to be a file or a file-like object
@@ -337,6 +341,7 @@ class Demo(object):
         # Clean the sources from all markup so it doesn't get displayed when
         # running the demo
         src_blocks = []
+
         def auto_strip(s):
             """
 
@@ -348,14 +353,15 @@ class Demo(object):
             -------
 
             """
-            return self.re_auto.sub('', s)
+            return self.re_auto.sub("", s)
+
         for i, b in enumerate(src_b):
             if self._auto[i]:
                 src_blocks.append(auto_strip(b))
             else:
                 src_blocks.append(b)
         # remove the auto_all marker
-        src_blocks[0] = self.re_auto_all.sub('', src_blocks[0])
+        src_blocks[0] = self.re_auto_all.sub("", src_blocks[0])
 
         self.nblocks = len(src_blocks)
         self.src_blocks = src_blocks
@@ -374,7 +380,7 @@ class Demo(object):
 
     def _validate_index(self, index):
         if index < 0 or index >= self.nblocks:
-            raise ValueError('invalid block index %s' % index)
+            raise ValueError("invalid block index %s" % index)
 
     def _get_index(self, index):
         """Get the current block index, validating and checking status.
@@ -384,7 +390,7 @@ class Demo(object):
         if index is None:
             if self.finished:
                 print(
-                    'Demo finished.  Use <demo_name>.reset() if you want to rerun it.'
+                    "Demo finished.  Use <demo_name>.reset() if you want to rerun it."
                 )
                 return None
             index = self.block_index
@@ -439,7 +445,7 @@ class Demo(object):
 
         filename = self.shell.mktempfile(self.src_blocks[index])
         self.shell.hooks.editor(filename, 1)
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             new_block = f.read()
         # update the source and colored block
         self.src_blocks[index] = new_block
@@ -456,8 +462,11 @@ class Demo(object):
             return
 
         print(
-            self.marquee('<%s> block # %s (%s remaining)' %
-                         (self.title, index, self.nblocks - index - 1)))
+            self.marquee(
+                "<%s> block # %s (%s remaining)"
+                % (self.title, index, self.nblocks - index - 1)
+            )
+        )
         print(self.src_blocks_colored[index])
         sys.stdout.flush()
 
@@ -472,13 +481,19 @@ class Demo(object):
         for index, block in enumerate(self.src_blocks_colored):
             if silent[index]:
                 print(
-                    marquee('<%s> SILENT block # %s (%s remaining)' %
-                            (title, index, nblocks - index - 1)))
+                    marquee(
+                        "<%s> SILENT block # %s (%s remaining)"
+                        % (title, index, nblocks - index - 1)
+                    )
+                )
             else:
                 print(
-                    marquee('<%s> block # %s (%s remaining)' %
-                            (title, index, nblocks - index - 1)))
-            print(block, end=' ')
+                    marquee(
+                        "<%s> block # %s (%s remaining)"
+                        % (title, index, nblocks - index - 1)
+                    )
+                )
+            print(block, end=" ")
         sys.stdout.flush()
 
     def run_cell(self, source):
@@ -504,19 +519,21 @@ class Demo(object):
             self.block_index += 1
             if self._silent[index]:
                 print(
-                    marquee('Executing silent block # %s (%s remaining)' %
-                            (index, self.nblocks - index - 1)))
+                    marquee(
+                        "Executing silent block # %s (%s remaining)"
+                        % (index, self.nblocks - index - 1)
+                    )
+                )
             else:
                 self.pre_cmd()
                 self.show(index)
                 if self.auto_all or self._auto[index]:
-                    print(marquee('output:'))
+                    print(marquee("output:"))
                 else:
-                    print(marquee('Press <q> to quit, <Enter> to execute...'),
-                          end=' ')
+                    print(marquee("Press <q> to quit, <Enter> to execute..."), end=" ")
                     ans = py3compat.input().strip()
                     if ans:
-                        print(marquee('Block NOT executed'))
+                        print(marquee("Block NOT executed"))
                         return
             try:
                 save_argv = sys.argv
@@ -534,19 +551,17 @@ class Demo(object):
                 self.ip_ns.update(self.user_ns)
 
         if self.block_index == self.nblocks:
-            mq1 = self.marquee('END OF DEMO')
+            mq1 = self.marquee("END OF DEMO")
             if mq1:
                 # avoid spurious print if empty marquees are used
                 print()
                 print(mq1)
-                print(
-                    self.marquee(
-                        'Use <demo_name>.reset() if you want to rerun it.'))
+                print(self.marquee("Use <demo_name>.reset() if you want to rerun it."))
             self.finished = True
 
     # These methods are meant to be overridden by subclasses who may wish to
     # customize the behavior of of their demos.
-    def marquee(self, txt='', width=78, mark='*'):
+    def marquee(self, txt="", width=78, mark="*"):
         """Return the input string centered in a 'marquee'."""
         return marquee(txt, width, mark)
 
@@ -563,6 +578,7 @@ class Demo(object):
         tokens = pygments.lex(block, self.python_lexer)
         if self.format_rst:
             from pygments.token import Token
+
             toks = []
             for token in tokens:
                 if token[0] == Token.String.Doc and len(token[1]) > 6:
@@ -574,8 +590,7 @@ class Demo(object):
                     toks.append((Token.Comment.Single, token[1][0]))
                     # parse comment content by rst lexer
                     # remove the extrat newline added by rst lexer
-                    toks += list(pygments.lex(token[1][1:],
-                                              self.rst_lexer))[:-1]
+                    toks += list(pygments.lex(token[1][1:], self.rst_lexer))[:-1]
                 else:
                     toks.append(token)
             tokens = toks
@@ -622,7 +637,7 @@ class LineDemo(Demo):
         lines = self.fobj.readlines()
         src_b = [l for l in lines if l.strip()]
         nblocks = len(src_b)
-        self.src = ''.join(lines)
+        self.src = "".join(lines)
         self._silent = [False] * nblocks
         self._auto = [True] * nblocks
         self.auto_all = True
@@ -638,6 +653,7 @@ class LineDemo(Demo):
 
 class IPythonLineDemo(IPythonDemo, LineDemo):
     """Variant of the LineDemo class whose input is processed by IPython."""
+
     pass
 
 
@@ -656,15 +672,16 @@ class ClearMixin(object):
     will provide an IPythonDemo class with the mixin's features.
     """
 
-    def marquee(self, txt='', width=78, mark='*'):
+    def marquee(self, txt="", width=78, mark="*"):
         """Blank marquee that returns '' no matter what the input."""
-        return ''
+        return ""
 
     def pre_cmd(self):
         """Method called before executing each block.
 
         This one simply clears the screen."""
         from IPython.utils.terminal import _term_clear
+
         _term_clear()
 
 
@@ -676,13 +693,15 @@ class ClearIPDemo(ClearMixin, IPythonDemo):
     pass
 
 
-def slide(file_path,
-          noclear=False,
-          format_rst=True,
-          formatter="terminal",
-          style="native",
-          auto_all=False,
-          delimiter='...'):
+def slide(
+    file_path,
+    noclear=False,
+    format_rst=True,
+    formatter="terminal",
+    style="native",
+    auto_all=False,
+    delimiter="...",
+):
     """
 
     Parameters
@@ -699,54 +718,64 @@ def slide(file_path,
         demo_class = Demo
     else:
         demo_class = ClearDemo
-    demo = demo_class(file_path,
-                      format_rst=format_rst,
-                      formatter=formatter,
-                      style=style,
-                      auto_all=auto_all)
+    demo = demo_class(
+        file_path,
+        format_rst=format_rst,
+        formatter=formatter,
+        style=style,
+        auto_all=auto_all,
+    )
     while not demo.finished:
         demo()
         try:
-            py3compat.input('\n' + delimiter)
+            py3compat.input("\n" + delimiter)
         except KeyboardInterrupt:
             exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description='Run python demos')
-    parser.add_argument('--noclear',
-                        '-C',
-                        action='store_true',
-                        help='Do not clear terminal on each slide')
-    parser.add_argument('--rst',
-                        '-r',
-                        action='store_true',
-                        help='Highlight comments and dostrings as rst')
-    parser.add_argument('--formatter',
-                        '-f',
-                        default='terminal',
-                        help='pygments formatter name could be: terminal, '
-                        'terminal256, terminal16m')
-    parser.add_argument('--style',
-                        '-s',
-                        default='default',
-                        help='pygments style name')
-    parser.add_argument('--auto',
-                        '-a',
-                        action='store_true',
-                        help='Run all blocks automatically without'
-                        'confirmation')
-    parser.add_argument('--delimiter',
-                        '-d',
-                        default='...',
-                        help='slides delimiter added after each slide run')
-    parser.add_argument('file', nargs=1, help='python demo file')
+
+    parser = argparse.ArgumentParser(description="Run python demos")
+    parser.add_argument(
+        "--noclear",
+        "-C",
+        action="store_true",
+        help="Do not clear terminal on each slide",
+    )
+    parser.add_argument(
+        "--rst",
+        "-r",
+        action="store_true",
+        help="Highlight comments and dostrings as rst",
+    )
+    parser.add_argument(
+        "--formatter",
+        "-f",
+        default="terminal",
+        help="pygments formatter name could be: terminal, " "terminal256, terminal16m",
+    )
+    parser.add_argument("--style", "-s", default="default", help="pygments style name")
+    parser.add_argument(
+        "--auto",
+        "-a",
+        action="store_true",
+        help="Run all blocks automatically without" "confirmation",
+    )
+    parser.add_argument(
+        "--delimiter",
+        "-d",
+        default="...",
+        help="slides delimiter added after each slide run",
+    )
+    parser.add_argument("file", nargs=1, help="python demo file")
     args = parser.parse_args()
-    slide(args.file[0],
-          noclear=args.noclear,
-          format_rst=args.rst,
-          formatter=args.formatter,
-          style=args.style,
-          auto_all=args.auto,
-          delimiter=args.delimiter)
+    slide(
+        args.file[0],
+        noclear=args.noclear,
+        format_rst=args.rst,
+        formatter=args.formatter,
+        style=args.style,
+        auto_all=args.auto,
+        delimiter=args.delimiter,
+    )

@@ -606,8 +606,8 @@ class EmbeddedSphinxShell:
 
         is_verbatim = decorator == "@verbatim" or self.is_verbatim
         is_doctest = (
-                             decorator is not None and decorator.startswith("@doctest")
-                     ) or self.is_doctest
+            decorator is not None and decorator.startswith("@doctest")
+        ) or self.is_doctest
         is_suppress = decorator == "@suppress" or self.is_suppress
         is_okexcept = decorator == "@okexcept" or self.is_okexcept
         is_okwarning = decorator == "@okwarning" or self.is_okwarning
@@ -680,7 +680,7 @@ class EmbeddedSphinxShell:
         # output any exceptions raised during execution to stdout
         # unless :okexcept: has been specified.
         if not is_okexcept and (
-                ("Traceback" in processed_output) or ("SyntaxError" in processed_output)
+            ("Traceback" in processed_output) or ("SyntaxError" in processed_output)
         ):
             s = "\nException in %s at block ending on line %s\n" % (filename, lineno)
             s += "Specify :okexcept: as an option in the ipython:: block to suppress this message\n"
@@ -724,14 +724,14 @@ class EmbeddedSphinxShell:
         )
 
     def process_output(
-            self,
-            data,
-            output_prompt,
-            input_lines,
-            output,
-            is_doctest,
-            decorator,
-            image_file,
+        self,
+        data,
+        output_prompt,
+        input_lines,
+        output,
+        is_doctest,
+        decorator,
+        image_file,
     ):
         """Process data block for OUTPUT token.
 
@@ -774,7 +774,7 @@ class EmbeddedSphinxShell:
                     source, content, "\n".join(input_lines), repr(found), TAB=TAB
                 )
                 raise RuntimeError(e)
-            found = found[len(output_prompt):].strip()
+            found = found[len(output_prompt) :].strip()
 
             # Handle the actual doctest comparison.
             if decorator.strip() == "@doctest":
@@ -1012,7 +1012,7 @@ class EmbeddedSphinxShell:
                     if len(nextline) - len(nextline.lstrip()) > 3:
                         continue
                 try:
-                    mod = ast.parse("\n".join(content[multiline_start: lineno + 1]))
+                    mod = ast.parse("\n".join(content[multiline_start : lineno + 1]))
                     if isinstance(mod.body[0], ast.FunctionDef):
                         # check to see if we have the whole function
                         for element in mod.body[0].body:
@@ -1071,11 +1071,11 @@ class IPythonDirective(Directive):
     optional_arguments = 4
     final_argumuent_whitespace = True
     option_spec = {
-        "python"   : directives.unchanged,
-        "suppress" : directives.flag,
-        "verbatim" : directives.flag,
-        "doctest"  : directives.flag,
-        "okexcept" : directives.flag,
+        "python": directives.unchanged,
+        "suppress": directives.flag,
+        "verbatim": directives.flag,
+        "doctest": directives.flag,
+        "okexcept": directives.flag,
         "okwarning": directives.flag,
     }
 
@@ -1332,8 +1332,8 @@ def setup(app: "Sphinx") -> Dict[str, Any]:
     highlighting.lexers["ipython3"] = ipy3
 
     metadata = {
-        "parallel_read_safe" : True,
+        "parallel_read_safe": True,
         "parallel_write_safe": True,
-        "version"            : version_info,
+        "version": version_info,
     }
     return metadata

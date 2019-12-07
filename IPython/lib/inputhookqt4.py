@@ -81,14 +81,16 @@ def _allow_CTRL_C_other():
     pass
 
 
-if os.name == 'posix':
+if os.name == "posix":
     import select
     import signal
+
     stdin_ready = _stdin_ready_posix
     ignore_CTRL_C = _ignore_CTRL_C_posix
     allow_CTRL_C = _allow_CTRL_C_posix
-elif os.name == 'nt':
+elif os.name == "nt":
     import msvcrt
+
     stdin_ready = _stdin_ready_nt
     ignore_CTRL_C = _ignore_CTRL_C_other
     allow_CTRL_C = _allow_CTRL_C_other
@@ -136,7 +138,7 @@ def create_inputhook_qt4(mgr, app=None):
 
     # Re-use previously created inputhook if any
     ip = InteractiveShell.instance()
-    if hasattr(ip, '_inputhook_qt4'):
+    if hasattr(ip, "_inputhook_qt4"):
         return app, ip._inputhook_qt4
 
     # Otherwise create the inputhook_qt4/preprompthook_qt4 pair of
@@ -205,12 +207,12 @@ def create_inputhook_qt4(mgr, app=None):
             #
             # Unfortunately this doesn't work on Windows (SIGINT kills
             # Python and CTRL_C_EVENT doesn't work).
-            if os.name == 'posix':
+            if os.name == "posix":
                 pid = os.getpid()
                 if not sigint_timer:
-                    sigint_timer = threading.Timer(.01,
-                                                   os.kill,
-                                                   args=[pid, signal.SIGINT])
+                    sigint_timer = threading.Timer(
+                        0.01, os.kill, args=[pid, signal.SIGINT]
+                    )
                     sigint_timer.start()
             else:
                 print("\nKeyboardInterrupt - Ctrl-C again for new prompt")
@@ -218,6 +220,7 @@ def create_inputhook_qt4(mgr, app=None):
         except BaseException:  # NO exceptions are allowed to escape from a ctypes callback
             ignore_CTRL_C()
             from traceback import print_exc
+
             print_exc()
             print("Got exception from inputhook_qt4, unregistering.")
             mgr.clear_inputhook()
@@ -242,6 +245,6 @@ def create_inputhook_qt4(mgr, app=None):
         got_kbdint = False
 
     ip._inputhook_qt4 = inputhook_qt4
-    ip.set_hook('pre_prompt_hook', preprompthook_qt4)
+    ip.set_hook("pre_prompt_hook", preprompthook_qt4)
 
     return app, inputhook_qt4

@@ -21,8 +21,10 @@ def win32_clipboard_get():
     try:
         import win32clipboard
     except ImportError:
-        raise TryNext("Getting text from the clipboard requires the pywin32 "
-                      "extensions: http://sourceforge.net/projects/pywin32/")
+        raise TryNext(
+            "Getting text from the clipboard requires the pywin32 "
+            "extensions: http://sourceforge.net/projects/pywin32/"
+        )
     win32clipboard.OpenClipboard()
     try:
         text = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
@@ -39,11 +41,10 @@ def win32_clipboard_get():
 def osx_clipboard_get():
     """ Get the clipboard's text on OS X.
     """
-    p = subprocess.Popen(['pbpaste', '-Prefer', 'ascii'],
-                         stdout=subprocess.PIPE)
+    p = subprocess.Popen(["pbpaste", "-Prefer", "ascii"], stdout=subprocess.PIPE)
     text, stderr = p.communicate()
     # Text comes in with old Mac \r line endings. Change them to \n.
-    text = text.replace(b'\r', b'\n')
+    text = text.replace(b"\r", b"\n")
     return text
 
 

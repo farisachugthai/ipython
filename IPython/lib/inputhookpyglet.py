@@ -30,7 +30,7 @@ import pyglet
 # Platform-dependent imports and functions
 # -----------------------------------------------------------------------------
 
-if os.name == 'posix':
+if os.name == "posix":
     import select
 
     def stdin_ready():
@@ -46,7 +46,8 @@ if os.name == 'posix':
         else:
             return False
 
-elif sys.platform == 'win32':
+
+elif sys.platform == "win32":
     import msvcrt
 
     def stdin_ready():
@@ -63,7 +64,7 @@ elif sys.platform == 'win32':
 # window close.  For details, see:
 # http://groups.google.com/group/pyglet-users/browse_thread/thread/47c1aab9aa4a3d23/c22f9e819826799e?#c22f9e819826799e
 
-if sys.platform.startswith('linux'):
+if sys.platform.startswith("linux"):
 
     def flip(window):
         """
@@ -76,6 +77,8 @@ if sys.platform.startswith('linux'):
             window.flip()
         except AttributeError:
             pass
+
+
 else:
 
     def flip(window):
@@ -110,7 +113,7 @@ def inputhook_pyglet():
             for window in pyglet.app.windows:
                 window.switch_to()
                 window.dispatch_events()
-                window.dispatch_event('on_draw')
+                window.dispatch_event("on_draw")
                 flip(window)
 
             # We need to sleep at this point to keep the idle CPU load
