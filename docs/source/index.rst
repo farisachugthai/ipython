@@ -111,7 +111,7 @@ or multiple environments.
    :caption: Introduction
 
    overview
-   install/index
+   installation
 
 
 Tutorial
