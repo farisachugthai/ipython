@@ -233,3 +233,9 @@ class ShimWarning(Warning):
     """
 
     pass
+
+
+class ClipboardEmpty(ValueError):
+    """lib.clipboard"""
+    pass
+

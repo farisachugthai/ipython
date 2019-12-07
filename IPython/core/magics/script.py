@@ -2,7 +2,7 @@
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
+from codecs import decode
 import errno
 import os
 import sys
@@ -14,7 +14,6 @@ import atexit
 from IPython.core import magic_arguments
 from IPython.core.magic import Magics, magics_class, line_magic, cell_magic
 from IPython.lib.backgroundjobs import BackgroundJobManager
-from IPython.utils import py3compat
 from IPython.utils.process import arg_split
 from traitlets import List, Dict, default
 
@@ -249,8 +248,8 @@ class ScriptMagics(Magics):
             except Exception as e:
                 print("Error while terminating subprocess (pid=%i): %s" % (p.pid, e))
             return
-        out = py3compat.decode(out)
-        err = py3compat.decode(err)
+        out = decode(out)
+        err = decode(err)
         if args.out:
             self.shell.user_ns[args.out] = out
         else:

@@ -40,7 +40,6 @@ from ._process_common import (
     process_handler,
     arg_split as py_arg_split,
 )
-from . import py3compat
 
 
 class AvoidUNCPath:
@@ -203,7 +202,7 @@ try:
             return py_arg_split(commandline, posix=posix, strict=strict)
         argvn = c_int()
         result_pointer = CommandLineToArgvW(
-            py3compat.cast_unicode(commandline.lstrip()), ctypes.byref(argvn)
+            commandline.lstrip(), ctypes.byref(argvn)
         )
         result_array_type = LPCWSTR * argvn.value
         result = [

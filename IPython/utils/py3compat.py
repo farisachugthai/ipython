@@ -13,6 +13,32 @@ import types
 
 from .encoding import DEFAULT_ENCODING
 
+# keep reference to builtin_mod because the kernel overrides that value
+# to forward requests to a frontend.
+builtin_mod_name = "builtins"
+
+str_to_unicode = no_code
+unicode_to_str = no_code
+str_to_bytes = encode
+bytes_to_str = decode
+cast_bytes_py2 = no_code
+cast_unicode_py2 = no_code
+buffer_to_bytes_py2 = no_code
+
+string_types = (str,)
+unicode_type = str
+
+which = shutil.which
+
+getcwd = os.getcwd
+MethodType = types.MethodType
+# Refactor print statements in doctests.
+_print_statement_re = re.compile(r"\bprint (?P<expr>.*)$", re.MULTILINE)
+xrange = range
+PY3 = True
+PY2 = not PY3
+PYPY = platform.python_implementation() == "PyPy"
+
 
 def no_code(x, encoding=None):
     """
@@ -157,14 +183,6 @@ def safe_unicode(e):
     return u"Unrecoverably corrupt evalue"
 
 
-PY3 = True
-
-# jfc what is this?
-
-# keep reference to builtin_mod because the kernel overrides that value
-# to forward requests to a frontend.
-
-
 def input(prompt=""):
     """
 
@@ -177,22 +195,6 @@ def input(prompt=""):
 
     """
     return builtin_mod.input(prompt)
-
-
-builtin_mod_name = "builtins"
-
-str_to_unicode = no_code
-unicode_to_str = no_code
-str_to_bytes = encode
-bytes_to_str = decode
-cast_bytes_py2 = no_code
-cast_unicode_py2 = no_code
-buffer_to_bytes_py2 = no_code
-
-string_types = (str,)
-unicode_type = str
-
-which = shutil.which
 
 
 def isidentifier(s, dotted=False):
@@ -210,9 +212,6 @@ def isidentifier(s, dotted=False):
     if dotted:
         return all(isidentifier(a) for a in s.split("."))
     return s.isidentifier()
-
-
-xrange = range
 
 
 def iteritems(d):
@@ -243,11 +242,6 @@ def itervalues(d):
     return iter(d.values())
 
 
-getcwd = os.getcwd
-
-MethodType = types.MethodType
-
-
 def execfile(fname, glob, loc=None, compiler=None):
     """
 
@@ -262,10 +256,6 @@ def execfile(fname, glob, loc=None, compiler=None):
     with open(fname, "rb") as f:
         compiler = compiler or compile
         exec(compiler(f.read(), fname, "exec"), glob, loc)
-
-
-# Refactor print statements in doctests.
-_print_statement_re = re.compile(r"\bprint (?P<expr>.*)$", re.MULTILINE)
 
 
 def _print_statement_sub(match):
@@ -285,10 +275,6 @@ def u_format(s):
 def get_closure(f):
     """Get a function's closure attribute"""
     return f.__closure__
-
-
-PY2 = not PY3
-PYPY = platform.python_implementation() == "PyPy"
 
 
 def annotate(**kwargs):

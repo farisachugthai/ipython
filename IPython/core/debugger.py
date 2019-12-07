@@ -67,7 +67,7 @@ from IPython.core.error import (
 )
 from IPython.core.excolors import exception_colors
 from IPython.core.getipython import get_ipython
-from IPython.utils import PyColorize, coloransi, py3compat
+from IPython.utils import PyColorize, coloransi
 
 # We have to check this directly from sys.argv, config struct not yet available
 prompt = "ipdb> "
@@ -387,7 +387,7 @@ class CorePdb(Pdb):
 
         # s = filename + '(' + `lineno` + ')'
         filename = self.canonic(frame.f_code.co_filename)
-        link = tpl_link % py3compat.cast_unicode(filename)
+        link = tpl_link % filename
 
         if frame.f_code.co_name:
             func = frame.f_code.co_name

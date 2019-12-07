@@ -15,8 +15,6 @@ import textwrap
 from string import Formatter
 from pathlib import Path
 
-from IPython.utils import py3compat
-
 # datetime.strftime date format for ipython
 if sys.platform == "win32":
     date_format = "%B %d, %Y"
@@ -492,8 +490,8 @@ def long_substr(data):
     if len(data) > 1 and len(data[0]) > 0:
         for i in range(len(data[0])):
             for j in range(len(data[0]) - i + 1):
-                if j > len(substr) and all(data[0][i : i + j] in x for x in data):
-                    substr = data[0][i : i + j]
+                if j > len(substr) and all(data[0][i: i + j] in x for x in data):
+                    substr = data[0][i: i + j]
     elif len(data) == 1:
         substr = data[0]
     return substr
@@ -671,7 +669,7 @@ class FullEvalFormatter(Formatter):
                 # format the object and append to the result
                 result.append(self.format_field(obj, ""))
 
-        return "".join(py3compat.cast_unicode(s) for s in result)
+        return "".join(s for s in result)
 
 
 class DollarFormatter(FullEvalFormatter):
@@ -744,7 +742,7 @@ def _col_chunks(l, max_rows, row_first=False):
             yield [l[j] for j in range(i, len(l), ncols)]
     else:
         for i in range(0, len(l), max_rows):
-            yield l[i : (i + max_rows)]
+            yield l[i: (i + max_rows)]
 
 
 def _find_optimal(rlist, row_first=False, separator_size=2, displaywidth=80):

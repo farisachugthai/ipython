@@ -3,7 +3,7 @@
 This file is only meant to be imported by the platform-specific implementations
 of subprocess utilities, and it contains tools that are common to all of them.
 
-.. note:: arg_split is used in completerlib so we can't wipe this file yet.
+It's used quite heavily throughout the repo though so take note of that.
 """
 
 # -----------------------------------------------------------------------------
@@ -21,8 +21,6 @@ import shlex
 import sys
 import os
 
-from IPython.utils import py3compat
-
 # -----------------------------------------------------------------------------
 # Function definitions
 # -----------------------------------------------------------------------------
@@ -33,12 +31,13 @@ def read_no_interrupt(p):
 
     This is necessary because when reading from pipes with GUI event loops
     running in the background, often interrupts are raised that stop the
-    command from completing."""
+    command from completing.
+    """
     import errno
 
     try:
         return p.read()
-    except IOError as err:
+    except OSError as err:
         if err.errno != errno.EINTR:
             raise
 
@@ -68,6 +67,15 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
     Returns
     -------
     The return value of the provided callback is returned.
+
+    Notes
+    -----
+    On POSIX systems run shell commands with user-preferred shell.
+
+    WAIT WHY IS THIS POSIX ONLY
+
+    .. versionchanged:: I've been trying to run bash on windows for so long
+
     """
     sys.stdout.flush()
     sys.stderr.flush()
@@ -75,9 +83,8 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
     close_fds = sys.platform != "win32"
     # Determine if cmd should be run with system shell.
     shell = isinstance(cmd, str)
-    # On POSIX systems run shell commands with user-preferred shell.
     executable = None
-    if shell and os.name == "posix" and "SHELL" in os.environ:
+    if shell and "SHELL" in os.environ:
         executable = os.environ["SHELL"]
     p = subprocess.Popen(
         cmd,
@@ -123,20 +130,17 @@ def getoutput(cmd):
     Parameters
     ----------
     cmd : str or list
-      A command to be executed in the system shell.
+        A command to be executed in the system shell.
 
     Returns
     -------
     output : str
-      A string containing the combination of stdout and stderr from the
-    subprocess, in whatever order the subprocess originally wrote to its
-    file descriptors (so the order of the information in this string is the
-    correct order as would be seen if running the command in a terminal).
+        A string containing the combination of stdout and stderr from the
+        subprocess, in whatever order the subprocess originally wrote to its
+        file descriptors (so the order of the information in this string is the
+        correct order as would be seen if running the command in a terminal).
     """
-    out = process_handler(cmd, lambda p: p.communicate()[0], subprocess.STDOUT)
-    if out is None:
-        return ""
-    return py3compat.decode(out)
+    return process_handler(cmd, lambda p: p.communicate()[0], subprocess.STDOUT) or ""
 
 
 def getoutputerror(cmd):
@@ -173,13 +177,14 @@ def get_output_error_code(cmd):
     stdout : str
     stderr : str
     returncode: int
+
     """
 
     out_err, p = process_handler(cmd, lambda p: (p.communicate(), p))
     if out_err is None:
         return "", "", p.returncode
     out, err = out_err
-    return py3compat.decode(out), py3compat.decode(err), p.returncode
+    return out, err, p.returncode
 
 
 def arg_split(s, posix=False, strict=True):
@@ -193,16 +198,18 @@ def arg_split(s, posix=False, strict=True):
     unparsed remainder being the last element of the list, rather than raising.
     This is because we sometimes use arg_split to parse things other than
     command-line args.
-    """
 
+    Extract tokens, ensuring that things like leaving open quotes
+    does not cause this to raise.  This is important, because we
+    sometimes pass Python source through this (e.g. %timeit f(" ")),
+    and it shouldn't raise an exception.
+
+    It may be a bad idea to parse things that are not command-line args
+    through this function, but we do, so let's be safe about it.
+
+    """
     lex = shlex.shlex(s, posix=posix)
     lex.whitespace_split = True
-    # Extract tokens, ensuring that things like leaving open quotes
-    # does not cause this to raise.  This is important, because we
-    # sometimes pass Python source through this (e.g. %timeit f(" ")),
-    # and it shouldn't raise an exception.
-    # It may be a bad idea to parse things that are not command-line args
-    # through this function, but we do, so let's be safe about it.
     lex.commenters = ""  # fix for GH-1269
     tokens = []
     while True:

@@ -12,7 +12,6 @@ import unittest
 from contextlib import contextmanager
 from unittest.mock import patch
 from os.path import join, abspath
-from imp import reload
 
 from nose import SkipTest, with_setup
 import nose.tools as nt

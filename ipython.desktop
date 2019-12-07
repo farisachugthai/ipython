@@ -7,7 +7,7 @@ Exec=ipython
 GenericName[en_US]=IPython
 GenericName=IPython
 
-# TODO: needs a new icon
+# TODO: needs a new icon. Doesn't work on KDE.
 Icon=gnome-netstatus-idle
 Name[en_US]=ipython
 Name=ipython

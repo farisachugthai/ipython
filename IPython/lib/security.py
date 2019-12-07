@@ -5,13 +5,13 @@ Password generation for the IPython notebook.
 # Imports
 # -----------------------------------------------------------------------------
 # Stdlib
+from codecs import encode
 import getpass
 import hashlib
 import random
 
 # Our own
 from IPython.core.error import UsageError
-from IPython.utils.py3compat import encode
 
 # -----------------------------------------------------------------------------
 # Globals

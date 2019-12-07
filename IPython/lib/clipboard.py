@@ -10,12 +10,7 @@ this too.
 """
 import subprocess
 
-from IPython.core.error import TryNext
-import IPython.utils.py3compat as py3compat
-
-
-class ClipboardEmpty(ValueError):
-    pass
+from IPython.core.error import TryNext, ClipboardEmpty
 
 
 def win32_clipboard_get():
@@ -34,7 +29,6 @@ def win32_clipboard_get():
     except (TypeError, win32clipboard.error):
         try:
             text = win32clipboard.GetClipboardData(win32clipboard.CF_TEXT)
-            text = py3compat.cast_unicode(text, py3compat.DEFAULT_ENCODING)
         except (TypeError, win32clipboard.error):
             raise ClipboardEmpty
     finally:

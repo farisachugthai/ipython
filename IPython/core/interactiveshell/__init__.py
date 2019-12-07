@@ -3119,6 +3119,13 @@ class InteractiveShell(SingletonConfigurable):
         helpful error messages to the screen.  This only works on pure
         Python files with the .py extension.
 
+        Notes
+        -----
+        There's a section of this method that is verbatim what we have at
+        ../../utils/py3compat:execfile.
+
+        As crazy long as this file is, a LOT can be trimmed down.
+
         Parameters
         ----------
         fname : string

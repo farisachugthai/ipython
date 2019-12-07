@@ -80,6 +80,7 @@ Inheritance diagram:
 from contextlib import contextmanager
 import datetime
 import os
+import platform
 import re
 import sys
 import types
@@ -88,8 +89,6 @@ from inspect import signature
 from io import StringIO
 from warnings import warn
 
-from IPython.utils.decorators import undoc
-from IPython.utils.py3compat import PYPY
 
 __all__ = [
     'pretty', 'pprint', 'PrettyPrinter', 'RepresentationPrinter', 'for_type',
@@ -98,6 +97,7 @@ __all__ = [
 
 MAX_SEQ_LENGTH = 1000
 _re_pattern_type = type(re.compile(''))
+PYPY = platform.python_implementation() == "PyPy"
 
 
 def _safe_getattr(obj, attr, default=None):
@@ -112,11 +112,11 @@ def _safe_getattr(obj, attr, default=None):
         return default
 
 
-@undoc
 class CUnicodeIO(StringIO):
     """
 
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         warn(("CUnicodeIO is deprecated since IPython 6.0. "
@@ -480,6 +480,7 @@ class Text(Printable):
     """
 
     """
+
     def __init__(self):
         self.objs = []
         self.width = 0
@@ -516,6 +517,7 @@ class Breakable(Printable):
     """
 
     """
+
     def __init__(self, seq, width, pretty):
         self.obj = seq
         self.width = width
@@ -551,6 +553,7 @@ class Group(Printable):
     """
 
     """
+
     def __init__(self, depth):
         self.depth = depth
         self.breakables = deque()
@@ -561,6 +564,7 @@ class GroupQueue(object):
     """
 
     """
+
     def __init__(self, *groups):
         self.queue = []
         for group in groups:
@@ -875,23 +879,23 @@ except NameError:
 
 #: printers for builtin types
 _type_pprinters = {
-    int:                        _repr_pprint,
-    float:                      _repr_pprint,
-    str:                        _repr_pprint,
-    tuple:                      _seq_pprinter_factory('(', ')'),
-    list:                       _seq_pprinter_factory('[', ']'),
-    dict:                       _dict_pprinter_factory('{', '}'),
-    set:                        _set_pprinter_factory('{', '}'),
-    frozenset:                  _set_pprinter_factory('frozenset({', '})'),
-    super:                      _super_pprint,
-    _re_pattern_type:           _re_pattern_pprint,
-    type:                       _type_pprint,
-    types.FunctionType:         _function_pprint,
-    types.BuiltinFunctionType:  _function_pprint,
-    types.MethodType:           _repr_pprint,
-    datetime.datetime:          _repr_pprint,
-    datetime.timedelta:         _repr_pprint,
-    _exception_base:            _exception_pprint
+    int: _repr_pprint,
+    float: _repr_pprint,
+    str: _repr_pprint,
+    tuple: _seq_pprinter_factory('(', ')'),
+    list: _seq_pprinter_factory('[', ']'),
+    dict: _dict_pprinter_factory('{', '}'),
+    set: _set_pprinter_factory('{', '}'),
+    frozenset: _set_pprinter_factory('frozenset({', '})'),
+    super: _super_pprint,
+    _re_pattern_type: _re_pattern_pprint,
+    type: _type_pprint,
+    types.FunctionType: _function_pprint,
+    types.BuiltinFunctionType: _function_pprint,
+    types.MethodType: _repr_pprint,
+    datetime.datetime: _repr_pprint,
+    datetime.timedelta: _repr_pprint,
+    _exception_base: _exception_pprint
 }
 
 # render os.environ like a dict
@@ -1005,6 +1009,7 @@ if __name__ == '__main__':
         """
 
         """
+
         def __init__(self):
             self.foo = 1
             self.bar = re.compile(r'\s+')
