@@ -310,6 +310,7 @@ def test_find_assign_op_dedent():
         """
 
         """
+
         def __init__(self, s):
             self.string = s
 

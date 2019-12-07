@@ -41,6 +41,7 @@ Authors:
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
+from textwrap import dedent
 from importlib import import_module
 import os
 
@@ -152,7 +153,8 @@ def list_bundled_profiles():
 
 class ProfileLocate(BaseIPythonApplication):
     """A minimally useful class for printing the path to the profile dir."""
-    description = """print the path to an IPython profile dir"""
+
+    description = Unicode("print the path to an IPython profile dir")
 
     def __init__(self, *args, **kwargs):
         super(ProfileLocate, self).__init__(*args, **kwargs)
@@ -169,8 +171,10 @@ class ProfileLocate(BaseIPythonApplication):
             self.profile = self.extra_args[0]
 
     def start(self):
-        """
+        """How odd is it that this subapp's start method is printing?
 
+        Maybe more importantly, do we ensure that this has a profile_dir
+        attribute?
         """
         print(self.profile_dir.location)
 
@@ -178,10 +182,21 @@ class ProfileLocate(BaseIPythonApplication):
         return self.start()
 
 
+def _print_profiles(profiles):
+    """print list of profiles, indented. todo: textwrap.indent"""
+    for profile in profiles:
+        print("    %s" % profile)
+
+
 class ProfileList(Application):
-    name = "ipython-profile"
-    description = list_help
-    examples = _list_examples
+    """Wrapped attributes with traitlets.Unicode and called textwrap.dedent.
+
+    I'm really surprised that was never done before.
+    """
+
+    name = Unicode("ipython-profile")
+    description = Unicode(dedent(list_help))
+    examples = Unicode(dedent(_list_examples))
 
     aliases = Dict(
         {
@@ -189,11 +204,14 @@ class ProfileList(Application):
             "log-level": "Application.log_level",
         }
     )
+
     flags = Dict(
-        {'debug': (
-            {"Application": {"log_level": 0}},
-            "Set Application.log_level to 0, maximizing log output.",
-        )}
+        {
+            "debug": (
+                {"Application": {"log_level": 0}},
+                "Set Application.log_level to 0, maximizing log output.",
+            )
+        }
     )
 
     ipython_dir = Unicode(
@@ -206,39 +224,26 @@ class ProfileList(Application):
         """,
     ).tag(config=True)
 
-    def _print_profiles(self, profiles):
-        """print list of profiles, indented."""
-        for profile in profiles:
-            print("    %s" % profile)
-
     def list_profile_dirs(self):
-        """Lists profiles in the `IPYTHONDIR` and then the `os.path.curdir`."""
-        profiles = list_bundled_profiles()
-        if profiles:
-            print()
-            print("Available profiles in IPython:")
-            self._print_profiles(profiles)
-            print()
-            print("    The first request for a bundled profile will copy it")
-            print("    into your IPython directory (%s)," % self.ipython_dir)
-            print("    where you can customize it.")
+        """Lists profiles in the `IPYTHONDIR` and then the `os.path.curdir`.
 
+        .. todo::
+            We don't bundle profiles so i deleted that.
+            Need to disambiguate between bundled and curdir profiles next.
+
+        """
         profiles = list_profiles_in(self.ipython_dir)
         if profiles:
-            print()
             print("Available profiles in %s:" % self.ipython_dir)
-            self._print_profiles(profiles)
+            _print_profiles(profiles)
 
         profiles = list_profiles_in(os.getcwd())
         if profiles:
-            print()
-            print("Available profiles in current directory (%s):" % os.getcwd())
-            self._print_profiles(profiles)
+            print("\nAvailable profiles in current directory (%s):" % os.getcwd())
+            _print_profiles(profiles)
 
-        print()
-        print("To use any of the above profiles, start IPython with:")
-        print("    ipython --profile=<name>")
-        print()
+        print("\nTo use any of the above profiles, start IPython with:")
+        print("    ipython --profile=<name>\n")
 
     def start(self):
         """Calls self.list_profile_dirs."""
@@ -277,24 +282,21 @@ class ProfileCreate(BaseIPythonApplication):
     """
 
     name = "ipython-profile"
-    description = create_help
-    examples = _create_examples
-    auto_create = Bool(True)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def _log_format_default(self):
-        return "[ %(created)f : %(name)s : %(highlevel)s : %(message)s : ]"
-        # return "[%(name)s] %(message)s"
-
-    def _copy_config_files_default(self):
-        """A method that returns True. I don't understand why it exists."""
-        return True
+    description = dedent(create_help)
+    examples = dedent(_create_examples)
+    auto_create = Bool(True, help="Why does this var exist if it isn't configurable?")
+    flags = Dict(create_flags)
 
     parallel = Bool(
         False, help="whether to include parallel computing config files"
     ).tag(config=True)
+
+    def _log_format_default(self):
+        return "[ %(created)f : %(name)s : %(highlevel)s : %(message)s : ]"
+
+    def _copy_config_files_default(self):
+        """A method that returns True. I don't understand why it exists."""
+        return True
 
     @observe("parallel")
     def _parallel_changed(self, change):
@@ -338,8 +340,6 @@ class ProfileCreate(BaseIPythonApplication):
         if self.extra_args:
             self.profile = self.extra_args[0]
 
-    flags = Dict(create_flags)
-
     classes = [ProfileDir]
 
     def _import_app(self, app_path):
@@ -348,14 +348,14 @@ class ProfileCreate(BaseIPythonApplication):
         try:
             app = import_module(app_path)
         except ImportError as e:
-            self.log.info(
+            self.log.warning(
                 """Couldn't import {}, config file will be excluded
                           The cause of the ImportError was {}""".format(
-                    e, e.__cause__()
+                    e, e.__traceback__()
                 )
             )
         except Exception:
-            self.log.warning("Unexpected error importing %s", name, exc_info=True)
+            self.log.error("Unexpected error importing %s", name, exc_info=True)
         return app
 
     def init_config_files(self):
@@ -396,35 +396,31 @@ class ProfileApp(Application):
     """An example of an Application. Should probably refer to that.
 
     The object in this file doesn't define any attributes it uses in it's
-    ow methods.o
+    own methods.
     """
 
     name = "ipython profile"
-    description = profile_help
-    examples = _main_examples
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    description = dedent(profile_help)
+    examples = dedent(_main_examples)
 
     subcommands = Dict(
-        {'create': (ProfileCreate, ProfileCreate.description.splitlines()[0]),
-         'list'  : (ProfileList, ProfileList.description.splitlines()[0]),
-         'locate': (ProfileLocate, ProfileLocate.description.splitlines()[0])}
+        {
+            "create": (ProfileCreate, ProfileCreate.description.splitlines()[0]),
+            "list": (ProfileList, ProfileList.description.splitlines()[0]),
+            "locate": (ProfileLocate, ProfileLocate.description.splitlines()[0]),
+        }
     )
 
     def start(self):
-        """
+        """TODO: Is there a way to check if we're running with config['quiet'].
 
-        Returns
-        -------
-
+        Or can we build that because our help message is really long.
         """
         if self.subapp is None:
-            print(
-                "No subcommand specified. Must specify one of: %s"
+            self.log.warning(
+                "No subcommand specified. Must specify one of: %s\n"
                 % (self.subcommands.keys())
             )
-            print()
             self.print_description()
             self.print_subcommands()
             self.exit(1)

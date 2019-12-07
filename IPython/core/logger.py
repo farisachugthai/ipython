@@ -237,17 +237,28 @@ which already exists. But you must first start the logging process with
 class LoggerManager(Configurable):
     """Let's give cleanup a shot."""
 
-    log_raw_input = Bool(False,
-                         help="Whether to log raw or processed input").tag(config=True)
+    log_raw_input = Bool(False, help="Whether to log raw or processed input").tag(
+        config=True
+    )
 
     log_output = Bool(False, help="Whether to also log output.").tag(config=True)
 
     timestamp = Bool(
-        False, help="Whether to put timestamps before each log entry.").tag(config=True)
+        False, help="Whether to put timestamps before each log entry."
+    ).tag(config=True)
 
     log_active = Bool(False, help="activity control flags").tag(config=True)
 
-    def __init__(self, home=None, logfname="Logger.log", loghead=None, logmode=None, logfile=None, *args, **kwargs):
+    def __init__(
+        self,
+        home=None,
+        logfname="Logger.log",
+        loghead=None,
+        logmode=None,
+        logfile=None,
+        *args,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.home = home or Path.home()
         self.logfname = logfname

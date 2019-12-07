@@ -559,6 +559,7 @@ class PrefilterHandler(Configurable):
     """
 
     """
+
     handler_name = Unicode("normal")
     esc_strings = List([])
     shell = Instance(

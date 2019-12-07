@@ -1,9 +1,12 @@
 # encoding: utf-8
-"""An object for managing IPython profile directories."""
+"""An object for managing IPython profile directories.
 
+Class for managing profile directories
+---------------------------------------
+
+"""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
 import errno
 import os
 import shutil
@@ -11,21 +14,9 @@ import shutil
 from traitlets import Unicode, Bool, observe
 from traitlets.config.configurable import LoggingConfigurable
 
+from IPython.core.error import ProfileDirError
 from IPython.paths import get_ipython_package_dir
 from IPython.utils.path import expand_path, ensure_dir_exists
-
-# -----------------------------------------------------------------------------
-# Module errors
-# -----------------------------------------------------------------------------
-
-
-class ProfileDirError(Exception):
-    pass
-
-
-# -----------------------------------------------------------------------------
-# Class for managing profile directories
-# -----------------------------------------------------------------------------
 
 
 class ProfileDir(LoggingConfigurable):
@@ -53,11 +44,6 @@ class ProfileDir(LoggingConfigurable):
     startup_dir_name = Unicode("startup")
     pid_dir_name = Unicode("pid")
     static_dir_name = Unicode("static")
-    security_dir = Unicode("")
-    log_dir = Unicode("")
-    startup_dir = Unicode("")
-    pid_dir = Unicode("")
-    static_dir = Unicode("")
 
     location = Unicode(
         "",

@@ -32,7 +32,6 @@ from sphinx.util.docfields import GroupedField
 from sphinx.util.logging import getLogger
 from sphinx.application import Sphinx
 
-import numpydoc  # noqa F401
 try:
     from matplotlib.sphinxext.plot_directive import PlotDirective
 except ImportError:
@@ -81,8 +80,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.napoleon',  # to preprocess docstrings
-    'numpydoc.numpydoc',
-    # 'autoapi.extension',
     'github',  # for easy GitHub links
     'magics',
     'configtraits',

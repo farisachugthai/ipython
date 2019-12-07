@@ -89,7 +89,8 @@ else:
         sys.exit(
             "Unsupported value for environment variable:"
             "'IPYTHON_SUPPRESS_CONFIG_ERRORS' is set to '%s' which is none of"
-            "{'0', '1', 'false', 'true', ''}." % _envvar)
+            "{'0', '1', 'false', 'true', ''}." % _envvar
+        )
 
 
 # aliases and flags
@@ -103,6 +104,7 @@ class BaseAliases(Configurable):
         base_flags is a dict of dicts so it might not be too complicated.
 
     """
+
     base_aliases = dict(
         {
             "profile-dir": "ProfileDir.location",
@@ -173,6 +175,7 @@ class BaseIPythonApplication(Application):
     .. todo:: What is this _in_init_profile_dir thing? They're doing down in init_profile_dir?
 
     """
+
     name = "ipython"
     description = Unicode("IPython: an enhanced interactive Python shell.")
     version = Unicode(release.version)
@@ -257,7 +260,7 @@ class BaseIPythonApplication(Application):
     def _ipython_dir_default(self):
         d = get_ipython_dir()
         self._ipython_dir_changed(
-            {"name": "ipython_dir", "old": d, "new": d, }
+            {"name": "ipython_dir", "old": d, "new": d,}
         )
         return d
 

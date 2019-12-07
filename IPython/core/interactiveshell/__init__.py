@@ -95,7 +95,13 @@ from IPython.utils.utils_io import ask_yes_no
 # guys its literally a pass statement. deleted.
 # NoOpContext is deprecated, but ipykernel imports it from here.
 # See https://github.com/ipython/ipykernel/issues/157
-from .execution import removed_co_newlocals, softspace, DummyMod, ExecutionInfo, ExecutionResult
+from .execution import (
+    removed_co_newlocals,
+    softspace,
+    DummyMod,
+    ExecutionInfo,
+    ExecutionResult,
+)
 
 try:
     import docrepr
@@ -885,7 +891,7 @@ class InteractiveShell(SingletonConfigurable):
             scheme=self.colors,
             str_detail_level=self.object_info_string_level,
             parent=self,
-            config=self.config
+            config=self.config,
         )
 
     def init_io(self):

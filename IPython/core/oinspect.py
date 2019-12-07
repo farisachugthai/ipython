@@ -283,10 +283,12 @@ class Inspector(Configurable):
 
     def set_active_scheme(self, scheme=None):
         if scheme is not None:
-            if getattr(self, 'color_table', None):
+            if getattr(self, "color_table", None):
                 self.color_table.set_active_scheme(scheme)
             else:
-                self.log('{} missing attribute "color_table"'.format(self.__class__.__name__))
+                self.log(
+                    '{} missing attribute "color_table"'.format(self.__class__.__name__)
+                )
             # self.parser.color_table.set_active_scheme(scheme)
 
     def noinfo(self, msg, oname=None):

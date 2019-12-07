@@ -163,13 +163,13 @@ def _new_id():
 
 
 def display(
-        *objs,
-        include=None,
-        exclude=None,
-        metadata=None,
-        transient=None,
-        display_id=None,
-        **kwargs,
+    *objs,
+    include=None,
+    exclude=None,
+    metadata=None,
+    transient=None,
+    display_id=None,
+    **kwargs,
 ):
     """Display a Python object in all frontends.
 
@@ -684,6 +684,7 @@ class HTML(TextDisplayObject):
     """
 
     """
+
     def __init__(self, data=None, url=None, filename=None, metadata=None):
         def warn():
             """
@@ -799,7 +800,7 @@ class ProgressBar(DisplayObject):
         fraction = self.progress / self.total
         filled = "=" * int(fraction * self.text_width)
         rest = " " * (self.text_width - len(filled))
-        return "[{}{}] {}/{}".format(filled, rest, self.progress, self.total, )
+        return "[{}{}] {}/{}".format(filled, rest, self.progress, self.total,)
 
     def _repr_html_(self):
         return "<progress style='width:{}' max='{}' value='{}'></progress>".format(
@@ -859,14 +860,14 @@ class JSON(DisplayObject):
     _data = None
 
     def __init__(
-            self,
-            data=None,
-            url=None,
-            filename=None,
-            expanded=False,
-            metadata=None,
-            root="root",
-            **kwargs,
+        self,
+        data=None,
+        url=None,
+        filename=None,
+        expanded=False,
+        metadata=None,
+        root="root",
+        **kwargs,
     ):
         """Create a JSON display object given raw data.
 
@@ -1025,6 +1026,7 @@ class Javascript(TextDisplayObject):
     """
 
     """
+
     def __init__(self, data=None, url=None, filename=None, lib=None, css=None):
         """Create a Javascript display object given raw data.
 
@@ -1092,7 +1094,7 @@ def _pngxy(data):
     """read the (width, height) from a PNG header"""
     ihdr = data.index(b"IHDR")
     # next 8 bytes are width/height
-    return struct.unpack(">ii", data[ihdr + 4: ihdr + 12])
+    return struct.unpack(">ii", data[ihdr + 4 : ihdr + 12])
 
 
 def _jpegxy(data):
@@ -1101,9 +1103,9 @@ def _jpegxy(data):
 
     idx = 4
     while True:
-        block_size = struct.unpack(">H", data[idx: idx + 2])[0]
+        block_size = struct.unpack(">H", data[idx : idx + 2])[0]
         idx = idx + block_size
-        if data[idx: idx + 2] == b"\xFF\xC0":
+        if data[idx : idx + 2] == b"\xFF\xC0":
             # found Start of Frame
             iSOF = idx
             break
@@ -1111,7 +1113,7 @@ def _jpegxy(data):
             # read another block
             idx += 2
 
-    h, w = struct.unpack(">HH", data[iSOF + 5: iSOF + 9])
+    h, w = struct.unpack(">HH", data[iSOF + 5 : iSOF + 9])
     return w, h
 
 
@@ -1124,6 +1126,7 @@ class Image(DisplayObject):
     """
 
     """
+
     _read_flags = "rb"
     _FMT_JPEG = "jpeg"
     _FMT_PNG = "png"
@@ -1136,17 +1139,17 @@ class Image(DisplayObject):
     }
 
     def __init__(
-            self,
-            data=None,
-            url=None,
-            filename=None,
-            format=None,
-            embed=None,
-            width=None,
-            height=None,
-            retina=False,
-            unconfined=False,
-            metadata=None,
+        self,
+        data=None,
+        url=None,
+        filename=None,
+        format=None,
+        embed=None,
+        width=None,
+        height=None,
+        retina=False,
+        unconfined=False,
+        metadata=None,
     ):
         """Create a PNG/JPEG/GIF image object given raw data.
 
@@ -1364,15 +1367,16 @@ class Video(DisplayObject):
     """
 
     """
+
     def __init__(
-            self,
-            data=None,
-            url=None,
-            filename=None,
-            embed=False,
-            mimetype=None,
-            width=None,
-            height=None,
+        self,
+        data=None,
+        url=None,
+        filename=None,
+        embed=False,
+        mimetype=None,
+        width=None,
+        height=None,
     ):
         """Create a video object given raw data or an URL.
 
@@ -1424,9 +1428,9 @@ class Video(DisplayObject):
             data = str(data)
 
         if (
-                url is None
-                and isinstance(data, str)
-                and data.startswith(("http:", "https:"))
+            url is None
+            and isinstance(data, str)
+            and data.startswith(("http:", "https:"))
         ):
             url = data
             data = None

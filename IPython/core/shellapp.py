@@ -154,14 +154,11 @@ class InteractiveShellApp(Configurable):
     ).tag(config=True)
 
     extra_extension = Unicode(
-        "",
-        allow_none=True,
-        help="dotted module name of an IPython extension to load."
+        "", allow_none=True, help="dotted module name of an IPython extension to load."
     ).tag(config=True)
 
     reraise_ipython_extension_failures = Bool(
-        False,
-        help="Reraise exceptions encountered loading IPython extensions.",
+        False, help="Reraise exceptions encountered loading IPython extensions.",
     ).tag(config=True)
 
     # Extensions that are always loaded (not configurable)
@@ -175,9 +172,7 @@ class InteractiveShellApp(Configurable):
     ).tag(config=True)
 
     exec_files = List(
-        Unicode(),
-        allow_none=True,
-        help="""List of files to run at IPython startup."""
+        Unicode(), allow_none=True, help="""List of files to run at IPython startup."""
     ).tag(config=True)
 
     exec_PYTHONSTARTUP = Bool(
@@ -186,24 +181,21 @@ class InteractiveShellApp(Configurable):
         variable at IPython startup.""",
     ).tag(config=True)
 
-    file_to_run = Unicode("", help="""A file to be run""", allow_none=True).tag(config=True)
+    file_to_run = Unicode("", help="""A file to be run""", allow_none=True).tag(
+        config=True
+    )
 
     exec_lines = List(
-        Unicode(),
-        allow_none=True,
-        help="""lines of code to run at IPython startup."""
+        Unicode(), allow_none=True, help="""lines of code to run at IPython startup."""
     ).tag(config=True)
 
     code_to_run = Unicode(
-        "",
-        help="Execute the given command string.",
-        allow_none=True,
+        "", help="Execute the given command string.", allow_none=True,
     ).tag(config=True)
 
-    module_to_run = Unicode("",
-                            help="Run the module as a script.",
-                            allow_none=True,
-                            ).tag(config=True)
+    module_to_run = Unicode(
+        "", help="Run the module as a script.", allow_none=True,
+    ).tag(config=True)
     gui = CaselessStrEnum(
         gui_keys,
         allow_none=True,
@@ -306,23 +298,30 @@ class InteractiveShellApp(Configurable):
         try:
             r = enable(key)
         except ImportError:
-            self.log.warning("Eventloop or matplotlib integration failed. Is matplotlib installed?")
+            self.log.warning(
+                "Eventloop or matplotlib integration failed. Is matplotlib installed?"
+            )
             return
         except Exception as e:
             self.log.warning(
-                "GUI event loop or pylab initialization failed. {}".format(sys.last_value))
+                "GUI event loop or pylab initialization failed. {}".format(
+                    sys.last_value
+                )
+            )
             return
 
         if isinstance(r, tuple):
             gui, backend = r[:2]
-            self.log.info("Enabling GUI event loop integration, "
-                          "eventloop=%s, matplotlib=%s", gui, backend)
+            self.log.info(
+                "Enabling GUI event loop integration, " "eventloop=%s, matplotlib=%s",
+                gui,
+                backend,
+            )
             if key == "auto":
                 print("Using matplotlib backend: %s" % backend)
         else:
             gui = r
-            self.log.info("Enabling GUI event loop integration, "
-                          "eventloop=%s", gui)
+            self.log.info("Enabling GUI event loop integration, " "eventloop=%s", gui)
 
     def init_extensions(self):
         """Load all IPython extensions in IPythonApp.extensions.
@@ -442,7 +441,8 @@ class InteractiveShellApp(Configurable):
                 self.shell.run_cell(line, store_history=False)
             except Exception as e:
                 self.log.warning(
-                    "Error in executing line in user namespace: {}\n{}".format(e, line))
+                    "Error in executing line in user namespace: {}\n{}".format(e, line)
+                )
                 # self.shell.showtraceback()
 
     def _exec_file(self, fname, shell_futures=False):
@@ -483,8 +483,11 @@ class InteractiveShellApp(Configurable):
                         )
                     # TODO: this block of code needs to become a method we do something similar SO many times
                     except BaseException:
-                        self.log.warning("Unknown error in handling startup file: {}\n{}".format(full_filename,
-                                                                                                 sys.last_type))
+                        self.log.warning(
+                            "Unknown error in handling startup file: {}\n{}".format(
+                                full_filename, sys.last_type
+                            )
+                        )
                 else:
                     # default to python, even without extension
                     self.shell.safe_execfile(

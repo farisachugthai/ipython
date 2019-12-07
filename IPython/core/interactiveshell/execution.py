@@ -173,4 +173,3 @@ class ExecutionResult:
                 repr(self.result),
             )
         )
-

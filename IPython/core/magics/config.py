@@ -32,6 +32,7 @@ class ConfigMagics(Magics):
     """
 
     """
+
     def __init__(self, shell):
         super(ConfigMagics, self).__init__(shell)
         self.configurables = []

@@ -817,13 +817,13 @@ class TestEnv(TestCase):
         env = _ip.magic("env")
         hidden = "<hidden>"
         with mock.patch.dict(
-                os.environ,
-                {
-                    "API_KEY": "abc123",
-                    "SECRET_THING": "ssshhh",
-                    "JUPYTER_TOKEN": "",
-                    "VAR": "abc",
-                },
+            os.environ,
+            {
+                "API_KEY": "abc123",
+                "SECRET_THING": "ssshhh",
+                "JUPYTER_TOKEN": "",
+                "VAR": "abc",
+            },
         ):
             env = _ip.magic("env")
         assert env["API_KEY"] == hidden
@@ -966,7 +966,7 @@ def test_file():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -979,7 +979,7 @@ def test_file_single_quote():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "'file1'")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -992,7 +992,7 @@ def test_file_double_quote():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, '"file1"')
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -1005,7 +1005,7 @@ def test_file_var_expand():
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
         ip.user_ns["filename"] = fname
-        ip.run_cell_magic("writefile", "$filename", "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", "$filename", "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -1017,7 +1017,7 @@ def test_file_unicode():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
-        ip.run_cell_magic("writefile", fname, "\n".join(["liné1", "liné2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["liné1", "liné2",]))
         with codecs.open(fname, encoding="utf-8") as f:
             s = f.read()
         nt.assert_in("liné1\n", s)
@@ -1029,8 +1029,8 @@ def test_file_amend():
     ip = get_ipython()
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file2")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
-        ip.run_cell_magic("writefile", "-a %s" % fname, "\n".join(["line3", "line4", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
+        ip.run_cell_magic("writefile", "-a %s" % fname, "\n".join(["line3", "line4",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -1042,7 +1042,7 @@ def test_file_spaces():
     ip = get_ipython()
     with TemporaryWorkingDirectory() as td:
         fname = "file name"
-        ip.run_cell_magic("file", '"%s"' % fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("file", '"%s"' % fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -1232,7 +1232,7 @@ def test_store():
 
 
 def _run_edit_test(
-        arg_s, exp_filename=None, exp_lineno=-1, exp_contents=None, exp_is_temp=None
+    arg_s, exp_filename=None, exp_lineno=-1, exp_contents=None, exp_is_temp=None
 ):
     ip = get_ipython()
     M = code.CodeMagics(ip)

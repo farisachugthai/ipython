@@ -58,6 +58,7 @@ def recursionlimit(frames):
         -------
 
         """
+
         def wrapper(*args, **kwargs):
             """
 

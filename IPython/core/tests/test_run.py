@@ -523,6 +523,7 @@ class TestMagicRunWithPackage(unittest.TestCase):
         -------
 
         """
+
         @functools.wraps(func)
         def wrapper(*args, **kwds):
             """

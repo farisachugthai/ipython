@@ -94,6 +94,7 @@ def test_find_file_decorated1():
         -------
 
         """
+
         def wrapper(*a, **kw):
             """
 

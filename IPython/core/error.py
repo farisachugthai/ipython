@@ -237,5 +237,16 @@ class ShimWarning(Warning):
 
 class ClipboardEmpty(ValueError):
     """lib.clipboard"""
+
     pass
 
+
+class ProfileDirError(Exception):
+    """./profiledir"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+
+    def __call__(self, msg=None):
+        """Idk if it was a good idea to do it this way but we don't see our own errors."""
+        print(msg)
