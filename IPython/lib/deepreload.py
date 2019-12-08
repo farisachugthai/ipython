@@ -1,4 +1,4 @@
-"""Provides a reload() function that acts recursively.
+"""Provide a reload function that acts recursively.
 
 Python's normal :func:`python:reload` function only reloads the module that it's
 passed. The :func:`reload` function in this module also reloads everything
@@ -22,6 +22,24 @@ A reference to the original :func:`python:reload` is stored in this module as
 
 This code is almost entirely based on knee.py, which is a Python
 re-implementation of hierarchical module import.
+
+.. todo::
+    Ensure the imp calls are moved and start cathing NotImplementedError
+    On Windows, running `reload` from this module recursively ran until it got
+    to :mod:`shutil` which features some things that aren't implemented on Win32.
+    Which is fine but it crashed the import.
+
+.. todo::
+    The import system is WAY different now. This code needs a lot of work.
+    We gotta:
+
+        * stop using imp
+
+        * don't create modules from types.ModuleType
+
+        * Probably reimplement as classes there are so many globals that make
+          more sense to write as state in a classes ns.
+
 """
 # *****************************************************************************
 #       Copyright (C) 2001 Nathaniel Gray <n8gray@caltech.edu>
@@ -157,7 +175,7 @@ def load_next(mod, altmod, name, buf):
         next = None
     else:
         subname = name[:dot]
-        next = name[dot + 1 :]
+        next = name[dot + 1:]
 
     if buf != "":
         buf += "."
@@ -325,7 +343,7 @@ def deep_reload_hook(m):
         except KeyError:
             modules_reloading.clear()
             raise ImportError("reload(): parent %.200s not in sys.modules" % name[:dot])
-        subname = name[dot + 1 :]
+        subname = name[dot + 1:]
         path = getattr(parent, "__path__", None)
 
     try:
@@ -361,10 +379,17 @@ def reload(
     module,
     exclude=("sys", "os.path", "builtins", "__main__", "numpy", "numpy._globals"),
 ):
-    """Recursively reload all modules used in the given module.  Optionally
-    takes a list of modules to exclude from reloading.  The default exclude
-    list contains sys, __main__, and __builtin__, to prevent, e.g., resetting
-    display, exception, and io hooks.
+    """Recursively reload all modules used in the given module.
+
+    Optionally takes a list of modules to exclude from reloading.
+
+    The default exclude list contains:
+
+       * sys
+       * ``__main__``
+       * ``__builtin__``
+
+    This is done to prevent, e.g., resetting display, exception, and io hooks.
     """
     global found_now
     for i in exclude:

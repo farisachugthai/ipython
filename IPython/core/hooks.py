@@ -12,7 +12,7 @@ instance methods. The self argument will be the IPython running instance
 itself, so hooks have full access to the entire IPython object.
 
 If you wish to define a new hook and activate it, you can make an
-:doc:`extension </config/extensions/index>`
+:ref:`extension <extensions>`
 or a :ref:`startup script <startup_files>`.
 
 For example, you could use a startup file like this:
@@ -22,10 +22,9 @@ load_ipython_extension function below?
 
 Why not just say.
 
-For example, you could write an extension like this:
+For example, you could write an extension like this::
 
     import os
-
     def calljed(self,filename, linenum):
         "My editor hook calls the jed editor directly."
         print "Calling my own editor, jed ..."

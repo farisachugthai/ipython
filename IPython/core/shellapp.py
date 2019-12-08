@@ -24,7 +24,7 @@ from traitlets import (
     observe,
 )
 from IPython.terminal import pt_inputhooks
-from IPython.core.application import SYSTEM_CONFIG_DIRS, ENV_CONFIG_DIRS
+from IPython.core.application import SYSTEM_CONFIG_DIRS
 from IPython.core import pylabtools
 from IPython.utils.contexts import preserve_keys
 

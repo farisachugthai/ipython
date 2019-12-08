@@ -19,6 +19,7 @@ line :command:`ipython` program.
 import logging
 import os
 import sys
+from textwrap import dedent
 import warnings
 from pathlib import Path
 
@@ -33,21 +34,15 @@ from IPython.paths import get_ipython_dir
 from IPython.core.application import (
     BaseAliases,
     BaseIPythonApplication,
-    base_aliases,
     base_flags,
 )
+base_aliases = BaseAliases().base_aliases
+
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
 from traitlets import Bool, List, Type, default, observe
 from traitlets.config.application import boolean_flag, catch_config_error
 from traitlets.config.loader import Config
-
-# Ensure you comment this out later
-logging.Filter()
-logging.basicConfig(
-    level=logging.WARNING,
-    format="%(created)f : %(module)s : %(levelname)s : %(message)s",
-)
 
 # This should probably be in ipapp.py.
 # From IPython/__init__
@@ -180,7 +175,11 @@ aliases.update(shell_aliases)
 
 
 class LocateIPythonApp(BaseIPythonApplication):
-    """A class that literally only has 1 subcommand. Why?"""
+    """A class that literally only has 1 subcommand. Why?
+
+    Yeah I have so many questions. Like why can't we get this information
+    from IPython.core.profileapp.ProfileApp?
+    """
 
     description = """Print the path to the IPython dir."""
     subcommands = dict(
@@ -220,35 +219,25 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     """
 
     name = u"ipython"
-    # description = usage.cl_usage
-    # crash_handler_class = IPAppCrashHandler
-    examples = """
-ipython --matplotlib       # enable matplotlib integration
-ipython --matplotlib=qt    # enable matplotlib integration with qt4 backend
+    description = usage.cl_usage
+    crash_handler_class = IPAppCrashHandler
+    examples = dedent("""
+    ipython --matplotlib       # enable matplotlib integration
+    ipython --matplotlib=qt    # enable matplotlib integration with qt4 backend
 
-ipython --log-level=DEBUG  # set logging to DEBUG
-ipython --profile=foo      # start with profile foo
+    ipython --log-level=DEBUG  # set logging to DEBUG
+    ipython --profile=foo      # start with profile foo
 
-ipython profile create foo # create profile foo w/ default config files
-ipython help profile       # show the help for the profile subcmd
+    ipython profile create foo # create profile foo w/ default config files
+    ipython help profile       # show the help for the profile subcmd
 
-ipython locate             # print the path to the IPython directory
-ipython locate profile foo # print the path to the directory for profile `foo`
-"""
+    ipython locate             # print the path to the IPython directory
+    ipython locate profile foo # print the path to the directory for profile `foo`
+    """)
 
     flags = flags
     aliases = aliases
     classes = List()
-    # apparently self hasn't been defined yet
-    # classes = List(self._classes_default(),
-    # help='Available classes').tag(config=False)
-
-    interactive_shell_class = Type(
-        klass=object,
-        # use default_value otherwise which only allow subclasses.
-        default_value=TerminalInteractiveShell,
-        help="Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends",
-    ).tag(config=True)
 
     @default("classes")
     def _classes_default(self):
@@ -276,6 +265,13 @@ ipython locate profile foo # print the path to the directory for profile `foo`
             ScriptMagics,
             LoggingMagics,
         ]
+
+    interactive_shell_class = Type(
+        klass=object,
+        # use default_value otherwise which only allow subclasses.
+        default_value=TerminalInteractiveShell,
+        help="Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends",
+    ).tag(config=True)
 
     subcommands = dict(
         profile=(
@@ -363,14 +359,15 @@ ipython locate profile foo # print the path to the directory for profile `foo`
         """This is done so many times in this repo why not make it official?"""
         try:
             line
-        except ImportError as e:
-            self.log.warning("ImportError: {}".format(e.tb_frame))
+        except ImportError:
+            if sys.exc_info()[2] is not None:
+                self.log.warning("ImportError: {}".format(sys.exc_info()[2]))
         except KeyboardInterrupt:
             self.log.warning("Interrupted!")
         except EOFError:
             self.log.warning("EOFError!")
         except BaseException as e:
-            self.log.error("Error: {}".format(e.tb_frame))
+            self.log.error("Error: {}".format(e))
             return
         else:
             if else_to_run is not None:

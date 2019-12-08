@@ -154,7 +154,7 @@ def list_bundled_profiles():
 class ProfileLocate(BaseIPythonApplication):
     """A minimally useful class for printing the path to the profile dir."""
 
-    description = Unicode("print the path to an IPython profile dir")
+    description = "print the path to an IPython profile dir"
 
     def __init__(self, *args, **kwargs):
         super(ProfileLocate, self).__init__(*args, **kwargs)
@@ -192,11 +192,13 @@ class ProfileList(Application):
     """Wrapped attributes with traitlets.Unicode and called textwrap.dedent.
 
     I'm really surprised that was never done before.
-    """
 
-    name = Unicode("ipython-profile")
-    description = Unicode(dedent(list_help))
-    examples = Unicode(dedent(_list_examples))
+    .. warning:: Can't wrap with Unicode trait. We call splitlines on it later.
+
+    """
+    name = "ipython-profile"
+    description = dedent(list_help)
+    examples = dedent(_list_examples)
 
     aliases = Dict(
         {
@@ -375,7 +377,7 @@ class ProfileCreate(BaseIPythonApplication):
             from ipyparallel.apps.ipclusterapp import IPClusterStart
 
             apps.extend(
-                [IPControllerApp, IPEngineApp, IPClusterStart,]
+                [IPControllerApp, IPEngineApp, IPClusterStart, ]
             )
         for App in apps:
             app = App()
