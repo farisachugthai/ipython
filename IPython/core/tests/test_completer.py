@@ -1,9 +1,5 @@
 # encoding: utf-8
-"""Tests for the IPython tab-completion machinery.
-
-What in the world is up with that one method that imports pandas?
-"""
-
+"""Tests for the IPython tab-completion machinery."""
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -17,7 +13,7 @@ import nose.tools as nt
 from nose.tools import assert_in, assert_not_in
 from traitlets.config.loader import Config
 
-from IPython import get_ipython
+from IPython.core.getipython import get_ipython
 from IPython.core import completer
 from IPython.core.completer import (
     Completion,
@@ -35,12 +31,13 @@ from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
 # -----------------------------------------------------------------------------
 
 
+def setup_module():
+    global ip
+    ip = get_ipython()
+
+
 @contextmanager
 def greedy_completion():
-    """
-
-    """
-    #
     greedy_original = ip.Completer.greedy
     try:
         ip.Completer.greedy = True

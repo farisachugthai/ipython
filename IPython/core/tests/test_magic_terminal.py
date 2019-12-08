@@ -11,11 +11,16 @@ from unittest import TestCase
 
 import nose.tools as nt
 
+from IPython.core.getipython import get_ipython
 from IPython.testing import tools as tt
 
 # -----------------------------------------------------------------------------
 # Test functions begin
 # -----------------------------------------------------------------------------
+
+def setup_module():
+    global ip
+    ip = get_ipython()
 
 
 def check_cpaste(code, should_fail=False):

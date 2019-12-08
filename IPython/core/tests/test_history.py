@@ -20,6 +20,7 @@ import nose.tools as nt
 # our own packages
 from traitlets.config.loader import Config
 from IPython.utils.tempdir import TemporaryDirectory
+from IPython.core.getipython import get_ipython
 from IPython.core.history import HistoryManager, extract_hist_ranges
 from IPython.testing.decorators import skipif
 

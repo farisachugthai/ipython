@@ -13,11 +13,11 @@ import os
 from traitlets.config.loader import Config
 import nose.tools as nt
 
+from IPython.core.getipython import get_ipython
+
 
 def setup_module():
-    """
-
-    """
+    ip = get_ipython()
     ip.magic("load_ext storemagic")
 
 

@@ -35,9 +35,6 @@ file_2 = """def f():
 
 
 def setup_module():
-    """
-
-    """
     global ip
     ip = get_ipython()
 
