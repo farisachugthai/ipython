@@ -23,8 +23,7 @@ interactively.  Its main components are:
 
 
 * A `Jupyter <https://jupyter.org/>`_ kernel to work with Python code in Jupyter
-  notebooks and other interactive frontends.
-
+  notebooks and other interactive front-ends.
 
 Features
 ========
@@ -32,14 +31,14 @@ Features
 The enhanced interactive Python shells and kernel have the following main
 features:
 
-* Comprehensive object introspection.
+* Comprehensive object introspection with a simple user interface.
 
 * Input history, persistent across sessions.
 
 * Caching of output results during a session with automatically generated
   references.
 
-* Extensible tab completion, with support by default for completion of python
+* Extensible Tab completion, with support by default for completion of python
   variables and keywords, filenames and function keywords.
 
 * Extensible system of 'magic' commands for controlling the environment and
@@ -63,17 +62,17 @@ features:
 Command Line Interface
 ======================
 
-The Command line interface inherits the above functionality and adds
+The Command line interface inherits the above functionality and adds.:
 
-* real multi-line editing thanks to `prompt_toolkit
+* Real multi-line editing thanks to `prompt_toolkit
   <http://python-prompt-toolkit.readthedocs.io/en/stable/>`_.
 
-* syntax highlighting as you type
+* Syntax highlighting as you type.
 
-* integration with command line editor for a better workflow.
+* Integration with your usual command line editor for a better workflow.
 
-The kernel also has its share of features. When used with a compatible frontend,
-it allows:
+The kernel also has its share of features. When used with a compatible
+front-end, it allows:
 
 * the object to create a rich display of Html, Images, Latex, Sound and
   Video.
@@ -189,7 +188,7 @@ Developer's guide for third party tools and libraries
 
     This guide contains information for developers of third party tools and
     libraries that use IPython. Alternatively, documentation for core
-    **IPython** development can be found in the :doc:`../coredev/index`.
+    **IPython** development can be found in the :doc:`coredev`.
 
 .. toctree::
    :maxdepth: 2
@@ -207,9 +206,10 @@ Developer's guide for third party tools and libraries
 
 .. toctree::
    :maxdepth: 4
+   :titlesonly:
    :caption: API
 
-   api/index
+   api/generated/IPython
    options/index
 
 

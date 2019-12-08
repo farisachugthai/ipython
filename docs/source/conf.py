@@ -15,6 +15,7 @@ that aren't pickleable (module imports are okay, they're removed automatically).
 All configuration values have a default value; values that are commented out
 serve to show the default value.
 """
+import copy
 import logging
 import os
 from pathlib import Path
@@ -33,10 +34,13 @@ from sphinx.util.logging import getLogger
 from sphinx.application import Sphinx
 
 try:
+    # See more at the bottom where we configure extensions
+    import matplotlib as mpl
     from matplotlib.sphinxext.plot_directive import PlotDirective
 except ImportError:
-    PlotDirective = None
+    mpl = PlotDirecive = None
 
+# Sphinx pre-packaged logger
 logger = getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -62,8 +66,9 @@ else:
 
 # We load the ipython release info into a dict by explicit execution
 iprelease = {}
-exec(compile(open('../../IPython/core/release.py').read(),
-             '../../IPython/core/release.py', 'exec'), iprelease)
+# exec(compile(open('../../IPython/core/release.py').read(),
+#              '../../IPython/core/release.py', 'exec'), iprelease)
+exec(compile(open('../../IPython/core/release.py').read(), '<string>', 'exec'), iprelease)
 
 # General configuration
 # ---------------------
@@ -74,27 +79,27 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     # terrible idea don't do it
-    # 'sphinx.ext.autosectionlabel',
+    # or nsure autosectionlabel.prefix_document = True
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.doctest',
-    'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
     'sphinx.ext.napoleon',  # to preprocess docstrings
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    # ours
     'github',  # for easy GitHub links
     'magics',
     'configtraits',
-]
-
-extensions.extend([
     'IPython.sphinxext.ipython_directive',
-])
-
-# autoapi_type = 'python'
-# autoapi_dirs = ['../../IPython']
-# autoapi_generate_api_docs = False
+]
 
 if shutil.which('dot'):
     extensions.append('sphinx.ext.graphviz')
+    # Dec 08, 2019: Yeah apparently you need graphviz installed for the
+    # inheritance diagrams too
+    extensions.append('sphinx.ext.inheritance_diagram')
+
 
 if PlotDirective is not None:
     extensions.append('matplotlib.sphinxext.plot_directive')
@@ -177,7 +182,7 @@ unused_docs = ['api/generated/IPython', 'api/generated/IPython.core']
 
 # Exclude these glob-style patterns when looking for source files. They are
 # relative to the source/ directory.
-exclude_patterns = ['**test**']
+exclude_patterns = ['**test**', '*/autosummary/*.rst']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 # add_function_parentheses = True
@@ -342,7 +347,9 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
                        'pip': ('https://pip.pypa.io/en/stable/', None)
                        }
 
-# -- IPython directive -------------------------------------------------------
+# -------------------------------------------------------------------
+# -- IPython directive ----------------------------------------------
+# -------------------------------------------------------------------
 
 ipython_warning_is_error = False
 
@@ -353,6 +360,12 @@ ipython_execlines = [
     'import matplotlib.pyplot',
 ]
 
+# -------------------------------------------------------------------
+# matplotlib plot_directive
+# -------------------------------------------------------------------
+mpl.rcParams['font.family'] = 'DejaVu Sans'
+mpl.rcParams['text.hinting'] = False
+mpl.rcParams['text.hinting_factor'] = 8
 # -------------------------------------------------------------------
 # Autosummary
 # -------------------------------------------------------------------
@@ -386,8 +399,20 @@ autosummary_imported_members = False
 # autoclass_content = u'both'
 # autodoc_member_order = u'bysource'
 autodoc_member_order = u'groupwise'
-
 autodoc_docstring_signature = True
+
+# Autosection
+
+autosectionlabel_prefix_document = True
+
+# GitHub and external links
+
+extlinks = {'pr': ('https://github.com/ipython/ipython/pull/%s',
+                   'PR #'),
+            'issue': ('https://github.com/ipython/ipython/issues/%s',
+                      'Issue #')
+            }
+
 
 # Cleanup
 # -------
@@ -419,6 +444,25 @@ def parse_event(env, sig, signode):
     return name
 
 
+def rstjinja(app, docname, source):
+    """Render our pages as a jinja template for fancy templating goodness."""
+    # http://ericholscher.com/blog/2016/jul/25/integrating-jinja-rst-sphinx/
+    # Make sure we're outputting HTML
+    if app.builder.format != "html":
+        return
+    src = source[0]
+    orig = copy.deepcopy(src)
+    # Skip converted notebooks
+    if 'nbconvert_exporter' in src:
+        return
+    try:
+        rendered = app.builder.templates.render_string(src,
+                                                       app.config.html_context)
+        source[0] = rendered
+    except Exception as exc:
+        logger.warning(exc)
+
+
 def setup(app: "Sphinx") -> None:
     """Add in the Sphinx directive for `confval`.
 
@@ -426,6 +470,7 @@ def setup(app: "Sphinx") -> None:
 
     12/03/19: Gonna add trait as a role.
     """
+    app.connect("source-read", rstjinja)
     app.add_object_type('confval', 'confval',
                         objname='configuration value',
                         indextemplate='pair: %s; configuration value')
@@ -443,3 +488,6 @@ def setup(app: "Sphinx") -> None:
     app.info = lambda *args, **kwargs: logger.info(*args, **kwargs)
     app.warn = lambda *args, **kwargs: logger.warning(*args, **kwargs)
     app.debug = lambda *args, **kwargs: logger.debug(*args, **kwargs)
+
+    return {'parallel_read_safe': True,
+            'parallel_write_safe': True}

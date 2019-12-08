@@ -16,29 +16,26 @@ Command-line usage
 
 You start IPython with the command:
 
-.. todo::
-    check that my *off the top of my head* man syntax is right
-    fuck it wasn't how do we fix this?
-
 .. program:: ipython [options] [-c <statement>] [-m <module>]
 
-If invoked with no options, it executes all the files listed in sequence and
-exits.
+If invoked with one or more files passed as arguments,
+the shell executes all the files listed in sequence and exits.
+The shell can remain in interactive mode with the `-i` flag however.
 
 .. option:: -i, --interactive [<file to execute>]
 
-Execute a file, then enter the interactive interpreter while still
-recognizing and executing any default options  set in  ``ipython_config.py``.
+   Execute a file, then enter the interactive interpreter while still
+   recognizing and executing any default options  set in  ``ipython_config.py``.
 
-This behavior is different from standard Python, which when called as:
+This behavior is different from standard Python, which when called as::
 
-:command:`python` `-i` ``file``
+   python -i [file]
 
 will execute only that one file, and in doing so, will ignore your
 configuration setup.
 
 Please note that some of the configuration options are not available at the
-command line, simply because they are not practical here. Look into your
+command line, simply because they are not practical there. Look into your
 configuration files for details on those. There are separate configuration files
 for each profile, and the files look like ``ipython_config.py`` or
 ``ipython_config_{frontendname}.py``.
@@ -51,38 +48,22 @@ to ``$HOME/.ipython`` or ``%USERPROFILE%\.ipython``.
 Command-line Options
 --------------------
 
-To see the options IPython accepts, use ``ipython --help``.
-
-.. tip:: Run the output through a pager such as ``ipython --help | less`` for more convenient reading.
-
-   Note that this can be done from inside of IPython like so.
-
-
-.. this didn't work oddly. like it worked but it didn't send the info to less :/
-.. .. code-block:: ipython
-
-..    help_docs = !ipython --help
-..    %page help_docs
-
-.. oddly enough this worked perfectly though
-
-.. code-block:: ipython
-
-   !ipython --help | less -
-
+To see the options IPython accepts before startup, run ``ipython --help``.
+For more verbose output, consider running ``ipython --help-all``.
 
 .. admonition:: To use the %page magic, ensure that the $PAGER env var is set.
 
-This variable is set by default on Unix like systems; however, it typically is
-unset on Windows.
+   This variable is set by default on Unix-like systems where rendering text
+   in a terminal is more common; however, it typically is not set on Windows.
 
 
 Help all
 --------
 
-This shows all the options that have a single-word alias to toggle them,
-but IPython lets you configure all of it's objects from
-the command-line by passing the full class name and a corresponding value.
+This shows all the options that IPython accepts, in addition to flags that
+have a single-word alias to toggle them. IPython lets a user configure all of
+it's objects from the command-line by passing the full class name and a
+corresponding value.
 
 As an example, type ``ipython --help-all`` to see this full list.::
 
@@ -107,6 +88,8 @@ Indicates that the following::
 is equivalent to::
 
    $ ipython --TerminalIPythonApp.matplotlib='qt'
+
+.. tip:: Run the output through a pager such as ``ipython --help-all | less`` for more convenient reading.
 
 Note that in the second form, you *must* use the equal sign, as the expression
 is evaluated as an actual Python assignment.
@@ -181,7 +164,6 @@ some sort, you can then exit::
 
 Once you exit and print `a`, the value 23 will be shown::
 
-
   In: print(a)
   23
 
@@ -199,7 +181,7 @@ To further exemplify this, consider the following example::
       IPython.embed()
       print(a)
 
-Now if call the function and complete the state changes as we did above, the
+Now if one calls the function and complete the state changes as we did above, the
 value `42` will be printed. Again, this is because it's not in the global
 namespace::
 
@@ -232,6 +214,7 @@ feature can be very valuable.
 It can also be useful in scientific computing situations where it is
 common to need to do some automatic, computationally intensive part and
 then stop to look at data, plots, etc.
+
 Opening an IPython instance will give you full access to your data and
 functions, and you can resume program execution once you are done with
 the interactive part (perhaps to stop again later, as many times as
@@ -261,21 +244,24 @@ them separately, for example with different options for data
 presentation. If you close and open the same instance multiple times,
 its prompt counters simply continue from each execution to the next.
 
-Please look at the docstrings in the :mod:`~IPython.frontend.terminal.embed`
+.. whoa. that file hasn't existed in a while.
+
+Please look at the docstrings in the :mod:`~IPython.terminal.embed`
 module for more details on the use of this system.
 
 The following sample file illustrating how to use the embedding
-functionality is provided in the examples directory as embed_class_long.py.
+functionality is provided in the examples directory as
+:file:`../../examples/Embedding/embed_class_long.py`_.
 It should be fairly self-explanatory:
 
-.. .. literalinclude:: ../../../examples/Embedding/embed_class_long.py
-..     :language: python
+ .. literalinclude:: /../../examples/Embedding/embed_class_long.py
+     :language: python
 
 Once you understand how the system functions, you can use the following
 code fragments in your programs which are ready for cut and paste:
 
-.. .. literalinclude:: ../../../examples/Embedding/embed_class_short.py
-..     :language: python
+ .. literalinclude:: ../../examples/Embedding/embed_class_short.py
+     :language: python
 
 
 Using the Python debugger (pdb)
@@ -289,8 +275,16 @@ function or not. For this, simply type ``%run -d myscript`` at an
 IPython prompt. See the :magic:`run` command's documentation for more details, including
 how to control where pdb will stop execution first.
 
+.. _debugger-see-also:
+
+See Also
+--------
+
 For more information on the use of the pdb debugger, see :ref:`debugger-commands`
 in the Python documentation.
+
+For IPython specific API information, see :mod:`IPython.core.debugger` and
+:mod:`IPython.terminal.debugger`.
 
 Running entire programs via pdb
 -------------------------------
@@ -454,49 +448,61 @@ documentation as per the Sphinx extension. See more :ref:`ipython-directive`.
 GUI event loop support
 ======================
 
+.. magic:: gui
+
 IPython has excellent support for working interactively with Graphical User
 Interface (GUI) toolkits, such as wxPython, PyQt4/PySide, PyGTK and Tk. This is
-implemented by running the toolkit's event loop while IPython is waiting for
-input.
+implemented by running the GUI's front end event loop while IPython waits for input.
 
 For users, enabling GUI event loop integration is simple.  You simple use the
 :magic:`gui` magic as follows::
 
     %gui [GUINAME]
 
-With no arguments, ``%gui`` removes all GUI support.  Valid ``GUINAME``
-arguments include ``wx``, ``qt``, ``qt5``, ``gtk``, ``gtk3`` and ``tk``.
+With no arguments, `%gui` removes all GUI support.  Valid
+arguments include ``wx``, ``qt``, ``qt4``, ``qt5``, ``gtk``, ``gtk3`` and ``tk``.
+
+In addition, ``glut``, ``gtk2``, ``osx``, and ``pyglet`` are also acceptable flags.
+
+.. versionchanged:: 7.10.0
+
+   asyncio is now a valid flag
 
 Thus, to use wxPython interactively and create a running :class:`wx.App`
-object, do::
+object, enter the following in the REPL.::
 
     %gui wx
 
 You can also start IPython with an event loop set up using the `--gui`
-flag::
+flag on the command line.::
 
     $ ipython --gui=qt
 
-For information on IPython's matplotlib_ integration (and the ``matplotlib``
-mode) see :ref:`this section <matplotlib_support>`.
+For information on IPython's `matplotlib` integration (and the `matplotlib`
+mode) see :ref:`more on IPython's matplotlib support <matplotlib_support>`.
 
 For developers that want to integrate additional event loops with IPython, see
-:doc:`/config/eventloops`.
+:doc:`eventloops`.
 
 When running inside IPython with an integrated event loop, a GUI application
 should *not* start its own event loop.
 
 This means that applications that are meant to be used both
-in IPython and as standalone apps need to have special code to detects how the
-application is being run. We highly recommend using IPython's support for this.
+in IPython and as standalone apps need to have special code to detect how the
+application is being run.
+
+We highly recommend using IPython's support for this.
+
 Since the details vary slightly between toolkits, we point you to the various
-examples in our source directory :doc:`examples/IPython Kernel/gui/` that
+examples in our source directory :doc:`../../examples/IPython Kernel/gui/` that
 demonstrate these capabilities.
 
 PyQt and PySide
 ---------------
 
 .. attempt at explanation of the complete mess that is Qt support
+
+.. option:: --gui[=asyncio,qt,qt4,qt5,wx,macOS,gtk,gtk2,gtk3
 
 When you use ``--gui=qt`` or ``--matplotlib=qt``, IPython can work with either
 PyQt4 or PySide.  There are three options for configuration here, because
@@ -532,10 +538,70 @@ neither v2 PyQt nor PySide work.
     use ``--gui=qt`` with code that requires PyQt4 API v1.
 
 
+
+Support for creating GUI apps and starting event loops.
+-------------------------------------------------------
+.. the old docstring from lib.guisupport
+
+IPython's GUI integration allows interactive plotting and GUI usage in IPython
+session. IPython has two different types of GUI integration:
+
+1. The terminal based IPython supports GUI event loops through Python's
+   PyOS_InputHook. PyOS_InputHook is a hook that Python calls periodically
+   whenever raw_input is waiting for a user to type code. We implement GUI
+   support in the terminal by setting PyOS_InputHook to a function that
+   iterates the event loop for a short while. It is important to note that
+   in this situation, the real GUI event loop is NOT run in the normal
+   manner, so you can't use the normal means to detect that it is running.
+2. In the two process IPython kernel/frontend, the GUI event loop is run in
+   the kernel. In this case, the event loop is run in the normal manner by
+   calling the function or method of the GUI toolkit that starts the event
+   loop.
+
+In addition to starting the GUI event loops in one of these two ways, IPython
+will *always* create an appropriate GUI application object when GUi
+integration is enabled.
+
+If you want your GUI apps to run in IPython you need to do two things:
+
+1. Test to see if there is already an existing main application object. If
+   there is, you should use it. If there is not an existing application object
+   you should create one.
+2. Test to see if the GUI event loop is running. If it is, you should not
+   start it. If the event loop is not running you may start it.
+
+This module contains functions for each toolkit that perform these things
+in a consistent manner. Because of how PyOS_InputHook runs the event loop
+you cannot detect if the event loop is running using the traditional calls
+(such as ``wx.GetApp.IsMainLoopRunning()`` in wxPython). If PyOS_InputHook is
+set These methods will return a false negative. That is, they will say the
+event loop is not running, when is actually is. To work around this limitation
+we proposed the following informal protocol:
+
+* Whenever someone starts the event loop, they *must* set the ``_in_event_loop``
+  attribute of the main application object to ``True``. This should be done
+  regardless of how the event loop is actually run.
+* Whenever someone stops the event loop, they *must* set the ``_in_event_loop``
+  attribute of the main application object to ``False``.
+* If you want to see if the event loop is running, you *must* use ``hasattr``
+  to see if ``_in_event_loop`` attribute has been set. If it is set, you
+  *must* use its value. If it has not been set, you can query the toolkit
+  in the normal manner.
+* If you want GUI support and no one else has created an application or
+  started the event loop you *must* do this. We don't want projects to
+  attempt to defer these things to someone else if they themselves need it.
+
+The functions below implement this logic for each GUI toolkit. If you need
+to create custom application subclasses, you will likely have to modify this
+code for your own purposes. This code can be copied into your own project
+so you don't have to depend on IPython.
+
 .. _matplotlib_support:
 
 Plotting with matplotlib
 ========================
+
+.. magic:: matplotlib
 
 `matplotlib` provides high quality 2D and 3D plotting for Python. `matplotlib`
 can produce plots on screen using a variety of GUI toolkits, including Tk,

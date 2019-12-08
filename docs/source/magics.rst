@@ -10,6 +10,9 @@ Magic command system
 IPython will treat any line whose first character is a :kbd:`%` as a special
 call to a 'magic' function.
 
+Introduction to Magics
+======================
+
 These allow you to control the behavior of IPython itself, plus a lot of
 system-type features. All magics are prefixed with a :kbd:`%` character, but
 `~IPython.core.magic_parameters` are given without parentheses or quotes.
@@ -91,7 +94,7 @@ Line magics, if they return a value, can be assigned to a variable using the
 syntax ``l = %sx ls`` (which in this particular case returns the result of
 :command:`ls` as a python `list`).
 
-.. see:: :ref:`below <manual_capture>` for more information.
+.. seealso:: :ref:`below <manual_capture>` for more information.
 
 Type `%magic` for more information, including a list of all available magic
 functions at any time and their docstrings. You can also type
@@ -216,7 +219,7 @@ not honor your :file:`~/.inputrc` configuration (or whatever
 file your :envvar:`INPUTRC` environment variable points to).
 
 In particular if you want to change the input mode to ``vi``, you will need to
-set the :trait:`TerminalInteractiveShell.editing_mode`
+set the :configtrait:`TerminalInteractiveShell.editing_mode`
 configuration  option of IPython.
 
 

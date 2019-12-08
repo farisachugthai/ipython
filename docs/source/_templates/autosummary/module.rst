@@ -1,20 +1,44 @@
 {{ fullname | escape | underline }}
 
-{# All credit goes to Matplotlib for these templates #}
+.. automodule:: {{ fullname }}
 
-.. currentmodule:: {{ module }}
+   {% block classes %}
+   {% if objtype in ['class'] %}
+     {# Also could do
+   {% if classes %}
+     #}
+   .. rubric:: Classes
 
+   .. autosummary::
+      :show-inheritance:
+      :members:
+   {% for item in classes %}
+      {{ item }}
+   {%- endfor %}
+   {% endif %}
+   {% endblock %}
 
-{% if objtype in ['class'] %}
+   {% block functions %}
+   {% if functions %}
+   .. rubric:: Functions
 
-  {{ objtype | escape | underline }}
+   .. autosummary::
+   {% for item in functions %}
+      {{ item }}
+   {%- endfor %}
+   {% endif %}
+   {% endblock %}
 
-.. auto{{ objtype }}:: {{ objname }}
-    :show-inheritance:
-    :members:
+   {% block exceptions %}
+   {% if exceptions %}
+   .. rubric:: Exceptions
 
-{% else %}
-
+   .. autosummary::
+   {% for item in exceptions %}
+      {{ item }}
+   {%- endfor %}
+   {% endif %}
+   {% endblock %}
   {{ objtype | escape | underline }}
 
 .. auto{{ objtype }}:: {{ objname }}
@@ -26,4 +50,4 @@
 
     <div class="clearer"></div>
 
-{# Vim: set ft=htmljinja: #}
+{# Vim: set ft=htmljinja.rst: #}

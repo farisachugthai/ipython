@@ -15,7 +15,7 @@ from typing import Dict, Any
 
 from sphinx.application import Sphinx
 
-from IPython import version_info
+from IPython.core.release import version_info
 
 
 def setup(app: "Sphinx") -> Dict[str, Any]:

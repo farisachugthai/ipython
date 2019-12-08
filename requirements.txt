@@ -6,6 +6,7 @@ coverage
 curio
 decorator
 docutils
+docrepr
 ipykernel
 ipyparallel
 ipython-genutils
