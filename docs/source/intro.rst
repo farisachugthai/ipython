@@ -1,14 +1,13 @@
-.. _config_overview:
+.. _config_intro:
 
 ============================================
 Overview of the IPython configuration system
 ============================================
 
-.. why did was this previously in development???
+.. module:: intro
+   :synopsis: Introduce IPython.
 
-This section describes the IPython configuration system. This is based on
-:mod:`traitlets.config`; see that documentation for more information
-about the overall architecture.
+.. why was this previously in development???
 
 Configuration file location
 ===========================
@@ -59,8 +58,8 @@ under :file:`profile_default`.
 
     IPython configuration options are case sensitive, and IPython cannot
     catch misnamed keys or invalid values.
-    
-    By default IPython will also ignore any invalid configuration files. 
+
+    By default IPython will also ignore any invalid configuration files.
 
 .. versionadded:: 5.0
 
@@ -72,64 +71,16 @@ under :file:`profile_default`.
 Locating these files
 --------------------
 
-From the command-line, you can quickly locate the IPYTHONDIR or a specific
-profile with:
+From the command-line, you can quickly locate the :envvar:`IPYTHONDIR`
+or a specific profile with:
 
 .. sourcecode:: bash
 
     $ ipython locate
     /home/you/.ipython
-    
+
     $ ipython locate profile foo
     /home/you/.ipython/profile_foo
 
 These map to the utility functions: :func:`IPython.utils.path.get_ipython_dir`
 and :func:`IPython.utils.path.locate_profile` respectively.
-
-
-.. _profiles_dev:
-
-Profiles
-========
-
-A profile is a directory containing configuration and runtime files, such as
-logs, connection info for the parallel apps, and your IPython command history.
-
-The idea is that users often want to maintain a set of configuration files for
-different purposes: one for doing numerical computing with NumPy and SciPy and
-another for doing symbolic computing with SymPy. Profiles make it easy to keep a
-separate configuration files, logs, and histories for each of these purposes.
-
-Let's start by showing how a profile is used:
-
-.. code-block:: bash
-
-    $ ipython --profile=sympy
-
-This tells the :command:`ipython` command line program to get its configuration
-from the "sympy" profile. The file names for various profiles do not change. The
-only difference is that profiles are named in a special way. In the case above,
-the "sympy" profile means looking for :file:`ipython_config.py` in :file:`<IPYTHONDIR>/profile_sympy`.
-
-The general pattern is this: simply create a new profile with:
-
-.. code-block:: bash
-
-    $ ipython profile create <name>
-
-which adds a directory called ``profile_<name>`` to your IPython directory. Then
-you can load this profile by adding ``--profile=<name>`` to your command line
-options. Profiles are supported by all IPython applications.
-
-IPython ships with some sample profiles in :file:`IPython/config/profile`. If
-you create profiles with the name of one of our shipped profiles, these config
-files will be copied over instead of starting with the automatically generated
-config files.
-
-IPython extends the config loader for Python files so that you can inherit
-config from another profile. To do this, use a line like this in your Python
-config file:
-
-.. sourcecode:: python
-
-    load_subconfig('ipython_config.py', profile='default')

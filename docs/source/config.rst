@@ -20,7 +20,7 @@ Many of IPython's classes have configurable attributes (see
 configured in several ways.
 
 Python config files
--------------------
+===================
 
 To create the blank config files, run::
 
@@ -65,7 +65,7 @@ you can use methods like those found on:
    list, dict and set methods for config values
 
 Example config file
--------------------
+===================
 
 ::
 
@@ -98,7 +98,7 @@ Example config file
 
 
 Command line arguments
-----------------------
+======================
 
 Every configurable value can be set from the command line, using this
 syntax::
@@ -125,7 +125,7 @@ Options specified at the command line, in either format, override
 options set in a configuration file.
 
 The config magic
-----------------
+================
 
 You can also modify config from inside IPython, using a magic command::
 
@@ -153,7 +153,7 @@ IPython starts, so they can't be changed like this.
 .. _configure_start_ipython:
 
 Running IPython from Python
-----------------------------
+============================
 
 If you are using :ref:`embedding` to start IPython from a normal
 python file, you can set configuration options the same way as in a
@@ -210,6 +210,6 @@ the directory :file:`~/.ipython/` by default.
 
 .. seealso::
 
-   :doc:`development/index`
+   :doc:`development/how_ipython_works.rst`
       Technical details of the config system.
 

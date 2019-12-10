@@ -54,38 +54,38 @@ dist: html
 api:
 	mkdir -p build/html build/.doctrees
 	@echo "Generating API docs"
-	$(SPHINXAPIDOC) -M -f --tocfile index -o source/api/generated -t source/_templates ../IPython ../IPython/*tests*
+	$(SPHINXAPIDOC) -d 1 -Mef --tocfile index -o source/api/generated -t source/_templates ../IPython "../IPython/*tests*"
 
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here
 html: api
-	$(SPHINXBUILD) -b html -c $(SRCDIR) -P -w sphinx.log $(ALLSPHINXOPTS) $(SRCDIR) build/html
+	$(SPHINXBUILD) -b html -c $(SRCDIR) -w sphinx.log $(ALLSPHINXOPTS) $(SRCDIR) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 
 
 html_noapi:
 	-rm -rf $(SRCDIR)/api/generated
-	$(SPHINXBUILD) -b html -c source -P -w sphinx.log $(ALLSPHINXOPTS) source build/html
+	$(SPHINXBUILD) -b html -c source -w sphinx.log $(ALLSPHINXOPTS) $(SRCDIR) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 
-htmlhelp:
+htmlhelp: api
 	mkdir -p build/htmlhelp build/doctrees
-	$(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) build/htmlhelp
+	$(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) $(SRCDIR) build/htmlhelp
 	@echo
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in build/htmlhelp."
 
-changes:
+changes: api
 	mkdir -p build/changes build/doctrees
-	$(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) build/changes
+	$(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(SRCDIR) build/changes
 	@echo
 	@echo "The overview file is in build/changes."
 
-linkcheck:
+linkcheck: api
 	mkdir -p build/linkcheck build/doctrees
-	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) build/linkcheck
+	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(SRCDIR) build/linkcheck
 	@echo
 	@echo "Link check complete; look for any errors in the above output " \
 	      "or in build/linkcheck/output.rst."

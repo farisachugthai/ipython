@@ -130,7 +130,6 @@ done some work in the classic Python REPL.
 
 .. toctree::
    :maxdepth: 3
-   :caption: Tutorial
 
    tutorial/tutorial
    tutorial/plotting
@@ -147,9 +146,16 @@ done some work in the classic Python REPL.
     `The Jupyter Notebook <http://jupyter-notebook.readthedocs.io/en/latest/>`__
 
 
+Configuration and Customization
+===============================
+
+This section describes the IPython configuration system. This is based on
+:mod:`traitlets.config`; see that documentation for more information
+about the overall architecture.
+
 .. toctree::
+   :caption:configuration_and_customization
    :maxdepth: 3
-   :caption: Configuration and customization
 
    intro
    config
@@ -157,10 +163,10 @@ done some work in the classic Python REPL.
    custommagics
    details
 
+Extending
+=========
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Extending
 
    integrating
    shell_mimerenderer
@@ -170,6 +176,14 @@ done some work in the classic Python REPL.
    extensions
    reference
 
+Extensions Bundled with IPython
+===============================
+
+.. toctree::
+   :maxdepth: 1
+
+   api/autoreload
+   api/storemagic
 
 .. toctree::
    :caption: Sphinx Extensions

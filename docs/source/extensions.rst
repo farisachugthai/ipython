@@ -112,12 +112,3 @@ Third Party Extensions
 
 .. _bundled_extensions:
 
-Extensions bundled with IPython
-===============================
-
-.. toctree::
-   :maxdepth: 1
-
-   autoreload
-   storemagic
-

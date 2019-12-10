@@ -1,8 +1,23 @@
+=================
 How IPython works
 =================
 
+.. module:: how_ipython_works
+   :synopsis: Review how IPython works 'under the hood'.
+
+.. |ip| replace:: :class:`~IPython.core.interactiveshell.InteractiveShell`
+
+.. moved kernel stuff out to wrapper kernels. This is gonna start housing
+   profile info.
+
+
 Terminal IPython
-----------------
+================
+
+.. this is the developers section they know what a repl is.
+
+Background
+----------
 
 When you type ``ipython``, you get the original IPython interface, running in
 the terminal. It does something like this::
@@ -17,47 +32,97 @@ model is like that: prompt the user for some code, and when they've entered it,
 exec it in the same process. This model is often called a REPL, or
 Read-Eval-Print-Loop.
 
-The IPython Kernel
-------------------
 
-All the other interfaces—the Notebook, the Qt console, ``ipython console`` in
-the terminal, and third party interfaces—use the IPython Kernel. This is a
-separate process which is responsible for running user code, and things like
-computing possible completions. Frontends communicate with it using JSON
-messages sent over `ZeroMQ <http://zeromq.org/>`_ sockets; the protocol they use is described in
-:ref:`jupyterclient:messaging`.
+.. _profiles_dev:
 
-The core execution machinery for the kernel is shared with terminal IPython:
+How Profiles Are Setup
+-----------------------
 
-.. image:: figs/ipy_kernel_and_terminal.png
+The profile directory is used by all IPython applications, to manage
+configuration, logging and security.
 
-A kernel process can be connected to more than one frontend simultaneously. In
-this case, the different frontends will have access to the same variables.
+Indeed the profile directory is the basis for all IPython configuration,
+and as a result, depends on pre-existing state from other objects and mixins
+the least.
 
-.. TODO: Diagram illustrating this?
+A profile is a directory containing configuration and runtime files, such as
+logs, connection info for the parallel apps, and your IPython command history.
 
-This design was intended to allow easy development of different frontends based
-on the same kernel, but it also made it possible to support new languages in the
-same frontends, by developing kernels in those languages, and we are refining
-IPython to make that more practical.
+The idea is that users often want to maintain a set of configuration files for
+different purposes: one for doing numerical computing with NumPy and SciPy and
+another for doing symbolic computing with SymPy. Profiles make it easy to keep a
+separate configuration files, logs, and histories for each of these purposes.
 
-Today, there are two ways to develop a kernel for another language. Wrapper
-kernels reuse the communications machinery from IPython, and implement only the
-core execution part. Native kernels implement execution and communications in
-the target language:
+Let's start by showing how a profile is used:
 
-.. image:: figs/other_kernels.png
+.. code-block:: bash
 
-Wrapper kernels are easier to write quickly for languages that have good Python
-wrappers, like `octave_kernel <https://pypi.python.org/pypi/octave_kernel>`_, or
-languages where it's impractical to implement the communications machinery, like
-`bash_kernel <https://pypi.python.org/pypi/bash_kernel>`_. Native kernels are
-likely to be better maintained by the community using them, like
-`IJulia <https://github.com/JuliaLang/IJulia.jl>`_ or `IHaskell <https://github.com/gibiansky/IHaskell>`_.
+    $ ipython --profile=sympy
 
-.. seealso::
+This tells the :command:`ipython` command line program to get its configuration
+from the "sympy" profile. The file names for various profiles do not change. The
+only difference is that profiles are named in a special way. In the case above,
+the "sympy" profile means looking for :file:`ipython_config.py` in :file:`<IPYTHONDIR>/profile_sympy`.
 
-   :ref:`jupyterclient:kernels`
-   
-   :doc:`wrapperkernels`
+The general pattern is this: simply create a new profile with:
+
+.. code-block:: bash
+
+    $ ipython profile create <name>
+
+which adds a directory called ``profile_<name>`` to your IPython directory. Then
+you can load this profile by adding ``--profile=<name>`` to your command line
+options. Profiles are supported by all IPython applications.
+
+IPython ships with some sample profiles in :file:`IPython/config/profile`. If
+you create profiles with the name of one of our shipped profiles, these config
+files will be copied over instead of starting with the automatically generated
+config files.
+
+IPython extends the config loader for Python files so that you can inherit
+config from another profile. To do this, use a line like this in your Python
+config file:
+
+.. sourcecode:: python
+
+    load_subconfig('ipython_config.py', profile='default')
+
+
+Profile Initialization
+----------------------
+
+As a result, the ``ipython_dir`` and ``profile_dir`` attributes of the
+|ip| object that drives the application are initialized first
+with :meth:`init_profile_dir`.
+
+
+:class:`IPython.core.profiledir.ProfileDir`
+-------------------------------------------
+
+This object knows how to find, create and manage these directories. This
+should be used by any code that wants to handle profiles.
+
+
+See Also
+---------
+
+Relevant Modules:
+
+:mod:`IPython.paths`
+:mod:`IPython.utils.path`
+:mod:`IPython.core.profileapp`
+:mod:`IPython.core.profiledir`
+:mod:`IPython.core.interactiveshell`
+
+Relevant Classes:
+
+:class:`IPython.core.interactiveshell.InteractiveShell`
+:class:`IPython.core.profileapp.ProfileApp`
+
+.. yeah it's kinda spread all over
+
+Relevant Docs:
+
+:doc:`config`
+:doc:`intro`
 
