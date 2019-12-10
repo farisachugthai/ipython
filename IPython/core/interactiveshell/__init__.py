@@ -1,4 +1,8 @@
-"""Main IPython class."""
+"""Main IPython class.
+
+.. highlight:: ipython
+
+"""
 
 # -----------------------------------------------------------------------------
 #  Copyright (C) 2001 Janko Hauser <jhauser@zscout.de>
@@ -33,6 +37,7 @@ from ast import AST, Await, Expr, Return
 from importlib import import_module
 from logging import error
 from pathlib import Path
+from reprlib import Repr
 from typing import List as ListType
 from typing import Tuple
 from warnings import warn
@@ -72,7 +77,6 @@ from IPython.core.formatters import DisplayFormatter
 from IPython.core.history import HistoryManager
 from IPython.core.inputtransformer2 import ESC_MAGIC, ESC_MAGIC2
 from IPython.core.logger import Logger
-from IPython.core.macro import Macro
 from IPython.core.payload import PayloadManager
 from IPython.core.prefilter import PrefilterManager
 from IPython.core.profiledir import ProfileDir
@@ -620,7 +624,7 @@ class InteractiveShell(SingletonConfigurable):
 
         TODO: init_io() needs to happen before init_traceback handlers
         because the traceback handlers hardcode the stdout/stderr streams.
-        This logic in in debugger.Pdb and should eventually be changed.
+        This logic is in debugger.Pdb and should eventually be changed.
 
         .. caution:: :meth:`init_pdb` must come after
                      :meth:`init_traceback_handlers`. `init_traceback_handlers`
@@ -705,6 +709,9 @@ class InteractiveShell(SingletonConfigurable):
     def get_ipython(self):
         """Return the currently running IPython instance."""
         return self
+
+    def __repr__(self):
+        return repr(self.get_ipython())
 
     # -------------------------------------------------------------------------
     # Trait changed handlers
@@ -1936,9 +1943,9 @@ class InteractiveShell(SingletonConfigurable):
     # Things related to exception handling and tracebacks (not debugging)
     # -------------------------------------------------------------------------
 
-    from IPython.core.debugger import CorePdb
+    from IPython.core.debugger import CorePdb as Pdb
 
-    debugger_cls = CorePdb
+    debugger_cls = Pdb
 
     def init_traceback_handlers(self, custom_exceptions=None):
         """Syntax error handler.
@@ -2378,7 +2385,7 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         # self.call_pdb is a property
-        # self.call_pdb = self.pdb
+        self.call_pdb = self.pdb
 
     def _get_call_pdb(self):
         return self._call_pdb
@@ -2410,15 +2417,21 @@ class InteractiveShell(SingletonConfigurable):
         # ) Both IPython.core.debugger and IPython.terminal.debugger are affected
 
         # ) This has implications for ipdb which is outside of this repository
+
+        Changes
+        -------
+
+        # notify the actual exception handlers
+        self.InteractiveTB.call_pdb = val
+
+        pdb is going to soon no longer be bound to our traceback handlers.
+
         """
         if val not in (0, 1, False, True):
             raise ValueError("new call_pdb value must be boolean")
 
         # store value in instance
-        self._call_pdb = val
-
-        # notify the actual exception handlers
-        self.InteractiveTB.call_pdb = val
+        self._call_pdb = bool(val)
 
     call_pdb = property(
         _get_call_pdb,
@@ -2433,10 +2446,10 @@ class InteractiveShell(SingletonConfigurable):
         Parameters
         ----------
         force : bool
-            By default, this routine checks the instance call_pdb
-            flag and does not actually invoke the debugger if the flag is false.
+            By default, this routine checks the instances 'call_pdb'
+            flag and does not actually invoke the debugger if the flag is False.
             The 'force' option forces the debugger to activate even if the flag
-            is false.
+            is False.
 
         """
         if not (force or self.call_pdb):
@@ -2446,20 +2459,30 @@ class InteractiveShell(SingletonConfigurable):
             error("No traceback has been produced, nothing to debug.")
             return
 
+        self.Pdb().set_trace(frame or sys._getframe().f_back)
         # self.InteractiveTB.debugger(force=True)
 
     # -------------------------------------------------------------------------
     # Things related to readline
     # -------------------------------------------------------------------------
 
-    @skip_doctest
-    def set_next_input(self, s, replace=False):
-        """ Sets the 'default' input string for the next command line.
+    def set_next_input(self, s):
+        """Sets the 'default' input string for the next command line.
 
-        Example::
+        .. versionchanged:: 7.11.0
 
-            In [1]: _ip.set_next_input("Hello Word")
-            In [2]: Hello Word_  # cursor is here
+            replace wasn't used. Update call signature
+
+        Parameters
+        ----------
+        s : str
+            Sets 'rl_next_input'.
+
+        Examples
+        --------
+        In [1]: _ip.set_next_input("Hello Word")
+        In [2]: Hello Word_  # cursor is here
+
         """
         self.rl_next_input = s
 
@@ -2485,7 +2508,7 @@ class InteractiveShell(SingletonConfigurable):
         - out-of-process (typically over the network by remote frontends)
 
         Also worth noting that this defines the `Completer` attribute,
-        initializes the `IPCompleter` object, defines the strdispatchers
+        initializes the `IPCompleter` object, defines the `strdispatchers`
         attribute and makes no less than 6 calls to 'set_hook'!
 
         So if you muck around with the hooks in this repo the completions
@@ -2519,7 +2542,6 @@ class InteractiveShell(SingletonConfigurable):
         self.set_hook("complete_command", cd_completer, str_key="%cd")
         self.set_hook("complete_command", reset_completer, str_key="%reset")
 
-    @skip_doctest
     def complete(self, text, line=None, cursor_pos=None):
         """Return the completed text and a list of completions.
 
@@ -2817,8 +2839,8 @@ class InteractiveShell(SingletonConfigurable):
         themacro : str or Macro
             The action to do upon invoking the macro.  If a string, a new
             Macro object is created by passing the string to it.
-        """
 
+        """
         from IPython.core import macro
 
         if isinstance(themacro, str):
@@ -2852,6 +2874,13 @@ class InteractiveShell(SingletonConfigurable):
         ------
         :exc:`OSError`
 
+        Notes
+        -----
+        We explicitly do NOT return the subprocess status code, because
+        a non-None value would trigger :func:`sys.displayhook` calls.
+
+        Instead, we store the exit_code in user_ns.
+
         """
         if cmd.rstrip().endswith("&"):
 
@@ -2861,10 +2890,6 @@ class InteractiveShell(SingletonConfigurable):
             # #) ../lib/backgroundjobs.py
 
             raise OSError("Background processes not supported.")
-
-        # we explicitly do NOT return the subprocess status code, because
-        # a non-None value would trigger :func:`sys.displayhook` calls.
-        # Instead, we store the exit_code in user_ns.
 
         # .. todo:: Can we notify them in any other way than 2500 lines deep in the source code leaving 1 comment?
         self.user_ns["_exit_code"] = system(self.var_expand(cmd, depth=1))
@@ -2877,6 +2902,18 @@ class InteractiveShell(SingletonConfigurable):
         ----------
         cmd : str
             Command to execute.
+
+        Notes
+        -----
+        For posix the result of the subprocess.call() below is an exit
+        code, which by convention is zero for success, positive for
+        program failure.  Exit codes above 128 are reserved for signals,
+        and the formula for converting a signal to an exit code is usually
+        signal_number+128.  To more easily differentiate between exit
+        codes and signals, ipython uses negative numbers.  For instance
+        since control-c is signal 2 but exit code 130, ipython's
+        _exit_code variable will read -2.  Note that some shells like
+        csh and fish don't follow sh/bash conventions for exit codes.
 
         """
         cmd = self.var_expand(cmd, depth=1)
@@ -2893,24 +2930,13 @@ class InteractiveShell(SingletonConfigurable):
                     print("\n" + self.get_exception_only(), file=sys.stderr)
                     ec = -2
         else:
-            # For posix the result of the subprocess.call() below is an exit
-            # code, which by convention is zero for success, positive for
-            # program failure.  Exit codes above 128 are reserved for signals,
-            # and the formula for converting a signal to an exit code is usually
-            # signal_number+128.  To more easily differentiate between exit
-            # codes and signals, ipython uses negative numbers.  For instance
-            # since control-c is signal 2 but exit code 130, ipython's
-            # _exit_code variable will read -2.  Note that some shells like
-            # csh and fish don't follow sh/bash conventions for exit codes.
             executable = os.environ.get("SHELL", None)
             try:
                 # Use env shell instead of default /bin/sh
-                # **TODO**:
-                # Where was executable=executable defined previously?
                 ec = subprocess.call(
                     cmd,
-                    shell=True
-                    # , executable=executable
+                    shell=True,
+                    executable=executable,
                 )
             except KeyboardInterrupt:
                 # intercept control-C; a long traceback is not useful here
@@ -3411,28 +3437,29 @@ class InteractiveShell(SingletonConfigurable):
     ) -> ExecutionResult:
         """Run a complete IPython cell asynchronously.
 
+        .. versionadded: 7.0
+
         Parameters
         ----------
         raw_cell : str
-          The code (including IPython code such as %magic functions) to run.
+            The code (including IPython code such as %magic functions) to run.
         store_history : bool
-          If True, the raw and translated cell will be stored in IPython's
-          history. For user code calling back into IPython's machinery, this
-          should be set to False.
+            If True, the raw and translated cell will be stored in IPython's
+            history. For user code calling back into IPython's machinery, this
+            should be set to False.
         silent : bool
-          If True, avoid side-effects, such as implicit displayhooks and
-          and logging.  silent=True forces store_history=False.
+            If True, avoid side-effects, such as implicit displayhooks and
+            and logging.  silent=True forces store_history=False.
         shell_futures : bool
-          If True, the code will share future statements with the interactive
-          shell. It will both be affected by previous __future__ imports, and
-          any __future__ imports in the code will affect the shell. If False,
-          __future__ imports are not shared in either direction.
+            If True, the code will share future statements with the interactive
+            shell. It will both be affected by previous __future__ imports, and
+            any __future__ imports in the code will affect the shell. If False,
+            __future__ imports are not shared in either direction.
 
         Returns
         -------
         result : :class:`ExecutionResult`
 
-        .. versionadded: 7.0
         """
         info = ExecutionInfo(raw_cell, store_history, silent, shell_futures)
         result = ExecutionResult(info)
@@ -3935,7 +3962,8 @@ class InteractiveShell(SingletonConfigurable):
 
         Parameters
         ----------
-        code :
+        code : str
+            Code to give to input_transformer_manager instance.
 
         Returns
         -------
@@ -4119,7 +4147,10 @@ class InteractiveShell(SingletonConfigurable):
         return filename
 
     def ask_yes_no(self, prompt, default=None, interrupt=None):
-        """
+        """Checks self.quiet and then returns True if so.
+
+        Why True. Whatever. Returns the similarly named ask_yes_no
+        function by passing along the args given here.
 
         Parameters
         ----------
@@ -4299,11 +4330,12 @@ class InteractiveShell(SingletonConfigurable):
         For things that may depend on startup flags or platform specifics (such
         as having readline or not), register a separate atexit function in the
         code that has the appropriate information, rather than trying to
-        clutter
+        clutter.
+
+        Close the history session (this stores the end time and line count)
+        this must be *before* the tempfile cleanup, in case of temporary
+        history db
         """
-        # Close the history session (this stores the end time and line count)
-        # this must be *before* the tempfile cleanup, in case of temporary
-        # history db
         self.history_manager.end_session()
 
         # Cleanup all tempfiles and folders left around
@@ -4323,7 +4355,7 @@ class InteractiveShell(SingletonConfigurable):
         self.reset(new_session=False)
 
         # Run user hooks
-        # self.hooks.shutdown_hook()
+        self.hooks.shutdown_hook()
 
     def cleanup(self):
         """
@@ -4331,9 +4363,8 @@ class InteractiveShell(SingletonConfigurable):
         """
         self.restore_sys_module_state()
 
-    # Overridden in terminal subclass to change prompts
     def switch_doctest_mode(self, mode):
-        """
+        """Overridden in terminal subclass to change prompts.
 
         Parameters
         ----------
@@ -4355,6 +4386,16 @@ class InteractiveShellABC(metaclass=abc.ABCMeta):
     def enable_gui(self, gui=None):
         """I didn't entirely understand why this was in the Interactive Shell and this had no methods."""
         raise NotImplementedError("Implement enable_gui in a subclass")
+
+    @abc.abstractmethod
+    def switch_doctest_mode(self, mode):
+        """Overridden in terminal subclass to change prompts.
+
+        Parameters
+        ----------
+        mode :
+        """
+        pass
 
 
 InteractiveShellABC.register(InteractiveShell)

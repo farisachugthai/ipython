@@ -19,6 +19,7 @@ _build
 docs/man/*.gz
 # Wait why
 docs/source/api/generated
+!docs/source/api
 docs/source/config/options
 docs/source/config/shortcuts/*.csv
 docs/source/interactive/magics-generated.txt
@@ -44,8 +45,5 @@ __pycache__
 .python-version
 venv*/
 .idea/
-
-!.idea/
 .noseids
 .patch
-# Vim: set ft=git:

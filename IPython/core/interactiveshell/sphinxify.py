@@ -1,17 +1,17 @@
 """Tried moving 1 function over and look at the hoops you gotta jump through."""
 import sys
-from tempdir import TemporaryDirectory
+from tempfile import TemporaryDirectory
 
 if sys.version_info < (3, 7):
     from IPython.core.error import ModuleNotFoundError
 
 try:
     import docrepr
-except (ImportError, ModuleNotFoundError)
-pass
+except (ImportError, ModuleNotFoundError):
+    pass
 
 
-def sphinxify(doc):
+def sphinxified(doc):
     """
 
     Parameters

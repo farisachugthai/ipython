@@ -679,4 +679,4 @@ def set_trace(frame=None):
     >>> Pdb().set_trace(frame or sys._getframe().f_back)
 
     """
-    Pdb().set_trace(frame or sys._getframe().f_back)
+    CorePdb().set_trace(frame or sys._getframe().f_back)

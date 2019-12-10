@@ -48,21 +48,25 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
     This function provides common scaffolding for creating subprocess.Popen()
     calls.  It creates a Popen object and then calls the callback with it.
 
+    WAIT WHY IS THIS POSIX ONLY
+
+    .. versionchanged:: 7.11.0 --- I've been trying to run bash on windows for so long
+
     Parameters
     ----------
     cmd : str or list
-      A command to be executed by the system, using :class:`subprocess.Popen`.
-      If a string is passed, it will be run in the system shell. If a list is
-      passed, it will be used directly as arguments.
+        A command to be executed by the system, using :class:`subprocess.Popen`.
+        If a string is passed, it will be run in the system shell. If a list is
+        passed, it will be used directly as arguments.
 
     callback : callable
-      A one-argument function that will be called with the Popen object.
+        A one-argument function that will be called with the Popen object.
 
     stderr : file descriptor number, optional
-      By default this is set to ``subprocess.PIPE``, but you can also pass the
-      value ``subprocess.STDOUT`` to force the subprocess' stderr to go into
-      the same file descriptor as its stdout.  This is useful to read stdout
-      and stderr combined in the order they are generated.
+        By default this is set to ``subprocess.PIPE``, but you can also pass the
+        value ``subprocess.STDOUT`` to force the subprocess' stderr to go into
+        the same file descriptor as its stdout.  This is useful to read stdout
+        and stderr combined in the order they are generated.
 
     Returns
     -------
@@ -71,10 +75,13 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
     Notes
     -----
     On POSIX systems run shell commands with user-preferred shell.
+    Should probably clean up that shell check though.
 
-    WAIT WHY IS THIS POSIX ONLY
+    >>> shell = isinstance(cmd, 'str')
 
-    .. versionchanged:: I've been trying to run bash on windows for so long
+    Is a terrible check. I guess for now add it as a parameter and allow None.
+    Same with executable. Damn this should probably just be a class
+    with a ``run`` like method.
 
     """
     sys.stdout.flush()

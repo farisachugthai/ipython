@@ -155,25 +155,26 @@ class CommandChainDispatcher:
         """
         self.chain = chain or []
 
-    def __call__(self, args=None, kw=None):
+    def call(self, args=None, kw=None):
         """Command chain is called just like normal func.
 
         This will call all funcs in chain with the same args as were given to
         this function, and return the result of first func that didn't raise
         :exc:`TryNext`.
 
-        .. note:: This doesn't utilize the priority in any way.ArithmeticError
+        .. note:: This doesn't utilize the priority in any way.
 
-            Maybe we need to do an sort using something in mod:`operator`.
+        .. todo:: Maybe we need to do a sort using something in mod:`operator`.
 
         """
-        for prio, cmd in self.chain:
-            # print "prio",prio,"cmd",cmd #dbg
-            try:
-                return cmd(*args, **kw)
-            except TryNext as exc:
-                # if no function will accept it, raise TryNext up to the caller
-                raise exc
+        if kw is not None:
+            for prio, cmd in self.chain:
+                # print "prio",prio,"cmd",cmd #dbg
+                try:
+                    return cmd(*args, **kw)
+                except TryNext as exc:
+                    # if no function will accept it, raise TryNext up to the caller
+                    pass
 
     def __repr__(self):
         return "{!r}\n{!r}".format(self.__class__.__name__, self.chain)

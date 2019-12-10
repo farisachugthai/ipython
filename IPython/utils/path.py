@@ -71,11 +71,15 @@ from warnings import warn
 
 from ipython_genutils.path import filefind
 
-from IPython.paths import _writable_dir
-
 # -----------------------------------------------------------------------------
 # Code
 # -----------------------------------------------------------------------------
+
+
+def _writable_dir(path):
+    """Whether `path` is a directory, to which the user has write access."""
+    return os.path.isdir(path) and os.access(path, os.W_OK)
+
 
 
 def get_long_path_name(path):

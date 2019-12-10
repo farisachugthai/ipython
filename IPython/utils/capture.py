@@ -105,8 +105,11 @@ class RichOutput:
 
 
 class CapturedIO:
-    """Simple object for containing captured
-    :data:`sys.stdout`, :data:`sys.stderr` and rich display StringIO objects.
+    """Simple object for containing captured IO streams.
+
+    This specifically manifests as purely unbuffered writes to
+    :data:`sys.stdout`, :data:`sys.stderr` as well as automatic
+    creation of rich display StringIO objects.
 
     Each instance `c` has three attributes:
 
@@ -158,6 +161,7 @@ class CapturedIO:
             from IPython.display import display
             for o in c.outputs:
                 display(o)
+
         """
         return [RichOutput(**kargs) for kargs in self._outputs]
 
@@ -171,10 +175,6 @@ class CapturedIO:
             RichOutput(**kargs).display()
 
     __call__ = show
-    # TODO: can the above be rewritten like this?
-    # def __call__(self, *args, **kwargs):
-    #     self.__init__(self, *args, **kwargs)
-    #     return self.show()
 
 
 class capture_output:

@@ -15,6 +15,9 @@ env:
     - PATH=$TRAVIS_BUILD_DIR/pandoc:$PATH
     - LANG=C.UTF-8
 
+cache:
+  - pip
+
 
 jobs:
   include:

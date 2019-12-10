@@ -53,9 +53,12 @@ class AvoidUNCPath:
     change and None otherwise, so that users can apply the necessary adjustment
     to their system calls in the event of a change.
 
+    .. todo:: `pathlib.PurePath` objects can handle UNC paths.
+
     Examples
     --------
     ::
+
         cmd = 'dir'
         with AvoidUNCPath() as path:
             if path is not None:
@@ -86,7 +89,11 @@ class AvoidUNCPath:
 
 
 def _find_cmd(cmd):
-    """Find the full path to a .bat or .exe using the win32api module."""
+    """Find the full path to a .bat or .exe using the win32api module.
+
+    .. todo:: Should check :envvar:`PATHEXT` not manually guess at it.
+
+    """
     try:
         from win32api import SearchPath
     except ImportError:

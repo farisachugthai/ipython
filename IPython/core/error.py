@@ -250,3 +250,4 @@ class ProfileDirError(Exception):
     def __call__(self, msg=None):
         """Idk if it was a good idea to do it this way but we don't see our own errors."""
         print(msg)
+        return msg

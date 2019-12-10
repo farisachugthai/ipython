@@ -1,4 +1,7 @@
-"""Logger class for IPython's logging facilities."""
+"""Logger class for IPython's logging facilities.
+
+Based on PEP 282.
+"""
 
 # *****************************************************************************
 #       Copyright (C) 2001 Janko Hauser <jhauser@zscout.de> and
@@ -15,25 +18,56 @@
 import codecs
 import glob
 import io
+# How does this not import logging?
+import logging
 import os
 from pathlib import Path
 import time
 
 from traitlets.config import Configurable, Bool
 
+
+class BracketFormatter(logging.Formatter):
+    """Formatter with additional `highlevel` record
+
+    This field is empty if log level is less than highlevel_limit,
+    otherwise it is formatted with self.highlevel_format.
+
+    Useful for adding 'WARNING' to warning messages,
+    without adding 'INFO' to info, etc.
+    """
+
+    def __init__(self, highlevel_limit=None, highlevel_format=None, *args, **kwargs):
+        """Slipped my mind that using ``{}`` in log messages is non-standard....
+
+        Let's override that.
+        """
+        self.highlevel_limit = logging.WARN or highlevel_limit
+        self.highlevel_format = " %(module)s | %(levelname)s |" or highlevel_format
+        super().__init__(self, *args, **kwargs)
+
+    def format(self, record=None):
+        if not record:
+            return
+        if record.levelno >= self.highlevel_limit:
+            record.highlevel = self.highlevel_format % record.__dict__
+        else:
+            record.highlevel = ""
+        return super().format(record)
+
+
 # ****************************************************************************
 # FIXME: This class isn't a mixin anymore, but it still needs attributes from
 # ipython and does input cache management.  Finish cleanup later...
 
-
 class Logger:
     """A Logfile class with different policies for file creation"""
 
-    def __init__(self, home_dir, logfname="Logger.log", loghead="", logmode="over"):
+    def __init__(self, home_dir=None, logfname="Logger.log", loghead="", logmode="over"):
 
         # this is the full ipython instance, we need some attributes from it
         # which won't exist until later. What a mess, clean up later...
-        self.home_dir = home_dir
+        self.home_dir = home_dir or Path.home().__fspath__()
 
         self.logfname = logfname
         self.loghead = loghead

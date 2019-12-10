@@ -4,6 +4,13 @@
 Class for managing profile directories
 ---------------------------------------
 
+The ProfileDir class has a :meth:`_mkdir` method, but we have a function
+:func:`IPython.utils.path.ensure_dir_exists`. See which one is functionally
+more useful and then change the method to return the function.
+
+Also condense those check_*_dir methods down to 1. It's a little silly
+to have 4 methods that do the same thing.
+
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -22,12 +29,6 @@ from IPython.utils.path import expand_path, ensure_dir_exists
 class ProfileDir(LoggingConfigurable):
     """An object to manage the profile directory and its resources.
 
-    The profile directory is used by all IPython applications, to manage
-    configuration, logging and security.
-
-    This object knows how to find, create and manage these directories. This
-    should be used by any code that wants to handle profiles.
-
     Attributes
     ----------
     location : str (path-like)
@@ -38,7 +39,6 @@ class ProfileDir(LoggingConfigurable):
         This occurs when the location is set.
 
     """
-
     security_dir_name = Unicode("security")
     log_dir_name = Unicode("log")
     startup_dir_name = Unicode("startup")
@@ -173,6 +173,15 @@ class ProfileDir(LoggingConfigurable):
         Default configuration files are kept in :mod:`IPython.core.profile`.
         This function moves these from that location to the working profile
         directory.
+
+        Parameters
+        ----------
+        profile_dir : str
+            The full path to the profile directory.  If it does exist, it will
+            be used.  If not, it will be created.
+        config : dict
+            Keyword parameters to pass to the shell.
+
         """
         dst = os.path.join(self.location, config_file)
         if os.path.isfile(dst) and not overwrite:
