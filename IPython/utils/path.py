@@ -62,6 +62,7 @@ So I deleted 2 of the functions and started the original function with.:
 import errno
 import glob
 import os
+from os import system
 from pathlib import Path
 import random
 import shutil
@@ -69,16 +70,12 @@ import sys
 from warnings import warn
 
 from ipython_genutils.path import filefind
-from IPython.utils.process import system
+
+from IPython.paths import _writable_dir
 
 # -----------------------------------------------------------------------------
 # Code
 # -----------------------------------------------------------------------------
-
-
-def _writable_dir(path):
-    """Whether `path` is a directory, to which the user has write access."""
-    return os.path.isdir(path) and os.access(path, os.W_OK)
 
 
 def get_long_path_name(path):
@@ -146,7 +143,7 @@ def compress_user(path):
     """
     home = os.path.expanduser("~")
     if path.startswith(home):
-        path = "~" + path[len(home) :]
+        path = "~" + path[len(home):]
     return path
 
 
@@ -212,9 +209,18 @@ def get_home_dir(require_writable=False):
 
 
 def get_xdg_dir():
-    """Return the XDG_CONFIG_HOME, if it is defined and exists, else None."""
-    env = os.environ
-    xdg = env.get("XDG_CONFIG_HOME", None) or os.path.join(get_home_dir(), ".config")
+    """Checks for the user's config dir as defined by the XDG standard.
+
+    First, we check for the presence of the env var XDG_CONFIG_HOME.
+    This also checks for the existence of the directory even if the env var
+    isn't defined, and checks whether that directory is writable.
+
+    Returns
+    -------
+    Return the :envvar:`XDG_CONFIG_HOME`.
+
+    """
+    xdg = os.environ.get("XDG_CONFIG_HOME", None) or str(Path.home().joinpath('.config'))
     if xdg and _writable_dir(xdg):
         return xdg
 
@@ -226,8 +232,7 @@ def get_xdg_cache_dir():
     Why? I defined XDG_CACHE_HOME on my windows OS it's not like we're
     incapable of doing so?
     """
-    env = os.environ
-    xdg = env.get("XDG_CACHE_HOME", None) or os.path.join(get_home_dir(), ".cache")
+    xdg = os.environ.get("XDG_CACHE_HOME", None) or str(Path.home().joinpath('.cache'))
     if xdg and _writable_dir(xdg):
         return xdg
 
