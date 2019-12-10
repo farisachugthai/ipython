@@ -106,26 +106,10 @@ from .execution import (
 try:
     import docrepr
 
-    def sphinxify(doc):
-        """
-
-        Parameters
-        ----------
-        doc :
-
-        Returns
-        -------
-
-        """
-        with TemporaryDirectory() as dirname:
-            return {
-                "text/html": docrepr.sphinxify.sphinxify(doc, dirname),
-                "text/plain": doc,
-            }
-
-
 except ImportError:
     sphinxify = None
+else:
+    from .sphinxify import sphinxified
 
 if sys.version_info > (3, 8):
     from ast import Module
@@ -579,11 +563,30 @@ class InteractiveShell(SingletonConfigurable):
     )
     magics_manager = Instance("IPython.core.magic.MagicsManager", allow_none=True)
 
+    # Why is this how we set it up? I'm setting this the same way that the ipython_dir got set up
+    # profile_dir = Unicode("", allow_none=True).tag(config=True)
     profile_dir = Instance("IPython.core.application.ProfileDir", allow_none=True)
 
     @property
     def profile(self):
-        """Property that returns self.profile_dir.location."""
+        """Property that returns self.profile_dir.location.
+
+        Check out init_profile_dir for an explanation of why
+        self.profile_dir != self.ipython_dir and why setting
+        self.profile = str() raises an TraitError.
+
+        This section here.: We call a ProfileDir classmethod and set
+        profile_dir equal to that. So it returns an instance, and as a result
+        we're required to pass ProfileDir instances to the var.
+        Goddamn that's confusing.:
+
+            self.profile_dir = ProfileDir.create_profile_dir_by_name(
+                self.ipython_dir, "default"
+            )
+
+        .. todo:: This really should have a setter associated with it then.
+
+        """
         if self.profile_dir is not None:
             name = os.path.basename(self.profile_dir.location)
             return name.replace("profile_", "")
@@ -724,24 +727,21 @@ class InteractiveShell(SingletonConfigurable):
     # init_* methods called by __init__
     # -------------------------------------------------------------------------
 
-    def init_ipython_dir(self, ipython_dir):
-        """
+    def init_ipython_dir(self, ipython_dir=None):
+        """First initialization method of the class!
 
         Parameters
         ----------
-        ipython_dir :
+        ipython_dir : str (os.Pathlike)
 
         Returns
         -------
 
         """
-        if ipython_dir is not None:
-            self.ipython_dir = ipython_dir
-            return
+        self.log.debug('InteractiveShell: ProfileDir: %s', self.profile_dir)
+        self.ipython_dir = get_ipython_dir() or ipython_dir
 
-        self.ipython_dir = get_ipython_dir()
-
-    def init_profile_dir(self, profile_dir):
+    def init_profile_dir(self, profile_dir=None):
         """
 
         Parameters
@@ -754,6 +754,7 @@ class InteractiveShell(SingletonConfigurable):
         """
         if profile_dir is not None:
             self.profile_dir = profile_dir
+            self.log.debug('InteractiveShell: ProfileDir: %s', self.profile_dir)
             return
         self.profile_dir = ProfileDir.create_profile_dir_by_name(
             self.ipython_dir, "default"
