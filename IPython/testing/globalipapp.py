@@ -15,7 +15,7 @@ import sys
 import types
 import warnings
 
-from . import tools
+from IPython.testing import tools
 
 from IPython.core import page
 from IPython.utils import utils_io
@@ -38,6 +38,7 @@ class StreamProxy(utils_io.IOStream):
             DeprecationWarning,
             stacklevel=2,
         )
+        # Oh yeah? Isn't io.StreamIO deprecated too?
         self.name = name
 
     @property
@@ -51,19 +52,10 @@ class StreamProxy(utils_io.IOStream):
         return getattr(sys, self.name)
 
     def flush(self):
-        """
-
-        """
         self.stream.flush()
 
 
 def get_ipython():
-    """
-
-    Returns
-    -------
-
-    """
     # This will get replaced by the real thing once we start IPython below
     return start_ipython()
 
@@ -143,9 +135,8 @@ def start_ipython():
     builtin_mod.ip = _ip
     builtin_mod.get_ipython = get_ipython
 
-    # Override paging, so we don't require user interaction during the tests.
     def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
-        """
+        """Override paging, so we don't require user interaction during the tests.
 
         Parameters
         ----------

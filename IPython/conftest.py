@@ -17,42 +17,61 @@ import pytest
 from _pytest.nose import pytest_runtest_setup, teardown_nose, is_potential_nosetest, call_optional
 # noqa
 
-from .testing import tools
+import IPython
 
 
-# @pytest.fixture
-def get_ipython():
+@pytest.fixture(scope='session', autouse=True)
+def ip():
+    return get_test_shell()
+
+
+@pytest.fixture(scope='session', autouse=True)
+def _ip():
+    """I'm gonna try and catch both of the typical calls to the shell with this."""
+    return get_test_shell()
+
+
+def get_test_shell():
+    """Changed the name from canonical get_ipython.
+
+    If we need to call that function direclty, import it and do so.
     """
+    # This will get replaced by the real thing once we start IPython below
+    return start_test_shell()
 
-    Returns
-    -------
 
+def start_test_shell():
+    """Starts an instance of our shell. It doesn't modify the state too much though.
+
+    No cheating before the test starts!
     """
-    from .terminal.interactiveshell import TerminalInteractiveShell
-    if TerminalInteractiveShell._instance:
-        return TerminalInteractiveShell.instance()
-
-    config = tools.default_config()
+    # Create custom argv and namespaces for our IPython to be test-friendly
+    config = IPython.testing.tools.default_config()
     config.TerminalInteractiveShell.simple_prompt = True
 
     # Create and initialize our test-friendly IPython instance.
-    shell = TerminalInteractiveShell.instance(config=config)
-    return shell
+    shell = IPython.terminal.interactiveshell.TerminalInteractiveShell.instance(config=config,)
+
+    def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
+        """Override paging, so we don't require user interaction during the tests.
+
+        Parameters
+        ----------
+        strng :
+        start :
+        screen_lines :
+        pager_cmd :
+        """
+        if isinstance(strng, dict):
+            strng = strng.get("text/plain", "")
+        print(strng)
+
+    IPython.core.page.pager_page = nopage
+
+    return _ip
 
 
-@pytest.fixture(autouse=True)
-def ip():
-    """
-
-    Returns
-    -------
-    :class:`IPython.core.interactiveshell.InteractiveShell` instance.
-
-    """
-    return get_ipython()
-
-
-# @pytest.fixture(scope='session', autouse=True)
+# @pytest.fixture(scope='session')
 # def work_path():
 #     path = pathlib.Path("./tmp-ipython-pytest-profiledir")
 #     os.environ["IPYTHONDIR"] = str(path.absolute())
@@ -64,32 +83,6 @@ def ip():
 #     shutil.rmtree(str(path.resolve()))
 
 
-def nopage(strng, start=0, screen_lines=0, pager_cmd=None, **kwargs):
-    """
-
-    Parameters
-    ----------
-    strng :
-    start :
-    screen_lines :
-    pager_cmd :
-    kwargs :
-    """
-    if isinstance(strng, dict):
-        strng = strng.get("text/plain", "")
-    print(strng)
-
-
-def xsys(self, cmd):
-    """Replace the default system call with a capturing one for doctest.
-    """
-    # We use getoutput, but we need to strip it because pexpect captures
-    # the trailing newline differently from commands.getoutput
-    print(self.getoutput(cmd, split=False, depth=1).rstrip(),
-          end="", file=sys.stdout)
-    sys.stdout.flush()
-
-
 @pytest.fixture(autouse=True, scope='session')
 def inject():
     """
@@ -99,12 +92,3 @@ def inject():
     yields. so for now execute at import time.
 
     """
-    builtins.get_ipython = get_ipython
-    builtins._ip = get_ipython()
-    builtins.ip = get_ipython()
-    builtins.ip.system = types.MethodType(xsys, ip)
-    builtins.ip.builtin_trap.activate()
-    from .core import page
-
-    page.pager_page = nopage
-    # yield

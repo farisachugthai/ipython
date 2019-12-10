@@ -215,6 +215,16 @@ class ProfileDir(LoggingConfigurable):
         config : dict
             Keyword parameters to pass to the shell.
 
+        Returns
+        -------
+        This is a classmethod. And if you manually call this function with a string
+        for the positional, you get a TraitletsError because the specified
+        ProfileDir was supposed to be a ProfileDir instance not a str.
+
+        Dude that is too weird. Like I either understand that wrong or
+        the way interactiveshell.InteractiveShell handles it is wrong because
+        I just tried checking parameters were bound to the Terminal instance
+        correctly and that error just came up.
         """
         if not os.path.isdir(path):
             raise ProfileDirError("Directory not found: %s" % path)

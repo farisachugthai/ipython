@@ -16,10 +16,13 @@
     ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
 
 """
-from .shortcuts import create_ipython_shortcuts
-from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
-from .pt_inputhooks import get_inputhook_name_and_func
-from .magics import TerminalMagics
+import asyncio
+import logging
+import os
+import sys
+import traceback
+from warnings import warn
+
 from pygments.token import Token
 from pygments.style import Style
 from pygments.styles import get_style_by_name
@@ -63,21 +66,13 @@ from IPython.utils.terminal import (
 from IPython.core.profiledir import ProfileDir, ProfileDirError
 from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
 from IPython.core.completer import IPCompleter
-import asyncio
-import logging
-import os
-import sys
-import traceback
-from warnings import warn
-
-logging.basicConfig(level=logging.INFO)
-
-
+from .shortcuts import create_ipython_shortcuts
+from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
+from .pt_inputhooks import get_inputhook_name_and_func
+from .magics import TerminalMagics
+# from .ptutils import IPythonPTCompleter
 # from prompt_toolkit.completion.base import ThreadedCompleter, merge_completers
 # from prompt_toolkit.completion.fuzzy_completer import FuzzyCompleter
-
-
-# from .ptutils import IPythonPTCompleter
 
 DISPLAY_BANNER_DEPRECATED = object()
 PTK3 = ptk_version.startswith("3.")
@@ -457,6 +452,7 @@ environment variable is set, or the current terminal is not a tty.
 
         # Pre-populate history from IPython's history database
         self.history = InMemoryHistory()
+        # It needs a certain amount of state before we can init pt
         super().__init__(*args, **kwargs)
         self.init_prompt_toolkit_cli()
 
@@ -938,18 +934,16 @@ environment variable is set, or the current terminal is not a tty.
         return "".join(self.__class__.__name__)
 
     def init_profile_dir(self, profile_dir=None):
-        """Modify this so we have a none argument for profile_dir."""
+        """Modify this so we have a none argument for profile_dir.
+
+        Wait hold on did we bind the ipython dir argument yet?
+        """
+        self.log.debug('IPython_dir is bound to: %s in'
+                       'terminal.interactiveshell: init_profile_dir', self.ipython_dir)
         if profile_dir is not None:
+            self.ipython_dir = profile_dir
             self.profile_dir = profile_dir
-            return
-        try:
-            self.profile_dir = ProfileDir.create_profile_dir_by_name(
-                self.ipython_dir, "default"
-            )
-        except ProfileDirError:
-            self.log.error("Profiledirerror")
-        except BaseException as e:
-            self.log.warning(e)
+        super().init_profile_dir(self.profile_dir)
 
     def showsyntaxerror(self, filename=None, **kwargs):
         """Display the syntax error that just occurred.

@@ -428,7 +428,6 @@ class TestResetErrors(TestCase):
 
         @magics_class
         class KernelMagics(Magics):
-
             @line_magic
             def less(self, shell):
                 """
@@ -760,7 +759,7 @@ def test_prun_special_syntax():
         ----------
         line :
         """
-                ip.user_ns["lmagic_out"] = line
+        ip.user_ns["lmagic_out"] = line
 
     # line mode test
     _ip.run_line_magic("prun", "-q %lmagic my line")
@@ -799,7 +798,7 @@ def test_extension():
 
 
 def test_notebook_export_json():
-_    _ip.history_manager.reset()  # Clear any existing history.
+    __ip.history_manager.reset()  # Clear any existing history.
     cmds = ["a=1", "def b():\n  return a**2", "print('noël, été', b())"]
     for i, cmd in enumerate(cmds, start=1):
         _ip.history_manager.store_inputs(i, cmd)
@@ -1095,7 +1094,7 @@ def test_script_bg_out_err():
 
 
 def test_script_defaults():
-        for cmd in ["sh", "bash", "perl", "ruby"]:
+    for cmd in ["sh", "bash", "perl", "ruby"]:
         try:
             find_cmd(cmd)
         except Exception:

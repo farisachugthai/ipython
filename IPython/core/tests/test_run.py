@@ -32,6 +32,15 @@ from IPython.testing import tools as tt
 from IPython.utils.capture import capture_output
 from IPython.utils.tempdir import TemporaryDirectory
 from IPython.core import debugger
+from IPython.core.getipython import get_ipython
+
+
+def setup_module():
+    global _ip
+    _ip = get_ipython()
+    # Because people randomly switched half through and I don't feel like correcting it rn
+    global ip
+    ip = get_ipython()
 
 
 def doctest_refbug():

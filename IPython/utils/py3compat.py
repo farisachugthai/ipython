@@ -3,6 +3,7 @@
 
 This file is deprecated and will be removed in a future version.
 """
+from codecs import encode, decode
 import builtins as builtin_mod
 import functools
 import os
@@ -11,19 +12,16 @@ import re
 import shutil
 import types
 
-from .encoding import DEFAULT_ENCODING
+from sys import getfilesystemencoding
+DEFAULT_ENCODING = getfilesystemencoding()
+# from .encoding import DEFAULT_ENCODING
 
 # keep reference to builtin_mod because the kernel overrides that value
 # to forward requests to a frontend.
 builtin_mod_name = "builtins"
 
-str_to_unicode = no_code
-unicode_to_str = no_code
 str_to_bytes = encode
 bytes_to_str = decode
-cast_bytes_py2 = no_code
-cast_unicode_py2 = no_code
-buffer_to_bytes_py2 = no_code
 
 string_types = (str,)
 unicode_type = str
@@ -55,36 +53,11 @@ def no_code(x, encoding=None):
     return x
 
 
-def decode(s, encoding=None):
-    """
-
-    Parameters
-    ----------
-    s :
-    encoding :
-
-    Returns
-    -------
-
-    """
-    encoding = encoding or DEFAULT_ENCODING
-    return s.decode(encoding, "replace")
-
-
-def encode(u, encoding=None):
-    """
-
-    Parameters
-    ----------
-    u :
-    encoding :
-
-    Returns
-    -------
-
-    """
-    encoding = encoding or DEFAULT_ENCODING
-    return u.encode(encoding, "replace")
+str_to_unicode = no_code
+unicode_to_str = no_code
+cast_bytes_py2 = no_code
+cast_unicode_py2 = no_code
+buffer_to_bytes_py2 = no_code
 
 
 def cast_unicode(s, encoding=None):
@@ -243,7 +216,7 @@ def itervalues(d):
 
 
 def execfile(fname, glob, loc=None, compiler=None):
-    """
+    """Suggeston. Change fname in the last line to '<string>'.
 
     Parameters
     ----------
