@@ -36,6 +36,7 @@ from IPython.core.application import (
     BaseIPythonApplication,
     base_flags,
 )
+
 base_aliases = BaseAliases().base_aliases
 
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
@@ -221,7 +222,8 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     name = u"ipython"
     description = usage.cl_usage
     crash_handler_class = IPAppCrashHandler
-    examples = dedent("""
+    examples = dedent(
+        """
     ipython --matplotlib       # enable matplotlib integration
     ipython --matplotlib=qt    # enable matplotlib integration with qt4 backend
 
@@ -233,7 +235,8 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
 
     ipython locate             # print the path to the IPython directory
     ipython locate profile foo # print the path to the directory for profile `foo`
-    """)
+    """
+    )
 
     flags = flags
     aliases = aliases
@@ -377,6 +380,12 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     def initialize(self, argv=None):
         """Do actions after construct, but before starting the app.
 
+        Notes
+        -----
+        How do we modify the log format or log level? I wanna include module
+        by default but need to review traitlets docs.
+
+
         Returns
         -------
         None
@@ -390,8 +399,7 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             # don't bother initializing further, starting subapp
             return
 
-        # only gets called like 1 or 2 times in startup but that gets old fast
-        logging.info("{}: Extra args was:: {}".format(__file__, self.extra_args))
+        self.log.info("{}: Extra args were:: {}".format(__file__, self.extra_args))
 
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]
