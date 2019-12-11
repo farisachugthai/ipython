@@ -25,8 +25,12 @@ import sys
 from typing import Dict, Any
 
 from IPython import sphinxext  # noqa
-from IPython.sphinxext import (configtraits, ipython_directive,
-                               magics, github)  # noqa F401
+from IPython.sphinxext import (
+    configtraits,
+    ipython_directive,
+    magics,
+    github,
+)  # noqa F401
 from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
 import sphinx
 from sphinx.util.docfields import GroupedField
@@ -44,19 +48,19 @@ except ImportError:
 logger = getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-root = Path('../..').resolve()
-logging.debug('root dir is: {}'.format(root))
+root = Path("../..").resolve()
+logging.debug("root dir is: {}".format(root))
 
-ipython_package = root.joinpath('IPython')
-sphinxext = ipython_package.joinpath('sphinxext')
+ipython_package = root.joinpath("IPython")
+sphinxext = ipython_package.joinpath("sphinxext")
 if sphinxext.is_dir():
     sys.path.append(sphinxext.__fspath__())
 
 # http://read-the-docs.readthedocs.io/en/latest/faq.html
-ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
+ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
 
 if ON_RTD:
-    tags.add('rtd')
+    tags.add("rtd")
 
 else:
     import sphinx_rtd_theme
@@ -68,7 +72,9 @@ else:
 iprelease = {}
 # exec(compile(open('../../IPython/core/release.py').read(),
 #              '../../IPython/core/release.py', 'exec'), iprelease)
-exec(compile(open('../../IPython/core/release.py').read(), '<string>', 'exec'), iprelease)
+exec(
+    compile(open("../../IPython/core/release.py").read(), "<string>", "exec"), iprelease
+)
 
 # General configuration
 # ---------------------
@@ -76,56 +82,56 @@ exec(compile(open('../../IPython/core/release.py').read(), '<string>', 'exec'), 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     # terrible idea don't do it
     # or nsure autosectionlabel.prefix_document = True
-    'sphinx.ext.autosectionlabel',
-    'sphinx.ext.doctest',
-    'sphinx.ext.extlinks',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.napoleon',  # to preprocess docstrings
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.doctest",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",  # to preprocess docstrings
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
     # ours
-    'github',  # for easy GitHub links
-    'magics',
-    'configtraits',
-    'IPython.sphinxext.ipython_directive',
+    "github",  # for easy GitHub links
+    "magics",
+    "configtraits",
+    "IPython.sphinxext.ipython_directive",
 ]
 
-if shutil.which('dot'):
-    extensions.append('sphinx.ext.graphviz')
+if shutil.which("dot"):
+    extensions.append("sphinx.ext.graphviz")
     # Dec 08, 2019: Yeah apparently you need graphviz installed for the
     # inheritance diagrams too
-    extensions.append('sphinx.ext.inheritance_diagram')
+    extensions.append("sphinx.ext.inheritance_diagram")
 
 
 if PlotDirective is not None:
-    extensions.append('matplotlib.sphinxext.plot_directive')
+    extensions.append("matplotlib.sphinxext.plot_directive")
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
-rst_prolog = ''
+rst_prolog = ""
 
 
 def is_stable(extra):
-    for ext in {'dev', 'b', 'rc'}:
+    for ext in {"dev", "b", "rc"}:
         if ext in extra:
             return False
     return True
 
 
-if is_stable(iprelease['_version_extra']):
-    tags.add('ipystable')
-    logger.info('Adding Tag: ipystable')
+if is_stable(iprelease["_version_extra"]):
+    tags.add("ipystable")
+    logger.info("Adding Tag: ipystable")
 else:
-    tags.add('ipydev')
-    logger.info('Adding Tag: ipydev')
+    tags.add("ipydev")
+    logger.info("Adding Tag: ipydev")
     rst_prolog += """
 .. warning::
 
@@ -147,18 +153,18 @@ rst_prolog += """
 """
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General substitutions.
-project = 'IPython'
-copyright = 'The IPython Development Team'
+project = "IPython"
+copyright = "The IPython Development Team"
 
 # ghissue config
 github_project_url = "https://github.com/ipython/ipython"
 
 trim_doctest_flags = True
 
-highlight_language = 'ipython'
+highlight_language = "ipython"
 
 # warning_is_error = True
 warning_is_error = False
@@ -167,22 +173,22 @@ warning_is_error = False
 # other places throughout the built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "%s" % iprelease['version']
+release = "%s" % iprelease["version"]
 # Just the X.Y.Z part, no '-dev'
-version = iprelease['version'].split('-', 1)[0]
+version = iprelease["version"].split("-", 1)[0]
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
 # today = ''
 # Else, today_fmt is used as the format for a strftime call.
-today_fmt = '%B %d, %Y'
+today_fmt = "%B %d, %Y"
 
 # List of documents that shouldn't be included in the build.
-unused_docs = ['api/generated/IPython', 'api/generated/IPython.core']
+unused_docs = ["api/generated/IPython", "api/generated/IPython.core"]
 
 # Exclude these glob-style patterns when looking for source files. They are
 # relative to the source/ directory.
-exclude_patterns = ['**test**', '*/autosummary/*.rst']
+exclude_patterns = ["**test**", "*/autosummary/*.rst"]
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 # add_function_parentheses = True
@@ -196,17 +202,17 @@ add_module_names = False
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # Set the default role so we can use `foo` instead of ``foo``
 
-default_role = 'py:obj'
+default_role = "py:obj"
 
 # Options for HTML output
 # -----------------------
 
 # Use our syntax highlighting by default
-highlight_language = 'ipython'
+highlight_language = "ipython"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -225,13 +231,13 @@ highlight_language = 'ipython'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Favicon needs the directory name
-html_favicon = '_static/favicon.ico'
+html_favicon = "_static/favicon.ico"
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = "%b %d, %Y"
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -243,10 +249,10 @@ html_last_updated_fmt = '%b %d, %Y'
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
 html_additional_pages = {
-    'interactive/htmlnotebook': 'notebook_redirect.html',
-    'interactive/notebook': 'notebook_redirect.html',
-    'interactive/nbconvert': 'notebook_redirect.html',
-    'interactive/public_server': 'notebook_redirect.html',
+    "interactive/htmlnotebook": "notebook_redirect.html",
+    "interactive/notebook": "notebook_redirect.html",
+    "interactive/nbconvert": "notebook_redirect.html",
+    "interactive/public_server": "notebook_redirect.html",
 }
 
 # If false, no module index is generated.
@@ -264,16 +270,16 @@ html_additional_pages = {
 # html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'ipythondoc'
+htmlhelp_basename = "ipythondoc"
 
 # Options for LaTeX output
 # ------------------------
 
 # The paper size ('letter' or 'a4').
-latex_paper_size = 'letter'
+latex_paper_size = "letter"
 
 # The font size ('10pt', '11pt' or '12pt').
-latex_font_size = '11pt'
+latex_font_size = "11pt"
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
@@ -319,7 +325,7 @@ latex_use_modindex = True
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-manpages_url = 'https://linux.die.net/man/'
+manpages_url = "https://linux.die.net/man/"
 
 man_show_urls = True
 
@@ -334,18 +340,19 @@ numpydoc_class_members_toctree = False
 
 # -- Options for intersphinx extension ---------------------------------------
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
-                       'rpy2': ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
-                       'jupyterclient': ('https://jupyter-client.readthedocs.io/en/latest/', None),
-                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/latest/', None),
-                       'jupyter': ('https://jupyter.readthedocs.io/en/latest/', None),
-                       'jedi': ('https://jedi.readthedocs.io/en/latest/', None),
-                       'traitlets': ('https://traitlets.readthedocs.io/en/latest/', None),
-                       'ipykernel': ('https://ipykernel.readthedocs.io/en/latest/', None),
-                       'prompt_toolkit': ('https://python-prompt-toolkit.readthedocs.io/en/stable/', None),
-                       'ipywidgets': ('https://ipywidgets.readthedocs.io/en/stable/', None),
-                       'pip': ('https://pip.pypa.io/en/stable/', None)
-                       }
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "rpy2": ("https://rpy2.readthedocs.io/en/version_2.8.x/", None),
+    "jupyterclient": ("https://jupyter-client.readthedocs.io/en/latest/", None),
+    "ipyparallel": ("https://ipyparallel.readthedocs.io/en/latest/", None),
+    "jupyter": ("https://jupyter.readthedocs.io/en/latest/", None),
+    "jedi": ("https://jedi.readthedocs.io/en/latest/", None),
+    "traitlets": ("https://traitlets.readthedocs.io/en/latest/", None),
+    "ipykernel": ("https://ipykernel.readthedocs.io/en/latest/", None),
+    "prompt_toolkit": ("https://python-prompt-toolkit.readthedocs.io/en/stable/", None),
+    "ipywidgets": ("https://ipywidgets.readthedocs.io/en/stable/", None),
+    "pip": ("https://pip.pypa.io/en/stable/", None),
+}
 
 # -------------------------------------------------------------------
 # -- IPython directive ----------------------------------------------
@@ -354,41 +361,41 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
 ipython_warning_is_error = False
 
 ipython_execlines = [
-    'import numpy',
-    'import IPython',
-    'import matplotlib as mpl',
-    'import matplotlib.pyplot',
+    "import numpy",
+    "import IPython",
+    "import matplotlib as mpl",
+    "import matplotlib.pyplot",
 ]
 
 # -------------------------------------------------------------------
 # matplotlib plot_directive
 # -------------------------------------------------------------------
-mpl.rcParams['font.family'] = 'DejaVu Sans'
-mpl.rcParams['text.hinting'] = False
-mpl.rcParams['text.hinting_factor'] = 8
+mpl.rcParams["font.family"] = "DejaVu Sans"
+mpl.rcParams["text.hinting"] = False
+mpl.rcParams["text.hinting_factor"] = 8
 # -------------------------------------------------------------------
 # Autosummary
 # -------------------------------------------------------------------
 
 # How it appears on the website currently is core.magics.*
 # So ignore the ``IPython.`` prefix
-modindex_common_prefix = ['IPython.']
+modindex_common_prefix = ["IPython."]
 
 if sphinx.version_info < (1, 8):
-    autodoc_default_flags = ['members', 'undoc-members']
+    autodoc_default_flags = ["members", "undoc-members"]
 else:
     autodoc_default_options = {
-        'member-order': 'bysource',
-        'undoc-members': True,
-        'show-inheritance': False,
+        "member-order": "bysource",
+        "undoc-members": True,
+        "show-inheritance": False,
         # might need to comment the below out
         # 'noindex': True,
     }
 
 apidoc_options = {
-    'members': False,
-    'undoc-members': True,
-    'show-inheritance': False,
+    "members": False,
+    "undoc-members": True,
+    "show-inheritance": False,
 }
 
 autodoc_inherit_docstrings = False
@@ -398,7 +405,7 @@ autosummary_imported_members = False
 
 # autoclass_content = u'both'
 # autodoc_member_order = u'bysource'
-autodoc_member_order = u'groupwise'
+autodoc_member_order = u"groupwise"
 autodoc_docstring_signature = True
 
 # Autosection
@@ -407,11 +414,10 @@ autosectionlabel_prefix_document = True
 
 # GitHub and external links
 
-extlinks = {'pr': ('https://github.com/ipython/ipython/pull/%s',
-                   'PR #'),
-            'issue': ('https://github.com/ipython/ipython/issues/%s',
-                      'Issue #')
-            }
+extlinks = {
+    "pr": ("https://github.com/ipython/ipython/pull/%s", "PR #"),
+    "issue": ("https://github.com/ipython/ipython/issues/%s", "Issue #"),
+}
 
 
 # Cleanup
@@ -426,7 +432,7 @@ del iprelease
 
 from sphinx import addnodes  # noqa
 
-event_sig_re = re.compile(r'([a-zA-Z-]+)\s*\((.*)\)')
+event_sig_re = re.compile(r"([a-zA-Z-]+)\s*\((.*)\)")
 
 
 def parse_event(env, sig, signode):
@@ -437,7 +443,7 @@ def parse_event(env, sig, signode):
     name, args = m.groups()
     signode += addnodes.desc_name(name, name)
     plist = addnodes.desc_parameterlist()
-    for arg in args.split(','):
+    for arg in args.split(","):
         arg = arg.strip()
         plist += addnodes.desc_parameter(arg, arg)
     signode += plist
@@ -453,11 +459,10 @@ def rstjinja(app, docname, source):
     src = source[0]
     orig = copy.deepcopy(src)
     # Skip converted notebooks
-    if 'nbconvert_exporter' in src:
+    if "nbconvert_exporter" in src:
         return
     try:
-        rendered = app.builder.templates.render_string(src,
-                                                       app.config.html_context)
+        rendered = app.builder.templates.render_string(src, app.config.html_context)
         source[0] = rendered
     except Exception as exc:
         logger.warning(exc)
@@ -471,23 +476,27 @@ def setup(app: "Sphinx") -> None:
     12/03/19: Gonna add trait as a role.
     """
     app.connect("source-read", rstjinja)
-    app.add_object_type('confval', 'confval',
-                        objname='configuration value',
-                        indextemplate='pair: %s; configuration value')
+    app.add_object_type(
+        "confval",
+        "confval",
+        objname="configuration value",
+        indextemplate="pair: %s; configuration value",
+    )
 
-    app.add_lexer('ipythontb', IPythonTracebackLexer)
-    app.add_lexer('ipython', IPyLexer)
+    app.add_lexer("ipythontb", IPythonTracebackLexer)
+    app.add_lexer("ipython", IPyLexer)
 
-    fdesc = GroupedField('param', label='Parameters',
-                         names=['param'], can_collapse=True)
-    app.add_object_type('directive', 'dir', 'pair: %s; directive')
-    app.add_object_type('event', 'event', 'pair: %s; event', parse_event,
-                        doc_field_types=[fdesc])
+    fdesc = GroupedField(
+        "param", label="Parameters", names=["param"], can_collapse=True
+    )
+    app.add_object_type("directive", "dir", "pair: %s; directive")
+    app.add_object_type(
+        "event", "event", "pair: %s; event", parse_event, doc_field_types=[fdesc]
+    )
 
     # workaround for RTD
     app.info = lambda *args, **kwargs: logger.info(*args, **kwargs)
     app.warn = lambda *args, **kwargs: logger.warning(*args, **kwargs)
     app.debug = lambda *args, **kwargs: logger.debug(*args, **kwargs)
 
-    return {'parallel_read_safe': True,
-            'parallel_write_safe': True}
+    return {"parallel_read_safe": True, "parallel_write_safe": True}
