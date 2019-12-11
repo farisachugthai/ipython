@@ -221,20 +221,19 @@ You can read more about using `jupyter qtconsole
 <https://jupyter.org/qtconsole/>`_, and
 `jupyter notebook <http://jupyter-notebook.readthedocs.io/en/latest/>`_. There
 is also a :ref:`message spec <messaging>` which documents the protocol for
-communication between kernels
-and clients.
+communication between kernels and clients.
 
 
-See Also
---------
-.. seealso::
+.. where is this?
+.. See Also
+.. --------
+.. .. seealso::
 
-    `Frontend/Kernel Model`_ example notebook
+    .. `Frontend/Kernel Model`_ example notebook
 
 
 Interactive parallel computing
 ==============================
-
 
 This functionality is optional and now part of the `ipyparallel
 <http://ipyparallel.readthedocs.io/>`_ project.

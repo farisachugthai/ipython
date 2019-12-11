@@ -4,9 +4,12 @@
 Guide for IPython core Developers
 =================================
 
+.. module:: coredev
+   :synopsis: Recommendations for the core developers of IPython.
+
 This guide documents the development of IPython itself.  Alternatively,
 developers of third party tools and libraries that use IPython should see the
-:doc:`../development/index`.
+:doc:`development/index`.
 
 
 For instructions on how to make a developer install see :ref:`devinstall`.

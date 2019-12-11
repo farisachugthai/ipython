@@ -2,6 +2,9 @@
 Specific config details
 =======================
 
+.. module:: details
+   :synopsis: Tips and tricks...but not the tips and tricks in tutorial.
+
 .. _custom_prompts:
 
 Custom Prompts
@@ -304,7 +307,7 @@ IPython configuration::
                 if document.line_count > 1: text = text[:document.cursor_position]
                 indent = shell.check_complete(text)[1]
                 buffer.insert_text('\n' + indent)
-            
+
                 # if you just wanted a plain newline without any indentation, you
                 # could use `buffer.insert_text('\n')` instead of the lines above
 

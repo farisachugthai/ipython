@@ -5,6 +5,8 @@ Plotting
 .. module:: plotting-tutorial
    :synopsis: Introduce IPython's notion of displays.
 
+.. highlight:: ipython
+
 One of the main feature of IPython when used as a kernel is its ability to
 show rich output. This means that object that can be representing as image,
 sounds, animation, (etc...) can be shown this way if the frontend support it.
@@ -30,7 +32,8 @@ Rich Outputs
 
 One major feature of the IPython kernel is the ability to display plots that
 are the output of running code cells. The IPython kernel is designed to work
-seamlessly with the matplotlib_ plotting library to provide this functionality.
+seamlessly with the :mod:`matplotlib` plotting library to provide this
+functionality.
 
 To set this up, before any plotting or import of matplotlib is performed you
 must execute the ``%matplotlib``  :ref:`magic command <magics_explained>`. This
@@ -43,7 +46,7 @@ output of a plotting command is displayed using the default ``matplotlib``
 backend in a separate window. Alternatively, the backend can be explicitly
 requested using, for example::
 
-  %matplotlib gtk
+    %matplotlib gtk
 
 A particularly interesting backend, provided by IPython, is the ``inline``
 backend.  This is available only for the Jupyter Notebook and the

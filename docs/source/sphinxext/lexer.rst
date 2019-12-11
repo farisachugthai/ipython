@@ -187,4 +187,4 @@ See Also
 
 
 To learn more about the IPython lexer and how it works in reStructured text
-documents parsed by Docutils or Sphinx, see :doc:`sphinxext`.
+documents parsed by Docutils or Sphinx, see :doc:`sphinxext/ipython_sphinx_directive`.

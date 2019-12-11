@@ -210,6 +210,6 @@ the directory :file:`~/.ipython/` by default.
 
 .. seealso::
 
-   :doc:`development/how_ipython_works.rst`
+   :doc:`development/how_ipython_works`
       Technical details of the config system.
 

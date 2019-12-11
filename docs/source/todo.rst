@@ -1,38 +1,12 @@
 :orphan:
 
-.. _todo:
-
-====
-TODO
-====
-
-.. highlight:: ipython
-
-
-:date: Oct 27, 2019
-
-These are just my personal observations of things that need to get fixed up.
-
 Remove all references to `IPython.core.inputtransformer` and `IPython.core.inputsplitter` in the tests.
 
-It was successfully removed from the code base but hasn't been from
-the tests.
-
-Flatten the docs they're really hard to navigate.
-
 The get_ipython().db attribute is seemingly completely undocumented.
-
 I just happened to stumble upon it while rummaging through the tests but why.
-
-Continue working on the sphinxext docs and also consider rewriting our directive.
-
-Docs still don't build.
-
-YES THEY DO! Got them working again and now it's a lot cleaner and emits way less warnings.
 
 Nosetests works.
 Pytest will collect ~500 modules and crash.
-
 
 Command line options
 --------------------
@@ -41,16 +15,13 @@ Oct 29, 2019:
 
 Did I do something wrong or does the quick option still execute startup files?
 
-.. code-block:: bash
+.. code-block::
 
    * $: ipython --quick
    Python 3.7.3 (default, Apr  3 2019, 19:16:38)
    Type 'copyright', 'credits' or 'license' for more information
    IPython 7.10.0.dev -- An enhanced Interactive Python. Type '?' for help.
    [TerminalIPythonApp] WARNING | Unknown error in handling startup files:
-
-
-Oh I should write something so it stops the bash highlighting.
 
 
 Documentation Additions
@@ -64,29 +35,12 @@ Because unfortunately I can't explain it. Dude it's insane. We execute the
 ipython/docs/sphinxext/apigen.py, which {btw why is it in the sphinxext dir?}
 is a literal AST parser.
 
-
-Like wtf we wrote our own parser? Was this made before Sphinx? I don't understand.
-
 So to avoid all that non-sense, use this command:
-
-``sphinx-build -b html -a -j auto -c source source build --color -P -w sphinx.log``
-
-It runs the command using sphinx's API because why would we generate our own
-doctree?
-
 
 Also a similar idea where we document how to run and make additions
 wouldn't be a bad idea for the tests.
 
-Deprecations
-============
-
-Probably gonna wanna deprecate utils.tz
-
-
-
-The old inputhook doc.
-----------------------
+**The old inputhook doc.**
 
 
 IPython GUI Support Notes

@@ -3,20 +3,27 @@
 Execution of cells in the IPython kernel
 ========================================
 
-When IPython kernel receives `execute_request <https://jupyter-client.readthedocs.io/en/latest/messaging.html#execute>`_
+When IPython kernel receives an `execute_request
+<https://jupyter-client.readthedocs.io/en/latest/messaging.html#execute>`_
 with user code, it processes the message in the following phases:
 
 1. Fire the ``pre_execute`` event.
+
 2. Fire the ``pre_run_cell`` event unless silent is ``True``.
+
 3. Execute ``run_cell`` method to preprocess ``code``, compile and run it, see below for details.
+
 4. If execution succeeds, expressions in ``user_expressions`` are computed.
-   This ensures that any error in the expressions don't affect the main code execution.
+
+   - This ensures that any error in the expressions don't affect the main code execution.
+
 5. Fire the ``post_execute`` event.
+
 6. Fire the ``post_run_cell`` event unless silent is ``True``.
 
 .. seealso::
 
-    :doc:`/config/callbacks`
+    :doc:`callbacks`
 
 
 Running user ``code``

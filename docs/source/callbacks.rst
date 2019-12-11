@@ -2,10 +2,7 @@
 IPython Events
 ==============
 
-.. index:: events, callbacks
-
-.. .. _events:
-   .. _callbacks:
+.. py:currentmodule:: IPython.core.events
 
 Extension code can register callbacks functions which will be called on specific
 events within the IPython code. You can see the current list of available

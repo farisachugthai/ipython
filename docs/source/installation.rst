@@ -152,6 +152,9 @@ If the dependencies or entrypoints have changed, you may have to run
     $ pip install -e .
 
 again, but this is infrequent.
+
+.. _installation-troubleshooting:
+
 Troubleshooting
 ===============
 
@@ -305,13 +308,18 @@ The ``--name`` value is used by Jupyter internally. These commands will overwrit
 any existing kernel with the same name. ``--display-name`` is what you see in
 the notebook menus.
 
-Using virtualenv or conda envs, you can make your IPython kernel in one env available to Jupyter in a different env. To do so, run ipykernel install from the kernel's env, with --prefix pointing to the Jupyter env:
+Using virtualenv or conda envs, you can make your IPython kernel in one env
+available to Jupyter in a different env.
+
+To do so, run ipykernel install from the kernel's env, with --prefix pointing
+to the Jupyter env:
 
 .. sourcecode:: bash
 
     /path/to/kernel/env/bin/python -m ipykernel install --prefix=/path/to/jupyter/env --name 'python-my-env'
 
-Note that this command will create a new configuration for the kernel in one of the preferred location (see ``jupyter --paths`` command for more details):
+Note that this command will create a new configuration for the kernel in one
+of the preferred location (see ``jupyter --paths`` command for more details):
 
 * system-wide (e.g. /usr/local/share),
 * in Jupyter's env (sys.prefix/share),
@@ -324,7 +332,9 @@ First, ask IPython to write its spec to a temporary location:
 
     ipython kernel install --prefix /tmp
 
-Edit the files in /tmp/share/jupyter/kernels/python3 to your liking, then when you are ready, tell Jupyter to install it (this will copy the files into a place Jupyter will look):
+Edit the files in /tmp/share/jupyter/kernels/python3 to your liking,
+then when you are ready, tell Jupyter to install it (this will copy the files
+into a place Jupyter will look):
 
 .. sourcecode:: bash
 
