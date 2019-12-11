@@ -66,8 +66,8 @@ from distutils.command.install_data import install_data
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
-if os.path.exists('MANIFEST'):
-    os.remove('MANIFEST')
+if os.path.exists("MANIFEST"):
+    os.remove("MANIFEST")
 
 try:
     import importlib_metadata
@@ -91,7 +91,7 @@ def execfile(fname, globs, locs=None):
 
 
 # release.py contains version, authors, license, url, keywords, etc.
-execfile(pjoin(repo_root, 'IPython', 'core', 'release.py'), globals())
+execfile(pjoin(repo_root, "IPython", "core", "release.py"), globals())
 
 # ------------------------------------------------------------------------------
 # Things related to the IPython documentation
@@ -133,43 +133,44 @@ setup_args = dict(
     classifiers=classifiers,
     # cmdclass={'install_data': install_data_ext},
     project_urls={
-        'Documentation': 'https://ipython.readthedocs.io/',
-        'Funding': 'https://numfocus.org/',
-        'Source': 'https://github.com/ipython/ipython',
-        'Tracker': 'https://github.com/ipython/ipython/issues',
-    })
+        "Documentation": "https://ipython.readthedocs.io/",
+        "Funding": "https://numfocus.org/",
+        "Source": "https://github.com/ipython/ipython",
+        "Tracker": "https://github.com/ipython/ipython/issues",
+    },
+)
 
-setup_args['packages'] = find_packages()
+setup_args["packages"] = find_packages()
 
 # setup_args['package_data'] = package_data
 # TODO: use resourcemanager API
-setup_args['package_data'] = {
-    '': ['*.txt', '*.rst'],
-    'IPython.core': ['profile/README*'],
-    'IPython.core.tests': ['*.png', '*.jpg', 'daft_extension/*.py'],
-    'IPython.lib.tests': ['*.wav'],
-    'IPython.testing.plugin': ['*.txt'],
+setup_args["package_data"] = {
+    "": ["*.txt", "*.rst"],
+    "IPython.core": ["profile/README*"],
+    "IPython.core.tests": ["*.png", "*.jpg", "daft_extension/*.py"],
+    "IPython.lib.tests": ["*.wav"],
+    "IPython.testing.plugin": ["*.txt"],
 }
 
 # For some commands, use setuptools.  Note that we do NOT list install here!
 # If you want a setuptools-enhanced install, just run 'setupegg.py install'
 # Uh no? We import setuptools at the beginning now.
 needs_setuptools = {
-    'develop',
-    'release',
-    'bdist_egg',
-    'bdist_rpm',
-    'bdist',
-    'bdist_dumb',
-    'bdist_wininst',
-    'bdist_wheel',
-    'egg_info',
-    'easy_install',
-    'upload',
-    'install_egg_info',
+    "develop",
+    "release",
+    "bdist_egg",
+    "bdist_rpm",
+    "bdist",
+    "bdist_dumb",
+    "bdist_wininst",
+    "bdist_wheel",
+    "egg_info",
+    "easy_install",
+    "upload",
+    "install_egg_info",
     # cool new pep517 toys
-    'build_wheel',
-    'build_sdist',
+    "build_wheel",
+    "build_sdist",
 }
 
 if len(needs_setuptools.intersection(sys.argv)) > 0:
@@ -182,89 +183,96 @@ setuptools_extra_args = {}
 # setuptools requirements
 
 extras_require = dict(
-    parallel=['ipyparallel'],
-    qtconsole=['qtconsole'],
+    parallel=["ipyparallel"],
+    qtconsole=["qtconsole"],
     # Note: matplotlib is a hard dependency to build the docs
-    doc=['Sphinx>=1.3', 'matplotlib'],
-
+    doc=["Sphinx>=1.3", "matplotlib"],
     # coverage shows up the iptestcontroller and there's no try/excepts
     test=[
-        'nose>=0.10.1', 'requests', 'testpath', 'nbformat', 'ipykernel',
-        'numpy', 'coverage'
+        "nose>=0.10.1",
+        "requests",
+        "testpath",
+        "nbformat",
+        "ipykernel",
+        "numpy",
+        "coverage",
     ],
     terminal=[],
-    kernel=['ipykernel'],
-    nbformat=['nbformat'],
-    notebook=['notebook', 'ipywidgets'],
-    nbconvert=['nbconvert'],
+    kernel=["ipykernel"],
+    nbformat=["nbformat"],
+    notebook=["notebook", "ipywidgets"],
+    nbconvert=["nbconvert"],
 )
 
 install_requires = [
-    'setuptools>=38.5',
-    'jedi>=0.10',
-    'decorator',
-    'pickleshare',
-    'traitlets>=4.2',
-    'prompt_toolkit>=2.0.0,<3.1.0,!=3.0.0,!=3.0.1',
-    'pygments',
-    'backcall',
+    "setuptools>=38.5",
+    "jedi>=0.10",
+    "decorator",
+    "pickleshare",
+    "traitlets>=4.2",
+    "prompt_toolkit>=2.0.0,<3.1.0,!=3.0.0,!=3.0.1",
+    "pygments",
+    "backcall",
 ]
 
 # Platform-specific dependencies:
 # This is the correct way to specify these,
 # but requires pip >= 6. pip < 6 ignores these.
 
-extras_require.update({
-    ':sys_platform != "win32"': ['pexpect'],
-    ':sys_platform == "darwin"': ['appnope'],
-    ':sys_platform == "win32"': ['colorama'],
-})
+extras_require.update(
+    {
+        ':sys_platform != "win32"': ["pexpect"],
+        ':sys_platform == "darwin"': ["appnope"],
+        ':sys_platform == "win32"': ["colorama"],
+    }
+)
 
 # FIXME: re-specify above platform dependencies for pip < 6
 # These would result in non-portable bdists.
-if not any(arg.startswith('bdist') for arg in sys.argv):
-    if sys.platform == 'darwin':
-        install_requires.extend(['appnope'])
+if not any(arg.startswith("bdist") for arg in sys.argv):
+    if sys.platform == "darwin":
+        install_requires.extend(["appnope"])
 
-    if not sys.platform.startswith('win'):
-        install_requires.append('pexpect')
+    if not sys.platform.startswith("win"):
+        install_requires.append("pexpect")
 
     # workaround pypa/setuptools#147, where setuptools misspells
     # platform_python_implementation as python_implementation
-    if 'setuptools' in sys.modules:
+    if "setuptools" in sys.modules:
         for key in list(extras_require):
-            if 'platform_python_implementation' in key:
-                new_key = key.replace('platform_python_implementation',
-                                      'python_implementation')
+            if "platform_python_implementation" in key:
+                new_key = key.replace(
+                    "platform_python_implementation", "python_implementation"
+                )
                 extras_require[new_key] = extras_require.pop(key)
 
 everything = set()
 for key, deps in extras_require.items():
-    if ':' not in key:
+    if ":" not in key:
         everything.update(deps)
-extras_require['all'] = everything
+extras_require["all"] = everything
 
-if 'setuptools' in sys.modules:
-    setuptools_extra_args['python_requires'] = '>=3.6'
-    setuptools_extra_args['zip_safe'] = False
-    setuptools_extra_args['entry_points'] = {
-        'console_scripts': [
-            'iptest = IPython.testing.iptestcontroller:main',
-            'iptest3 = IPython.testing.iptestcontroller:main',
-            'ipython = IPython:start_ipython',
-            'ipython3 = IPython:start_ipython',
+if "setuptools" in sys.modules:
+    setuptools_extra_args["python_requires"] = ">=3.6"
+    setuptools_extra_args["zip_safe"] = False
+    setuptools_extra_args["entry_points"] = {
+        "console_scripts": [
+            "iptest = IPython.testing.iptestcontroller:main",
+            "iptest3 = IPython.testing.iptestcontroller:main",
+            "ipython = IPython:start_ipython",
+            "ipython3 = IPython:start_ipython",
         ],
         # find_entry_points(),
-        'pygments.lexers': [
-            'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
-            'ipy = IPython.lib.lexers:IPyLexer',
-            'ipython3 = IPython.lib.lexers:IPython3Lexer',
-            'ipython = IPython.lib.lexers:IPythonLexer',
-            'ipytraceback = IPython.lib.lexers:IPythonTracebackLexer',
+        "pygments.lexers": [
+            "ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer",
+            "ipy = IPython.lib.lexers:IPyLexer",
+            "ipython3 = IPython.lib.lexers:IPython3Lexer",
+            "ipython = IPython.lib.lexers:IPythonLexer",
+            "ipytraceback = IPython.lib.lexers:IPythonTracebackLexer",
         ],
     }
-    setup_args['extras_require'] = extras_require
-    setup_args['install_requires'] = install_requires
+    setup_args["extras_require"] = extras_require
+    setup_args["install_requires"] = install_requires
 
 # ---------------------------------------------------------------------------
 # Do the actual setup now
@@ -290,15 +298,18 @@ class install_data_ext(install_data):
         self.warn_dir = 1
 
     def finalize_options(self):
-        self.set_undefined_options('install', ('root', 'root'),
-                                   ('force', 'force'),
-                                   ('install_base', 'install_base'),
-                                   ('install_platbase', 'install_platbase'),
-                                   ('install_purelib', 'install_purelib'),
-                                   ('install_headers', 'install_headers'),
-                                   ('install_lib', 'install_lib'),
-                                   ('install_scripts', 'install_scripts'),
-                                   ('install_data', 'install_data'))
+        self.set_undefined_options(
+            "install",
+            ("root", "root"),
+            ("force", "force"),
+            ("install_base", "install_base"),
+            ("install_platbase", "install_platbase"),
+            ("install_purelib", "install_purelib"),
+            ("install_headers", "install_headers"),
+            ("install_lib", "install_lib"),
+            ("install_scripts", "install_scripts"),
+            ("install_data", "install_data"),
+        )
 
     def run(self):
         """
@@ -310,9 +321,9 @@ class install_data_ext(install_data):
         """
         for lof in self.data_files:
             if lof[0]:
-                base = getattr(self, 'install_' + lof[0])
+                base = getattr(self, "install_" + lof[0])
             else:
-                base = getattr(self, 'install_base')
+                base = getattr(self, "install_base")
             dir = convert_path(lof[1])
             if not os.path.isabs(dir):
                 dir = os.path.join(base, dir)
@@ -341,5 +352,5 @@ def main():
     setup(**setup_args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

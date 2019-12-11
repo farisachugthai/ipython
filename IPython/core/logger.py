@@ -18,6 +18,7 @@ Based on PEP 282.
 import codecs
 import glob
 import io
+
 # How does this not import logging?
 import logging
 import os
@@ -60,10 +61,13 @@ class BracketFormatter(logging.Formatter):
 # FIXME: This class isn't a mixin anymore, but it still needs attributes from
 # ipython and does input cache management.  Finish cleanup later...
 
+
 class Logger:
     """A Logfile class with different policies for file creation"""
 
-    def __init__(self, home_dir=None, logfname="Logger.log", loghead="", logmode="over"):
+    def __init__(
+        self, home_dir=None, logfname="Logger.log", loghead="", logmode="over"
+    ):
 
         # this is the full ipython instance, we need some attributes from it
         # which won't exist until later. What a mess, clean up later...

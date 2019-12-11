@@ -70,6 +70,7 @@ from .shortcuts import create_ipython_shortcuts
 from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
 from .pt_inputhooks import get_inputhook_name_and_func
 from .magics import TerminalMagics
+
 # from .ptutils import IPythonPTCompleter
 # from prompt_toolkit.completion.base import ThreadedCompleter, merge_completers
 # from prompt_toolkit.completion.fuzzy_completer import FuzzyCompleter
@@ -333,11 +334,13 @@ environment variable is set, or the current terminal is not a tty.
             "should print 'TRUECOLOR' in orange: "
             'printf "\\x1b[38;2;255;100;0mTRUECOLOR\\x1b[0m\\n"'
         ),
+        allow_none=True,
     ).tag(config=True)
 
     editor = Unicode(
         get_default_editor(),
         help="Set the editor used by IPython (default to $EDITOR/vi/notepad).",
+        allow_none=True,
     ).tag(config=True)
 
     prompts_class = Type(
@@ -354,9 +357,9 @@ environment variable is set, or the current terminal is not a tty.
     def _displayhook_class_default(self):
         return RichPromptDisplayHook
 
-    term_title = Bool(True, help="Automatically set the terminal title").tag(
-        config=True
-    )
+    term_title = Bool(
+        True, help="Automatically set the terminal title", allow_none=True,
+    ).tag(config=True)
 
     term_title_format = Unicode(
         "IPython: {cwd}",
@@ -478,6 +481,13 @@ environment variable is set, or the current terminal is not a tty.
 
         Originally didn't have a docstring so easy to over look but this is a
         really important method here.
+
+        .. todo:: If this method or the class could take ``**kwargs`` so that
+                  we could pass a glob to PromptSession and arbitrarily add stuff
+                  that'd be dope. Also if we could refactor more of the details out
+                  of here so that by the time we're actually calling this function,
+                  everything's set up and we're just putting instance attributes together,
+                  I'd imagine that'd make debugging 1000x easier.
 
         Notes
         -----
@@ -931,18 +941,27 @@ environment variable is set, or the current terminal is not a tty.
             self._prompts_before = None
 
     def __repr__(self):
-        return "".join(self.__class__.__name__)
+        return "{}\t{}".format(self.__class__.__name__, self.ipython_dir)
 
     def init_profile_dir(self, profile_dir=None):
         """Modify this so we have a none argument for profile_dir.
 
         Wait hold on did we bind the ipython dir argument yet?
         """
-        self.log.debug('IPython_dir is bound to: %s in'
-                       'terminal.interactiveshell: init_profile_dir', self.ipython_dir)
+        self.log.debug(
+            "IPython_dir is bound to: %s in"
+            "terminal.interactiveshell: init_profile_dir",
+            self.ipython_dir,
+        )
         if profile_dir is not None:
-            self.ipython_dir = profile_dir
+            # can't do this. ipython_dir == str. profile_dir is instance of ProfileDir
+            # self.ipython_dir = profile_dir
             self.profile_dir = profile_dir
+        else:
+            if self.ipython_dir is not None:
+                super().init_ipython_dir(ipython_dir=self.ipython_dir)
+            else:
+                super().init_ipython_dir()
         super().init_profile_dir(self.profile_dir)
 
     def showsyntaxerror(self, filename=None, **kwargs):

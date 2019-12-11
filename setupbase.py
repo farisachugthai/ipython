@@ -70,10 +70,10 @@ def check_package_data(package_data):
     """verify that package_data globs make sense"""
     print("checking package data")
     for pkg, data in package_data.items():
-        pkg_root = pjoin(*pkg.split('.'))
+        pkg_root = pjoin(*pkg.split("."))
         for d in data:
             path = pjoin(pkg_root, d)
-            if '*' in path:
+            if "*" in path:
                 assert len(glob(path)) > 0, "No files match pattern %s" % path
             else:
                 assert os.path.exists(path), "Missing package data: %s" % path
@@ -87,7 +87,6 @@ def check_package_data_first(command):
 
     @functools.wraps
     class DecoratedCommand(command):
-
         def run(self):
             check_package_data(self.package_data)
             command.run(self)
@@ -106,15 +105,15 @@ def find_data_files():
     Just man pages at this point.
     """
     if "freebsd" in sys.platform:
-        manpagebase = pjoin('man', 'man1')
+        manpagebase = pjoin("man", "man1")
     else:
-        manpagebase = pjoin('share', 'man', 'man1')
+        manpagebase = pjoin("share", "man", "man1")
 
     # Simple file lists can be made by hand
-    manpages = [f for f in glob(pjoin('docs', 'man', '*.1.gz')) if isfile(f)]
+    manpages = [f for f in glob(pjoin("docs", "man", "*.1.gz")) if isfile(f)]
     if not manpages:
         # When running from a source tree, the manpages aren't gzipped
-        manpages = [f for f in glob(pjoin('docs', 'man', '*.1')) if isfile(f)]
+        manpages = [f for f in glob(pjoin("docs", "man", "*.1")) if isfile(f)]
 
     # And assemble the entire output list
     data_files = [(manpagebase, manpages)]
@@ -178,11 +177,11 @@ def find_entry_points():
     suffixed with the Python major version number, e.g. ipython3.
     """
     ep = [
-        'ipython%s = IPython:start_ipython',
-        'iptest%s = IPython.testing.iptestcontroller:main',
+        "ipython%s = IPython:start_ipython",
+        "iptest%s = IPython.testing.iptestcontroller:main",
     ]
     suffix = str(sys.version_info[0])
-    return [e % '' for e in ep] + [e % suffix for e in ep]
+    return [e % "" for e in ep] + [e % suffix for e in ep]
 
 
 script_src = """#!{executable}
@@ -207,28 +206,28 @@ class build_scripts_entrypt(build_scripts):
         self.mkpath(self.build_dir)
         outfiles = []
         for script in find_entry_points():
-            name, entrypt = script.split('=')
+            name, entrypt = script.split("=")
             name = name.strip()
             entrypt = entrypt.strip()
             outfile = os.path.join(self.build_dir, name)
             outfiles.append(outfile)
-            print('Writing script to', outfile)
+            print("Writing script to", outfile)
 
-            mod, func = entrypt.split(':')
-            with open(outfile, 'w') as f:
+            mod, func = entrypt.split(":")
+            with open(outfile, "w") as f:
                 f.write(
-                    script_src.format(executable=sys.executable,
-                                      mod=mod,
-                                      func=func))
+                    script_src.format(executable=sys.executable, mod=mod, func=func)
+                )
 
-            if sys.platform == 'win32':
+            if sys.platform == "win32":
                 # Write .cmd wrappers for Windows so 'ipython' etc. work at the
                 # command line
-                cmd_file = os.path.join(self.build_dir, name + '.cmd')
+                cmd_file = os.path.join(self.build_dir, name + ".cmd")
                 cmd = r'@"{python}" "%~dp0\{script}" %*\r\n'.format(
-                    python=sys.executable, script=name)
+                    python=sys.executable, script=name
+                )
                 log.info("Writing %s wrapper script" % cmd_file)
-                with open(cmd_file, 'w') as f:
+                with open(cmd_file, "w") as f:
                     f.write(cmd)
 
         return outfiles, outfiles
@@ -236,7 +235,7 @@ class build_scripts_entrypt(build_scripts):
 
 class install_lib_symlink(Command):
     user_options = [
-        ('install-dir=', 'd', "directory to install to"),
+        ("install-dir=", "d", "directory to install to"),
     ]
 
     def initialize_options(self):
@@ -244,28 +243,27 @@ class install_lib_symlink(Command):
 
     def finalize_options(self):
         self.set_undefined_options(
-            'symlink',
-            ('install_lib', 'install_dir'),
+            "symlink", ("install_lib", "install_dir"),
         )
 
     def run(self):
-        pkg = os.path.join(os.getcwd(), 'IPython')
-        dest = os.path.join(self.install_dir, 'IPython')
+        pkg = os.path.join(os.getcwd(), "IPython")
+        dest = os.path.join(self.install_dir, "IPython")
         if os.path.islink(dest):
-            print('removing existing symlink at %s' % dest)
+            print("removing existing symlink at %s" % dest)
             os.unlink(dest)
-        print('symlinking %s -> %s' % (pkg, dest))
+        print("symlinking %s -> %s" % (pkg, dest))
         os.symlink(pkg, dest)
 
 
 class unsymlink(install):
     def run(self):
-        dest = os.path.join(self.install_lib, 'IPython')
+        dest = os.path.join(self.install_lib, "IPython")
         if os.path.islink(dest):
-            print('removing symlink at %s' % dest)
+            print("removing symlink at %s" % dest)
             os.unlink(dest)
         else:
-            print('No symlink exists at %s' % dest)
+            print("No symlink exists at %s" % dest)
 
 
 class install_symlinked(install):
@@ -285,8 +283,8 @@ class install_symlinked(install):
             self.run_command(cmd_name)
 
     sub_commands = [
-        ('install_lib_symlink', lambda self: True),
-        ('install_scripts_sym', lambda self: True),
+        ("install_lib_symlink", lambda self: True),
+        ("install_scripts_sym", lambda self: True),
     ]
 
 
@@ -297,12 +295,12 @@ class install_scripts_for_symlink(install_scripts):
     """
 
     def finalize_options(self):
-        self.set_undefined_options('build', ('build_scripts', 'build_dir'))
+        self.set_undefined_options("build", ("build_scripts", "build_dir"))
         self.set_undefined_options(
-            'symlink',
-            ('install_scripts', 'install_dir'),
-            ('force', 'force'),
-            ('skip_build', 'skip_build'),
+            "symlink",
+            ("install_scripts", "install_dir"),
+            ("force", "force"),
+            ("skip_build", "skip_build"),
         )
 
 
@@ -321,21 +319,23 @@ def git_prebuild(pkg_dir, build_cmd=build_py):
 
     @functools.wraps
     class MyBuildPy(build_cmd):
-        ''' Subclass to write commit data into installation tree '''
+        """ Subclass to write commit data into installation tree """
 
         def run(self):
             # loose as `.dev` is suppose to be invalid
             print("check version number")
             loose_pep440re = re.compile(
-                r'^(\d+)\.(\d+)\.(\d+((a|b|rc)\d+)?)(\.post\d+)?(\.dev\d*)?$')
+                r"^(\d+)\.(\d+)\.(\d+((a|b|rc)\d+)?)(\.post\d+)?(\.dev\d*)?$"
+            )
             if not loose_pep440re.match(version):
                 raise ValueError(
                     "Version number '%s' is not valid (should match [N!]N(.N)*[{a|b|rc}N][.postN][.devN])"
-                    % version)
+                    % version
+                )
 
             build_cmd.run(self)
             # this one will only fire for build commands
-            if hasattr(self, 'build_lib'):
+            if hasattr(self, "build_lib"):
                 self._record_commit(self.build_lib)
 
         def make_release_tree(self, base_dir, files):
@@ -344,14 +344,16 @@ def git_prebuild(pkg_dir, build_cmd=build_py):
             self._record_commit(base_dir)
 
         def _record_commit(self, base_dir):
-            proc = subprocess.Popen('git rev-parse --short HEAD',
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    shell=True)
+            proc = subprocess.Popen(
+                "git rev-parse --short HEAD",
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=True,
+            )
             repo_commit, _ = proc.communicate()
             repo_commit = repo_commit.strip().decode("ascii")
 
-            out_pth = pjoin(base_dir, pkg_dir, 'utils', '_sysinfo.py')
+            out_pth = pjoin(base_dir, pkg_dir, "utils", "_sysinfo.py")
             if os.path.isfile(out_pth) and not repo_commit:
                 # nothing to write, don't clobber
                 return
@@ -363,10 +365,9 @@ def git_prebuild(pkg_dir, build_cmd=build_py):
                 os.remove(out_pth)
             except (IOError, OSError):
                 pass
-            with open(out_pth, 'w') as out_file:
-                out_file.writelines([
-                    '# GENERATED BY setup.py\n',
-                    'commit = u"%s"\n' % repo_commit,
-                ])
+            with open(out_pth, "w") as out_file:
+                out_file.writelines(
+                    ["# GENERATED BY setup.py\n", 'commit = u"%s"\n' % repo_commit,]
+                )
 
     return MyBuildPy

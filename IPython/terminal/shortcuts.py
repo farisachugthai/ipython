@@ -13,7 +13,7 @@ import signal
 import sys
 from typing import Callable
 
-from  IPython.core.getipython import get_ipython
+from IPython.core.getipython import get_ipython
 
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import DEFAULT_BUFFER, SEARCH_BUFFER
@@ -34,15 +34,17 @@ from prompt_toolkit.key_binding import KeyBindings
 
 class VerbosePrompt:
     """Because I can't ever remember how these classes resolve."""
+
     def __init__(self):
         self.shell = get_ipython()
-        if getattr(self.shell, 'pt_app', None):
+        if getattr(self.shell, "pt_app", None):
             self.app = self.shell.pt_app
             self.buffer = self.shell.pt_app.buffer
             self.document = self.shell.pt_app.buffer.document
 
     def __repr__(self):
-        return '{}'.format(i for i in dir(self) if not i.startswith('_'))
+        return "{}".format(i for i in dir(self) if not i.startswith("_"))
+
 
 @Condition
 def cursor_in_leading_ws():

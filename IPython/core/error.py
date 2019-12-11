@@ -244,10 +244,23 @@ class ClipboardEmpty(ValueError):
 class ProfileDirError(Exception):
     """./profiledir"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
+    def __init__(self, bad_profile=None, *args, **kwargs):
+        """Location of the profile that raised the error and a message to pass along to Exception."""
+        self.bad_profile = bad_profile
+        Exception.__init__(self, *args, **kwargs)
 
     def __call__(self, msg=None):
         """Idk if it was a good idea to do it this way but we don't see our own errors."""
-        print(msg)
+        if msg is None:
+            # TODO: log
+            pass
+        else:
+            print(msg)
+        if self.bad_profile is not None:
+            print("Location of the faulty profile. {}".format(self.bad_profile))
         return msg
+
+    def __repr__(self, msg=None):
+        if msg is None:
+            msg = ""
+        return "{}\t{}".format(self.__class__.__name__, msg)

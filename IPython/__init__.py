@@ -61,6 +61,7 @@ import os
 import sys
 
 from .core import release
+
 # from .core.interactiveshell import InteractiveShell  # noqa F0401
 # from .terminal.embed import embed  # noqa F0401
 
@@ -70,7 +71,8 @@ from .core import release
 
 # Don't forget to also update setup.py when this changes!
 if sys.version_info < (3, 6):
-    raise ImportError("""
+    raise ImportError(
+        """
 IPython 7.10+ supports Python 3.6 and above.
 When using Python 2.7, please install IPython 5.x LTS Long Term Support
 version. Python 3.3 and 3.4 were supported up to IPython 6.x.
@@ -80,14 +82,15 @@ See IPython `README.rst` file for more information:
 
     https://github.com/ipython/ipython/blob/master/README.rst
 
-""")
+"""
+    )
 
 # -----------------------------------------------------------------------------
 # Setup the top level names
 # -----------------------------------------------------------------------------
 
 # Release data
-__author__ = '%s <%s>' % (release.author, release.author_email)
+__author__ = "%s <%s>" % (release.author, release.author_email)
 __license__ = release.license
 __version__ = release.version
 version_info = release.version_info
@@ -124,6 +127,7 @@ def embed_kernel(module=None, local_ns=None, **kwargs):
 
     # Only import .zmq when we really need it
     from ipykernel.embed import embed_kernel as real_embed_kernel
+
     real_embed_kernel(module=module, local_ns=local_ns, **kwargs)
 
 
@@ -154,6 +158,7 @@ def start_ipython(argv=None, **kwargs):
 
     """
     from IPython.terminal.ipapp import launch_new_instance
+
     return launch_new_instance(argv, **kwargs)
 
 
@@ -180,6 +185,7 @@ def start_kernel(argv=None, **kwargs):
 
     """
     from ipykernel.kernelapp import launch_new_instance
+
     return launch_new_instance(argv=argv, **kwargs)
 
 
@@ -206,5 +212,6 @@ def get_ipython():
     """
     # from IPython.core.interactiveshell import InteractiveShell
     from traitlets.config import Application
+
     if Application.initialized():
         return Application.instance()

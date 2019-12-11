@@ -18,6 +18,7 @@ from IPython.testing import tools as tt
 # Test functions begin
 # -----------------------------------------------------------------------------
 
+
 def setup_module():
     global ip
     ip = get_ipython()

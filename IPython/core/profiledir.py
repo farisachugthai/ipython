@@ -39,6 +39,7 @@ class ProfileDir(LoggingConfigurable):
         This occurs when the location is set.
 
     """
+
     security_dir_name = Unicode("security")
     log_dir_name = Unicode("log")
     startup_dir_name = Unicode("startup")
@@ -235,6 +236,11 @@ class ProfileDir(LoggingConfigurable):
         I just tried checking parameters were bound to the Terminal instance
         correctly and that error just came up.
         """
+        if path is None:
+            raise ProfileDirError("None passed as profile. Exiting.")
+        if path == "":
+            raise ProfileDirError("Empty string passed as profile.")
+
         if not os.path.isdir(path):
             raise ProfileDirError("Directory not found: %s" % path)
         profile_dir = os.path.join(path, "profile_" + name)
@@ -274,10 +280,12 @@ class ProfileDir(LoggingConfigurable):
             raise ProfileDirError("Profile directory not found in paths: %s" % dirname)
 
     @classmethod
-    def find_profile_dir(cls, profile_dir, config=None):
+    def find_profile_dir(cls, profile_dir=None, config=None):
         """Find/create a profile dir and return its ProfileDir.
 
         This will create the profile directory if it doesn't exist.
+
+        .. todo:: Handle ``ipython --profile=None`` because that crashes everything.
 
         Parameters
         ----------

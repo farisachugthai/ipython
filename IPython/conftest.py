@@ -13,19 +13,26 @@ import pathlib
 import shutil
 
 import pytest
+
 # adding this here not because we need them yet but they're good reminders.
-from _pytest.nose import pytest_runtest_setup, teardown_nose, is_potential_nosetest, call_optional
+from _pytest.nose import (
+    pytest_runtest_setup,
+    teardown_nose,
+    is_potential_nosetest,
+    call_optional,
+)
+
 # noqa
 
 import IPython
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def ip():
     return get_test_shell()
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _ip():
     """I'm gonna try and catch both of the typical calls to the shell with this."""
     return get_test_shell()
@@ -50,7 +57,9 @@ def start_test_shell():
     config.TerminalInteractiveShell.simple_prompt = True
 
     # Create and initialize our test-friendly IPython instance.
-    shell = IPython.terminal.interactiveshell.TerminalInteractiveShell.instance(config=config,)
+    shell = IPython.terminal.interactiveshell.TerminalInteractiveShell.instance(
+        config=config,
+    )
 
     def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
         """Override paging, so we don't require user interaction during the tests.
@@ -83,7 +92,7 @@ def start_test_shell():
 #     shutil.rmtree(str(path.resolve()))
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True, scope="session")
 def inject():
     """
     for things to work correctly we would need this as a session fixture;

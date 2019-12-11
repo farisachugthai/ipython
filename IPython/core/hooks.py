@@ -167,14 +167,19 @@ class CommandChainDispatcher:
         .. todo:: Maybe we need to do a sort using something in mod:`operator`.
 
         """
-        if kw is not None:
-            for prio, cmd in self.chain:
-                # print "prio",prio,"cmd",cmd #dbg
-                try:
-                    return cmd(*args, **kw)
-                except TryNext as exc:
-                    # if no function will accept it, raise TryNext up to the caller
-                    pass
+        last_exc = TryNext()
+        for prio, cmd in self.chain:
+            # print "prio",prio,"cmd",cmd #dbg
+            try:
+                return cmd(*args, **kw)
+            except TryNext as exc:
+                # if no function will accept it, raise TryNext up to the caller
+                pass
+        # if no function will accept it, raise TryNext up to the caller
+        raise last_exc
+
+    def __call__(self, *args, **kwargs):
+        self.call(*args, **kwargs)
 
     def __repr__(self):
         return "{!r}\n{!r}".format(self.__class__.__name__, self.chain)

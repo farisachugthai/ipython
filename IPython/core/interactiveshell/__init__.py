@@ -745,7 +745,7 @@ class InteractiveShell(SingletonConfigurable):
         -------
 
         """
-        self.log.debug('InteractiveShell: ProfileDir: %s', self.profile_dir)
+        self.log.debug("InteractiveShell: ProfileDir: %s", self.profile_dir)
         self.ipython_dir = get_ipython_dir() or ipython_dir
 
     def init_profile_dir(self, profile_dir=None):
@@ -761,10 +761,10 @@ class InteractiveShell(SingletonConfigurable):
         """
         if profile_dir is not None:
             self.profile_dir = profile_dir
-            self.log.debug('InteractiveShell: ProfileDir: %s', self.profile_dir)
+            self.log.debug("InteractiveShell: ProfileDir: %s", self.profile_dir)
             return
         self.profile_dir = ProfileDir.create_profile_dir_by_name(
-            self.ipython_dir, "default"
+            self.ipython_dir, "default", config=self.config
         )
 
     def init_instance_attrs(self):
@@ -2933,11 +2933,7 @@ class InteractiveShell(SingletonConfigurable):
             executable = os.environ.get("SHELL", None)
             try:
                 # Use env shell instead of default /bin/sh
-                ec = subprocess.call(
-                    cmd,
-                    shell=True,
-                    executable=executable,
-                )
+                ec = subprocess.call(cmd, shell=True, executable=executable,)
             except KeyboardInterrupt:
                 # intercept control-C; a long traceback is not useful here
                 print("\n" + self.get_exception_only(), file=sys.stderr)

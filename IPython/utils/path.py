@@ -81,7 +81,6 @@ def _writable_dir(path):
     return os.path.isdir(path) and os.access(path, os.W_OK)
 
 
-
 def get_long_path_name(path):
     """Expand a path into its long form.
 
@@ -147,7 +146,7 @@ def compress_user(path):
     """
     home = os.path.expanduser("~")
     if path.startswith(home):
-        path = "~" + path[len(home):]
+        path = "~" + path[len(home) :]
     return path
 
 
@@ -224,7 +223,9 @@ def get_xdg_dir():
     Return the :envvar:`XDG_CONFIG_HOME`.
 
     """
-    xdg = os.environ.get("XDG_CONFIG_HOME", None) or str(Path.home().joinpath('.config'))
+    xdg = os.environ.get("XDG_CONFIG_HOME", None) or str(
+        Path.home().joinpath(".config")
+    )
     if xdg and _writable_dir(xdg):
         return xdg
 
@@ -236,7 +237,7 @@ def get_xdg_cache_dir():
     Why? I defined XDG_CACHE_HOME on my windows OS it's not like we're
     incapable of doing so?
     """
-    xdg = os.environ.get("XDG_CACHE_HOME", None) or str(Path.home().joinpath('.cache'))
+    xdg = os.environ.get("XDG_CACHE_HOME", None) or str(Path.home().joinpath(".cache"))
     if xdg and _writable_dir(xdg):
         return xdg
 

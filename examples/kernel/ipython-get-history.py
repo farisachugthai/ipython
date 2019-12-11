@@ -60,7 +60,7 @@ from IPython.core.history import HistoryAccessor
 session_number = int(sys.argv[1])
 if len(sys.argv) > 2:
     dest = open(sys.argv[2], "w")
-    raw = not sys.argv[2].endswith('.py')
+    raw = not sys.argv[2].endswith(".py")
 else:
     dest = sys.stdout
     raw = True
@@ -72,5 +72,5 @@ with dest:
     hist = HistoryAccessor()
 
     for session, lineno, cell in hist.get_range(session=session_number, raw=raw):
-      cell = cell.encode('utf-8')  # This line is only needed on Python 2.
-      dest.write(cell + '\n')
+        cell = cell.encode("utf-8")  # This line is only needed on Python 2.
+        dest.write(cell + "\n")

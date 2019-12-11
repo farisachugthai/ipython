@@ -13,6 +13,7 @@ import shutil
 import types
 
 from sys import getfilesystemencoding
+
 DEFAULT_ENCODING = getfilesystemencoding()
 # from .encoding import DEFAULT_ENCODING
 

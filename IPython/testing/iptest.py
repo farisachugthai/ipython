@@ -45,27 +45,27 @@ from IPython.external.decorators import KnownFailure, knownfailureif
 pjoin = path.join
 
 # Enable printing all warnings raise by IPython's modules
-warnings.filterwarnings(
-    "ignore",
-    message=".*Matplotlib is building the font cache.*",
-    category=UserWarning,
-    module=".*",
-)
-warnings.filterwarnings("error", message=".*", category=ResourceWarning, module=".*")
-warnings.filterwarnings(
-    "error", message=".*{'config': True}.*", category=DeprecationWarning, module="IPy.*"
-)
-warnings.filterwarnings("default", message=".*", category=Warning, module="IPy.*")
+# warnings.filterwarnings(
+#     "ignore",
+#     message=".*Matplotlib is building the font cache.*",
+#     category=UserWarning,
+#     module=".*",
+# )
+# warnings.filterwarnings("error", message=".*", category=ResourceWarning, module=".*")
+# warnings.filterwarnings(
+#     "error", message=".*{'config': True}.*", category=DeprecationWarning, module="IPy.*"
+# )
+# warnings.filterwarnings("default", message=".*", category=Warning, module="IPy.*")
 
-warnings.filterwarnings(
-    "error", message=".*apply_wrapper.*", category=DeprecationWarning, module=".*"
-)
-warnings.filterwarnings(
-    "error", message=".*make_label_dec", category=DeprecationWarning, module=".*"
-)
-warnings.filterwarnings(
-    "error", message=".*decorated_dummy.*", category=DeprecationWarning, module=".*"
-)
+# warnings.filterwarnings(
+#     "error", message=".*apply_wrapper.*", category=DeprecationWarning, module=".*"
+# )
+# warnings.filterwarnings(
+#     "error", message=".*make_label_dec", category=DeprecationWarning, module=".*"
+# )
+# warnings.filterwarnings(
+#     "error", message=".*decorated_dummy.*", category=DeprecationWarning, module=".*"
+# )
 warnings.filterwarnings(
     "error", message=".*skip_file_no_x11.*", category=DeprecationWarning, module=".*"
 )
@@ -95,16 +95,16 @@ warnings.filterwarnings(
     module=".*",
 )
 
-if version_info < (6,):
-    # nose.tools renames all things from `camelCase` to `snake_case` which raise an
-    # warning with the runner they also import from standard import library. (as of Dec 2015)
-    # Ignore, let's revisit that in a couple of years for IPython 6.
-    warnings.filterwarnings(
-        "ignore",
-        message=".*Please use assertEqual instead",
-        category=Warning,
-        module="IPython.*",
-    )
+# if version_info < (6,):
+#     # nose.tools renames all things from `camelCase` to `snake_case` which raise an
+#     # warning with the runner they also import from standard import library. (as of Dec 2015)
+#     # Ignore, let's revisit that in a couple of years for IPython 6.
+#     warnings.filterwarnings(
+#         "ignore",
+#         message=".*Please use assertEqual instead",
+#         category=Warning,
+#         module="IPython.*",
+#     )
 
 if version_info < (8,):
     warnings.filterwarnings(

@@ -196,6 +196,7 @@ class ProfileList(Application):
     .. warning:: Can't wrap with Unicode trait. We call splitlines on it later.
 
     """
+
     name = "ipython-profile"
     description = dedent(list_help)
     examples = dedent(_list_examples)
@@ -377,7 +378,7 @@ class ProfileCreate(BaseIPythonApplication):
             from ipyparallel.apps.ipclusterapp import IPClusterStart
 
             apps.extend(
-                [IPControllerApp, IPEngineApp, IPClusterStart, ]
+                [IPControllerApp, IPEngineApp, IPClusterStart,]
             )
         for App in apps:
             app = App()
