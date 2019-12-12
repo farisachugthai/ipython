@@ -1,9 +1,7 @@
 # encoding: utf-8
 """Utilities for path handling.
 
-The lack of :mod:`pathlib` usage is a perfect sign of the age of this module.
-
-Also I'm deleting filefind because it's copy pasted:
+Deleting filefind because it's copy pasted:
 
 *) Here
 
@@ -29,8 +27,6 @@ Here's the old docstring.
     Will find the file in the users home directory.  This function does not
     automatically try any paths, such as the cwd or the user's home directory.
 
-    .. todo:: Is this in traitlets now?
-
     Parameters
     ----------
     filename : str
@@ -47,8 +43,8 @@ Here's the old docstring.
     Raises :exc:`IOError` or returns absolute path to file.
 
 
-Also worth pointing out I got rid of a bunch of absurd logic in this file.
-There was a functon wrapping 2 functions but it was all predicated on
+Also of note.
+There was a function wrapping 2 functions but it was all predicated on
 Windows being installed.
 
 So I deleted 2 of the functions and started the original function with.:
@@ -61,6 +57,7 @@ So I deleted 2 of the functions and started the original function with.:
 # Distributed under the terms of the Modified BSD License.
 import errno
 import glob
+import logging
 import os
 from os import system
 from pathlib import Path
@@ -81,53 +78,26 @@ def _writable_dir(path):
     return os.path.isdir(path) and os.access(path, os.W_OK)
 
 
-def get_long_path_name(path):
-    """Expand a path into its long form.
-
-    On Windows this expands any ~ in the paths using ctypes.
-    On other platforms, it is a null operation.
+def get_home_dir(require_writable=False):
+    """Return the 'home' directory, as a unicode string using pathlib.
 
     Parameters
     ----------
-    path : str (path-like)
-        Path to perform a tilde "compression" on.
+    require_writable : bool
+        [default: False]
 
     Returns
     -------
-    str (path-like)
-        Path with a tilde added.
+    Path to your home dir
 
-    Raises
-    ------
-    :exc:`ImportError`
-        If ctypes isn't installed.
-    :exc:`OSError`
-        If ctypes doesn't have windll.
-
-    Examples
-    --------
-    >>> get_long_path_name('c:\\docume~1')
-    'c:\\\\Documents and Settings'
     """
-    if not sys.platform == "win32":
-        return
-
-    try:
-        import ctypes
-    except ImportError:
-        raise ImportError("you need to have ctypes installed for this to work")
-    if not getattr(ctypes, "windll", None):
-        raise OSError("Ctypes doesn't have WinDLL available.")
-
-    _GetLongPathName = ctypes.windll.kernel32.GetLongPathNameW
-    _GetLongPathName.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint]
-
-    buf = ctypes.create_unicode_buffer(260)
-    rv = _GetLongPathName(path, buf, 260)
-    if rv == 0 or rv > 260:
-        return path
+    if not require_writable:
+        return Path.home().__fspath__()
     else:
-        return buf.value
+        if not _writable_dir(Path.home().__fspath__()):
+            raise
+        else:
+            return Path.home().__fspath__()
 
 
 def compress_user(path):
@@ -180,7 +150,7 @@ def get_py_filename(name, force_win32=None):
         Uses pathlib instead of os.path.
         IOError tmk got deprecated so raise OSError.
         Is also recursive because that was an interesting way to do it IMO.
-        Now the functions only 4 lines! *And 30 lines of docstring. Aren't
+        Now the functions only 4 lines! *And 30 lines of docstring.* Aren't
         I the worst?
 
     """
@@ -192,23 +162,6 @@ def get_py_filename(name, force_win32=None):
         get_py_filename(name)
     else:
         raise OSError("File `%r` not found." % name)
-
-
-def get_home_dir(require_writable=False):
-    """Return the 'home' directory, as a unicode string using pathlib.
-
-    Parameters
-    ----------
-    require_writable : bool
-        [default: False]
-
-    Returns
-    -------
-    Path to your home dir
-    """
-    if require_writable:
-        print("utils.path:get_home_dir Hey fix the function calling this.")
-    return Path.home().__fspath__()
 
 
 def get_xdg_dir():
@@ -309,13 +262,8 @@ def target_outdated(target, deps):
     If target doesn't exist or is older than any file listed in deps, return
     true, otherwise return false.
 
-    .. warning:: THIS DOESN'T CATCH AN ERROR CORRECTLY LIKE GUIZE
-
-        Original line: except os.error:
-
-    Also wth why return 1 return True like a normal person.
-
     """
+    logging.basicConfig()
     try:
         target_time = os.path.getmtime(target)
     except OSError:
@@ -323,8 +271,8 @@ def target_outdated(target, deps):
     for dep in deps:
         dep_time = os.path.getmtime(dep)
         if dep_time > target_time:
-            # print "For target",target,"Dep failed:",dep # dbg
-            # print "times (dep,tar):",dep_time,target_time # dbg
+            logging.debug("For target",target,"Dep failed:",dep)
+            logging.debug("times (dep,tar):",dep_time,target_time)
             return True
 
 
@@ -340,8 +288,6 @@ def target_update(target, deps, cmd):
         system(cmd)
 
 
-ENOLINK = 1998
-
 
 def link(src, dst):
     """Create a hard link ``src`` to ``dst``, returning 0 or errno.
@@ -349,6 +295,8 @@ def link(src, dst):
     Note that the special errno ``ENOLINK`` will be returned if ``os.link``
     isn't supported by the operating system.
     """
+    ENOLINK = 1998
+
     if not hasattr(os, "link"):
         return ENOLINK
     link_errno = 0

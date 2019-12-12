@@ -180,6 +180,7 @@ from logging import debug, error, info
 from shutil import get_terminal_size
 
 from IPython.core.display_trap import DisplayTrap
+from IPython.core.error import OperationalError
 from IPython.core.excolors import exception_colors
 from IPython.core.getipython import get_ipython
 from IPython.utils import PyColorize
@@ -333,12 +334,12 @@ def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
     ----------
     lnum: int
     index: int
-    lines: list[string]
-    Colors:
+    lines: list of str
+    Colors :
         ColorScheme used.
-    lvals: bytes
+    lvals : bytes
         Values of local variables, already colored, to inject just after the error line.
-    _line_format: f (str) -> (str, bool)
+    _line_format : f (str) -> (str, bool)
         return (colorized version of str, failure to do so)
 
     """
@@ -459,6 +460,14 @@ class TBTools(Colorable):
         Defaults to 0.
         Number of frames to skip when reporting tracebacks.
 
+    color_scheme_table : Dict
+        :func:`IPython.core.excolors.exception_colors` output.
+
+    call_pdb : bool
+        Needs to be next var refactored out of here.
+        Like whose idea was it to implement color management, exception handling, debugging, user interaction, user configuration, traceback
+        formatting, and differentiating exceptions based on cause IN ONE CLASS.
+
     """
 
     tb_offset = 0
@@ -487,8 +496,10 @@ class TBTools(Colorable):
 
         """
         super().__init__(parent=parent, config=config)
+
         # Create color table
         # self.color_scheme_table = exception_colors()
+
         if not hasattr(self, "color_scheme_table"):
             self.color_scheme_table = exception_colors()
 
@@ -497,17 +508,19 @@ class TBTools(Colorable):
         # else:
         #     self.color_scheme_table = ColorSchemeTable()
 
-        # todo
-        # if self.Colors is None:
         # self.set_colors(color_scheme)
         # self.old_scheme = color_scheme  # save initial value for toggles
 
         self.call_pdb = call_pdb
         self._ostream = ostream
 
-        from IPython.core.debugger import CorePdb
+        from IPython.core import debugger
 
-        self.pdb = CorePdb() if self.call_pdb else None
+        self.pdb = debugger.CorePdb() if self.call_pdb else None
+
+    def __repr__(self):
+        """This isn't defined like anywhere. Let's do everyone a favor."""
+        return "".join(self.__class__.__name__)
 
     def _get_ostream(self):
         """Output stream that exceptions are written to.
@@ -523,15 +536,35 @@ class TBTools(Colorable):
         """
         return sys.stdout if self._ostream is None else self._ostream
 
-    def __repr__(self):
-        """This isn't defined like anywhere. Let's do everyone a favor."""
-        return "".join(self.__class__.__name__)
-
     def _set_ostream(self, val):
         assert val is None or (hasattr(val, "write") and hasattr(val, "flush"))
         self._ostream = val
 
     ostream = property(_get_ostream, _set_ostream)
+
+    def get_parts_of_chained_exception(self, evalue):
+        def get_chained_exception(exception_value):
+            cause = getattr(exception_value, '__cause__', None)
+            if cause:
+                return cause
+            if getattr(exception_value, '__suppress_context__', False):
+                return None
+            return getattr(exception_value, '__context__', None)
+
+        chained_evalue = get_chained_exception(evalue)
+
+        if chained_evalue:
+            return chained_evalue.__class__, chained_evalue, chained_evalue.__traceback__
+
+    def prepare_chained_exception_message(self, cause):
+        direct_cause = "\nThe above exception was the direct cause of the following exception:\n"
+        exception_during_handling = "\nDuring handling of the above exception, another exception occurred:\n"
+
+        if cause:
+            message = [[direct_cause]]
+        else:
+            message = [[exception_during_handling]]
+        return message
 
     def set_colors(self, *args, **kw):
         """Shorthand access to the color table scheme selector method."""
@@ -633,7 +666,6 @@ class ListTB(TBTools):
         parent=None,
         config=None,
     ):
-        # """Just modified execution so it calls super() and not the super class directly."""
         self.color_scheme = color_scheme
         self.call_pdb = call_pdb
         self.ostream = ostream
@@ -663,21 +695,21 @@ class ListTB(TBTools):
         """
         if hasattr(self.ostream, "flush"):
             self.ostream.flush()
+        else:
+            raise OperationalError('%s: ListTB.__call__ does not have an output stream.', __file__)
         # so i made this mistake a bunch of times throughout the repository
         # sys always have exc_info, sometimes it just returns (None, None, None)
-        if sys.exc_info()[0] is not None:
-            etype = sys_exc_info()[0]
-        if sys.exc_info()[1] is not None:
-            value = sys.exc_info()[1]
-        if sys.exc_info()[2] is not None:
-            elist = sys.exc_info()[2]
-        self.ostream.write(self.text(etype, value, elist))
-        self.ostream.write("\n")
+        self.ostream.write(self.text(*sys.exc_info()) + '\n')
 
     def structured_traceback(
         self, etype=None, value=None, elist=None, tb_offset=None, context=5, mode=None
     ):
         """Return a color formatted string with the traceback info.
+
+        Notes
+        -----
+        This is a workaround to get chained_exc_ids in recursive calls
+        etb should not be a tuple if structured_traceback is not recursive.
 
         Parameters
         ----------
@@ -700,10 +732,27 @@ class ListTB(TBTools):
             String with formatted exception.
 
         """
+        if isinstance(etb, tuple):
+            etb, chained_exc_ids = etb
+        else:
+            chained_exc_ids = set()
+
+        if isinstance(etb, list):
+            elist = etb
+        elif etb is not None:
+            elist = self._extract_tb(etb)
+        else:
+            elist = []
+
+        if getattr(self, 'Colors', None):
+            Colors = self.Colors
+        else:
+            raise
+
         tb_offset = self.tb_offset if tb_offset is None else tb_offset
         out_list = []
-        if elist:
 
+        if elist:
             if tb_offset and len(elist) > tb_offset:
                 elist = elist[tb_offset:]
 
@@ -714,8 +763,24 @@ class ListTB(TBTools):
             )
             out_list.extend(self._format_list(elist))
         # The exception info should be a single entry in the list.
-        lines = "".join(self._format_exception_only(etype, value))
-        out_list.append(lines)
+        # lines = "".join(self._format_exception_only(etype, value))
+
+        # exception = self.get_parts_of_chained_exception(evalue)
+
+        # if exception and not id(exception[1]) in chained_exc_ids:
+        #     chained_exception_message = self.prepare_chained_exception_message(
+        #         evalue.__cause__)[0]
+        #     etype, evalue, etb = exception
+        #     # Trace exception to avoid infinite 'cause' loop
+        #     chained_exc_ids.add(id(exception[1]))
+        #     chained_exceptions_tb_offset = 0
+        #     out_list = (
+        #         self.structured_traceback(
+        #             etype, evalue, (etb, chained_exc_ids),
+        #             chained_exceptions_tb_offset, context)
+        #         + chained_exception_message
+        #         + out_list)
+        # out_list.append(lines)
 
         return out_list
 
@@ -754,7 +819,7 @@ class ListTB(TBTools):
         etype : exception type
         value : exception value
         """
-        return self.structured_traceback(self, etype, value, [],)
+        return ListTB.structured_traceback(self, etype, value, [],)
 
     def show_exception_only(self, etype, evalue):
         """Only print the exception type and message, without a traceback.
@@ -770,6 +835,7 @@ class ListTB(TBTools):
         etype : exception type
 
         """
+        self.ostream.flush()
         self.ostream.write("\n".join(traceback.format_exception_only(etype, evalue)))
         self.ostream.flush()
 
@@ -878,9 +944,9 @@ class VerboseTB(TBTools):
             check_cache = linecache.checkcache
         self.check_cache = check_cache
 
-        from IPython.core.debugger import CorePdb
+        from IPython.core import debugger
 
-        self.debugger_cls = debugger_cls or CorePdb
+        self.debugger_cls = debugger_cls or debugger.CorePdb
 
     def format_records(self, records, last_unique, recursion_repeat):
         """Format the stack frames of the traceback"""
@@ -1757,15 +1823,16 @@ class SyntaxTB(ListTB):
         self.color_scheme_table = ColorSchemeTable()
         self.color_scheme = color_scheme or "Linux"
         self.parent = parent
-        # super().__init__(self, color_scheme=color_scheme, call_pdb=call_pdb, ostream=ostream, parent=parent)
-        self.last_syntax_error = None
         self.config = config
+        # The 2 lines below are all that are in upstreams copy
         ListTB.__init__(
             self, color_scheme=self.color_scheme, parent=self.parent, config=self.config
         )
+        self.last_syntax_error = None
 
     def __call__(self, value):
         self.last_syntax_error = value
+        ListTB.__call__(self, *sys.exc_info())
 
     def structured_traceback(
         self, etype, value, elist, tb_offset=None, context=5, **kwargs

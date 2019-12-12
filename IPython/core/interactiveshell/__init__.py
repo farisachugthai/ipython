@@ -32,12 +32,12 @@ import sys
 import tempfile
 import traceback
 import types
-import warnings
-from ast import AST, Await, Expr, Return
+# import warnings
+from ast import AST # , Await, Expr, Return
 from importlib import import_module
 from logging import error
 from pathlib import Path
-from reprlib import Repr
+# from reprlib import Repr
 from typing import List as ListType
 from typing import Tuple
 from warnings import warn
@@ -84,7 +84,7 @@ from IPython.core.usage import default_banner
 
 from IPython.paths import get_ipython_dir
 
-from IPython.testing.skipdoctest import skip_doctest
+# from IPython.testing.skipdoctest import skip_doctest
 
 from IPython.utils import PyColorize, openpy
 from IPython.utils.ipstruct import Struct
@@ -92,13 +92,14 @@ from IPython.utils.path import ensure_dir_exists, get_py_filename
 from IPython.utils.process import getoutput, system
 from IPython.utils.strdispatch import StrDispatch
 from IPython.utils.syspathcontext import prepended_to_syspath
-from IPython.utils.tempdir import TemporaryDirectory
+# from IPython.utils.tempdir import TemporaryDirectory
 from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
 from IPython.utils.utils_io import ask_yes_no
 
 # guys its literally a pass statement. deleted.
 # NoOpContext is deprecated, but ipykernel imports it from here.
 # See https://github.com/ipython/ipykernel/issues/157
+# (2016, let's try to remove than in IPython 8.0)
 from .execution import (
     removed_co_newlocals,
     softspace,
@@ -4370,6 +4371,16 @@ class InteractiveShell(SingletonConfigurable):
 
 
 class InteractiveShellABC(metaclass=abc.ABCMeta):
+    """An abstract base class for InteractiveShell."""
+
+    def __repr__(self):
+        return "".join(self.__class__.__name__)
+
+    def __str__(self):
+        return "{}\n{}".format(self.__class__.__name__, str(self.__doc__))
+
+
+class _InteractiveShellABC(metaclass=abc.ABCMeta):
     """An abstract base class for InteractiveShell."""
 
     def __repr__(self):

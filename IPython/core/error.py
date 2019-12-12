@@ -207,7 +207,6 @@ class DatabaseError(Exception):
 
 
 class OperationalError(Exception):
-    """Dummy exception when sqlite could not be imported. Should never occur."""
 
     def __init__(self, *args, **kwargs):
         super().__init(self, *args, **kwargs)

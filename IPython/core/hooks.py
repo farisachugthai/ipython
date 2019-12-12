@@ -172,7 +172,7 @@ class CommandChainDispatcher:
             # print "prio",prio,"cmd",cmd #dbg
             try:
                 return cmd(*args, **kw)
-            except TryNext as exc:
+            except TryNext:
                 # if no function will accept it, raise TryNext up to the caller
                 pass
         # if no function will accept it, raise TryNext up to the caller

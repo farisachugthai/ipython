@@ -40,17 +40,6 @@ PYPY = platform.python_implementation() == "PyPy"
 
 
 def no_code(x, encoding=None):
-    """
-
-    Parameters
-    ----------
-    x :
-    encoding :
-
-    Returns
-    -------
-
-    """
     return x
 
 
@@ -115,7 +104,7 @@ def _modify_str_or_docstring(str_change_func):
         -------
 
         """
-        if isinstance(func_or_str, string_types):
+        if isinstance(func_or_str, (str,)):
             func = None
             doc = func_or_str
         else:
@@ -140,17 +129,12 @@ def safe_unicode(e):
     safe to call unicode() on.
     """
     try:
-        return unicode_type(e)
+        return str(e)
     except UnicodeError:
         pass
 
     try:
-        return str_to_unicode(str(e))
-    except UnicodeError:
-        pass
-
-    try:
-        return str_to_unicode(repr(e))
+        return repr(e)
     except UnicodeError:
         pass
 
@@ -170,6 +154,11 @@ def input(prompt=""):
     """
     return builtin_mod.input(prompt)
 
+builtin_mod_name = "builtins"
+import builtins as builtin_mod
+
+
+which = shutil.which
 
 def isidentifier(s, dotted=False):
     """

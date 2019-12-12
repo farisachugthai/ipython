@@ -8,6 +8,7 @@ We should try coming up with some kind of shim and then we can get delete
 this too.
 
 """
+import codecs
 import subprocess
 
 from IPython.core.error import TryNext, ClipboardEmpty
@@ -38,13 +39,14 @@ def win32_clipboard_get():
     return text
 
 
-def osx_clipboard_get():
+def osx_clipboard_get() -> str:
     """ Get the clipboard's text on OS X.
     """
     p = subprocess.Popen(["pbpaste", "-Prefer", "ascii"], stdout=subprocess.PIPE)
-    text, stderr = p.communicate()
+    bytes_, stderr = p.communicate()
     # Text comes in with old Mac \r line endings. Change them to \n.
-    text = text.replace(b"\r", b"\n")
+    bytes_ = bytes_.replace(b'\r', b'\n')
+    text = codecs.decode(bytes_)
     return text
 
 

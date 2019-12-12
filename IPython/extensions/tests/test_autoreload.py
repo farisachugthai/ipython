@@ -26,8 +26,6 @@ import IPython.testing.tools as tt
 
 from unittest import TestCase
 
-from IPython.testing.decorators import skipif
-
 from IPython.extensions.autoreload import AutoreloadMagics
 from IPython.core.events import EventManager, pre_run_cell
 
@@ -194,7 +192,7 @@ def pickle_get_current_class(obj):
 
 class TestAutoreload(Fixture):
     def test_reload_enums(self):
-        import enum
+
 
         mod_name, mod_fn = self.new_module(
             textwrap.dedent(

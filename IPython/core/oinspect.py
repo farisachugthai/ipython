@@ -12,7 +12,9 @@ reference the name under which an object is being read.
 __all__ = ["Inspector", "InspectColors"]
 
 import ast
+import codecs
 import inspect
+import io as stdlib_io
 import linecache
 import os
 import sys
@@ -20,6 +22,7 @@ import types
 from inspect import getabsfile as find_file, getdoc, getsource, signature
 from itertools import zip_longest
 from textwrap import dedent, indent
+from typing import Union
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -107,7 +110,7 @@ def object_info(**kw):
     kw : dict
 
     """
-    infodict = dict(zip_longest(info_fields, [None]))
+    infodict = {k:None for k in info_fields}
     infodict.update(kw)
     return infodict
 
@@ -116,10 +119,113 @@ def get_encoding(obj):
     """Get encoding for python source file defining obj
 
     Returns None if obj is not defined in a sourcefile.
+    """
+    ofile = find_file(obj)
+    # run contents of file through pager starting at line where the object
+    # is defined, as long as the file isn't binary and is actually on the
+    # filesystem.
+    if ofile is None:
+        return None
+    elif ofile.endswith(('.so', '.dll', '.pyd')):
+        return None
+    elif not os.path.isfile(ofile):
+        return None
+    else:
+        # Print only text files, not extension binaries.  Note that
+        # getsourcelines returns lineno with 1-offset and page() uses
+        # 0-offset, so we must adjust.
+        with stdlib_io.open(ofile, 'rb') as buffer:   # Tweaked to use io.open for Python 2
+            encoding, lines = openpy.detect_encoding(buffer.readline)
+        return encoding
+
+
+def _get_encoding(obj):
+    """I'm sorry I might just do something dumb like return sys.getfile
+    """
+    return sys.getfilesystemencoding()
+
+
+def getdoc(obj):
+    """Stable wrapper around inspect.getdoc.
+
+    This can't crash because of attribute problems.
 
     I'm sorry I might just do something dumb like return sys.getfile
     """
-    return sys.getfilesystemencoding()
+    # Allow objects to offer customized documentation via a getdoc method:
+    try:
+        ds = obj.getdoc()
+    except Exception:
+        pass
+    else:
+        if isinstance(ds, str):
+            return inspect.cleandoc(ds)
+    docstr = inspect.getdoc(obj)
+    encoding = get_encoding(obj)
+    return codecs.encode(docstr, encoding=encoding)
+
+
+def getsource(obj, oname=''):
+    """Wrapper around inspect.getsource.
+
+    This can be modified by other projects to provide customized source
+    extraction.
+
+    Parameters
+    ----------
+    obj : object
+        an object whose source code we will attempt to extract
+    oname : str
+        (optional) a name under which the object is known
+
+    Returns
+    -------
+    src : unicode or None
+
+    """
+
+    if isinstance(obj, property):
+        sources = []
+        for attrname in ['fget', 'fset', 'fdel']:
+            fn = getattr(obj, attrname)
+            if fn is not None:
+                encoding = get_encoding(fn)
+                oname_prefix = ('%s.' % oname) if oname else ''
+                sources.append(cast_unicode(
+                    ''.join(('# ', oname_prefix, attrname)),
+                    encoding=encoding))
+                if inspect.isfunction(fn):
+                    sources.append(dedent(getsource(fn)))
+                else:
+                    # Default str/repr only prints function name,
+                    # pretty.pretty prints module name too.
+                    sources.append(cast_unicode(
+                        '%s%s = %s\n' % (
+                            oname_prefix, attrname, pretty(fn)),
+                        encoding=encoding))
+        if sources:
+            return '\n'.join(sources)
+        else:
+            return None
+
+    else:
+        # Get source for non-property objects.
+
+        obj = _get_wrapped(obj)
+
+        try:
+            src = inspect.getsource(obj)
+        except TypeError:
+            # The object itself provided no meaningful source, try looking for
+            # its class definition instead.
+            if hasattr(obj, '__class__'):
+                try:
+                    src = inspect.getsource(obj.__class__)
+                except TypeError:
+                    return None
+
+        encoding = get_encoding(obj)
+        return codecs.encode(src, encoding=encoding)
 
 
 def is_simple_callable(obj):
@@ -152,8 +258,8 @@ def _get_wrapped(obj):
     return obj
 
 
-def find_source_lines(obj):
-    """Find the line number in a file where an object was defined.
+def find_file(obj) -> str:
+    """Find the absolute path to the file where an object was defined.
 
     This is essentially a robust wrapper around `inspect.getsourcelines`.
 
@@ -186,6 +292,38 @@ def find_source_lines(obj):
         fname = None
     return fname
 
+
+def find_source_lines(obj):
+    """Find the line number in a file where an object was defined.
+
+    This is essentially a robust wrapper around `inspect.getsourcelines`.
+
+    Returns None if no file can be found.
+
+    Parameters
+    ----------
+    obj : any Python object
+
+    Returns
+    -------
+    lineno : int
+      The line number where the object definition starts.
+    """
+    obj = _get_wrapped(obj)
+
+    try:
+        try:
+            lineno = inspect.getsourcelines(obj)[1]
+        except TypeError:
+            # For instances, try the class object like getsource() does
+            if hasattr(obj, '__class__'):
+                lineno = inspect.getsourcelines(obj.__class__)[1]
+            else:
+                lineno = None
+    except:
+        return None
+
+    return lineno
 
 def _mime_format(text, formatter=None):
     """Return a mime bundle representation of the input text.
@@ -257,10 +395,7 @@ class Inspector(Configurable):
         # self.format = self.parser.format
         self.str_detail_level = str_detail_level
 
-        self.parent = parent
-        self.config = config
-
-    def _getdef(self, obj, oname=""):
+    def _getdef(self,obj,oname='') -> Union[str,None]:
         """Return the call signature for any callable object.
 
         If any exception is generated, None is returned instead and the
@@ -273,7 +408,7 @@ class Inspector(Configurable):
         hdef = _render_signature(signature(obj), oname)
         return hdef
 
-    def __head(self, h):
+    def __head(self,h) -> str:
         """Return a header string with proper colors."""
         return "%s%s%s" % (
             self.color_table.active_colors.header,
@@ -437,6 +572,45 @@ class Inspector(Configurable):
             out.append(title + content)
         return "\n".join(out)
 
+
+    def _mime_format(self, text:str, formatter=None) -> dict:
+        """Return a mime bundle representation of the input text.
+
+        - if `formatter` is None, the returned mime bundle has
+           a `text/plain` field, with the input text.
+           a `text/html` field with a `<pre>` tag containing the input text.
+
+        - if `formatter` is not None, it must be a callable transforming the
+          input text into a mime bundle. Default values for `text/plain` and
+          `text/html` representations are the ones described above.
+
+        Note:
+
+        Formatters returning strings are supported but this behavior is deprecated.
+
+        """
+        defaults = {
+            'text/plain': text,
+            'text/html': '<pre>' + text + '</pre>'
+        }
+
+        if formatter is None:
+            return defaults
+        else:
+            formatted = formatter(text)
+
+            if not isinstance(formatted, dict):
+                # Handle the deprecated behavior of a formatter returning
+                # a string instead of a mime bundle.
+                return {
+                    'text/plain': formatted,
+                    'text/html': '<pre>' + formatted + '</pre>'
+                }
+
+            else:
+                return dict(defaults, **formatted)
+
+
     def format_mime(self, bundle):
         """
 
@@ -488,7 +662,7 @@ class Inspector(Configurable):
             "text/html": "",
         }
 
-        def append_field(bundle, title, key, formatter=None):
+        def append_field(bundle, title:str, key:str, formatter=None):
             """
 
             Parameters
@@ -628,8 +802,10 @@ class Inspector(Configurable):
             If set to 1, more information is given.
 
         Returns
-        -------
-        An object info dict with known fields from `info_fields`.
+        =======
+
+        An object info dict with known fields from `info_fields`. Keys are
+        strings, values are string or None.
 
         """
         if info is None:
@@ -936,7 +1112,7 @@ class Inspector(Configurable):
         page.page("\n".join(sorted(search_result)))
 
 
-def _render_signature(obj_signature, obj_name):
+def _render_signature(obj_signature, obj_name) -> str:
     """
     This was mostly taken from inspect.Signature.__str__.
     Look there for the comments.

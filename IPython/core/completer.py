@@ -78,12 +78,15 @@ raise unless use in an :any:`provisionalcompleter` context manager.
 
 You will find that the following are experimental:
 
-    - :any:`provisionalcompleter`
-    - :any:`IPCompleter.completions`
-    - :any:`Completion`
-    - :any:`rectify_completions`
+    - `provisionalcompleter`
 
-.. todo::
+    - `IPCompleter.completions`
+
+    - `Completion`
+
+    - `rectify_completions`
+
+.. note::
 
     better name for :any:`rectify_completions` ?
 
@@ -112,8 +115,8 @@ I think you can access the shell's completers through
 Debugging
 ---------
 
-If ``IPCompleter.debug`` is ``True`` may return a :any:`_FakeJediCompletion`
-object containing a string with the Jedi debug information attached.
+If `IPCompleter.debug` is `True` may return a `_FakeJediCompletion`
+object containing a `str` with `jedi` debugging information attached.
 
 """
 import builtins as builtin_mod
@@ -130,6 +133,7 @@ import unicodedata
 import warnings
 from contextlib import contextmanager
 from importlib import import_module
+from typing import Iterator, List, Tuple, Iterable, Union
 from types import SimpleNamespace
 from typing import Iterable, Iterator, List, Tuple, Union
 
@@ -152,6 +156,13 @@ from traitlets import Bool, Enum, observe, Int
 
 from IPython.core.error import ProvisionalCompleterWarning
 
+# Just saying, after all this our file is still 1700 lines.
+# from IPython.core._completer import (PROTECTABLES, MATCHES_LIMIT, _deprecation_readline_sentinel, provisionalcompleter,
+#         has_open_quotes, protect_filename, compress_user, expand_user, completions_sorting_key, _FakeJediCompletion,
+#         Completion, _IC, _deduplication_completions, rectify_completions, DELIMS, GREEDY_DELIMS, CompletionSplitter,
+#         get__all__entries, match_dict_keys, cursor_to_position, position_to_cursor, _safe_isinstance,
+#         back_unicode_name_matches, back_latex_name_matches, _formatparamchildren, _make_signature)
+
 # skip module docstests
 skip_doctest = True
 
@@ -164,6 +175,15 @@ skip_doctest = True
 
 # Public API
 __all__ = ["Completer", "IPCompleter"]
+
+
+
+
+"""completer has 700 lines that can't be imported because they're not in __all__.
+
+It's also really hard to read from how huge the file is. I'm moving everything
+into this "hidden" module.
+"""
 
 if sys.platform == "win32":
     PROTECTABLES = " "
@@ -365,7 +385,10 @@ class _FakeJediCompletion:
         self._origin = "fake"
 
     def __repr__(self):
-        return "".join(self.__class__.__name__)
+        return "{}".format(
+                self.__class__.__name__,
+                "<Fake completion object jedi has crashed>"
+                )
 
 
 class Completion:
@@ -619,175 +642,6 @@ class CompletionSplitter:
         return self._delim_re.split(l)[-1]
 
 
-class Completer(Configurable):
-    """
-
-    """
-
-    # jedi is a hard dependency
-    use_jedi = Bool(
-        default_value=True,
-        help="Experimental: Use Jedi to generate autocompletions. "
-        "Default to True if jedi is installed.",
-    ).tag(config=True)
-
-    jedi_compute_type_timeout = Int(
-        default_value=400,
-        help="""Experimental: restrict time (in milliseconds) during which Jedi
-        can compute types.
-        Set to 0 to stop computing types. Non-zero value lower than 100ms may hurt
-        performance by preventing jedi to build its cache.
-        """,
-    ).tag(config=True)
-
-    debug = Bool(
-        default_value=False,
-        help="Enable debug for the Completer. Mostly print extra "
-        "information for experimental jedi integration.",
-    ).tag(config=True)
-
-    backslash_combining_completions = Bool(
-        True,
-        help="Enable unicode completions, e.g. \\alpha<tab> . "
-        "Includes completion of latex commands, unicode names, and expanding "
-        "unicode characters back to latex commands.",
-    ).tag(config=True)
-
-    def __init__(self, namespace=None, global_namespace=None, **kwargs):
-        """Create a new completer for the command line.
-
-        .. class:: Completer(namespace=ns, global_namespace=ns2)
-
-            If unspecified, the default namespace where completions are performed
-            is __main__ (technically, __main__.__dict__). Namespaces should be
-            given as dictionaries.
-
-        An optional second namespace can be given.  This allows the completer
-        to handle cases where both the local and global scopes need to be
-        distinguished.
-
-        Don't bind to namespace quite yet, but flag whether the user wants a
-        specific namespace or to use __main__.__dict__. This will allow us
-        to bind to __main__.__dict__ at completion time, not now.
-        """
-        if namespace is None:
-            self.use_main_ns = True
-        else:
-            self.use_main_ns = False
-            self.namespace = namespace
-
-        # The global namespace, if given, can be bound directly
-        if global_namespace is None:
-            self.global_namespace = {}
-        else:
-            self.global_namespace = global_namespace
-
-        super().__init__(**kwargs)
-
-    def complete(self, text, state):
-        """Return the next possible completion for 'text'.
-
-        This is called successively with state == 0, 1, 2, ... until it
-        returns None.  The completion should begin with 'text'.
-        """
-        if self.use_main_ns:
-            self.namespace = __main__.__dict__
-
-        if state == 0:
-            if "." in text:
-                self.matches = self.attr_matches(text)
-            else:
-                self.matches = self.global_matches(text)
-        try:
-            return self.matches[state]
-        except IndexError:
-            return None
-
-    def global_matches(self, text):
-        """Compute matches when text is a simple name.
-
-        Return a list of all keywords, built-in functions and names currently
-        defined in self.namespace or self.global_namespace that match.
-        """
-        matches = []
-        match_append = matches.append
-        n = len(text)
-        for lst in [
-            keyword.kwlist,
-            builtin_mod.__dict__.keys(),
-            self.namespace.keys(),
-            self.global_namespace.keys(),
-        ]:
-            for word in lst:
-                if word[:n] == text and word != "__builtins__":
-                    match_append(word)
-
-        snake_case_re = re.compile(r"[^_]+(_[^_]+)+?\Z")
-        for lst in [self.namespace.keys(), self.global_namespace.keys()]:
-            shortened = {
-                "_".join([sub[0] for sub in word.split("_")]): word
-                for word in lst
-                if snake_case_re.match(word)
-            }
-            for word in shortened.keys():
-                if word[:n] == text and word != "__builtins__":
-                    match_append(shortened[word])
-        return matches
-
-    def attr_matches(self, text):
-        """Compute matches when text contains a dot.
-
-        Assuming the text is of the form NAME.NAME....[NAME], and is
-        evaluatable in self.namespace or self.global_namespace, it will be
-        evaluated and its attributes (as revealed by dir()) are used as
-        possible completions.  (For class instances, class members are
-        also considered.)
-
-        WARNING: this can still invoke arbitrary C code, if an object
-        with a ``__getattr__`` hook is evaluated.
-
-        """
-        # Another option, seems to work great. Catches things like ''.<tab>
-        m = re.match(r"(\S+(\.\w+)*)\.(\w*)$", text)
-
-        if m:
-            expr, attr = m.group(1, 3)
-        elif hasattr(self, "greedy"):
-            # should probably check that it has the attribute first because
-            # we're deprecating this soon
-            m2 = re.match(r"(.+)\.(\w*)$", self.line_buffer)
-            if not m2:
-                return []
-            expr, attr = m2.group(1, 2)
-        else:
-            return []
-
-        try:
-            obj = eval(expr, self.namespace)
-        except BaseException:
-            try:
-                obj = eval(expr, self.global_namespace)
-            except BaseException:
-                return []
-
-        if self.limit_to__all__ and hasattr(obj, "__all__"):
-            words = get__all__entries(obj)
-        else:
-            words = dir2(obj)
-
-        try:
-            words = generics.complete_object(obj, words)
-        except TryNext:
-            pass
-        except AssertionError:
-            raise
-        except Exception:
-            pass
-        # Build match list to return
-        n = len(attr)
-        return ["%s.%s" % (expr, w) for w in words if w[:n] == attr]
-
-
 def get__all__entries(obj):
     """Returns the strings in the ``__all__`` attribute."""
     try:
@@ -1036,6 +890,175 @@ def _make_signature(completion) -> str:
     return "(%s)" % ", ".join(
         [f for f in (_formatparamchildren(p) for p in completion.params) if f]
     )
+
+
+class Completer(Configurable):
+    """
+
+    """
+
+    # jedi is a hard dependency
+    use_jedi = Bool(
+        default_value=True,
+        help="Experimental: Use Jedi to generate autocompletions. "
+        "Default to True if jedi is installed.",
+    ).tag(config=True)
+
+    jedi_compute_type_timeout = Int(
+        default_value=400,
+        help="""Experimental: restrict time (in milliseconds) during which Jedi
+        can compute types.
+        Set to 0 to stop computing types. Non-zero value lower than 100ms may hurt
+        performance by preventing jedi to build its cache.
+        """,
+    ).tag(config=True)
+
+    debug = Bool(
+        default_value=False,
+        help="Enable debug for the Completer. Mostly print extra "
+        "information for experimental jedi integration.",
+    ).tag(config=True)
+
+    backslash_combining_completions = Bool(
+        True,
+        help="Enable unicode completions, e.g. \\alpha<tab> . "
+        "Includes completion of latex commands, unicode names, and expanding "
+        "unicode characters back to latex commands.",
+    ).tag(config=True)
+
+    def __init__(self, namespace=None, global_namespace=None, **kwargs):
+        """Create a new completer for the command line.
+
+        .. class:: Completer(namespace=ns, global_namespace=ns2)
+
+            If unspecified, the default namespace where completions are performed
+            is __main__ (technically, __main__.__dict__). Namespaces should be
+            given as dictionaries.
+
+        An optional second namespace can be given.  This allows the completer
+        to handle cases where both the local and global scopes need to be
+        distinguished.
+
+        Don't bind to namespace quite yet, but flag whether the user wants a
+        specific namespace or to use __main__.__dict__. This will allow us
+        to bind to __main__.__dict__ at completion time, not now.
+        """
+        if namespace is None:
+            self.use_main_ns = True
+        else:
+            self.use_main_ns = False
+            self.namespace = namespace
+
+        # The global namespace, if given, can be bound directly
+        if global_namespace is None:
+            self.global_namespace = {}
+        else:
+            self.global_namespace = global_namespace
+
+        super().__init__(**kwargs)
+
+    def complete(self, text, state):
+        """Return the next possible completion for 'text'.
+
+        This is called successively with state == 0, 1, 2, ... until it
+        returns None.  The completion should begin with 'text'.
+        """
+        if self.use_main_ns:
+            self.namespace = __main__.__dict__
+
+        if state == 0:
+            if "." in text:
+                self.matches = self.attr_matches(text)
+            else:
+                self.matches = self.global_matches(text)
+        try:
+            return self.matches[state]
+        except IndexError:
+            return None
+
+    def global_matches(self, text):
+        """Compute matches when text is a simple name.
+
+        Return a list of all keywords, built-in functions and names currently
+        defined in self.namespace or self.global_namespace that match.
+        """
+        matches = []
+        match_append = matches.append
+        n = len(text)
+        for lst in [
+            keyword.kwlist,
+            builtin_mod.__dict__.keys(),
+            self.namespace.keys(),
+            self.global_namespace.keys(),
+        ]:
+            for word in lst:
+                if word[:n] == text and word != "__builtins__":
+                    match_append(word)
+
+        snake_case_re = re.compile(r"[^_]+(_[^_]+)+?\Z")
+        for lst in [self.namespace.keys(), self.global_namespace.keys()]:
+            shortened = {
+                "_".join([sub[0] for sub in word.split("_")]): word
+                for word in lst
+                if snake_case_re.match(word)
+            }
+            for word in shortened.keys():
+                if word[:n] == text and word != "__builtins__":
+                    match_append(shortened[word])
+        return matches
+
+    def attr_matches(self, text):
+        """Compute matches when text contains a dot.
+
+        Assuming the text is of the form NAME.NAME....[NAME], and is
+        evaluatable in self.namespace or self.global_namespace, it will be
+        evaluated and its attributes (as revealed by dir()) are used as
+        possible completions.  (For class instances, class members are
+        also considered.)
+
+        WARNING: this can still invoke arbitrary C code, if an object
+        with a ``__getattr__`` hook is evaluated.
+
+        """
+        # Another option, seems to work great. Catches things like ''.<tab>
+        m = re.match(r"(\S+(\.\w+)*)\.(\w*)$", text)
+
+        if m:
+            expr, attr = m.group(1, 3)
+        elif hasattr(self, "greedy"):
+            # should probably check that it has the attribute first because
+            # we're deprecating this soon
+            m2 = re.match(r"(.+)\.(\w*)$", self.line_buffer)
+            if not m2:
+                return []
+            expr, attr = m2.group(1, 2)
+        else:
+            return []
+
+        try:
+            obj = eval(expr, self.namespace)
+        except BaseException:
+            try:
+                obj = eval(expr, self.global_namespace)
+            except BaseException:
+                return []
+
+        if self.limit_to__all__ and hasattr(obj, "__all__"):
+            words = get__all__entries(obj)
+        else:
+            words = dir2(obj)
+
+        try:
+            words = generics.complete_object(obj, words)
+        except TryNext:
+            pass
+        except AssertionError:
+            raise
+        except Exception:
+            pass
+        # Build match list to return
+        n = len(attr)
+        return ["%s.%s" % (expr, w) for w in words if w[:n] == attr]
 
 
 class IPCompleter(Completer):
@@ -2217,18 +2240,23 @@ class IPCompleter(Completer):
 
         But no matter what this should be refactored this one method
         undertakes a large number of different tasks.
+
+        Parameters
+        ----------
+        cursor_pos :
+            If the cursor position isn't given, the only sane assumption we can
+            make is that it's at the end of the line (the common case).
+        text :
+            If text is either None or an empty string, rely on the line buffer.
         """
-        # if the cursor position isn't given, the only sane assumption we can
-        # make is that it's at the end of the line (the common case)
         if cursor_pos is None:
-            # cursor_pos = len(line_buffer) if text is None else len(text)
+            cursor_pos = len(line_buffer) if text is None else len(text)
             # uh wouldn't that just be this?
-            cursor_pos = len(line_buffer)
+            # cursor_pos = len(line_buffer)
 
         if self.use_main_ns:
             self.namespace = __main__.__dict__
 
-        # if text is either None or an empty string, rely on the line buffer
         if (not line_buffer) and full_text:
             line_buffer = full_text.split("\n")[cursor_line]
 
@@ -2237,6 +2265,8 @@ class IPCompleter(Completer):
 
         if self.backslash_combining_completions:
             # allow deactivation of these on windows.
+            # Or just anyone that doesn't have this activated. This entire block
+            # of logic would be easier to follow as a separate method.
             base_text = text if not line_buffer else line_buffer[:cursor_pos]
             latex_text, latex_matches = self.latex_matches(base_text)
             if latex_matches:
@@ -2248,7 +2278,6 @@ class IPCompleter(Completer):
                 )
             name_text = ""
             name_matches = []
-            # need to add self.fwd_unicode_match() function here when done
             for meth in (
                 self.unicode_name_matches,
                 back_latex_name_matches,

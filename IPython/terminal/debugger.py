@@ -79,7 +79,7 @@ class TerminalPdb(CorePdb):
             color_depth=self.shell.color_depth,
         )
         if not PTK3:
-            options["inputhook"] = self.inputhook
+            options["inputhook"] = self.shell.inputhook
         self.pt_app = PromptSession(**options)
 
     def get_prompt_tokens(self):

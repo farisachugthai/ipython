@@ -32,7 +32,7 @@ from prompt_toolkit.styles.pygments import (
     style_from_pygments_dict,
 )
 from prompt_toolkit.styles import DynamicStyle, merge_styles
-from prompt_toolkit.shortcuts import PromptSession, CompleteStyle, print_formatted_text
+from prompt_toolkit.shortcuts import PromptSession, CompleteStyle
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.output import ColorDepth
 from prompt_toolkit.layout.processors import (
@@ -879,9 +879,18 @@ environment variable is set, or the current terminal is not a tty.
         # For prompt_toolkit 3.0. We have to create an asyncio event loop with
         # this inputhook.
         if PTK3:
-            if self._inputhook:
-                from prompt_toolkit.eventloop import new_eventloop_with_inputhook
+            import asyncio
+            from prompt_toolkit.eventloop import new_eventloop_with_inputhook
 
+            if gui == 'asyncio':
+                # When we integrate the asyncio event loop, run the UI in the
+                # same event loop as the rest of the code. don't use an actual
+                # input hook. (Asyncio is not made for nesting event loops.)
+                self.pt_loop = asyncio.get_event_loop()
+
+            elif self._inputhook:
+                # If an inputhook was set, create a new asyncio event loop with
+                # this inputhook for the prompt.
                 self.pt_loop = new_eventloop_with_inputhook(self._inputhook)
             else:
                 import asyncio

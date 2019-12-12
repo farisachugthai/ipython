@@ -7,18 +7,15 @@ Don't know how I didn't think of this. Don't let anything in utils.path
 import from here. Circular imports.
 """
 from importlib import import_module
-import logging
 import os
 from pathlib import Path
 import shutil
 import sys
-import tempfile
 from warnings import warn
 
 from IPython.utils.path import (
     get_xdg_dir,
     get_xdg_cache_dir,
-    compress_user,
     ensure_dir_exists,
 )
 
@@ -28,7 +25,7 @@ def _writable_dir(path):
     return os.path.isdir(path) and os.access(path, os.W_OK)
 
 
-def get_ipython_dir():
+def get_ipython_dir() -> str:
     """Get the IPython directory for this platform and user.
 
     This uses the logic in `get_home_dir` to find the home directory
@@ -66,17 +63,6 @@ def get_ipython_dir():
         # Eh but i don't wanna crash the application. but this seems like the
         # right time to do so. TODO:
         raise PermissionError("{} is not a writable directory.".format(ipdir))
-
-    elif not os.path.exists(ipdir):
-        parent = os.path.dirname(ipdir)
-        if not _writable_dir(parent):
-            # ipdir does not exist and parent isn't writable
-            # I feel like this isn't what warning.warn is for though
-            warn(
-                "IPython parent '{0}' is not a writable location,"
-                " using a temp directory.".format(parent)
-            )
-            ipdir = tempfile.mkdtemp()
 
     if hasattr(ipdir, "__fspath__"):
         ipdir = ipdir.__fspath__()
@@ -118,7 +104,7 @@ def try_to_move(source, destination):
         )
 
 
-def get_ipython_cache_dir():
+def get_ipython_cache_dir() -> str:
     """Get the cache directory it is created if it does not exist."""
     xdgdir = get_xdg_cache_dir()
     if xdgdir is None:
@@ -132,7 +118,7 @@ def get_ipython_cache_dir():
     return ipdir
 
 
-def get_ipython_package_dir():
+def get_ipython_package_dir() -> str:
     """Get the base directory where IPython itself is installed."""
     # This was a weird time to not bother catching exceptions. check if IPython
     # has the file attr before working with it!
@@ -141,6 +127,8 @@ def get_ipython_package_dir():
 
     if hasattr(IPython, "__file__"):
         return os.path.dirname(IPython.__file__)
+    ipdir = os.path.dirname(IPython.__file__)
+    return ipdir
 
 
 def get_ipython_module_path(module_str=None):
@@ -167,13 +155,13 @@ def locate_profile(profile="default"):
 
     I.E. find :envvar:`IPYTHONDIR`/profile_*.
 
+    .. versionchanged:: 7.11 -- Now raises an OSError.
+
     Raises
     ------
     :exc:`IOError`
         Why an IOError?
         They got deprecated.
-
-    .. versionchanged:: 7.11 -- Now raises an OSError.
 
     """
     from IPython.core.profiledir import ProfileDir, ProfileDirError
@@ -181,6 +169,5 @@ def locate_profile(profile="default"):
     try:
         pd = ProfileDir.find_profile_dir_by_name(get_ipython_dir(), profile)
     except ProfileDirError:
-        # IOError makes more sense when people are expecting a path
         raise OSError("Couldn't find profile %r" % profile)
     return pd.location

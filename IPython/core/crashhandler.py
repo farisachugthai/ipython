@@ -26,6 +26,8 @@ from pprint import pformat
 from IPython.core import ultratb
 from IPython.core.release import author_email
 
+from IPython.core.release import __version__ as version
+
 # -----------------------------------------------------------------------------
 # Code
 # -----------------------------------------------------------------------------
@@ -65,7 +67,7 @@ To ensure accurate tracking of this issue, please file a report about it at:
 """
 
 _lite_message_template = """
-If you suspect this is an IPython bug, please report it at:
+If you suspect this is an IPython {version} bug, please report it at:
     https://github.com/ipython/ipython/issues
 or send an email to the mailing list at {email}
 
@@ -227,6 +229,6 @@ def crash_handler_lite(etype, evalue, tb):
         # we are not in a shell, show generic config
         config = "c."
     print(
-        _lite_message_template.format(email=author_email, config=config),
+        _lite_message_template.format(email=author_email, config=config, version=version),
         file=sys.stderr,
     )
