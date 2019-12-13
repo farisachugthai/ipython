@@ -110,7 +110,7 @@ def object_info(**kw):
     kw : dict
 
     """
-    infodict = {k:None for k in info_fields}
+    infodict = {k: None for k in info_fields}
     infodict.update(kw)
     return infodict
 
@@ -126,7 +126,7 @@ def get_encoding(obj):
     # filesystem.
     if ofile is None:
         return None
-    elif ofile.endswith(('.so', '.dll', '.pyd')):
+    elif ofile.endswith((".so", ".dll", ".pyd")):
         return None
     elif not os.path.isfile(ofile):
         return None
@@ -134,7 +134,9 @@ def get_encoding(obj):
         # Print only text files, not extension binaries.  Note that
         # getsourcelines returns lineno with 1-offset and page() uses
         # 0-offset, so we must adjust.
-        with stdlib_io.open(ofile, 'rb') as buffer:   # Tweaked to use io.open for Python 2
+        with stdlib_io.open(
+            ofile, "rb"
+        ) as buffer:  # Tweaked to use io.open for Python 2
             encoding, lines = openpy.detect_encoding(buffer.readline)
         return encoding
 
@@ -165,7 +167,7 @@ def getdoc(obj):
     return codecs.encode(docstr, encoding=encoding)
 
 
-def getsource(obj, oname=''):
+def getsource(obj, oname=""):
     """Wrapper around inspect.getsource.
 
     This can be modified by other projects to provide customized source
@@ -186,25 +188,29 @@ def getsource(obj, oname=''):
 
     if isinstance(obj, property):
         sources = []
-        for attrname in ['fget', 'fset', 'fdel']:
+        for attrname in ["fget", "fset", "fdel"]:
             fn = getattr(obj, attrname)
             if fn is not None:
                 encoding = get_encoding(fn)
-                oname_prefix = ('%s.' % oname) if oname else ''
-                sources.append(cast_unicode(
-                    ''.join(('# ', oname_prefix, attrname)),
-                    encoding=encoding))
+                oname_prefix = ("%s." % oname) if oname else ""
+                sources.append(
+                    cast_unicode(
+                        "".join(("# ", oname_prefix, attrname)), encoding=encoding
+                    )
+                )
                 if inspect.isfunction(fn):
                     sources.append(dedent(getsource(fn)))
                 else:
                     # Default str/repr only prints function name,
                     # pretty.pretty prints module name too.
-                    sources.append(cast_unicode(
-                        '%s%s = %s\n' % (
-                            oname_prefix, attrname, pretty(fn)),
-                        encoding=encoding))
+                    sources.append(
+                        cast_unicode(
+                            "%s%s = %s\n" % (oname_prefix, attrname, pretty(fn)),
+                            encoding=encoding,
+                        )
+                    )
         if sources:
-            return '\n'.join(sources)
+            return "\n".join(sources)
         else:
             return None
 
@@ -218,7 +224,7 @@ def getsource(obj, oname=''):
         except TypeError:
             # The object itself provided no meaningful source, try looking for
             # its class definition instead.
-            if hasattr(obj, '__class__'):
+            if hasattr(obj, "__class__"):
                 try:
                     src = inspect.getsource(obj.__class__)
                 except TypeError:
@@ -316,7 +322,7 @@ def find_source_lines(obj):
             lineno = inspect.getsourcelines(obj)[1]
         except TypeError:
             # For instances, try the class object like getsource() does
-            if hasattr(obj, '__class__'):
+            if hasattr(obj, "__class__"):
                 lineno = inspect.getsourcelines(obj.__class__)[1]
             else:
                 lineno = None
@@ -324,6 +330,7 @@ def find_source_lines(obj):
         return None
 
     return lineno
+
 
 def _mime_format(text, formatter=None):
     """Return a mime bundle representation of the input text.
@@ -395,7 +402,7 @@ class Inspector(Configurable):
         # self.format = self.parser.format
         self.str_detail_level = str_detail_level
 
-    def _getdef(self,obj,oname='') -> Union[str,None]:
+    def _getdef(self, obj, oname="") -> Union[str, None]:
         """Return the call signature for any callable object.
 
         If any exception is generated, None is returned instead and the
@@ -408,7 +415,7 @@ class Inspector(Configurable):
         hdef = _render_signature(signature(obj), oname)
         return hdef
 
-    def __head(self,h) -> str:
+    def __head(self, h) -> str:
         """Return a header string with proper colors."""
         return "%s%s%s" % (
             self.color_table.active_colors.header,
@@ -572,8 +579,7 @@ class Inspector(Configurable):
             out.append(title + content)
         return "\n".join(out)
 
-
-    def _mime_format(self, text:str, formatter=None) -> dict:
+    def _mime_format(self, text: str, formatter=None) -> dict:
         """Return a mime bundle representation of the input text.
 
         - if `formatter` is None, the returned mime bundle has
@@ -589,10 +595,7 @@ class Inspector(Configurable):
         Formatters returning strings are supported but this behavior is deprecated.
 
         """
-        defaults = {
-            'text/plain': text,
-            'text/html': '<pre>' + text + '</pre>'
-        }
+        defaults = {"text/plain": text, "text/html": "<pre>" + text + "</pre>"}
 
         if formatter is None:
             return defaults
@@ -603,13 +606,12 @@ class Inspector(Configurable):
                 # Handle the deprecated behavior of a formatter returning
                 # a string instead of a mime bundle.
                 return {
-                    'text/plain': formatted,
-                    'text/html': '<pre>' + formatted + '</pre>'
+                    "text/plain": formatted,
+                    "text/html": "<pre>" + formatted + "</pre>",
                 }
 
             else:
                 return dict(defaults, **formatted)
-
 
     def format_mime(self, bundle):
         """
@@ -662,7 +664,7 @@ class Inspector(Configurable):
             "text/html": "",
         }
 
-        def append_field(bundle, title:str, key:str, formatter=None):
+        def append_field(bundle, title: str, key: str, formatter=None):
             """
 
             Parameters

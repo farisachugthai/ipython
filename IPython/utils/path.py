@@ -271,8 +271,8 @@ def target_outdated(target, deps):
     for dep in deps:
         dep_time = os.path.getmtime(dep)
         if dep_time > target_time:
-            logging.debug("For target",target,"Dep failed:",dep)
-            logging.debug("times (dep,tar):",dep_time,target_time)
+            logging.debug("For target", target, "Dep failed:", dep)
+            logging.debug("times (dep,tar):", dep_time, target_time)
             return True
 
 
@@ -286,7 +286,6 @@ def target_update(target, deps, cmd):
     """
     if target_outdated(target, deps):
         system(cmd)
-
 
 
 def link(src, dst):

@@ -882,7 +882,7 @@ environment variable is set, or the current terminal is not a tty.
             import asyncio
             from prompt_toolkit.eventloop import new_eventloop_with_inputhook
 
-            if gui == 'asyncio':
+            if gui == "asyncio":
                 # When we integrate the asyncio event loop, run the UI in the
                 # same event loop as the rest of the code. don't use an actual
                 # input hook. (Asyncio is not made for nesting event loops.)

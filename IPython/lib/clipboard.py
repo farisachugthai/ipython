@@ -45,7 +45,7 @@ def osx_clipboard_get() -> str:
     p = subprocess.Popen(["pbpaste", "-Prefer", "ascii"], stdout=subprocess.PIPE)
     bytes_, stderr = p.communicate()
     # Text comes in with old Mac \r line endings. Change them to \n.
-    bytes_ = bytes_.replace(b'\r', b'\n')
+    bytes_ = bytes_.replace(b"\r", b"\n")
     text = codecs.decode(bytes_)
     return text
 

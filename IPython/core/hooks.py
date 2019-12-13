@@ -267,12 +267,15 @@ def clipboard_get(self):
     """
     if sys.platform == "win32":
         from IPython.lib.clipboard import win32_clipboard_get
+
         chain = [win32_clipboard_get, tkinter_clipboard_get]
     elif sys.platform == "darwin":
         from IPython.lib.clipboard import osx_clipboard_get
+
         chain = [osx_clipboard_get, tkinter_clipboard_get]
     else:
         from IPython.lib.clipboard import tkinter_clipboard_get
+
         chain = [tkinter_clipboard_get]
     dispatcher = CommandChainDispatcher()
     for func in chain:

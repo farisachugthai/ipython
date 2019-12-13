@@ -193,7 +193,6 @@ def pickle_get_current_class(obj):
 class TestAutoreload(Fixture):
     def test_reload_enums(self):
 
-
         mod_name, mod_fn = self.new_module(
             textwrap.dedent(
                 """

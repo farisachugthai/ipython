@@ -23,7 +23,6 @@ from IPython.utils.ipstruct import Struct
 
 
 class MagicsDisplay:
-
     def __init__(self, magics_manager, ignore=None):
         """Initialize the magics class that displays other magics.
 

@@ -207,7 +207,6 @@ class DatabaseError(Exception):
 
 
 class OperationalError(Exception):
-
     def __init__(self, *args, **kwargs):
         super().__init(self, *args, **kwargs)
 

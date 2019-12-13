@@ -229,6 +229,8 @@ def crash_handler_lite(etype, evalue, tb):
         # we are not in a shell, show generic config
         config = "c."
     print(
-        _lite_message_template.format(email=author_email, config=config, version=version),
+        _lite_message_template.format(
+            email=author_email, config=config, version=version
+        ),
         file=sys.stderr,
     )

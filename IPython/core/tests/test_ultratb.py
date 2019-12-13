@@ -347,8 +347,9 @@ except Exception:
             ip.run_cell("%xmode Verbose")
 
     def test_plain_suppress_exception_chaining(self):
-        with tt.AssertNotPrints("ZeroDivisionError"), \
-             tt.AssertPrints("ValueError", suppress=False):
+        with tt.AssertNotPrints("ZeroDivisionError"), tt.AssertPrints(
+            "ValueError", suppress=False
+        ):
             ip.run_cell("%xmode Plain")
             ip.run_cell(self.SUPPRESS_CHAINING_CODE)
             ip.run_cell("%xmode Verbose")

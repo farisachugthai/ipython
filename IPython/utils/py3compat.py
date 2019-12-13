@@ -154,11 +154,13 @@ def input(prompt=""):
     """
     return builtin_mod.input(prompt)
 
+
 builtin_mod_name = "builtins"
 import builtins as builtin_mod
 
 
 which = shutil.which
+
 
 def isidentifier(s, dotted=False):
     """

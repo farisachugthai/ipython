@@ -201,11 +201,13 @@ def test_get_home_dir_8():
     class key:
         def __enter__(self):
             pass
+
         def Close(self):
             """
 
             """
             pass
+
         def __exit__(*args, **kwargs):
             pass
 

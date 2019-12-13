@@ -30,7 +30,7 @@ prompt_toolkit`s `patch_stdout`)::
 import asyncio
 from prompt_toolkit import __version__ as ptk_version
 
-PTK3 = ptk_version.startswith('3.')
+PTK3 = ptk_version.startswith("3.")
 
 
 # Keep reference to the original asyncio loop, because getting the event loop

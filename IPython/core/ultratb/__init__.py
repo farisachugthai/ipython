@@ -544,21 +544,29 @@ class TBTools(Colorable):
 
     def get_parts_of_chained_exception(self, evalue):
         def get_chained_exception(exception_value):
-            cause = getattr(exception_value, '__cause__', None)
+            cause = getattr(exception_value, "__cause__", None)
             if cause:
                 return cause
-            if getattr(exception_value, '__suppress_context__', False):
+            if getattr(exception_value, "__suppress_context__", False):
                 return None
-            return getattr(exception_value, '__context__', None)
+            return getattr(exception_value, "__context__", None)
 
         chained_evalue = get_chained_exception(evalue)
 
         if chained_evalue:
-            return chained_evalue.__class__, chained_evalue, chained_evalue.__traceback__
+            return (
+                chained_evalue.__class__,
+                chained_evalue,
+                chained_evalue.__traceback__,
+            )
 
     def prepare_chained_exception_message(self, cause):
-        direct_cause = "\nThe above exception was the direct cause of the following exception:\n"
-        exception_during_handling = "\nDuring handling of the above exception, another exception occurred:\n"
+        direct_cause = (
+            "\nThe above exception was the direct cause of the following exception:\n"
+        )
+        exception_during_handling = (
+            "\nDuring handling of the above exception, another exception occurred:\n"
+        )
 
         if cause:
             message = [[direct_cause]]
@@ -696,10 +704,12 @@ class ListTB(TBTools):
         if hasattr(self.ostream, "flush"):
             self.ostream.flush()
         else:
-            raise OperationalError('%s: ListTB.__call__ does not have an output stream.', __file__)
+            raise OperationalError(
+                "%s: ListTB.__call__ does not have an output stream.", __file__
+            )
         # so i made this mistake a bunch of times throughout the repository
         # sys always have exc_info, sometimes it just returns (None, None, None)
-        self.ostream.write(self.text(*sys.exc_info()) + '\n')
+        self.ostream.write(self.text(*sys.exc_info()) + "\n")
 
     def structured_traceback(
         self, etype=None, value=None, elist=None, tb_offset=None, context=5, mode=None
@@ -744,7 +754,7 @@ class ListTB(TBTools):
         else:
             elist = []
 
-        if getattr(self, 'Colors', None):
+        if getattr(self, "Colors", None):
             Colors = self.Colors
         else:
             raise

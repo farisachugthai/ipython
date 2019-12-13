@@ -53,10 +53,12 @@ def test_handlers():
     # turns off the esc char, which it should unless there is a continuation
     # line.
     run(
-        [('"no change"', '"no change"'),             # normal
-         (u"lsmagic",     "get_ipython().run_line_magic('lsmagic', '')"),   # magic
-         #("a = b # PYTHON-MODE", '_i'),          # emacs -- avoids _in cache
-         ])
+        [
+            ('"no change"', '"no change"'),  # normal
+            (u"lsmagic", "get_ipython().run_line_magic('lsmagic', '')"),  # magic
+            # ("a = b # PYTHON-MODE", '_i'),          # emacs -- avoids _in cache
+        ]
+    )
 
     # Objects which are instances of IPyAutocall are *always* autocalled
     autocallable = Autocallable()
