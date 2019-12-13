@@ -45,9 +45,14 @@ class ProfileDir(LoggingConfigurable):
     startup_dir_name = Unicode("startup")
     pid_dir_name = Unicode("pid")
     static_dir_name = Unicode("static")
+    security_dir = Unicode(u"")
+    log_dir = Unicode(u"")
+    startup_dir = Unicode(u"")
+    pid_dir = Unicode(u"")
+    static_dir = Unicode(u"")
 
     location = Unicode(
-        "",
+        u"",
         help="""Set the profile location directly. This overrides the logic used by the
         `profile` option.""",
     ).tag(config=True)
@@ -89,7 +94,7 @@ class ProfileDir(LoggingConfigurable):
         self.check_dirs()
 
     def _mkdir(self, path, mode=None):
-        """Ensure a directory exists at a given path
+        """ensure a directory exists at a given path
 
         This is a version of os.mkdir, with the following differences:
 
@@ -103,6 +108,7 @@ class ProfileDir(LoggingConfigurable):
           the creation
 
           - ...raising the question of why? In what situation would that happen?
+            *And more importantly, is that something we want to ignore?*
 
         - sets permissions if requested and the dir already exists
 
@@ -139,7 +145,7 @@ class ProfileDir(LoggingConfigurable):
 
         readme = os.path.join(self.startup_dir, "README")
         src = os.path.join(
-            get_ipython_package_dir(), "core", "profile", "README_STARTUP"
+            get_ipython_package_dir(), u"core", u"profile", u"README_STARTUP"
         )
 
         if not os.path.exists(src):
@@ -186,12 +192,11 @@ class ProfileDir(LoggingConfigurable):
         """
         dst = os.path.join(self.location, config_file)
         if os.path.isfile(dst) and not overwrite:
-            raise ProfileDirError(
-                'dst already exists and the "overwrite_config_files" \
-                                   setting is False'
-            )
+            return False
         if path is None:
-            path = os.path.join(get_ipython_package_dir(), "core", "profile", "default")
+            path = os.path.join(
+                get_ipython_package_dir(), u"core", u"profile", u"default"
+            )
         src = os.path.join(path, config_file)
         shutil.copy(src, dst)
         return True
@@ -212,11 +217,12 @@ class ProfileDir(LoggingConfigurable):
         return cls(location=profile_dir, config=config)
 
     @classmethod
-    def create_profile_dir_by_name(cls, path, name="default", config=None):
+    def create_profile_dir_by_name(cls, path, name=u"default", config=None):
         """Create a profile dir by profile name and path.
 
         Parameters
         ----------
+        config :
         path : unicode
             The path (directory) to put the profile directory in.
         name : unicode
@@ -236,22 +242,17 @@ class ProfileDir(LoggingConfigurable):
         I just tried checking parameters were bound to the Terminal instance
         correctly and that error just came up.
         """
-        if path is None:
-            raise ProfileDirError("None passed as profile. Exiting.")
-        if path == "":
-            raise ProfileDirError("Empty string passed as profile.")
-
         if not os.path.isdir(path):
             raise ProfileDirError("Directory not found: %s" % path)
-        profile_dir = os.path.join(path, "profile_" + name)
+        profile_dir = os.path.join(path, u"profile_" + name)
         return cls(location=profile_dir, config=config)
 
     @classmethod
-    def find_profile_dir_by_name(cls, ipython_dir, name="default", config=None):
+    def find_profile_dir_by_name(cls, ipython_dir, name=u"default", config=None):
         """Find an existing profile dir by profile name, return its ProfileDir.
 
         This searches through a sequence of paths for a profile dir.  If it
-        is not found, a `ProfileDirError` exception will be raised.
+        is not found, a :class:`ProfileDirError` exception will be raised.
 
         The search path algorithm is:
 
@@ -270,7 +271,7 @@ class ProfileDir(LoggingConfigurable):
             Keyword parameters to pass to the shell.
 
         """
-        dirname = "profile_" + name
+        dirname = u"profile_" + name
         paths = [os.getcwd(), ipython_dir]
         for p in paths:
             profile_dir = os.path.join(p, dirname)
@@ -280,7 +281,7 @@ class ProfileDir(LoggingConfigurable):
             raise ProfileDirError("Profile directory not found in paths: %s" % dirname)
 
     @classmethod
-    def find_profile_dir(cls, profile_dir=None, config=None):
+    def find_profile_dir(cls, profile_dir, config=None):
         """Find/create a profile dir and return its ProfileDir.
 
         This will create the profile directory if it doesn't exist.

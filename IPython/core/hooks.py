@@ -63,6 +63,14 @@ Like I mean.::
 
 Generally.
 
+Notes
+------
+
+Unfortunately this module is not only invoked a handful of times in
+interactiveshell it's also used in completerlib. And wading into the deep
+end of how our completions work really starts getting into some interesting
+ways of how intertwined most of this package is.
+
 """
 # *****************************************************************************
 #       Copyright (C) 2005 Fernando Perez. <fperez@colorado.edu>
@@ -202,13 +210,13 @@ def shutdown_hook(self):
 
     Typically, shutdown hooks should raise TryNext so all shutdown ops are done
     """
-    self.log("default shutdown hook ok")
+    self.log.info("default shutdown hook ok")
     return
 
 
 def late_startup_hook(self, *args, **kwargs):
     """Executed after ipython has been constructed and configured."""
-    self.log("default startup hook ok")
+    self.log.info("default startup hook ok")
     return
 
 
@@ -247,18 +255,24 @@ def pre_run_code_hook(self):
 
 
 def clipboard_get(self):
-    """Get text from the clipboard."""
-    from IPython.lib.clipboard import (
-        osx_clipboard_get,
-        tkinter_clipboard_get,
-        win32_clipboard_get,
-    )
+    """Get text from the clipboard.
 
+    Moved platform specific imports into their own section of the loop.
+
+    Note
+    ----
+    Not all Linux platforms have Tkinter; however, prompt_toolkit has
+    3 different modules in the :mod:`prompt_toolkit.clipboard` package.
+
+    """
     if sys.platform == "win32":
+        from IPython.lib.clipboard import win32_clipboard_get
         chain = [win32_clipboard_get, tkinter_clipboard_get]
     elif sys.platform == "darwin":
+        from IPython.lib.clipboard import osx_clipboard_get
         chain = [osx_clipboard_get, tkinter_clipboard_get]
     else:
+        from IPython.lib.clipboard import tkinter_clipboard_get
         chain = [tkinter_clipboard_get]
     dispatcher = CommandChainDispatcher()
     for func in chain:

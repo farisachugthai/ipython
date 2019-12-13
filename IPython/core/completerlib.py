@@ -20,22 +20,22 @@ These are all loaded by default by IPython.
 import glob
 from importlib import import_module
 
-# Isn't this only a builtin in 3.8+ ?
 from importlib.machinery import all_suffixes
 import inspect
 import os
+from os.path import expanduser as expand_user
 import re
 import sys
 from time import time
 from zipimport import zipimporter
 
 # Our own imports
-from .completer import expand_user, compress_user
-from .error import TryNext
-from ..utils._process_common import arg_split
+from IPython.core.error import TryNext
+from IPython.utils._process_common import arg_split
+from IPython.utils.path import compress_user
 
 # FIXME: this should be pulled in with the right call via the component system
-from IPython import get_ipython
+from IPython.core.getipython import get_ipython
 
 from typing import List
 
@@ -92,7 +92,7 @@ def module_list(path=None):
         # recurse more than one level into subdirectories.
         files = []
         for root, dirs, nondirs in os.walk(path, followlinks=True):
-            subdir = root[len(path) + 1 :]
+            subdir = root[len(path) + 1:]
             if subdir:
                 files.extend(pjoin(subdir, f) for f in nondirs)
                 dirs[:] = []  # Do not recurse into additional subdirectories.
@@ -230,22 +230,10 @@ def quick_completer(cmd, completions):
         [d:\ipython]|3> foo ba
 
     """
-
     if isinstance(completions, str):
         completions = completions.split()
 
     def do_complete(self, event):
-        """
-
-        Parameters
-        ----------
-        self :
-        event :
-
-        Returns
-        -------
-
-        """
         return completions
 
     get_ipython().set_hook("complete_command", do_complete, str_key=cmd)
@@ -317,6 +305,24 @@ def module_completer(self, event):
 
 def magic_run_completer(self, event):
     """Complete files that end in .py or .ipy or .ipynb for the `%run` command.
+
+    Notes
+    -----
+    On the loop starting with ``if any(magic_run_re.match...)``
+
+    Find if the user has already typed the first filename, after which we
+    should complete on all files, since after the first one other files may
+    be arguments to the input script.
+
+    Our implementation works in all versions of python.  While 2.5 has
+    pkgutil.walk_packages(), that particular routine is fairly dangerous,
+    since it imports *EVERYTHING* on sys.path.  That is: a) very slow b) full
+    of possibly problematic side effects.
+    This search the folders in the sys.path for available modules.
+
+    So I suppose that leads into a reasonable todo. Any other implementations
+    of walk_packages that we could use sine the import system is quite
+    different now than it was in 2.5?
     """
     comps = arg_split(event.line, strict=False)
     # relpath should be the current token that we need to complete.
@@ -333,18 +339,9 @@ def magic_run_completer(self, event):
     isdir = os.path.isdir
     relpath, tilde_expand, tilde_val = expand_user(relpath)
 
-    # Find if the user has already typed the first filename, after which we
-    # should complete on all files, since after the first one other files may
-    # be arguments to the input script.
-
     if any(magic_run_re.match(c) for c in comps):
         matches = [
             f.replace("\\", "/") + ("/" if isdir(f) else "")
-            # This works in all versions of python.  While 2.5 has
-            # pkgutil.walk_packages(), that particular routine is fairly dangerous,
-            # since it imports *EVERYTHING* on sys.path.  That is: a) very slow b) full
-            # of possibly problematic side effects.
-            # This search the folders in the sys.path for available modules.
             for f in lglob(relpath + "*")
         ]
     else:
@@ -400,6 +397,7 @@ def cd_completer(self, event):
         if " " in d:
             # we don't want to deal with any of that, complex code
             # for this is elsewhere
+            # literally wut
             raise TryNext
 
         found.append(d)
