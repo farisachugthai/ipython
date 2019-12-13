@@ -10,8 +10,12 @@ import os
 import unicodedata
 from wcwidth import wcwidth
 
-from IPython import get_ipython
-from IPython.core.completer import (
+from IPython.core.getipython import get_ipython
+
+# So how does __all__ work is a relevant question I have now...
+# We import things from IPython.core.completer that aren't in all. Or is this
+# code never executed? Or it fails silently?
+from IPython.core._completer import (
     provisionalcompleter,
     cursor_to_position,
     _deduplicate_completions,
@@ -143,7 +147,7 @@ class IPythonPTCompleter(Completer):
             # then it's probably a decomposed unicode character. E.g. caused by
             # the "\dot" completion. Try to compose again with the previous
             # character.
-            if wcwidth(text[0]) == 0:
+            if not wcwidth(text[0]):
                 if cursor_position + c.start > 0:
                     char_before = body[c.start - 1]
                     fixed_text = unicodedata.normalize("NFC", char_before + text)
