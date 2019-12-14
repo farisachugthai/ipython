@@ -64,13 +64,12 @@ from pathlib import Path
 import random
 import shutil
 import sys
-from warnings import warn
-
-from ipython_genutils.path import filefind
 
 # -----------------------------------------------------------------------------
 # Code
 # -----------------------------------------------------------------------------
+
+fs_encoding = sys.getfilesystemencoding()
 
 
 def _writable_dir(path):
@@ -228,8 +227,10 @@ def expand_path(s):
 
 def unescape_glob(s):
     """Unescape glob pattern in `string`. Dont use the word string wtf?"""
-    for pattern in "*[]!?":
-        s = s.replace(r"\{0}".format(pattern), pattern)
+    def unescape(s):
+        for pattern in "*[]!?":
+            s = s.replace(r"\{0}".format(pattern), pattern)
+        return s
 
     return "\\".join(map(unescape, s.split("\\\\")))
 

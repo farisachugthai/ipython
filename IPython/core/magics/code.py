@@ -256,7 +256,7 @@ class CodeMagics(Magics):
         with codecs.open(fname, mode, encoding="utf-8") as f:
             if not file_exists or not append:
                 f.write("# coding: utf-8\n")
-            f.write(out)
+            f.write(cmds)
             # make sure we end on a newline
             if not out.endswith("\n"):
                 f.write("\n")

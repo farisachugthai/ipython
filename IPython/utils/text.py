@@ -669,7 +669,7 @@ class FullEvalFormatter(Formatter):
                 # format the object and append to the result
                 result.append(self.format_field(obj, ""))
 
-        return "".join(s for s in result)
+        return "".join(result)
 
 
 class DollarFormatter(FullEvalFormatter):
