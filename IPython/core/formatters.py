@@ -138,7 +138,8 @@ class DisplayFormatter(Configurable):
             which will usually be MIME type strings and the values and
             JSON'able data structure containing the raw data for the
             representation in that format.
-            metadata_dict is a dictionary of metadata about each mime-type output. It's keys will be a strict subset of the keys in
+            metadata_dict is a dictionary of metadata about each
+            mime-type output. It's keys will be a strict subset of the keys in
             ``format_dict``.
 
         Notes

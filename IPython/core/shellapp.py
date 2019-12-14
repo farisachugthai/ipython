@@ -1,14 +1,19 @@
 """
 A mixin for :class:`~IPython.core.application.Application` classes that
 launch InteractiveShell instances, load extensions, etc.
+
+.. data:: flags
+
+   May want to consider refactoring flags, frontend_flags, aliases etc etc
+   into their own file because there's genuinely in the vicinity of 100
+   globals just floating around a handful of files
+
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 import abc
 import glob
 import os
-from pathlib import Path
-import pdb
 import sys
 
 from traitlets.config.application import boolean_flag

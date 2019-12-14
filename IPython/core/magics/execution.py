@@ -3,36 +3,25 @@
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-
 import ast
 import bdb
-import builtins as builtin_mod
+import builtins
 import gc
 import inspect
-from io import StringIO
 import itertools
+import math
 import os
+import re
 import shlex
 import sys
 import time
 import timeit
-import math
-import re
+from io import StringIO
 from pdb import Restart
 
-# cProfile was added in Python2.5
-try:
-    import cProfile as profile
-    import pstats
-except ImportError:
-    # profile isn't bundled by default in Debian for license reasons
-    try:
-        import profile
-        import pstats
-    except ImportError:
-        profile = pstats = None
+import cProfile as profile
+import pstats
 
-# from IPython.core import oinspect
 from IPython.core import magic_arguments
 from IPython.core import page
 from IPython.core.error import UsageError
@@ -63,6 +52,7 @@ else:
     # mock the new API, ignore second argument
     # see https://github.com/ipython/ipython/issues/11590
     from ast import Module as OriginalModule
+
 
     def Module(nodelist, type_ignores):
         """
@@ -128,18 +118,17 @@ class TimeitResult:
         """
         mean = self.average
         return (
-            math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)
-        ) ** 0.5
+                       math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)
+               ) ** 0.5
 
     def __str__(self):
+        """TODO: This dunder should probably be a full method."""
         pm = "+-"
         if hasattr(sys.stdout, "encoding") and sys.stdout.encoding:
-            try:
-                "\xb1".encode(sys.stdout.encoding)
-                pm = "\xb1"
-            except BaseException:
-                pass
-        return "{mean} {pm} {std} per loop (mean {pm} std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} each)".format(
+            "\xb1".encode(sys.stdout.encoding)
+            pm = "\xb1"
+        return "{mean} {pm} {std} per loop (mean {pm} std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} " \
+               "each)".format(
             pm=pm,
             runs=self.repeat,
             loops=self.loops,
@@ -840,7 +829,7 @@ python-profiler package from non-free."""
                 code = "run_module(modulename, prog_ns)"
                 code_ns = {
                     "run_module": self.shell.safe_run_module,
-                    "prog_ns": prog_ns,
+                    "prog_ns"   : prog_ns,
                     "modulename": modulename,
                 }
             else:
@@ -851,7 +840,7 @@ python-profiler package from non-free."""
                     code = "execfile(filename, prog_ns)"
                 code_ns = {
                     "execfile": self.shell.safe_execfile,
-                    "prog_ns": prog_ns,
+                    "prog_ns" : prog_ns,
                     "filename": get_py_filename(filename),
                 }
 
@@ -921,7 +910,7 @@ python-profiler package from non-free."""
             # Since this seems to be done by the interpreter itself, the best
             # we can do is to at least restore __builtins__ for the user on
             # exit.
-            self.shell.user_ns["__builtins__"] = builtin_mod
+            self.shell.user_ns["__builtins__"] = builtins
 
             # Ensure key global structures are restored
             sys.argv = save_argv
@@ -938,10 +927,11 @@ python-profiler package from non-free."""
         return stats
 
     def _run_with_debugger(
-        self, code, code_ns, filename=None, bp_line=None, bp_file=None
+            self, code, code_ns, filename=None, bp_line=None, bp_file=None
     ):
-        """
-        Run `code` in debugger with a break point.
+        """Run `code` in debugger with a break point.
+
+        .. todo:: We gotta replace the InteractiveTB.pdb calls
 
         Parameters
         ----------
@@ -991,11 +981,11 @@ python-profiler package from non-free."""
                         break
                 else:
                     msg = (
-                        "\nI failed to find a valid line to set "
-                        "a breakpoint\n"
-                        "after trying up to line: %s.\n"
-                        "Please set a valid breakpoint manually "
-                        "with the -b option." % bp
+                            "\nI failed to find a valid line to set "
+                            "a breakpoint\n"
+                            "after trying up to line: %s.\n"
+                            "Please set a valid breakpoint manually "
+                            "with the -b option." % bp
                     )
                     raise UsageError(msg)
             # if we find a good linenumber, set the breakpoint
@@ -1561,7 +1551,7 @@ def parse_breakpoint(text, current_file):
     if colon == -1:
         return current_file, int(text)
     else:
-        return text[:colon], int(text[colon + 1 :])
+        return text[:colon], int(text[colon + 1:])
 
 
 def _format_time(timespan, precision=3):

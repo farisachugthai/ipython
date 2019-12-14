@@ -127,7 +127,8 @@ the instance.
 So that'll hopefully protect us for how insanely inconsistent the
 variable handling here is.
 
-Cool. Now we can handle that tuple being None gracefully. Call that method for each of the 3 components. Check if all 3 are None and if so just bail.
+Cool. Now we can handle that tuple being None gracefully. Call that method
+for each of the 3 components. Check if all 3 are None and if so just bail.
 
 That'll take care of structured_traceback getting called incorrectly and
 doesn't provide the traceback info we want; in addition to handling a situation
@@ -465,7 +466,8 @@ class TBTools(Colorable):
 
     call_pdb : bool
         Needs to be next var refactored out of here.
-        Like whose idea was it to implement color management, exception handling, debugging, user interaction, user configuration, traceback
+        Like whose idea was it to implement color management, exception
+        handling, debugging, user interaction, user configuration, traceback
         formatting, and differentiating exceptions based on cause IN ONE CLASS.
 
     """

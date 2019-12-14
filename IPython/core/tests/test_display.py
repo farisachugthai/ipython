@@ -87,9 +87,7 @@ def test_retina_jpeg():
 
 
 def test_base64image():
-    display.Image(
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB94BCRQnOqNu0b4AAAAKSURBVAjXY2AAAAACAAHiIbwzAAAAAElFTkSuQmCC"
-    )
+    display.Image("")
 
 
 def test_image_filename_defaults():

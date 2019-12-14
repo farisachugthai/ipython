@@ -32,7 +32,7 @@ from traitlets.config import Configurable, Unicode
 from IPython.core import page
 from IPython.lib.lexers import IPyLexer
 from IPython.utils import openpy, PyColorize
-from IPython.utils.coloransi import ColorSchemeTable, TermColors
+from IPython.utils.coloransi import TermColors
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
 from IPython.utils.wildcard import typestr2type, list_namespace
@@ -141,97 +141,10 @@ def get_encoding(obj):
         return encoding
 
 
-def _get_encoding(obj):
+def _get_encoding(obj=None):
     """I'm sorry I might just do something dumb like return sys.getfile
     """
     return sys.getfilesystemencoding()
-
-
-def getdoc(obj):
-    """Stable wrapper around inspect.getdoc.
-
-    This can't crash because of attribute problems.
-
-    I'm sorry I might just do something dumb like return sys.getfile
-    """
-    # Allow objects to offer customized documentation via a getdoc method:
-    try:
-        ds = obj.getdoc()
-    except Exception:
-        pass
-    else:
-        if isinstance(ds, str):
-            return inspect.cleandoc(ds)
-    docstr = inspect.getdoc(obj)
-    encoding = get_encoding(obj)
-    return codecs.encode(docstr, encoding=encoding)
-
-
-def getsource(obj, oname=""):
-    """Wrapper around inspect.getsource.
-
-    This can be modified by other projects to provide customized source
-    extraction.
-
-    Parameters
-    ----------
-    obj : object
-        an object whose source code we will attempt to extract
-    oname : str
-        (optional) a name under which the object is known
-
-    Returns
-    -------
-    src : unicode or None
-
-    """
-
-    if isinstance(obj, property):
-        sources = []
-        for attrname in ["fget", "fset", "fdel"]:
-            fn = getattr(obj, attrname)
-            if fn is not None:
-                encoding = get_encoding(fn)
-                oname_prefix = ("%s." % oname) if oname else ""
-                sources.append(
-                    cast_unicode(
-                        "".join(("# ", oname_prefix, attrname)), encoding=encoding
-                    )
-                )
-                if inspect.isfunction(fn):
-                    sources.append(dedent(getsource(fn)))
-                else:
-                    # Default str/repr only prints function name,
-                    # pretty.pretty prints module name too.
-                    sources.append(
-                        cast_unicode(
-                            "%s%s = %s\n" % (oname_prefix, attrname, pretty(fn)),
-                            encoding=encoding,
-                        )
-                    )
-        if sources:
-            return "\n".join(sources)
-        else:
-            return None
-
-    else:
-        # Get source for non-property objects.
-
-        obj = _get_wrapped(obj)
-
-        try:
-            src = inspect.getsource(obj)
-        except TypeError:
-            # The object itself provided no meaningful source, try looking for
-            # its class definition instead.
-            if hasattr(obj, "__class__"):
-                try:
-                    src = inspect.getsource(obj.__class__)
-                except TypeError:
-                    return None
-
-        encoding = get_encoding(obj)
-        return codecs.encode(src, encoding=encoding)
 
 
 def is_simple_callable(obj):
@@ -263,40 +176,6 @@ def _get_wrapped(obj):
             return orig_obj
     return obj
 
-
-def find_file(obj) -> str:
-    """Find the absolute path to the file where an object was defined.
-
-    This is essentially a robust wrapper around `inspect.getsourcelines`.
-
-    Returns None if no file can be found.
-
-    Parameters
-    ----------
-    obj : any Python object
-
-    Returns
-    -------
-    lineno : int
-      The line number where the object definition starts.
-
-    """
-    obj = _get_wrapped(obj)
-
-    try:
-        fname = inspect.getabsfile(obj)
-    except TypeError:
-        # For an instance, the file that matters is where its class was
-        # declared.
-        if hasattr(obj, "__class__"):
-            try:
-                fname = inspect.getabsfile(obj.__class__)
-            except TypeError:
-                # Can happen for builtins
-                fname = None
-    except:
-        fname = None
-    return fname
 
 
 def find_source_lines(obj):
@@ -533,17 +412,20 @@ class Inspector(Configurable):
             print(src)
 
     def pfile(self, obj, oname=""):
-        """Show the whole file where an object was defined."""
+        """Show the whole file where an object was defined.
 
+        If the found file is binary:
+
+            run contents of file through pager starting at line where the object
+            is defined, as long as the file isn't binary and is actually on the
+            filesystem.
+        """
         lineno = find_source_lines(obj)
         if lineno is None:
             self.noinfo("file", oname)
             return
 
         ofile = find_file(obj)
-        # run contents of file through pager starting at line where the object
-        # is defined, as long as the file isn't binary and is actually on the
-        # filesystem.
         if ofile.endswith((".so", ".dll", ".pyd")):
             print("File %r is binary, not printing." % ofile)
         elif not os.path.isfile(ofile):
@@ -563,9 +445,10 @@ class Inspector(Configurable):
         Parameters
         ----------
         fields : list
-          A list of 2-tuples: (field_title, field_content)
+            A list of 2-tuples: (field_title, field_content)
         title_width : int
-          How many characters to pad titles to. Default to longest title.
+            How many characters to pad titles to. Default to longest title.
+
         """
         out = []
         header = self.__head
@@ -644,7 +527,7 @@ class Inspector(Configurable):
         """Retrieve an info dict and format it.
 
         Parameters
-        ==========
+        ----------
 
         obj: any
             Object to inspect and return info from

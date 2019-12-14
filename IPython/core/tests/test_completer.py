@@ -15,7 +15,7 @@ from traitlets.config.loader import Config
 
 from IPython.core.getipython import get_ipython
 from IPython.core import completer
-from IPython.core.completer import (
+from IPython.core._completer import (
     Completion,
     _deduplicate_completions,
     match_dict_keys,

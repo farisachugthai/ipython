@@ -28,27 +28,6 @@ Import Priority:
 import os
 import sys
 
-from IPython.external.qt_loaders import (
-    load_qt,
-    loaded_api,
-    QT_API_PYQT,
-    QT_API_PYQT5,
-    QT_API_PYQT_DEFAULT,
-    QT_API_PYQTv1,
-    QT_API_PYSIDE,
-    QT_API_PYSIDE2,
-)
-from IPython.utils.version import check_version
-
-_qt_apis = (
-    QT_API_PYSIDE,
-    QT_API_PYSIDE2,
-    QT_API_PYQT,
-    QT_API_PYQT5,
-    QT_API_PYQTv1,
-    QT_API_PYQT_DEFAULT,
-)
-
 # Constraints placed on an imported matplotlib
 
 
@@ -116,5 +95,29 @@ def get_options():
         return [qt_api]
 
 
-api_opts = get_options()
-QtCore, QtGui, QtSvg, QT_API = load_qt(api_opts)
+
+if __name__ == '__main__':
+
+    from IPython.external.qt_loaders import (
+        load_qt,
+        loaded_api,
+        QT_API_PYQT,
+        QT_API_PYQT5,
+        QT_API_PYQT_DEFAULT,
+        QT_API_PYQTv1,
+        QT_API_PYSIDE,
+        QT_API_PYSIDE2,
+    )
+    from IPython.utils.version import check_version
+
+    _qt_apis = (
+        QT_API_PYSIDE,
+        QT_API_PYSIDE2,
+        QT_API_PYQT,
+        QT_API_PYQT5,
+        QT_API_PYQTv1,
+        QT_API_PYQT_DEFAULT,
+    )
+
+    api_opts = get_options()
+    QtCore, QtGui, QtSvg, QT_API = load_qt(api_opts)

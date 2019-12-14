@@ -175,12 +175,8 @@ def doctest_reset_del():
 
 class TestMagicRunPass(tt.TempFileMixin):
     def setUp(self):
-        """
-
-        """
         content = "a = [1,2,3]\nb = 1"
         self.mktmp(content)
-        ip = get_ipython()
 
     def run_tmpfile(self):
         """
@@ -222,7 +218,19 @@ class TestMagicRunPass(tt.TempFileMixin):
         self.run_tmpfile_p()
 
     def test_run_debug_twice(self):
-        # https://github.com/ipython/ipython/issues/10028
+        """Shittttt.
+
+        The _run_with_debugger method depends on AutoFormattedTB having
+        a pdb attribute.
+
+        .. todo:: That's kinda the crux of this test file so we need to
+                    come up with the debugger's replacement on the shell.
+
+        See Also
+        --------
+        https://github.com/ipython/ipython/issues/10028
+
+        """
         with tt.fake_input(["c"]):
             ip.magic("run -d %s" % self.fname)
         with tt.fake_input(["c"]):
@@ -305,6 +313,7 @@ class TestMagicRunSimple(tt.TempFileMixin):
 
     @dec.skip_win32
     def test_tclass(self):
+        """TODO. Does this *actually* not work on windows."""
         mydir = os.path.dirname(__file__)
         tc = os.path.join(mydir, "tclass")
         src = (

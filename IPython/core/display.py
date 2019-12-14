@@ -1,4 +1,6 @@
+# coding=utf-8
 """Top-level display functions for displaying object in different formats."""
+# Vim: set et:
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 from binascii import b2a_hex, b2a_base64, hexlify
