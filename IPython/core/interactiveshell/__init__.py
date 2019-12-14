@@ -1988,7 +1988,8 @@ class InteractiveShell(SingletonConfigurable):
                         config=None):
 
         """
-        from IPython.core.ultratb import SyntaxTB, AutoFormattedTB
+        from ..ultratb.list_tb import SyntaxTB
+        from ..ultratb.formatted_tb import AutoFormattedTB
         from IPython.utils.coloransi import DefaultDark
 
         new_colors = DefaultDark()

@@ -58,11 +58,10 @@ EntryPoint(name='ipython3', value='IPython:start_ipython', group='console_script
 import os
 import sys
 
-from setuptools.build_meta import build_sdist
-from setuptools import find_packages, setup, build_meta
-from distutils.core import setup
-from distutils.util import change_root, convert_path
 from distutils.command.install_data import install_data
+from distutils.util import change_root, convert_path
+
+from setuptools import find_packages, setup
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
@@ -246,10 +245,11 @@ if not any(arg.startswith("bdist") for arg in sys.argv):
                 )
                 extras_require[new_key] = extras_require.pop(key)
 
-everything = set()
+everything =[]
 for key, deps in extras_require.items():
     if ":" not in key:
-        everything.update(deps)
+        everything.append(deps)
+
 extras_require["all"] = everything
 
 if "setuptools" in sys.modules:

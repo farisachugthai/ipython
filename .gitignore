@@ -1,3 +1,4 @@
+*.ignore
 coverage.xml
 docs/source/savefig/*.png
 .idea/**
@@ -41,9 +42,10 @@ __pycache__
 .coverage
 *.swp
 .vscode
-.pytest_cache
 .python-version
 venv*/
 .idea/
 .noseids
 .patch
+.*pytest**[a-z]*
+Test Results - pytest_for_IPython.xml

@@ -1,3 +1,5 @@
+# coding=utf-8
+import abc
 import inspect
 import keyword
 import linecache
@@ -10,14 +12,371 @@ from importlib._bootstrap_external import source_from_cache
 from logging import debug, error, info
 from shutil import get_terminal_size
 
-import PyColorize
-from core import get_ipython
-from core.display_trap import DisplayTrap
-from core.ultratb import TBTools, get_parts_of_chained_exception, INDENT_SIZE, eqrepr, nullrepr, generate_tokens, \
-    _format_traceback_lines, find_recursion, _fixed_getinnerframes, inspect_error
-from os import path as util_path
+from IPython.core import get_ipython
+from IPython.core.display_trap import DisplayTrap
+from IPython.utils import path as util_path
+from IPython.utils import PyColorize
+from IPython.utils.data import uniq_stable
 
-from data import uniq_stable
+import functools
+import inspect
+import linecache
+import logging
+import pydoc
+import tokenize
+import traceback
+from inspect import findsource, getargs
+
+from .tb_tools import TBTools
+
+generate_tokens = tokenize.tokenize
+INDENT_SIZE = 8
+DEFAULT_SCHEME = "NoColor"
+_FRAME_RECURSION_LIMIT = 500
+
+
+def inspect_error():
+    """Print a message about internal inspect errors.
+
+    These are unfortunately quite common.
+    """
+    logging.error(
+        "Internal Python error in the inspect module.\n"
+        "Below is the traceback from this internal error.\n"
+    )
+
+
+def with_patch_inspect(f, *args, **kwargs):
+    """Decorator for monkeypatching inspect.findsource.
+
+    Deprecated since IPython 6.0
+
+    Parameters
+    ----------
+    f
+        Function to inspect
+
+    Returns
+    -------
+
+    """
+
+    @functools.wraps
+    def wrapped(f, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        f :
+        args :
+        kwargs :
+
+        Returns
+        -------
+
+        """
+        save_findsource = inspect.findsource
+        save_getargs = inspect.getargs
+        inspect.findsource = findsource
+        inspect.getargs = getargs
+        try:
+            return f(*args, **kwargs)
+        finally:
+            inspect.findsource = save_findsource
+            inspect.getargs = save_getargs
+
+    return wrapped(f, *args, **kwargs)
+
+
+def fix_frame_records_filenames(records):
+    """Try to fix the filenames in each record from inspect.getinnerframes().
+
+    Particularly, modules loaded from within zip files have useless filenames
+    attached to their code object, and inspect.getinnerframes() just uses it.
+
+    Parameters
+    ----------
+    records
+        Apparently something that produces a 6 item index when you iterate
+        over it. Jesus Christ what calls this?
+
+    Notes
+    ------
+    Look inside the frame's globals dictionary for __file__,
+    which should be better. However, keep Cython filenames since
+    we prefer the source filenames over the compiled .so file.
+
+    """
+    fixed_records = []
+    for frame, filename, line_no, func_name, lines, index in records:
+        if not filename.endswith((".pyx", ".pxd", ".pxi")):
+            better_fn = frame.f_globals.get("__file__", None)
+            if isinstance(better_fn, str):
+                # Check the type just in case someone did something weird with
+                # __file__. It might also be None if the error occurred during
+                # import.
+                filename = better_fn
+        fixed_records.append((frame, filename, line_no, func_name, lines, index))
+    return fixed_records
+
+
+@with_patch_inspect
+def _fixed_getinnerframes(etb, context=1, tb_offset=0):
+    """
+    If the error is at the console, don't build any context, since it would
+    otherwise produce 5 blank lines printed out (there is no file at the
+    console)
+    """
+    LNUM_POS, LINES_POS, INDEX_POS = 2, 4, 5
+
+    records = fix_frame_records_filenames(inspect.getinnerframes(etb, context))
+    rec_check = records[tb_offset:]
+    try:
+        rname = rec_check[0][1]
+        if rname == "<ipython console>" or rname.endswith("<string>"):
+            return rec_check
+    except IndexError:
+        pass
+
+    aux = traceback.extract_tb(etb)
+    assert len(records) == len(aux)
+    for i, (file, lnum, _, _) in enumerate(aux):
+        maybeStart = lnum - 1 - context // 2
+        start = max(maybeStart, 0)
+        end = start + context
+        lines = linecache.getlines(file)[start:end]
+        buf = list(records[i])
+        buf[LNUM_POS] = lnum
+        buf[INDEX_POS] = lnum - 1 - start
+        buf[LINES_POS] = lines
+        records[i] = tuple(buf)
+    return records[tb_offset:]
+
+
+def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
+    """
+    Format tracebacks lines with pointing arrow, leading numbers...
+
+    Helper function -- largely belongs to VerboseTB, but we need the same
+    functionality to produce a pseudo verbose TB for SyntaxErrors, so that they
+    can be recognized properly by ipython.el's py-traceback-line-re
+    (SyntaxErrors have to be treated specially because they have no traceback)
+
+    Parameters
+    ----------
+    lnum: int
+    index: int
+    lines: list of str
+    Colors :
+        ColorScheme used.
+    lvals : bytes
+        Values of local variables, already colored, to inject just after the error line.
+    _line_format : f (str) -> (str, bool)
+        return (colorized version of str, failure to do so)
+
+    """
+    from IPython.core.debugger import make_arrow
+
+    numbers_width = INDENT_SIZE - 1
+    res = []
+
+    for i, line in enumerate(lines, lnum - index):
+        new_line, err = _line_format(line, "str")
+        if not err:
+            line = new_line
+
+        if i == lnum:
+            pad = numbers_width - len(str(i))
+            num = "%s%s" % (make_arrow(pad), str(lnum))
+            line = "%s%s%s %s%s" % (
+                Colors.linenoEm,
+                num,
+                Colors.line,
+                line,
+                Colors.Normal,
+            )
+        else:
+            num = "%*s" % (numbers_width, i)
+            line = "%s%s%s %s" % (Colors.lineno, num, Colors.Normal, line)
+
+        res.append(line)
+        if lvals and i == lnum:
+            res.append(lvals + "\n")
+    return res
+
+
+def is_recursion_error(etype, value, records):
+    """Check for a recursion error.
+
+    This function only exists for backwards compatibility?
+
+    It simply checks for whether an exception is a RecursionError without
+    invoking the keyword as it was only defined in python3.5. We only support
+    3.6+.
+
+    Notes
+    -----
+    The default recursion limit is 1000, but some of that will be taken up
+    by stack frames in IPython itself. >500 frames probably indicates
+    a recursion error.
+
+    """
+    recursion_error_type = RecursionError
+    return (
+        (etype is recursion_error_type)
+        and "recursion" in str(value).lower()
+        and len(records) > _FRAME_RECURSION_LIMIT
+    )
+
+
+def find_recursion(etype, value, records):
+    """Identify the repeating stack frames from a RecursionError traceback.
+
+    This involves a bit of guesswork - we want to show enough of the traceback
+    to indicate where the recursion is occurring. We guess that the innermost
+    quarter of the traceback (250 frames by default) is repeats, and find the
+    first frame (from in to out) that looks different.
+
+    Parameters
+    ----------
+    'records' is a list as returned by VerboseTB.get_records()
+
+    Returns
+    -------
+    (last_unique, repeat_length)
+
+    """
+    if not is_recursion_error(etype, value, records):
+        return len(records), 0
+
+    # Select filename, lineno, func_name to track frames with
+    records = [r[1:4] for r in records]
+    inner_frames = records[-(len(records) // 4) :]
+    frames_repeated = set(inner_frames)
+
+    last_seen_at = {}
+    longest_repeat = 0
+    i = len(records)
+    for frame in reversed(records):
+        i -= 1
+        if frame not in frames_repeated:
+            last_unique = i
+            break
+
+        if frame in last_seen_at:
+            distance = last_seen_at[frame] - i
+            longest_repeat = max(longest_repeat, distance)
+
+        last_seen_at[frame] = i
+    else:
+        last_unique = 0  # The whole traceback was recursion
+
+    return last_unique, longest_repeat
+
+
+def get_parts_of_chained_exception(evalue):
+    """This is a weird way of doing things but the closure works I guess?
+
+    Parameters
+    ----------
+    evalue
+
+    Returns
+    -------
+    chained_evalue.__class__, chained_evalue, chained_evalue.__traceback__
+        Uhh so I guess tuple of str, whatever the hell evalue.__context__ is...
+        maybe a frame? and a traceback type.
+
+    """
+
+    @functools.wraps
+    def get_chained_exception(exception_value):
+        """
+
+        Parameters
+        ----------
+        exception_value :
+
+        Returns
+        -------
+
+        """
+        cause = getattr(exception_value, "__cause__", None)
+        if cause:
+            return cause
+        if getattr(exception_value, "__suppress_context__", False):
+            return None
+        return getattr(exception_value, "__context__", None)
+
+    chained_evalue = get_chained_exception(evalue)
+
+    if chained_evalue:
+        return chained_evalue.__class__, chained_evalue, chained_evalue.__traceback__
+
+
+def _extract_tb(tb):
+    if tb:
+        return traceback.extract_tb(tb)
+    else:
+        return None
+
+
+def text_repr(value):
+    """Hopefully pretty robust repr equivalent."""
+    try:
+        return pydoc.text.repr(value)
+    except KeyboardInterrupt:
+        raise
+    except BaseException:
+        try:
+            return repr(value)
+        except KeyboardInterrupt:
+            raise
+        except BaseException:
+            try:
+                # all still in an except block so we catch
+                # getattr raising
+                name = getattr(value, "__name__", None)
+                if name:
+                    # ick, recursion
+                    return text_repr(name)
+                klass = getattr(value, "__class__", None)
+                if klass:
+                    return "%s instance" % text_repr(klass)
+            except KeyboardInterrupt:
+                raise
+            except BaseException:
+                return "UNRECOVERABLE REPR FAILURE"
+
+
+def eqrepr(value, repr=text_repr):
+    """
+
+    Parameters
+    ----------
+    value :
+    repr :
+
+    Returns
+    -------
+
+    """
+    return "=%s" % repr(value)
+
+
+def nullrepr(value, repr=text_repr):
+    """
+
+    Parameters
+    ----------
+    value :
+    repr :
+
+    Returns
+    -------
+
+    """
+    return ""
 
 
 class VerboseTB(TBTools):
@@ -593,3 +952,26 @@ class VerboseTB(TBTools):
             self.debugger()
         except KeyboardInterrupt:
             print("\nKeyboardInterrupt")
+
+
+class TBToolsABC(abc.ABC):
+    """Refactored the :meth:`structured_traceback` method out of TBTools.
+
+    Seemed more sensible to make it an ABC class.
+    """
+
+    @abc.abstractmethod
+    def structured_traceback(
+        self, etype, evalue, tb, tb_offset=None, context=5, mode=None
+    ):
+        """Return a list of traceback frames.
+
+        Must be implemented by each class.
+
+        See Also
+        --------
+        :class:`~AutoFormattedTB`.
+        :class:`~SyntaxTB`.
+
+        """
+        raise NotImplementedError()

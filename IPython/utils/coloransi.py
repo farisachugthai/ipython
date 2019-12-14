@@ -12,8 +12,6 @@ Default Dark scheme by Chris Kempson (http://chriskempson.com)
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
-
-# As a better way to subclass Dict
 from collections import defaultdict
 import copy
 import os
@@ -359,12 +357,6 @@ class Base16Style(defaultdict):
 
     @property
     def colors(self):
-        """
-
-        Returns
-        -------
-
-        """
         return styles
 
     # See https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/prompt_toolkit/styles/defaults.py

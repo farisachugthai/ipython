@@ -51,11 +51,6 @@ Command-line Options
 To see the options IPython accepts before startup, run ``ipython --help``.
 For more verbose output, consider running ``ipython --help-all``.
 
-.. admonition:: To use the %page magic, ensure that the $PAGER env var is set.
-
-   This variable is set by default on Unix-like systems where rendering text
-   in a terminal is more common; however, it typically is not set on Windows.
-
 
 Help all
 --------
@@ -89,8 +84,6 @@ is equivalent to::
 
    $ ipython --TerminalIPythonApp.matplotlib='qt'
 
-.. tip:: Run the output through a pager such as ``ipython --help-all | less`` for more convenient reading.
-
 Note that in the second form, you *must* use the equal sign, as the expression
 is evaluated as an actual Python assignment.
 
@@ -99,6 +92,14 @@ only the most common options have a short form,
 while any configurable variable in IPython can be set at the command-line by
 using the long form.  This long form is the same syntax used in the
 configuration files, if you want to set these options permanently.
+
+.. tip:: Run the output through a pager such as ``ipython --help-all | less``
+         for more convenient reading.
+
+.. admonition:: To use the %page magic, ensure that the $PAGER env var is set.
+
+   This variable is set by default on Unix-like systems where rendering text
+   in a terminal is more common; however, it typically is not set on Windows.
 
 
 IPython as your default Python environment
@@ -150,7 +151,7 @@ code snippet::
   a = 42
   IPython.embed()
 
-and within the IPython shell, you reassign `a` to `23` to do further testing of
+and within the IPython shell, you reassign 'a' to '23' to do further testing of
 some sort, you can then exit::
 
   >>> IPython.embed()
@@ -162,14 +163,14 @@ some sort, you can then exit::
 
   In [2]: exit()
 
-Once you exit and print `a`, the value 23 will be shown::
+Once you exit and print 'a', the value '23' will be shown::
 
   In: print(a)
   23
 
 It's important to note that the code run in the embedded IPython shell will
 *not* change the state of your code and variables, **unless** the shell is
-contained within the global namespace. In the above example, `a` is changed
+contained within the global namespace. In the above example, 'a' is changed
 because this is true.
 
 To further exemplify this, consider the following example::
@@ -182,7 +183,7 @@ To further exemplify this, consider the following example::
       print(a)
 
 Now if one calls the function and complete the state changes as we did above, the
-value `42` will be printed. Again, this is because it's not in the global
+value '42' will be printed. Again, this is because it's not in the global
 namespace::
 
   do()
@@ -233,9 +234,9 @@ connect an external frontend (``ipython qtconsole`` or ``ipython console``),
 rather than interacting with it in the terminal.
 
 You can run embedded instances even in code which is itself being run at
-the IPython interactive prompt with '%run <filename>'. Since it's easy
-to get lost as to where you are (in your top-level IPython or in your
-embedded one), it's a good idea in such cases to set the in/out prompts
+the IPython interactive prompt with '`%run` <filename>'. Since it's easy
+to get lost as to whether you're currently in your top-level IPython or in your
+embedded one, it's a good idea in such cases to set the In and Out prompts
 to something different for the embedded instances. The code examples
 below illustrate this.
 
@@ -243,8 +244,6 @@ You can also have multiple IPython instances in your program and open
 them separately, for example with different options for data
 presentation. If you close and open the same instance multiple times,
 its prompt counters simply continue from each execution to the next.
-
-.. whoa. that file hasn't existed in a while.
 
 Please look at the docstrings in the :mod:`~IPython.terminal.embed`
 module for more details on the use of this system.
@@ -254,7 +253,7 @@ functionality is provided in the examples directory as
 :file:`../../examples/Embedding/embed_class_long.py`_.
 It should be fairly self-explanatory:
 
- .. literalinclude:: /../../examples/Embedding/embed_class_long.py
+ .. literalinclude:: ../../examples/Embedding/embed_class_long.py
      :language: python
 
 Once you understand how the system functions, you can use the following
@@ -272,8 +271,11 @@ allows you to step through code, set breakpoints, watch variables,
 etc.  IPython makes it very easy to start any script under the control
 of pdb, regardless of whether you have wrapped it into a 'main()'
 function or not. For this, simply type ``%run -d myscript`` at an
-IPython prompt. See the :magic:`run` command's documentation for more details, including
+IPython prompt.
+
+See the :magic:`run` command's documentation for more details, including
 how to control where pdb will stop execution first.
+
 
 .. _debugger-see-also:
 
@@ -286,14 +288,16 @@ in the Python documentation.
 For IPython specific API information, see :mod:`IPython.core.debugger` and
 :mod:`IPython.terminal.debugger`.
 
+
 Running entire programs via pdb
 -------------------------------
 
-IPython extends the debugger with a few useful additions, like coloring of
-tracebacks. The debugger will adopt the color scheme selected for IPython.
+IPython extends the debugger with a few useful additions, like coloring
+tracebacks as well as adapting the color scheme selected for IPython to
+handling exceptions.
 
-The ``where`` command has also been extended to take as argument the number of
-context line to show. This allows to a many line of context on shallow stack trace:
+The ``where`` command has been extended to take the number of context lines
+to show as an argument.
 
 .. sourcecode:: ipython
 
@@ -372,8 +376,8 @@ the origin of the problem.
 
 You can use the :magic:`debug` magic after an exception has occurred to start
 post-mortem debugging. IPython can also call debugger every time your code
-triggers an uncaught exception. This feature can be toggled with the :magic:`pdb` magic
-command, or you can start IPython with the ``--pdb`` option.
+triggers an uncaught exception. This feature can be toggled with the
+:magic:`pdb` magic command, or you can start IPython with the ``--pdb`` option.
 
 .. For a post-mortem debugger in your programs outside IPython,
 .. put the following lines toward the top of your 'main' routine::
@@ -393,7 +397,6 @@ command, or you can start IPython with the ``--pdb`` option.
 
    The 'color_scheme' keyword can be one of 'NoColor', 'Linux' (default) or
    'LightBG'.
-
 
 This will give any of your programs detailed, colored tracebacks with
 automatic invocation of :mod:`pdb`.
@@ -505,12 +508,19 @@ PyQt and PySide
 .. option:: --gui[=asyncio,qt,qt4,qt5,wx,macOS,gtk,gtk2,gtk3
 
 When you use ``--gui=qt`` or ``--matplotlib=qt``, IPython can work with either
-PyQt4 or PySide.  There are three options for configuration here, because
-PyQt4 has two APIs for QString and QVariant: v1, which is the default on
-Python 2, and the more natural v2, which is the only API supported by PySide.
-v2 is also the default for PyQt4 on Python 3.  IPython's code for the QtConsole
-uses v2, but you can still use any interface in your code, since the
-Qt frontend is in a different process.
+PyQt4 or PySide.
+
+.. todo:: Update old python 2 stuff
+
+There are three options for configuration here, because
+PyQt4 has two APIs for ``QString`` and ``QVariant``:
+
+   - v1, which is the default on Python 2.
+
+   - v2, which is the only API supported by PySide, the default for PyQt4 on Python 3.
+
+IPython's code for the QtConsole uses v2, but you can still use any interface
+in your code, since the Qt frontend is in a different process.
 
 The default will be to import PyQt4 without configuration of the APIs, thus
 matching what most applications would expect. It will fall back to PySide if
@@ -518,15 +528,20 @@ PyQt4 is unavailable.
 
 If specified, IPython will respect the environment variable ``QT_API`` used
 by ETS.  ETS 4.0 also works with both PyQt4 and PySide, but it requires
-PyQt4 to use its v2 API.  So if ``QT_API=pyside`` PySide will be used,
-and if ``QT_API=pyqt`` then PyQt4 will be used *with the v2 API* for
-QString and QVariant, so ETS codes like MayaVi will also work with IPython.
+PyQt4 to use its v2 API.
 
-If you launch IPython in matplotlib mode with ``ipython --matplotlib=qt``,
-then IPython will ask matplotlib which Qt library to use (only if QT_API is
-*not set*), via the 'backend.qt4' rcParam.  If matplotlib is version 1.0.1 or
-older, then IPython will always use PyQt4 without setting the v2 APIs, since
-neither v2 PyQt nor PySide work.
+So if ``QT_API=pyside`` PySide will be used, and if ``QT_API=pyqt`` then PyQt4
+will be used *with the v2 API* for ``QString`` and ``QVariant``, so ETS codes
+like ``MayaVi`` will also work with IPython.
+
+If you launch IPython in :option:`matplotlib` mode with
+``ipython --matplotlib=qt``, then IPython will ask matplotlib which Qt library
+to use via the 'backend.qt4' rcParam.
+
+Note that this only occurs if the environment variable :envvar:`QT_API`
+is *not set*). If matplotlib is version 1.0.1 or older, then IPython will
+always use PyQt4 without setting the v2 APIs, since neither v2 PyQt nor PySide
+work.
 
 .. warning::
 

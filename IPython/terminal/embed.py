@@ -16,6 +16,7 @@ from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.interactiveshell import DummyMod
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 from IPython.utils.utils_io import ask_yes_no
+from IPython.core.ultratb.formatted_tb import FormattedTB
 
 # kept for backward compatibility as IPython 6 was released with
 # the typo. See https://github.com/ipython/ipython/pull/10706
@@ -181,7 +182,7 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
 
         # don't use the ipython crash handler so that user exceptions aren't
         # trapped
-        sys.excepthook = ultratb.FormattedTB(
+        sys.excepthook = core.ultratb.formatted_tb.FormattedTB(
             color_scheme=self.colors, mode=self.xmode, call_pdb=self.pdb
         )
 
