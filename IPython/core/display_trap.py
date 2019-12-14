@@ -46,7 +46,7 @@ class DisplayTrap(Configurable):
         self._nested_level = 0
 
     def __enter__(self):
-        if self._nested_level == 0:
+        if not self._nested_level:
             self.set()
         self._nested_level += 1
         return self

@@ -56,7 +56,7 @@ class NamespaceMagics(Magics):
         # We need to detect if we got called as 'pinfo pinfo foo', which can
         # happen if the user types 'pinfo foo?' at the cmd line.
         pinfo, qmark1, oname, qmark2 = re.match(
-            r"(pinfo )?(\?*)(.*?)(\??$)", parameter_s
+            r"(pinfo )?([?]*)(.*?)([?]?$)", parameter_s
         ).groups()
         if pinfo or qmark1 or qmark2:
             detail_level = 1
@@ -595,7 +595,7 @@ class NamespaceMagics(Magics):
             user_ns = self.shell.user_ns
             for i in self.who_ls():
                 del user_ns[i]
-        elif len(args) == 0:  # Hard reset
+        elif not len(args):  # Hard reset
             self.shell.reset(new_session=False)
 
         # reset in/out/dhist/array: previously extensinions/clearcmd.py

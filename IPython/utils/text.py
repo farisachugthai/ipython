@@ -254,7 +254,7 @@ class SList(list):
 
         Without args, fields() just split()'s the strings.
         """
-        if len(fields) == 0:
+        if not len(fields):
             return [el.split() for el in self]
 
         res = SList()
@@ -554,7 +554,7 @@ def strip_ansi(source):
     source : str
         Source to remove the ansi from
     """
-    return re.sub(r"\033\[(\d|;)+?m", "", source)
+    return re.sub(r"\x1b\[(\d|;)+?m", "", source)
 
 
 class EvalFormatter(Formatter):
@@ -693,7 +693,7 @@ class DollarFormatter(FullEvalFormatter):
     """
 
     _dollar_pattern_ignore_single_quote = re.compile(
-        r"(.*?)\$(\$?[\w\.]+)(?=([^']*'[^']*')*[^']*$)"
+        r"(.*?)[$]([$]?[.\.]+)(?=([^']*'[^']*')*[^']*$)"
     )
 
     def parse(self, fmt_string):
@@ -919,7 +919,7 @@ def get_text_list(list_, last_sep=" and ", sep=", ", wrap_item_with=""):
     >>> get_text_list(['a', 'b', 'c', 'd'], " = ", sep=" + ")
     'a + b + c = d'
     """
-    if len(list_) == 0:
+    if not len(list_):
         return ""
     if wrap_item_with:
         list_ = ["%s%s%s" % (wrap_item_with, item, wrap_item_with) for item in list_]

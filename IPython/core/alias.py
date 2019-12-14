@@ -128,7 +128,7 @@ def default_aliases():
                 # things which are executable
                 ("lx", "ls -F -l -G %l | grep ^-..x"),
             ]
-        default_aliases = default_aliases + ls_aliases
+        default_aliases += ls_aliases
     elif os.name in ["nt", "dos"]:
         default_aliases = [
             ("ls", "dir /on %l"),
@@ -233,7 +233,7 @@ class Alias:
             cmd = cmd.replace("%l", rest)
             rest = ""
 
-        if nargs == 0:
+        if not nargs:
             if cmd.find("%%s") >= 1:
                 cmd = cmd.replace("%%s", "%s")
             # Simple, argument-less aliases

@@ -64,7 +64,7 @@ class MagicHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
             # if the Optional doesn't take a value, format is:
             #    -s, --long
-            if action.nargs == 0:
+            if not action.nargs:
                 parts.extend(action.option_strings)
 
             # if the Optional takes a value, format is:

@@ -806,7 +806,7 @@ class IPythonDoctest(ExtensionDoctest):
         doctests = self.finder.find(obj, module=getmodule(parent))
         if doctests:
             for test in doctests:
-                if len(test.examples) == 0:
+                if not len(test.examples):
                     continue
 
                 yield DocTestCase(

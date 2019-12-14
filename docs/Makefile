@@ -4,10 +4,10 @@
 # You can set these variables from the command line, and also
 # from the environment for the first two.
 ALLSPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SPHINXAPIDOC   ?= sphinx-apidoc
-SRCDIR     = source
-BUILDDIR      = build
+SPHINXBUILD      ?= sphinx-build
+SPHINXAPIDOC	 ?= sphinx-apidoc
+SRCDIR            = source
+BUILDDIR          = build
 
 # Put it first so that "make" without argument is like "make help".
 .PHONY: help clean html html_noapi htmlhelp changes linkcheck api
@@ -21,6 +21,8 @@ help:
 	@echo "  htmlhelp    HTML files and a HTML help project"
 	@echo "  changes     an overview over all changed/added/deprecated items"
 	@echo "  linkcheck   check all external links for integrity (takes a long time)"
+	@echo "  clean ..."
+	@echo "  api    maybe"
 	@echo
 	@echo "Compound utility targets:"
 	@echo "pdf          latex and then runs the PDF generation"
@@ -51,14 +53,18 @@ dist: html
 	cp -al build/html .
 	@echo "Build finished.  Final docs are in html/"
 
-api:
+api: apidoc
+
+apidoc:
 	mkdir -p build/html build/.doctrees
 	@echo "Generating API docs"
-	$(SPHINXAPIDOC) -d 1 -Mef --tocfile index -o source/api/generated -t source/_templates ../IPython "../IPython/*tests*"
+	$(SPHINXAPIDOC) -d 1 -Mef --tocfile index -o source/api/generated -t source/_templates ../IPython ".*[conf]?test.**"
 
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here
-html: api
+html: apidoc html_build
+
+html_build:
 	$(SPHINXBUILD) -b html -c $(SRCDIR) -w sphinx.log $(ALLSPHINXOPTS) $(SRCDIR) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."

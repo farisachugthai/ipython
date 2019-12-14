@@ -32,7 +32,7 @@ _ver = [_version_major, _version_minor, _version_patch]
 
 __version__ = ".".join(map(str, _ver))
 if _version_extra:
-    __version__ = __version__ + _version_extra
+    __version__ += _version_extra
 
 version = __version__  # backwards compatibility name
 version_info = (_version_major, _version_minor, _version_patch, _version_extra)

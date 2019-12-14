@@ -47,7 +47,7 @@ re_fun_name = re.compile(r"[a-zA-Z_]([a-zA-Z0-9_.]*) *$")
 
 # Warning: the '-' HAS TO BE AT THE END of the first group, otherwise
 # it affects the rest of the group in square brackets.
-re_exclude_auto = re.compile(r"^[,&^\|\*/\+-]" r"|^is |^not |^in |^and |^or ")
+re_exclude_auto = re.compile(r"^[,&^|*/+-]" r"|^is |^not |^in |^and |^or ")
 
 # try to catch also methods for stuff in lists/tuples/dicts: off
 # (experimental). For this to work, the line_split regexp would need

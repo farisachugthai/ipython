@@ -58,7 +58,7 @@ class BuiltinTrap(Configurable):
         }
 
     def __enter__(self):
-        if self._nested_level == 0:
+        if not self._nested_level:
             self.activate()
         self._nested_level += 1
         # I return self, so callers can use add_builtin in a with clause.

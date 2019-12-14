@@ -57,5 +57,5 @@ def main():
         glut.glutMainLoop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

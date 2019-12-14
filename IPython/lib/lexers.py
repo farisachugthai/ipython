@@ -350,7 +350,7 @@ class IPythonConsoleLexer(Lexer):
     out_regex = r"Out\[[0-9]+\]: "
 
     #: The regex to determine when a traceback starts.
-    ipytb_start = re.compile(r"^(\^C)?(-+\n)|^(  File)(.*)(, line )(\d+\n)")
+    ipytb_start = re.compile(r"^(\^C)?(-+\n)|^( {2}File)(.*)(, line )(\d+\n)")
 
     def __init__(self, **options):
         """Initialize the IPython console lexer.

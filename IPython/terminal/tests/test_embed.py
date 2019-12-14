@@ -90,7 +90,7 @@ def test_nest_embed():
     # skip the banner until we get to a prompt
     try:
         prompted = -1
-        while prompted != 0:
+        while prompted:
             prompted = child.expect([ipy_prompt, "\r\n"])
     except pexpect.TIMEOUT as e:
         print(e)
@@ -108,7 +108,7 @@ def test_nest_embed():
     # skip the banner until we get to a prompt
     try:
         prompted = -1
-        while prompted != 0:
+        while prompted:
             prompted = child.expect([ipy_prompt, "\r\n"])
     except pexpect.TIMEOUT as e:
         print(e)

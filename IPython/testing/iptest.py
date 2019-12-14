@@ -621,7 +621,7 @@ def run_iptest():
         "--exe",
     ]
     if "-a" not in argv and "-A" not in argv:
-        argv = argv + ["-a", "!crash"]
+        argv += ["-a", "!crash"]
 
     if nose.__version__ >= "0.11":
         # I don't fully understand why we need this one, but depending on what

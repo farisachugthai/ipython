@@ -649,7 +649,7 @@ class EmbeddedSphinxShell:
 
         if not is_suppress:
             for i, line in enumerate(input_lines):
-                if i == 0:
+                if not i:
                     formatted_line = "%s %s" % (input_prompt, line)
                 else:
                     formatted_line = "%s %s" % (continuation, line)

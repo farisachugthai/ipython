@@ -44,7 +44,7 @@ from IPython.utils.text import get_text_list
 # Magic implementation classes
 # -----------------------------------------------------------------------------
 
-ipython_input_pat = re.compile(r"<ipython\-input\-(\d+)-[a-z\d]+>$")
+ipython_input_pat = re.compile(r"<ipython-input-(\d+)-[a-z\d]+>$")
 
 # To match, e.g. 8-10 1:5 :10 3-
 range_re = re.compile(

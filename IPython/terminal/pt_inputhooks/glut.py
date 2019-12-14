@@ -130,7 +130,7 @@ def inputhook(context):
         t = clock()
 
         # Make sure the default window is set after a window has been closed
-        if glut.glutGetWindow() == 0:
+        if not glut.glutGetWindow():
             glut.glutSetWindow(1)
             glutMainLoopEvent()
             return 0

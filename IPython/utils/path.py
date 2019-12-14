@@ -337,7 +337,7 @@ def link_or_copy(src, dst):
                 pass
             raise
         os.rename(new_dst, dst)
-    elif link_errno != 0:
+    elif link_errno:
         # Either link isn't supported, or the filesystem doesn't support
         # linking, or 'src' and 'dst' are on different filesystems.
         shutil.copy(src, dst)

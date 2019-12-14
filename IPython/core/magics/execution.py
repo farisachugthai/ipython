@@ -1234,7 +1234,7 @@ python-profiler package from non-free."""
         # This is used to check if there is a huge difference between the
         # best and worst timings.
         # Issue: https://github.com/ipython/ipython/issues/6471
-        if number == 0:
+        if not number:
             # determine number so that 0.2 <= total time < 2.0
             for index in range(0, 10):
                 number = 10 ** index
@@ -1576,7 +1576,7 @@ def _format_time(timespan, precision=3):
         for suffix, length in parts:
             value = int(leftover / length)
             if value > 0:
-                leftover = leftover % length
+                leftover %= length
                 time.append("%s%s" % (str(value), suffix))
             if leftover < 1:
                 break

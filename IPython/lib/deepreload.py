@@ -100,7 +100,7 @@ def get_parent(globals, level):
         # __package__ is set, so use it
         if not hasattr(pkgname, "rindex"):
             raise ValueError("__package__ set to non-string")
-        if len(pkgname) == 0:
+        if not len(pkgname):
             if level > 0:
                 raise ValueError("Attempted relative import in non-package")
             return None, ""
@@ -161,13 +161,13 @@ def load_next(mod, altmod, name, buf):
     altmod is either None or same as mod
     """
 
-    if len(name) == 0:
+    if not len(name):
         # completely empty module name should only happen in
         # 'from . import' (or '__import__("")')
         return mod, None, buf
 
     dot = name.find(".")
-    if dot == 0:
+    if not dot:
         raise ValueError("Empty module name")
 
     if dot < 0:

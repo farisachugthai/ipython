@@ -54,7 +54,7 @@ class OSMagics(Magics):
             except KeyError:
                 winext = "exe|com|bat|py"
 
-            self.execre = re.compile(r"(.*)\.(%s)$" % winext, re.IGNORECASE)
+            self.execre = re.compile(r"(.*)[.](%s)$" % winext, re.IGNORECASE)
 
         # call up the chain
         super().__init__(shell=shell, **kwargs)

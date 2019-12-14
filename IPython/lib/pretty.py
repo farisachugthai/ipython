@@ -703,7 +703,7 @@ def _set_pprinter_factory(start, end):
         """
         if cycle:
             return p.text(start + "..." + end)
-        if len(obj) == 0:
+        if not len(obj):
             # Special case.
             p.text(type(obj).__name__ + "()")
         else:

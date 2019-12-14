@@ -354,7 +354,7 @@ class ProfileCreate(BaseIPythonApplication):
             self.log.warning(
                 """Couldn't import {}, config file will be excluded
                           The cause of the ImportError was {}""".format(
-                    e, e.__traceback__()
+                    e, e.__traceback__
                 )
             )
         except Exception:

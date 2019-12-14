@@ -637,7 +637,7 @@ class HistoryManager(HistoryAccessor):
     # A regex matching all forms of the exit command, so that we don't store
     # them in the history (it's annoying to rewind the first entry and land on
     # an exit call).
-    _exit_re = re.compile(r"(exit|quit)(\s*\(.*\))?$")
+    _exit_re = re.compile(r"(exit|quit)(\s*[(].*[)])?$")
 
     def __init__(self, shell=None, config=None, **traits):
         """Create a new history manager associated with a shell instance.
@@ -1066,6 +1066,6 @@ def extract_hist_ranges(ranges_str):
 
 def _format_lineno(session, line):
     """Format line numbers properly."""
-    if session == 0:
+    if not session:
         return str(line)
     return "%s#%s" % (session, line)

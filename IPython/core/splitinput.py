@@ -43,8 +43,8 @@ from IPython.utils.encoding import get_stream_enc
 line_split = re.compile(
     r"""
              ^(\s*)               # any leading space
-             ([,;/%]|!!?|\?\??)?  # escape character or characters
-             \s*(%{0,2}[\w\.\*]*)     # function/method, possibly with leading %
+             ([,;/%]|!!?|[?][?]?)?  # escape character or characters
+             \s*(%{0,2}[\w.*]*)     # function/method, possibly with leading %
                                   # to correctly treat things like '?%magic'
              (.*?$|$)             # rest of line
              """,

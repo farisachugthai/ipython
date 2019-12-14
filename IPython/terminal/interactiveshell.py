@@ -65,11 +65,7 @@ from IPython.utils.terminal import (
 )
 from IPython.core.profiledir import ProfileDir, ProfileDirError
 from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
-from IPython.core.completer import IPCompleter
-from .shortcuts import create_ipython_shortcuts
-from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
-from .pt_inputhooks import get_inputhook_name_and_func
-from .magics import TerminalMagics
+from IPython.terminal.prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
 
 # from .ptutils import IPythonPTCompleter
 # from prompt_toolkit.completion.base import ThreadedCompleter, merge_completers
@@ -173,6 +169,7 @@ class TerminalInteractiveShell(InteractiveShell):
 
     """
 
+    rl_next_input = None
     mime_renderers = Dict().tag(config=True)
 
     space_for_menu = Integer(
@@ -414,12 +411,6 @@ environment variable is set, or the current terminal is not a tty.
 
     @observe("term_title")
     def init_term_title(self, change=None):
-        """
-
-        Parameters
-        ----------
-        change :
-        """
         # Enable or disable the terminal title.
         if self.term_title:
             toggle_set_term_title(True)
@@ -428,53 +419,24 @@ environment variable is set, or the current terminal is not a tty.
             toggle_set_term_title(False)
 
     def restore_term_title(self):
-        """
-
-        """
         if self.term_title:
             restore_term_title()
 
-    def __init__(self, keep_running=True, rl_next_input=None, *args, **kwargs):
-        """Why is this class built so that every individual method calls it's super?
-
-        Added init_profile_dir because that felt important. It's in the super class.
-
-        Notes
-        -----
-        The super call is totally required.
-
-        """
-        self.init_term_title()
-        self.keep_running = keep_running
-        self.init_profile_dir()
-        self.debugger_history = InMemoryHistory()
-        self.rl_next_input = rl_next_input
-        # Set up keyboard shortcuts
-        # TODO: This should be a configurable
-        self.key_bindings = create_ipython_shortcuts(self)
-
-        # Pre-populate history from IPython's history database
-        self.history = InMemoryHistory()
-        # It needs a certain amount of state before we can init pt
-        super().__init__(*args, **kwargs)
-        self.init_prompt_toolkit_cli()
-
     def init_display_formatter(self):
-        """We don't need to keep making weird ass super calls. Move to init?"""
         super().init_display_formatter()
         # terminal only supports plain text
         self.display_formatter.active_types = ["text/plain"]
         # disable `_ipython_display_`
         self.display_formatter.ipython_display_formatter.enabled = False
 
-    # def init_completer(self):
-    #     """Allow the user to choose their own completer."""
-    #     if self.Completer:
-    #         return
-    # self.Completer = IPCompleter(shell=self)
-    # Nope doesn't work. Or at least we have to configure more things
-    # Error raised on TerminalInteractiveShell not having user_ns???
-    # super().init_completer()
+    def init_completer(self):
+        from IPython.core.completer import IPCompleter
+
+        self.Completer = IPCompleter(shell=self)
+        super().init_completer()
+        # Nope doesn't work. Or at least we have to configure more things
+        # Error raised on TerminalInteractiveShell not having user_ns???
+        # super().init_completer()
 
     def init_prompt_toolkit_cli(self):
         """The entry point for prompt_toolkit!
@@ -498,22 +460,8 @@ environment variable is set, or the current terminal is not a tty.
         if self.simple_prompt:
 
             def prompt():
-                """Fall back to plain non-interactive output for tests.
-
-                .. admonition:: This is very limited.
-
-                Returns
-                -------
-
-                """
                 prompt_text = "".join(x[1] for x in self.prompts.in_prompt_tokens())
-                try:
-                    lines = [input(prompt_text)]
-                except IOError:
-                    # we might be in a test runner in which case we're capture stdout as is. don't ask
-                    # for stdin
-                    pass
-
+                lines = [input(prompt_text)]
                 prompt_continuation = "".join(
                     x[1] for x in self.prompts.continuation_prompt_tokens()
                 )
@@ -524,22 +472,22 @@ environment variable is set, or the current terminal is not a tty.
             self.prompt_for_code = prompt
             return
 
-        last_cell = u""
-        if getattr(self, "history_manager", None):
-            if self.history_manager is not None:
-                for __, ___, cell in self.history_manager.get_tail(
-                    self.history_load_length, include_latest=True
-                ):
-                    # Ignore blank lines and consecutive duplicates
-                    cell = cell.rstrip()
-                    if cell and (cell != last_cell):
-                        self.history.append_string(cell)
-                        last_cell = cell
-        else:
-            logging.error("You do not have a history manager.")
+        # Set up keyboard shortcuts
+        from IPython.terminal.shortcuts import create_ipython_shortcuts
 
-        # TODO: What happens if we don't have a history manager??
-        # init_history something i guess
+        key_bindings = create_ipython_shortcuts(self)
+
+        # Pre-populate history from IPython's history database
+        history = InMemoryHistory()
+        last_cell = u""
+        for __, ___, cell in self.history_manager.get_tail(
+            self.history_load_length, include_latest=True
+        ):
+            # Ignore blank lines and consecutive duplicates
+            cell = cell.rstrip()
+            if cell and (cell != last_cell):
+                history.append_string(cell)
+                last_cell = cell
 
         self._style = self._make_style_from_name_or_cls(self.highlighting_style)
         # self.completer = self.init_completer()
@@ -720,36 +668,36 @@ environment variable is set, or the current terminal is not a tty.
         else:
             default = ""
 
-        with patch_stdout(raw=True):
-            old_loop = asyncio.get_event_loop()
-            # Wait what is self.pt_loop?
-            asyncio.set_event_loop(self.pt_loop)
             try:
+                old_loop = asyncio.get_event_loop()
+            except RuntimeError:
+                # This happens when the user used `asyncio.run()`.
+                old_loop = None
+
+        asyncio.set_event_loop(self.pt_loop)
+        try:
+            with patch_stdout(raw=True):
                 text = self.pt_app.prompt(
                     default=default, **self._extra_prompt_options()
                 )
-            finally:
-                # Restore the original event loop.
-                asyncio.set_event_loop(old_loop)
+        finally:
+            # Restore the original event loop.
+            asyncio.set_event_loop(old_loop)
+
         return text
 
     def init_io(self):
         """Literally only imports colorama if sys.platform==win32 or cli.
 
         Got rid of it in the superclass as well. Both invoke classes we got rid
-        of and nothing else.
         """
-        # if sys.platform not in {'win32', 'cli'}:
-        #     return
-        # import colorama
-        # colorama.init()
-        pass
+
+    pass
 
     def init_magics(self):
-        """
-
-        """
         super().init_magics()
+        from IPython.terminal.magics import TerminalMagics
+
         self.register_magics(TerminalMagics)
 
     def init_alias(self):
@@ -872,6 +820,8 @@ environment variable is set, or the current terminal is not a tty.
         gui :
         """
         if gui and (gui != "inline"):
+            from IPython.terminal.pt_inputhooks import get_inputhook_name_and_func
+
             self.active_eventloop, self._inputhook = get_inputhook_name_and_func(gui)
         else:
             self.active_eventloop = self._inputhook = None
@@ -893,7 +843,6 @@ environment variable is set, or the current terminal is not a tty.
                 # this inputhook for the prompt.
                 self.pt_loop = new_eventloop_with_inputhook(self._inputhook)
             else:
-                import asyncio
 
                 self.pt_loop = asyncio.new_event_loop()
 

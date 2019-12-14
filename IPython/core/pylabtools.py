@@ -110,7 +110,7 @@ def print_figure(fig, fmt="png", bbox_inches="tight", **kwargs):
 
     dpi = fig.dpi
     if fmt == "retina":
-        dpi = dpi * 2
+        dpi *= 2
         fmt = "png"
 
     # build keyword args

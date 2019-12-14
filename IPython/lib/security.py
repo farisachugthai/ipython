@@ -107,7 +107,7 @@ def passwd_check(hashed_passphrase, passphrase):
     except ValueError:
         return False
 
-    if len(pw_digest) == 0:
+    if not len(pw_digest):
         return False
 
     h.update(encode(passphrase, "utf-8") + encode(salt, "ascii"))

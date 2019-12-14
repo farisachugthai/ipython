@@ -353,7 +353,7 @@ else:
 
 onlyif_unicode_paths = onlyif(
     unicode_paths,
-    ("This test is only applicable " "where we can use unicode in filenames."),
+    "This test is only applicable " "where we can use unicode in filenames.",
 )
 
 

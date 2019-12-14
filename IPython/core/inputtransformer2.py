@@ -87,10 +87,10 @@ class PromptStripper:
 
 
 classic_prompt = PromptStripper(
-    prompt_re=re.compile(r"^(>>>|\.\.\.)( |$)"), initial_re=re.compile(r"^>>>( |$)")
+    prompt_re=re.compile(r"^(>>>|[.][.][.])( |$)"), initial_re=re.compile(r"^>>>( |$)")
 )
 
-ipython_prompt = PromptStripper(re.compile(r"^(In \[\d+\]: |\s*\.{3,}: ?)"))
+ipython_prompt = PromptStripper(re.compile(r"^(In \[\d+\]: |\s*[.]{3,}: ?)"))
 
 
 def cell_magic(lines):
@@ -106,7 +106,7 @@ def cell_magic(lines):
     """
     if not lines or not lines[0].startswith("%%"):
         return lines
-    if re.match(r"%%\w+\?", lines[0]):
+    if re.match(r"%%\w+[?]", lines[0]):
         # This case will be handled by help_end
         return lines
     magic_name, _, first_line = lines[0][2:-1].partition(" ")
@@ -456,9 +456,9 @@ class EscapedCommand(TokenTransformBase):
 _help_end_re = re.compile(
     r"""(%{0,2}
                               [a-zA-Z_*][\w*]*        # Variable name
-                              (\.[a-zA-Z_*][\w*]*)*   # .etc.etc
+                              ([.][a-zA-Z_*][\w*]*)*   # .etc.etc
                               )
-                              (\?\??)$                # ? or ??
+                              ([?][?]?)$                # ? or ??
                               """,
     re.VERBOSE,
 )

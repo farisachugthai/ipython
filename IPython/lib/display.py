@@ -592,7 +592,7 @@ class FileLinks(FileLink):
                 ):
                     display_fnames.append(fname)
 
-            if len(display_fnames) == 0:
+            if not len(display_fnames):
                 # if there are no filenames to display, don't print anything
                 # (not even the directory name)
                 pass

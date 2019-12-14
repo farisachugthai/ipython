@@ -398,7 +398,7 @@ class Win32ShellCommandController(object):
                 raise RuntimeError("internal stdin function string error")
 
             # An empty string signals EOF
-            if len(data) == 0:
+            if not len(data):
                 return
 
             # In a windows console, sometimes the input is echoed,
@@ -406,7 +406,7 @@ class Win32ShellCommandController(object):
             stdout_func(data)
             # WriteFile may not accept all the data at once.
             # Loop until everything is processed
-            while len(data) != 0:
+            while len(data):
                 # print("Calling writefile")
                 if not WriteFile(
                     handle, data, len(data), ctypes.byref(bytesWritten), None

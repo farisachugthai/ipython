@@ -59,8 +59,8 @@ class IPython2PythonConverter(object):
     implementation, but for now it only does prompt conversion."""
 
     def __init__(self):
-        self.rps1 = re.compile(r"In\ \[\d+\]: ")
-        self.rps2 = re.compile(r"\ \ \ \.\.\.+: ")
+        self.rps1 = re.compile(r"In \[\d+\]: ")
+        self.rps2 = re.compile(r" {3}\.\.\.+: ")
         self.rout = re.compile(r"Out\[\d+\]: \s*?\n?")
         self.pyps1 = ">>> "
         self.pyps2 = "... "

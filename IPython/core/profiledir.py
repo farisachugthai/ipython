@@ -183,11 +183,9 @@ class ProfileDir(LoggingConfigurable):
 
         Parameters
         ----------
-        profile_dir : str
-            The full path to the profile directory.  If it does exist, it will
-            be used.  If not, it will be created.
-        config : dict
-            Keyword parameters to pass to the shell.
+        config_file :
+        path :
+        overwrite :
 
         """
         dst = os.path.join(self.location, config_file)

@@ -229,7 +229,7 @@ def genelatex(body, wrap):
     yield r"\documentclass{article}"
     packages = lt.packages
     if breqn:
-        packages = packages + ["breqn"]
+        packages += ["breqn"]
     for pack in packages:
         yield r"\usepackage{{{0}}}".format(pack)
     yield r"\pagestyle{empty}"

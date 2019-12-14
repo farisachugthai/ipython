@@ -57,7 +57,7 @@ import_re = re.compile(
 )
 
 # RE for the ipython %run command (python + ipython scripts)
-magic_run_re = re.compile(r".*(\.ipy|\.ipynb|\.py[w]?)$")
+magic_run_re = re.compile(r".*([.]ipy|[.]ipynb|[.]py[w]?)$")
 
 
 # -----------------------------------------------------------------------------

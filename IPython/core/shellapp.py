@@ -296,7 +296,7 @@ class InteractiveShellApp(Configurable):
             return
 
         try:
-            r = enable(key)
+            r = enable
         except ImportError:
             self.log.warning(
                 "Eventloop or matplotlib integration failed. Is matplotlib installed?"

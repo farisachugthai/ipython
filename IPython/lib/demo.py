@@ -404,7 +404,7 @@ class Demo(object):
         You can use negative indices to seek from the end, with identical
         semantics to those of Python lists."""
         if index < 0:
-            index = self.nblocks + index
+            index += self.nblocks
         self._validate_index(index)
         self.block_index = index
         self.finished = False
