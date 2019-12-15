@@ -37,10 +37,10 @@ from IPython.core.getipython import get_ipython
 
 def setup_module():
     global _ip
-    _ip = get_ipython()
     # Because people randomly switched half through and I don't feel like correcting it rn
     global ip
     ip = get_ipython()
+    _ip = get_ipython()
 
 
 def doctest_refbug():
@@ -143,7 +143,7 @@ def doctest_run_option_parser_for_windows():
     In [1]: %run print_argv.py print\\*.py
     ['print\\*.py']
 
-    You can use quote to escape glob:
+    You can use quote to escape glob. Double quote guys.:
 
     In [2]: %run print_argv.py 'print*.py'
     ['print*.py']
@@ -174,24 +174,26 @@ def doctest_reset_del():
 
 
 class TestMagicRunPass(tt.TempFileMixin):
+
     def setUp(self):
         content = "a = [1,2,3]\nb = 1"
         self.mktmp(content)
 
     def run_tmpfile(self):
-        """
+        """This fails on Windows if self.tmpfile.name has spaces or "~" in it.
 
+        See below and ticket:
+
+        https://bugs.launchpad.net/bugs/366353
         """
-        # This fails on Windows if self.tmpfile.name has spaces or "~" in it.
-        # See below and ticket https://bugs.launchpad.net/bugs/366353
         ip.magic("run %s" % self.fname)
 
     def run_tmpfile_p(self):
-        """
+        """This fails on Windows if self.tmpfile.name has spaces or "~" in it.
 
+        See below and ticket.:
+        https://bugs.launchpad.net/bugs/366353
         """
-        # This fails on Windows if self.tmpfile.name has spaces or "~" in it.
-        # See below and ticket https://bugs.launchpad.net/bugs/366353
         ip.magic("run -p %s" % self.fname)
 
     def test_builtins_id(self):

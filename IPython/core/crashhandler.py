@@ -23,7 +23,7 @@ import sys
 import traceback
 from pprint import pformat
 
-import core.ultratb.verbose_tb
+from IPython.core.ultratb.verbose_tb import VerboseTB
 from IPython.core import ultratb
 from IPython.core.release import author_email
 
@@ -165,7 +165,7 @@ class CrashHandler:
         # properly expanded out in the user message template
         self.crash_report_fname = report_name
         self.info["crash_report_fname"] = report_name
-        TBhandler = core.ultratb.verbose_tb.VerboseTB(
+        TBhandler = VerboseTB(
             color_scheme=color_scheme, long_header=1, call_pdb=self.call_pdb,
         )
         if self.call_pdb:

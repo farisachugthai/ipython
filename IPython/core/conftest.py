@@ -1,21 +1,16 @@
 import types
 import sys
 import builtins
-import os
-import pathlib
-import shutil
 
 import pytest
 
 # adding this here not because we need them yet but they're good reminders.
-from _pytest.nose import (
-    pytest_runtest_setup,
-    teardown_nose,
-    is_potential_nosetest,
-    call_optional,
-)
-
-# noqa
+# from _pytest.nose import (
+#     pytest_runtest_setup,
+#     teardown_nose,
+#     is_potential_nosetest,
+#     call_optional,
+# )
 
 from IPython.testing import tools
 

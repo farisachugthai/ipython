@@ -33,7 +33,7 @@ import sys
 import threading
 
 from IPython.core.getipython import get_ipython
-from core.ultratb.formatted_tb import AutoFormattedTB
+from IPython.core.ultratb.formatted_tb import AutoFormattedTB
 from logging import error, debug
 
 

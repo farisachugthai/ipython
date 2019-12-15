@@ -34,7 +34,8 @@ import traceback
 import types
 
 # import warnings
-from ast import AST  # , Await, Expr, Return
+import warnings
+from ast import AST, Await, Expr, Return
 from importlib import import_module
 from logging import error
 from pathlib import Path
@@ -167,7 +168,7 @@ dedent_re = re.compile(r"^\s+raise|^\s+return|^\s+pass")
 if hasattr("async_helpers", "curio_runner"):
     # then import it fuck the version check it's gonna make everything so much
     # harder to maintain!!!
-    from .async_helpers import _curio_runner, _trio_runner, _should_be_async
+    from IPython.core.async_helpers import _curio_runner, _trio_runner, _should_be_async
 else:
     _curio_runner = _trio_runner = None
 
@@ -641,6 +642,8 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         super().__init__(**kwargs)
+        # TODO:
+        self.input_splitter = None
         if "PromptManager" in self.config:
             warn(
                 "As of IPython 5.0 `PromptManager` config will have no effect"

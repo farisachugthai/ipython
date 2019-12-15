@@ -693,7 +693,7 @@ class DollarFormatter(FullEvalFormatter):
     """
 
     _dollar_pattern_ignore_single_quote = re.compile(
-        r"(.*?)[$]([$]?[.\.]+)(?=([^']*'[^']*')*[^']*$)"
+        r"(.*?)[$]([$]?[..]+)(?=([^']*'[^']*')*[^']*$)"
     )
 
     def parse(self, fmt_string):

@@ -39,6 +39,12 @@ class DisplayTrap(Configurable):
     hook = Any()
 
     def __init__(self, hook=None):
+        """
+
+        Returns
+        -------
+
+        """
         super(DisplayTrap, self).__init__(hook=hook, config=None)
         self.old_hook = None
         # We define this to track if a single BuiltinTrap is nested.

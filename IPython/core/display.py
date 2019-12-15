@@ -937,18 +937,18 @@ class JSON(DisplayObject):
 
 
 _css_t = """var link = document.createElement("link");
-	link.ref = "stylesheet";
-	link.type = "text/css";
-	link.href = "%s";
-	document.head.appendChild(link);
+    link.ref = "stylesheet";
+    link.type = "text/css";
+    link.href = "%s";
+    document.head.appendChild(link);
 """
 
 _lib_t1 = """new Promise(function(resolve, reject) {
-	var script = document.createElement("script");
-	script.onload = resolve;
-	script.onerror = reject;
-	script.src = "%s";
-	document.head.appendChild(script);
+    var script = document.createElement("script");
+    script.onload = resolve;
+    script.onerror = reject;
+    script.src = "%s";
+    document.head.appendChild(script);
 }).then(() => {
 """
 

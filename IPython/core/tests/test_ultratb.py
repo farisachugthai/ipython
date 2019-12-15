@@ -1,7 +1,6 @@
 # encoding: utf-8
 """Tests for IPython.core.ultratb
 """
-import core.ultratb.misc
 from IPython.testing.decorators import skipif
 import codecs
 import io
@@ -13,12 +12,8 @@ import traceback
 import unittest
 from unittest import mock
 
-# import IPython.core.ultratb as ultratb
-# ....
-from IPython.core import ultratb
-from core.ultratb.misc import find_recursion
-from core.ultratb.formatted_tb import ColorTB
-from core.ultratb import VerboseTB
+from IPython.core.ultratb.formatted_tb import ColorTB
+from IPython.core.ultratb.verbose_tb import VerboseTB, _FRAME_RECURSION_LIMIT, find_recursion
 from IPython.core.getipython import get_ipython
 from IPython.testing import tools as tt
 from IPython.testing.decorators import onlyif_unicode_paths
@@ -71,8 +66,8 @@ def recursionlimit(frames):
             -------
 
             """
-            _orig_rec_limit = core.ultratb.misc._FRAME_RECURSION_LIMIT
-            core.ultratb.misc._FRAME_RECURSION_LIMIT = 50
+            _orig_rec_limit = _FRAME_RECURSION_LIMIT
+            _FRAME_RECURSION_LIMIT = 50
 
             rl = sys.getrecursionlimit()
             sys.setrecursionlimit(frames)
@@ -80,7 +75,7 @@ def recursionlimit(frames):
                 return test_function(*args, **kwargs)
             finally:
                 sys.setrecursionlimit(rl)
-                core.ultratb.misc._FRAME_RECURSION_LIMIT = _orig_rec_limit
+                _FRAME_RECURSION_LIMIT = _orig_rec_limit
 
         return wrapper
 

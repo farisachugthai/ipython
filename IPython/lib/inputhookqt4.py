@@ -23,12 +23,6 @@ import threading
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.external.qt_for_kernel import QtCore, QtGui
 
-# -----------------------------------------------------------------------------
-# Module Globals
-# -----------------------------------------------------------------------------
-
-got_kbdint = False
-sigint_timer = None
 
 # -----------------------------------------------------------------------------
 # Utilities
@@ -80,24 +74,6 @@ def _allow_CTRL_C_other():
     """Take CTRL+C into account (not implemented)."""
     pass
 
-
-if os.name == "posix":
-    import select
-    import signal
-
-    stdin_ready = _stdin_ready_posix
-    ignore_CTRL_C = _ignore_CTRL_C_posix
-    allow_CTRL_C = _allow_CTRL_C_posix
-elif os.name == "nt":
-    import msvcrt
-
-    stdin_ready = _stdin_ready_nt
-    ignore_CTRL_C = _ignore_CTRL_C_other
-    allow_CTRL_C = _allow_CTRL_C_other
-else:
-    stdin_ready = _stdin_ready_other
-    ignore_CTRL_C = _ignore_CTRL_C_other
-    allow_CTRL_C = _allow_CTRL_C_other
 
 # -----------------------------------------------------------------------------
 # Code
@@ -248,3 +224,27 @@ def create_inputhook_qt4(mgr, app=None):
     ip.set_hook("pre_prompt_hook", preprompthook_qt4)
 
     return app, inputhook_qt4
+
+
+if __name__ == '__main__':
+
+    if os.name == "posix":
+        import select
+        import signal
+
+        stdin_ready = _stdin_ready_posix
+        ignore_CTRL_C = _ignore_CTRL_C_posix
+        allow_CTRL_C = _allow_CTRL_C_posix
+    elif os.name == "nt":
+        import msvcrt
+
+        stdin_ready = _stdin_ready_nt
+        ignore_CTRL_C = _ignore_CTRL_C_other
+        allow_CTRL_C = _allow_CTRL_C_other
+    else:
+        stdin_ready = _stdin_ready_other
+        ignore_CTRL_C = _ignore_CTRL_C_other
+        allow_CTRL_C = _allow_CTRL_C_other
+
+    got_kbdint = False
+    sigint_timer = None

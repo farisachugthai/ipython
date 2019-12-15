@@ -38,101 +38,21 @@ import OpenGL.platform as platform
 from timeit import default_timer as clock
 
 # -----------------------------------------------------------------------------
-# Constants
-# -----------------------------------------------------------------------------
-
-# Frame per second : 60
-# Should probably be an IPython option
-glut_fps = 60
-
-# Display mode : double buffeed + rgba + depth
-# Should probably be an IPython option
-glut_display_mode = glut.GLUT_DOUBLE | glut.GLUT_RGBA | glut.GLUT_DEPTH
-
-glutMainLoopEvent = None
-if sys.platform == "darwin":
-    try:
-        glutCheckLoop = platform.createBaseFunction(
-            "glutCheckLoop",
-            dll=platform.GLUT,
-            resultType=None,
-            argTypes=[],
-            doc="glutCheckLoop(  ) -> None",
-            argNames=(),
-        )
-    except AttributeError:
-        raise RuntimeError(
-            """Your glut implementation does not allow interactive sessions"""
-            """Consider installing freeglut."""
-        )
-    glutMainLoopEvent = glutCheckLoop
-elif glut.HAVE_FREEGLUT:
-    glutMainLoopEvent = glut.glutMainLoopEvent
-else:
-    raise RuntimeError(
-        """Your glut implementation does not allow interactive sessions. """
-        """Consider installing freeglut."""
-    )
-
-# -----------------------------------------------------------------------------
-# Platform-dependent imports and functions
-# -----------------------------------------------------------------------------
-
-if os.name == "posix":
-    import select
-
-    def stdin_ready():
-        """
-
-        Returns
-        -------
-
-        """
-        infds, outfds, erfds = select.select([sys.stdin], [], [], 0)
-        if infds:
-            return True
-        else:
-            return False
-
-
-elif sys.platform == "win32":
-    import msvcrt
-
-    def stdin_ready():
-        """
-
-        Returns
-        -------
-
-        """
-        return msvcrt.kbhit()
-
-
-# -----------------------------------------------------------------------------
 # Callback functions
 # -----------------------------------------------------------------------------
 
 
 def glut_display():
-    """
-
-    """
     # Dummy display function
     pass
 
 
 def glut_idle():
-    """
-
-    """
     # Dummy idle function
     pass
 
 
 def glut_close():
-    """
-
-    """
     # Close function only hides the current window
     glut.glutHideWindow()
     glutMainLoopEvent()
@@ -203,3 +123,78 @@ def inputhook_glut():
     except KeyboardInterrupt:
         pass
     return 0
+
+
+if __name__ == "__main__":
+
+    # -----------------------------------------------------------------------------
+    # Constants
+    # -----------------------------------------------------------------------------
+
+    # Frame per second : 60
+    # Should probably be an IPython option
+    glut_fps = 60
+
+    # Display mode : double buffeed + rgba + depth
+    # Should probably be an IPython option
+    glut_display_mode = glut.GLUT_DOUBLE | glut.GLUT_RGBA | glut.GLUT_DEPTH
+
+    glutMainLoopEvent = None
+    if sys.platform == "darwin":
+        try:
+            glutCheckLoop = platform.createBaseFunction(
+                "glutCheckLoop",
+                dll=platform.GLUT,
+                resultType=None,
+                argTypes=[],
+                doc="glutCheckLoop(  ) -> None",
+                argNames=(),
+            )
+        except AttributeError:
+            raise RuntimeError(
+                """Your glut implementation does not allow interactive sessions"""
+                """Consider installing freeglut."""
+            )
+        glutMainLoopEvent = glutCheckLoop
+    elif glut.HAVE_FREEGLUT:
+        glutMainLoopEvent = glut.glutMainLoopEvent
+    else:
+        raise RuntimeError(
+            """Your glut implementation does not allow interactive sessions. """
+            """Consider installing freeglut."""
+        )
+
+    # -----------------------------------------------------------------------------
+    # Platform-dependent imports and functions
+    # -----------------------------------------------------------------------------
+
+    if os.name == "posix":
+        import select
+
+        def stdin_ready():
+            """
+
+            Returns
+            -------
+
+            """
+            infds, outfds, erfds = select.select([sys.stdin], [], [], 0)
+            if infds:
+                return True
+            else:
+                return False
+
+
+    elif sys.platform == "win32":
+        import msvcrt
+
+        def stdin_ready():
+            """
+
+            Returns
+            -------
+
+            """
+            return msvcrt.kbhit()
+
+
