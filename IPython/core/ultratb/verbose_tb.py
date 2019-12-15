@@ -1,13 +1,8 @@
 # coding=utf-8
 import abc
-import inspect
 import keyword
-import linecache
-import os
 import sys
 import time
-import tokenize
-import traceback
 from importlib._bootstrap_external import source_from_cache
 from logging import debug, error, info
 from shutil import get_terminal_size
@@ -28,6 +23,8 @@ import traceback
 from inspect import findsource, getargs
 
 from .tb_tools import TBTools
+from .. import debugger
+from ..display_trap import DisplayTrap
 
 generate_tokens = tokenize.tokenize
 INDENT_SIZE = 8
@@ -379,7 +376,72 @@ def nullrepr(value, repr=text_repr):
     return ""
 
 
-class VerboseTB(TBTools):
+class UltraDbg:
+    def __init__(self, call_pdb=None, debugger_cls=None):
+        self.call_pdb = call_pdb
+        self.debugger_cls = debugger_cls or debugger.CorePdb
+
+    def debugger(self, force=False):
+        """Call up the pdb debugger if desired, always clean up the tb
+        reference.
+
+        Keywords:
+
+          - force(False): by default, this routine checks the instance call_pdb
+            flag and does not actually invoke the debugger if the flag is false.
+            The 'force' option forces the debugger to activate even if the flag
+            is false.
+
+        If the :param:`call_pdb` flag is set, the pdb interactive debugger is
+        invoked. In all cases, the self.tb reference to the current traceback
+        is deleted to prevent lingering references which hamper memory
+        management.
+
+        Note that each call to pdb() does an 'import readline', so if your app
+        requires a special setup for the readline completers, you'll have to
+        fix that by hand after invoking the exception handler.
+
+        This method in particular should be easy enough to refactor out.
+        ostream is just sys.stdout, call_pdb and force are now keyword
+        parameters, sys.exc_info() replaces the evalue nonsense.
+
+        It'll probably be a cleaner implementation if we do it this way.
+        Check that out!
+
+        Parameters
+        ----------
+        force :
+
+        Returns
+        -------
+        object
+        """
+
+        if force or self.call_pdb:
+            if self.pdb is None:
+                self.pdb = self.debugger_cls()
+            # the system displayhook may have changed, restore the original
+            # for pdb
+            display_trap = DisplayTrap(hook=sys.__displayhook__)
+            with display_trap:
+                self.pdb.reset()
+                # Find the right frame so we don't pop up inside ipython itself
+                if hasattr(self, "tb") and self.tb is not None:
+                    etb = self.tb
+                else:
+                    etb = self.tb = sys.last_traceback
+                while self.tb is not None and self.tb.tb_next is not None:
+                    self.tb = self.tb.tb_next
+                if etb and etb.tb_next:
+                    etb = etb.tb_next
+                self.pdb.botframe = etb.tb_frame
+                self.pdb.interaction(None, etb)
+
+        if hasattr(self, "tb"):
+            del self.tb
+
+
+class VerboseTB(TBTools, UltraDbg):
     """A port of Ka-Ping Yee's cgitb.py module that outputs color text instead
     of HTML.  Requires inspect and pydoc.  Crazy, man.
 
@@ -424,7 +486,6 @@ class VerboseTB(TBTools):
 
         """
         self.color_scheme = color_scheme
-        self.call_pdb = call_pdb
         self.ostream = ostream
         self.parent = parent
         self.config = config
@@ -439,8 +500,6 @@ class VerboseTB(TBTools):
         self.check_cache = check_cache
 
         from IPython.core import debugger
-
-        self.debugger_cls = debugger_cls or debugger.CorePdb
 
     def format_records(self, records, last_unique, recursion_repeat):
         """Format the stack frames of the traceback"""
@@ -881,59 +940,26 @@ class VerboseTB(TBTools):
 
         return structured_traceback_parts
 
-    def debugger(self, force=False):
-        """Call up the pdb debugger if desired, always clean up the tb
-        reference.
-
-        Keywords:
-
-          - force(False): by default, this routine checks the instance call_pdb
-            flag and does not actually invoke the debugger if the flag is false.
-            The 'force' option forces the debugger to activate even if the flag
-            is false.
-
-        If the :param:`call_pdb` flag is set, the pdb interactive debugger is
-        invoked. In all cases, the self.tb reference to the current traceback
-        is deleted to prevent lingering references which hamper memory
-        management.
-
-        Note that each call to pdb() does an 'import readline', so if your app
-        requires a special setup for the readline completers, you'll have to
-        fix that by hand after invoking the exception handler.
-        """
-
-        if force or self.call_pdb:
-            if self.pdb is None:
-                self.pdb = self.debugger_cls()
-            # the system displayhook may have changed, restore the original
-            # for pdb
-            display_trap = DisplayTrap(hook=sys.__displayhook__)
-            with display_trap:
-                self.pdb.reset()
-                # Find the right frame so we don't pop up inside ipython itself
-                if hasattr(self, "tb") and self.tb is not None:
-                    etb = self.tb
-                else:
-                    etb = self.tb = sys.last_traceback
-                while self.tb is not None and self.tb.tb_next is not None:
-                    self.tb = self.tb.tb_next
-                if etb and etb.tb_next:
-                    etb = etb.tb_next
-                self.pdb.botframe = etb.tb_frame
-                self.pdb.interaction(None, etb)
-
-        if hasattr(self, "tb"):
-            del self.tb
-
     def handler(self, info=None):
-        """
+        """This'll be so easy to get out of here.
+
+        I suppose the focus should be on which methods are actively called,
+        where they're called and moving things out that way.
+
+        So we refactor static methods out. Bind it to the class with the
+        old name for compatability. Then we address where those new functions
+        not methods are getting called, and call them by the new name so that
+        we decouple the functions internally.
+
+        Jesus.
 
         Parameters
         ----------
         info :
+
         """
         (etype, evalue, etb) = info or sys.exc_info()
-        self.tb = etb
+        # self.tb = etb
         ostream = self.ostream
         ostream.flush()
         ostream.write(self.text(etype, evalue, etb))

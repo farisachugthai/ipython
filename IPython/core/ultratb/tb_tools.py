@@ -63,6 +63,7 @@ class TBTools(Colorable):
         # Create color table
         # self.color_scheme_table = exception_colors()
 
+        self.color_scheme = color_scheme
         if not hasattr(self, "color_scheme_table"):
             self.color_scheme_table = exception_colors()
 
