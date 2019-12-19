@@ -56,13 +56,11 @@ class TeeTestCase(unittest.TestCase):
 
 
 class TestIOStream(unittest.TestCase):
-
     def test_IOStream_init(self):
         """IOStream initializes from a file-like object missing attributes. """
 
         # Cause a failure from getattr and dir(). (Issue #6386)
         class BadStringIO(StringIO):
-
             def __dir__(self):
                 attrs = super().__dir__()
                 attrs.append("name")

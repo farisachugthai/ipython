@@ -4,6 +4,11 @@ This file is only meant to be imported by the platform-specific implementations
 of subprocess utilities, and it contains tools that are common to all of them.
 
 It's used quite heavily throughout the repo though so take note of that.
+
+For example, in :mod:`IPython.testing.tools`, 'get_output_error_code' is
+required, and that kicks off the entire testing suite... So don't mess with
+that.
+
 """
 
 # -----------------------------------------------------------------------------

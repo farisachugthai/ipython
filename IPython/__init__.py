@@ -60,6 +60,7 @@ sys.exit(1)
 import sys
 
 from .core import release
+
 # from .core.interactiveshell import InteractiveShell  # noqa F0401
 # from .terminal.embed import embed  # noqa F0401
 

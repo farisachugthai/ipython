@@ -1,6 +1,8 @@
 import sys
 import os
-from IPython.external.qt_for_kernel import QtCore, QtGui
+# from IPython.external.qt_for_kernel import QtCore, QtGui
+from IPython.external.qt_for_kernel import get_options
+from IPython.external.qt_loaders import load_qt
 
 # If we create a QApplication, keep a reference to it so that it doesn't get
 # garbage collected.
@@ -60,3 +62,9 @@ def inputhook(context):
                 event_loop.exec_()
         finally:
             notifier.setEnabled(False)
+
+
+if __name__ == "__main__":
+
+    api_opts = get_options()
+    QtCore, QtGui, QtSvg, QT_API = load_qt(api_opts)

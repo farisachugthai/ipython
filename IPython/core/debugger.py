@@ -70,7 +70,7 @@ from IPython.core.getipython import get_ipython
 from IPython.terminal.prompts import Prompts
 
 
-RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')
+RGX_EXTRA_INDENT = re.compile(r"(?<=\n)\s+")
 
 
 def make_arrow(pad):
@@ -83,7 +83,7 @@ def make_arrow(pad):
 
 
 def strip_indentation(multiline_string):
-    return RGX_EXTRA_INDENT.sub('', multiline_string)
+    return RGX_EXTRA_INDENT.sub("", multiline_string)
 
 
 def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
@@ -92,6 +92,7 @@ def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     Adapted from from a comp.lang.python posting
     by Duncan Booth.
     """
+
     def wrapper(*args, **kw):
         return new_fn(*args, **kw)
 
@@ -174,7 +175,7 @@ class CorePdb(Pdb):
         return decorate_fn_with_doc(super().__doc__())
 
     def __repr__(self):
-        return '{!r}\t{!r}'.format(self.__class__.__name__, self.prompt)
+        return "{!r}\t{!r}".format(self.__class__.__name__, self.prompt)
 
     def interaction(self, frame, traceback):
         """
@@ -320,7 +321,7 @@ class CorePdb(Pdb):
         lines = linecache.getlines(filename)
         start = min(start, len(lines) - context)
         start = max(start, 0)
-        lines = lines[start: start + context]
+        lines = lines[start : start + context]
 
         for i, line in enumerate(lines):
             show_arrow = start + 1 + i == lineno
@@ -374,13 +375,9 @@ class CorePdb(Pdb):
                     break
 
                 if lineno == self.curframe.f_lineno:
-                    line = self.__format_line(
-                        filename, lineno, line, arrow=True
-                    )
+                    line = self.__format_line(filename, lineno, line, arrow=True)
                 else:
-                    line = self.__format_line(
-                        filename, lineno, line, arrow=False
-                    )
+                    line = self.__format_line(filename, lineno, line, arrow=False)
 
                 src.append(line)
                 self.lineno = lineno

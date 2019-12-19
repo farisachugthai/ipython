@@ -1,14 +1,17 @@
-"""Enable pyglet to be used interactively with prompt_toolkit
-"""
+"""Enable pyglet to be used interactively with prompt_toolkit.
 
+Note
+----
+On linux only, window.flip() has a bug that causes an AttributeError on
+window close.  For details, see:
+
+`<http://groups.google.com/group/pyglet-users/browse_thread/thread/47c1aab9aa4a3d23/c22f9e819826799e?#c22f9e819826799e>`_
+
+"""
 import sys
 import time
 from timeit import default_timer as clock
-import pyglet
 
-# On linux only, window.flip() has a bug that causes an AttributeError on
-# window close.  For details, see:
-# http://groups.google.com/group/pyglet-users/browse_thread/thread/47c1aab9aa4a3d23/c22f9e819826799e?#c22f9e819826799e
 
 if sys.platform.startswith("linux"):
 
@@ -44,9 +47,24 @@ def inputhook(context):
     processing all pending events, a call to time.sleep is inserted.  This is
     needed, otherwise, CPU usage is at 100%.  This sleep time should be tuned
     though for best performance.
+
+    We need to protect against a user pressing Control-C when IPython is
+    idle and this is running. We trap KeyboardInterrupt and pass.
+
+    We need to sleep at this point to keep the idle CPU load
+    low.  However, if sleep to long, GUI response is poor.  As
+    a compromise, we watch how often GUI events are being processed
+    and switch between a short and long sleep time.  Here are some
+    stats useful in helping to tune this.
+
+    time    CPU load
+
+    0.001   13%
+    0.005   3%
+    0.01    1.5%
+    0.05    0.5%
+
     """
-    # We need to protect against a user pressing Control-C when IPython is
-    # idle and this is running. We trap KeyboardInterrupt and pass.
     try:
         t = clock()
         while not context.input_is_ready():
@@ -57,16 +75,6 @@ def inputhook(context):
                 window.dispatch_event("on_draw")
                 flip(window)
 
-            # We need to sleep at this point to keep the idle CPU load
-            # low.  However, if sleep to long, GUI response is poor.  As
-            # a compromise, we watch how often GUI events are being processed
-            # and switch between a short and long sleep time.  Here are some
-            # stats useful in helping to tune this.
-            # time    CPU load
-            # 0.001   13%
-            # 0.005   3%
-            # 0.01    1.5%
-            # 0.05    0.5%
             used_time = clock() - t
             if used_time > 10.0:
                 # print 'Sleep for 1 s'  # dbg
@@ -80,3 +88,9 @@ def inputhook(context):
                 time.sleep(0.001)
     except KeyboardInterrupt:
         pass
+
+
+if __name__ == "__main__":
+    import pyglet
+
+    inputhook(context)

@@ -9,6 +9,13 @@ Authors
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+from . import skipdoctest
+from . import decorators as dec
+from IPython.utils.utils_io import temp_pyfile, Tee
+from IPython.utils.text import list_strings
+from IPython.utils._process_common import get_output_error_code
+from traitlets.config.loader import Config
+import logging
 import os
 import re
 import sys
@@ -20,6 +27,8 @@ from io import StringIO
 from subprocess import Popen, PIPE
 from unittest.mock import patch
 
+testing_logger = logging.getLogger(name=__name__)
+
 try:
     # These tools are used by parts of the runtime, so we make the nose
     # dependency optional at this point.  Nose is a hard dependency to run the
@@ -30,13 +39,6 @@ try:
 except ImportError:
     has_nose = False
 
-from traitlets.config.loader import Config
-from IPython.utils.process import get_output_error_code
-from IPython.utils.text import list_strings
-from IPython.utils.utils_io import temp_pyfile, Tee
-
-from . import decorators as dec
-from . import skipdoctest
 
 # The docstring for full_path doctests differently on win32 (different path
 # separator) so just skip the doctest there.  The example remains informative.
@@ -54,15 +56,14 @@ def full_path(startPath, files):
     Parameters
     ----------
     startPath : string
-      Initial path to use as the base for the results.  This path is split
-      using os.path.split() and only its first component is kept.
+        Initial path to use as the base for the results.  This path is split
+        using os.path.split() and only its first component is kept.
 
     files : string or list
-      One or more files.
+        One or more files.
 
     Examples
     --------
-
     >>> full_path('/foo/bar.py',['a.txt','b.txt'])
     ['/foo/a.txt', '/foo/b.txt']
 
@@ -73,8 +74,8 @@ def full_path(startPath, files):
 
         >>> full_path('/foo','a.txt')
         ['/a.txt']
-    """
 
+    """
     files = list_strings(files)
     base = os.path.split(startPath)[0]
     return [os.path.join(base, f) for f in files]
@@ -83,29 +84,24 @@ def full_path(startPath, files):
 def parse_test_output(txt):
     """Parse the output of a test run and return errors, failures.
 
-    Dude what the hell is this return statement?
-
-    >>> return 0, 0
-
-    What type is that?? Is it.....I have no idea.
-
     Parameters
     ----------
     txt : str
-      Text output of a test run, assumed to contain a line of one of the
-      following forms::
+        Text output of a test run, assumed to contain a line of one of the
+        following forms:
 
-        'FAILED (errors=1)'
-        'FAILED (failures=1)'
-        'FAILED (errors=1, failures=1)'
+        - 'FAILED (errors=1)'
+
+        - 'FAILED (failures=1)'
+
+        - 'FAILED (errors=1, failures=1)'
 
     Returns
     -------
     nerr, nfail
-      number of errors and failures.
+        number of errors and failures.
 
     """
-
     err_m = re.search(r"^FAILED [(]errors=(\d+)[)]", txt, re.MULTILINE)
     if err_m:
         nerr = int(err_m.group(1))
@@ -134,7 +130,6 @@ parse_test_output.__test__ = False
 
 def default_argv():
     """Return a valid default argv for creating testing instances of ipython"""
-
     return [
         "--quick",  # so no config file is loaded
         # Other defaults to minimize side effects on stdout
@@ -151,7 +146,6 @@ def default_config():
     This means, a tempfile.NamedTemporaryFile is used for the history.sqlite
     file AKA the HistoryManager.hist_file, autocall is set to 0 and the db
     cache is set very high so as to prevent disk writes.
-
     """
     config = Config()
     config.TerminalInteractiveShell.colors = "NoColor"
@@ -201,13 +195,11 @@ def ipexec(fname, options=None, commands=()):
     Parameters
     ----------
     fname : str
-      Name of file to be executed (should have .py or .ipy extension).
-
+        Name of file to be executed (should have .py or .ipy extension).
     options : optional, list
-      Extra command-line flags to be passed to IPython.
-
+        Extra command-line flags to be passed to IPython.
     commands : optional, list
-      Commands to send in on stdin
+        Commands to send in on stdin
 
     Returns
     -------
@@ -244,37 +236,34 @@ def ipexec_validate(fname, expected_out, expected_err="", options=None, commands
 
     This function raises an AssertionError if the validation fails.
 
-    Note that this starts IPython in a subprocess!
+    Note
+    ----
+    If there are any errors, we must check those before stdout, as they may be
+    more informative than simply having an empty stdout.
+
+    In addition, be aware that this starts IPython in a subprocess!
 
     Parameters
     ----------
     commands :
     fname : str
-      Name of the file to be executed (should have .py or .ipy extension).
-
+        Name of the file to be executed (should have .py or .ipy extension).
     expected_out : str
-      Expected stdout of the process.
-
+        Expected stdout of the process.
     expected_err : optional, str
-      Expected stderr of the process.
-
+        Expected stderr of the process.
     options : optional, list
-      Extra command-line flags to be passed to IPython.
+        Extra command-line flags to be passed to IPython.
 
     Returns
     -------
     None
 
     """
-    # Why is this here it's already at the top of the module?
-    # import nose.tools as nt
-
     out, err = ipexec(fname, options, commands)
     # Why are these lines here you could just do a logging.debug call?
-    # print 'OUT', out  # dbg
-    # print 'ERR', err  # dbg
-    # If there are any errors, we must check those before stdout, as they may be
-    # more informative than simply having an empty stdout.
+    testing_logger.debug("OUT: ", out)
+    testing_logger.debug("ERR: ", err)
     if err:
         if expected_err:
             nt.assert_equal(
@@ -307,15 +296,12 @@ class TempFileMixin(unittest.TestCase):
         self.fname = fname
 
     def tearDown(self):
-        """
+        """If the tmpfile wasn't made because of skipped tests, nothing to clean.
 
+        This occurs on win32, there's nothing to cleanup.
         """
-        # If the tmpfile wasn't made because of skipped tests, like in
-        # win32, there's nothing to cleanup.
         if hasattr(self, "tmps"):
             for fname in self.tmps:
-                # If the tmpfile wasn't made because of skipped tests, like in
-                # win32, there's nothing to cleanup.
                 try:
                     os.unlink(fname)
                 except BaseException:
@@ -326,7 +312,8 @@ class TempFileMixin(unittest.TestCase):
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, *kwargs):
+        """This used to take 3 params but we never used them."""
         self.tearDown()
 
 

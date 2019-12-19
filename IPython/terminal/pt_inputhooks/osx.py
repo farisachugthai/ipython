@@ -1,24 +1,13 @@
 """Inputhook for OS X
 
 Calls NSApp / CoreFoundation APIs via ctypes.
+
+obj-c boilerplate from appnope, used under BSD 2-clause
+
 """
-
-# obj-c boilerplate from appnope, used under BSD 2-clause
-
 import ctypes
 import ctypes.util
 from threading import Event
-
-objc = ctypes.cdll.LoadLibrary(ctypes.util.find_library("objc"))
-
-void_p = ctypes.c_void_p
-
-objc.objc_getClass.restype = void_p
-objc.sel_registerName.restype = void_p
-objc.objc_msgSend.restype = void_p
-objc.objc_msgSend.argtypes = [void_p, void_p]
-
-msg = objc.objc_msgSend
 
 
 def _utf8(s):
@@ -36,47 +25,6 @@ def n(name):
 def C(classname):
     """get an ObjC Class by name"""
     return objc.objc_getClass(_utf8(classname))
-
-
-# end obj-c boilerplate from appnope
-
-# CoreFoundation C-API calls we will use:
-CoreFoundation = ctypes.cdll.LoadLibrary(ctypes.util.find_library("CoreFoundation"))
-
-CFFileDescriptorCreate = CoreFoundation.CFFileDescriptorCreate
-CFFileDescriptorCreate.restype = void_p
-CFFileDescriptorCreate.argtypes = [void_p, ctypes.c_int, ctypes.c_bool, void_p]
-
-CFFileDescriptorGetNativeDescriptor = CoreFoundation.CFFileDescriptorGetNativeDescriptor
-CFFileDescriptorGetNativeDescriptor.restype = ctypes.c_int
-CFFileDescriptorGetNativeDescriptor.argtypes = [void_p]
-
-CFFileDescriptorEnableCallBacks = CoreFoundation.CFFileDescriptorEnableCallBacks
-CFFileDescriptorEnableCallBacks.restype = None
-CFFileDescriptorEnableCallBacks.argtypes = [void_p, ctypes.c_ulong]
-
-CFFileDescriptorCreateRunLoopSource = CoreFoundation.CFFileDescriptorCreateRunLoopSource
-CFFileDescriptorCreateRunLoopSource.restype = void_p
-CFFileDescriptorCreateRunLoopSource.argtypes = [void_p, void_p, void_p]
-
-CFRunLoopGetCurrent = CoreFoundation.CFRunLoopGetCurrent
-CFRunLoopGetCurrent.restype = void_p
-
-CFRunLoopAddSource = CoreFoundation.CFRunLoopAddSource
-CFRunLoopAddSource.restype = None
-CFRunLoopAddSource.argtypes = [void_p, void_p, void_p]
-
-CFRelease = CoreFoundation.CFRelease
-CFRelease.restype = None
-CFRelease.argtypes = [void_p]
-
-CFFileDescriptorInvalidate = CoreFoundation.CFFileDescriptorInvalidate
-CFFileDescriptorInvalidate.restype = None
-CFFileDescriptorInvalidate.argtypes = [void_p]
-
-# From CFFileDescriptor.h
-kCFFileDescriptorReadCallBack = 1
-kCFRunLoopCommonModes = void_p.in_dll(CoreFoundation, "kCFRunLoopCommonModes")
 
 
 def _NSApp():
@@ -118,10 +66,6 @@ def _input_callback(fdref, flags, info):
     _wake(NSApp)
 
 
-_c_callback_func_type = ctypes.CFUNCTYPE(None, void_p, void_p, void_p)
-_c_input_callback = _c_callback_func_type(_input_callback)
-
-
 def _stop_on_read(fd):
     """Register callback to stop eventloop when there's data on fd"""
     _triggered.clear()
@@ -144,3 +88,58 @@ def inputhook(context):
         # Run the loop manually in this case,
         # since there may be events still to process (#9734)
         CoreFoundation.CFRunLoopRun()
+
+
+if __name__ == "__main__":
+    objc = ctypes.cdll.LoadLibrary(ctypes.util.find_library("objc"))
+
+    void_p = ctypes.c_void_p
+
+    objc.objc_getClass.restype = void_p
+    objc.sel_registerName.restype = void_p
+    objc.objc_msgSend.restype = void_p
+    objc.objc_msgSend.argtypes = [void_p, void_p]
+
+    msg = objc.objc_msgSend
+
+    _c_callback_func_type = ctypes.CFUNCTYPE(None, void_p, void_p, void_p)
+    _c_input_callback = _c_callback_func_type(_input_callback)
+    # end obj-c boilerplate from appnope
+
+    # CoreFoundation C-API calls we will use:
+    CoreFoundation = ctypes.cdll.LoadLibrary(ctypes.util.find_library("CoreFoundation"))
+
+    CFFileDescriptorCreate = CoreFoundation.CFFileDescriptorCreate
+    CFFileDescriptorCreate.restype = void_p
+    CFFileDescriptorCreate.argtypes = [void_p, ctypes.c_int, ctypes.c_bool, void_p]
+
+    CFFileDescriptorGetNativeDescriptor = CoreFoundation.CFFileDescriptorGetNativeDescriptor
+    CFFileDescriptorGetNativeDescriptor.restype = ctypes.c_int
+    CFFileDescriptorGetNativeDescriptor.argtypes = [void_p]
+
+    CFFileDescriptorEnableCallBacks = CoreFoundation.CFFileDescriptorEnableCallBacks
+    CFFileDescriptorEnableCallBacks.restype = None
+    CFFileDescriptorEnableCallBacks.argtypes = [void_p, ctypes.c_ulong]
+
+    CFFileDescriptorCreateRunLoopSource = CoreFoundation.CFFileDescriptorCreateRunLoopSource
+    CFFileDescriptorCreateRunLoopSource.restype = void_p
+    CFFileDescriptorCreateRunLoopSource.argtypes = [void_p, void_p, void_p]
+
+    CFRunLoopGetCurrent = CoreFoundation.CFRunLoopGetCurrent
+    CFRunLoopGetCurrent.restype = void_p
+
+    CFRunLoopAddSource = CoreFoundation.CFRunLoopAddSource
+    CFRunLoopAddSource.restype = None
+    CFRunLoopAddSource.argtypes = [void_p, void_p, void_p]
+
+    CFRelease = CoreFoundation.CFRelease
+    CFRelease.restype = None
+    CFRelease.argtypes = [void_p]
+
+    CFFileDescriptorInvalidate = CoreFoundation.CFFileDescriptorInvalidate
+    CFFileDescriptorInvalidate.restype = None
+    CFFileDescriptorInvalidate.argtypes = [void_p]
+
+    # From CFFileDescriptor.h
+    kCFFileDescriptorReadCallBack = 1
+    kCFRunLoopCommonModes = void_p.in_dll(CoreFoundation, "kCFRunLoopCommonModes")
