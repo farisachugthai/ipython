@@ -55,6 +55,13 @@ from nose.util import anyp, tolist
 log = logging.getLogger(__name__)
 
 
+def setup_module():
+    global _ip
+    from IPython.core.getipython import get_ipython
+    _ip = get_ipython()
+
+
+
 # -----------------------------------------------------------------------------
 # Classes and functions
 # -----------------------------------------------------------------------------

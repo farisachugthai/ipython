@@ -7,6 +7,12 @@ import nose.tools as nt
 from IPython.utils.tempdir import TemporaryDirectory
 
 
+def setup_module():
+    global _ip
+    from IPython.core.getipython import get_ipython
+    _ip = get_ipython()
+
+
 def test_logstart_inaccessible_file():
     try:
         _ip.logger.logstart(logfname="/")  # Opening that filename will fail.

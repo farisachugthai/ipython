@@ -2,23 +2,16 @@
 import argparse
 import codecs
 import logging
-import io
 from importlib import import_module
-import os
 from pprint import pformat
-import textwrap
 from textwrap import dedent, indent
-import sys
-from warnings import warn
 
 from IPython.core import magic_arguments, page
 
-# from IPython.core.payloadpage import page
 from IPython.core.error import UsageError, ColorSwitchErr, XmodeSwitchErr
 from IPython.core.magic import Magics, magics_class, line_magic, magic_escapes
-from IPython.utils.text import format_screen  # , dedent, indent
+from IPython.utils.text import format_screen
 
-# from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.ipstruct import Struct
 
 

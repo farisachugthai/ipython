@@ -49,16 +49,16 @@ API
 #       Copyright (C) 2005-2006 Fernando Perez. <fperez@colorado.edu>
 # *****************************************************************************
 
-import bdb
-import functools
+# import bdb
+# import functools
 import inspect
 import linecache
-from pprint import pprint
+# from pprint import pprint
 import re
-import reprlib
+# import reprlib
 import sys
-import warnings
-from bdb import BdbQuit
+# import warnings
+# from bdb import BdbQuit
 from pdb import Pdb
 
 from IPython.core.error import (
@@ -246,6 +246,11 @@ class CorePdb(Pdb):
         frame_lineno :
         prompt_prefix :
         context :
+
+        Raises
+        ------
+        :exc:`ValueError`
+
         """
         if context is None:
             context = self.context
@@ -274,6 +279,7 @@ class CorePdb(Pdb):
 
         Returns
         -------
+        ret : list
 
         """
         try:
@@ -324,7 +330,7 @@ class CorePdb(Pdb):
 
         for i, line in enumerate(lines):
             show_arrow = start + 1 + i == lineno
-            linetpl = (frame is self.curframe or show_arrow) and tpl_line_em or tpl_line
+            linetpl = (frame is self.curframe or show_arrow)
             ret.append(
                 self.__format_line(
                     linetpl, filename, start + 1 + i, line, arrow=show_arrow

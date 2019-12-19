@@ -12,6 +12,12 @@ from IPython.core.prefilter import AutocallChecker
 # -----------------------------------------------------------------------------
 
 
+def setup_module():
+    global ip
+    from IPython.core.getipython import get_ipython
+    ip = get_ipython()
+
+
 def test_prefilter():
     """Test user input conversions"""
 
