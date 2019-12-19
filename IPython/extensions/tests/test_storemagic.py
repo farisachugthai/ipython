@@ -17,6 +17,7 @@ from IPython.core.getipython import get_ipython
 
 
 def setup_module():
+    global ip
     ip = get_ipython()
     ip.magic("load_ext storemagic")
 

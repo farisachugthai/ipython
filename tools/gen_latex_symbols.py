@@ -9,11 +9,12 @@
 #
 # The original mapping of latex symbols to unicode comes from the `latex_symbols.jl` files from Julia.
 
-import os, sys
+import requests
+import os
+import sys
 
 # Import the Julia LaTeX symbols
 print("Importing latex_symbols.js from Julia...")
-import requests
 
 url = "https://raw.githubusercontent.com/JuliaLang/julia/master/stdlib/REPL/src/latex_symbols.jl"
 r = requests.get(url)
@@ -27,7 +28,7 @@ prefixes_line = lines.index('# "font" prefixes')
 symbols_line = lines.index("# manual additions:")
 
 prefix_dict = {}
-for l in lines[prefixes_line + 1 : symbols_line]:
+for l in lines[prefixes_line + 1: symbols_line]:
     p = l.split()
     if not p or p[1] == "latex_symbols":
         continue

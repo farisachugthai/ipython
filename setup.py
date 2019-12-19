@@ -6,55 +6,25 @@ Under Posix environments it works like a typical setup.py script.
 
 And now it does on Windows as well.
 
-It's also probably worth noting that in the dir
-site-packages/ipython-7.8.0-dist-info/ is a file called entry_points.txt.
+.. data:: setup_args
 
-It only has the following for it's contents:
+    Create a dict with the basic information
+    This dict is eventually passed to setup after additional keys are added.
 
-    [console_scripts]
+.. data:: setuptools_extra_args
 
-    [pygments.lexers]
-    ipython = IPython.lib.lexers:IPythonLexer
-    ipython3 = IPython.lib.lexers:IPython3Lexer
-    ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer
-
-This is so weird to me how this script is set up. Like check this::
-
-   if 'setuptools' in sys.modules:
-       setuptools_extra_args['entry_points'] = {
-           'console_scripts':
-           # find_entry_points(),
-           'pygments.lexers': [
-               'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
-               'ipython = IPython.lib.lexers:IPythonLexer',
-               'ipython3 = IPython.lib.lexers:IPython3Lexer',
-           ],
-       }
-
-So if this user doesn't have setuptools installed, then they don't get the
-pygments lexers installed? Wth?
-
-Here's something worth keeping in mind.
-
->>> import importlib_metadata
->>> importlib_metadata.entry_points()
-...  # +ELLIPSIS
-EntryPoint(name='iptest', value='IPython.testing.iptestcontroller:main', group='console_scripts'),
-EntryPoint(name='iptest3', value='IPython.testing.iptestcontroller:main', group='console_scripts'),
-EntryPoint(name='ipython', value='IPython:start_ipython', group='console_scripts'),
-EntryPoint(name='ipython3', value='IPython:start_ipython', group='console_scripts'),
-
-
------------------------------------------------------------------------------
-
-  Copyright (c) 2008-2011, IPython Development Team.
-  Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
-  Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
-  Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
-
-  Distributed under the terms of the Modified BSD License.
+    This dict is used for passing extra arguments that are setuptools
+    specific to setup
 
 """
+# -----------------------------------------------------------------------------
+#   Copyright (c) 2008-2011, IPython Development Team.
+#   Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
+#   Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
+#   Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
+
+#   Distributed under the terms of the Modified BSD License.
+# -----------------------------------------------------------------------------
 import os
 import sys
 
@@ -64,9 +34,19 @@ from distutils.util import change_root, convert_path
 from setuptools import find_packages, setup
 
 if False:  # shut the linters up
-    from IPython.core.release import (name, version, description, long_description,
-                                      author, author_email, url, license, platforms,
-                                      keywords, classifiers)
+    from IPython.core.release import (
+        name,
+        version,
+        description,
+        long_description,
+        author,
+        author_email,
+        url,
+        license,
+        platforms,
+        keywords,
+        classifiers,
+    )
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
@@ -78,24 +58,17 @@ try:
 except ImportError:
     importlib_metadata = None
 
-# Just checking i'm allowed to make setuptools a hard dependency right?
-# Because everything we use has it as a dependency so there's no way a user
-# doesn't have it
-# from distutils.command.sdist import sdist
-
-isfile = os.path.isfile
-pjoin = os.path.join
-repo_root = os.path.dirname(os.path.abspath(__file__))
-
 
 def execfile(fname, globs, locs=None):
+    """TODO: runpy.run_path()."""
     locs = locs or globs
     with open(fname) as f:
         exec(compile(f.read(), fname, "exec"), globs, locs)
 
 
 # release.py contains version, authors, license, url, keywords, etc.
-execfile(pjoin(repo_root, "IPython", "core", "release.py"), globals())
+repo_root = os.path.dirname(os.path.abspath(__file__))
+execfile(os.path.join(repo_root, "IPython", "core", "release.py"), globals())
 
 # ------------------------------------------------------------------------------
 # Things related to the IPython documentation
@@ -121,8 +94,6 @@ execfile(pjoin(repo_root, "IPython", "core", "release.py"), globals())
 
 # data_files = find_data_files()
 
-# Create a dict with the basic information
-# This dict is eventually passed to setup after additional keys are added.
 setup_args = dict(
     name=name,
     version=version,
@@ -146,7 +117,6 @@ setup_args = dict(
 
 setup_args["packages"] = find_packages()
 
-# setup_args['package_data'] = package_data
 # TODO: use resourcemanager API
 setup_args["package_data"] = {
     "": ["*.txt", "*.rst"],
@@ -156,9 +126,6 @@ setup_args["package_data"] = {
     "IPython.testing.plugin": ["*.txt"],
 }
 
-# For some commands, use setuptools.  Note that we do NOT list install here!
-# If you want a setuptools-enhanced install, just run 'setupegg.py install'
-# Uh no? We import setuptools at the beginning now.
 needs_setuptools = {
     "develop",
     "release",
@@ -177,14 +144,7 @@ needs_setuptools = {
     "build_sdist",
 }
 
-# if len(needs_setuptools.intersection(sys.argv)) > 0:
-#     import setuptools
-
-# This dict is used for passing extra arguments that are setuptools
-# specific to setup
 setuptools_extra_args = {}
-
-# setuptools requirements
 
 extras_require = dict(
     parallel=["ipyparallel"],
@@ -220,9 +180,6 @@ install_requires = [
 ]
 
 # Platform-specific dependencies:
-# This is the correct way to specify these,
-# but requires pip >= 6. pip < 6 ignores these.
-
 extras_require.update(
     {
         ':sys_platform != "win32"': ["pexpect"],
@@ -231,8 +188,6 @@ extras_require.update(
     }
 )
 
-# FIXME: re-specify above platform dependencies for pip < 6
-# These would result in non-portable bdists.
 if not any(arg.startswith("bdist") for arg in sys.argv):
     if sys.platform == "darwin":
         install_requires.extend(["appnope"])

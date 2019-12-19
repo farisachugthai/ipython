@@ -471,7 +471,7 @@ class IPDocTestParser(doctest.DocTestParser):
 
         for m in terms:
             # Add the pre-example text to `output`.
-            output.append(string[charno : m.start()])
+            output.append(string[charno: m.start()])
             # Update lineno (lines before this example)
             lineno += string.count("\n", charno, m.start())
             # Extract info from the regexp match.
@@ -539,7 +539,7 @@ class IPDocTestParser(doctest.DocTestParser):
         if ps2:
             self._check_prefix(source_lines[1:], " " * indent + ps2, name, lineno)
 
-        source = "\n".join([sl[indent + ps1_len + 1 :] for sl in source_lines])
+        source = "\n".join([sl[indent + ps1_len + 1:] for sl in source_lines])
 
         if ip2py:
             # Convert source input from IPython into valid Python syntax

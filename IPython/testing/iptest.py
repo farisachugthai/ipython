@@ -222,7 +222,6 @@ test_group_names = [
 
 
 class TestSection:
-
     def __init__(self, name, includes):
         self.name = name
         self.includes = includes
@@ -399,6 +398,7 @@ class StreamCapturer(Thread):
     started : bool
 
     """
+
     daemon = True  # Don't hang if main thread crashes
     started = False
 
@@ -615,7 +615,7 @@ def run_iptest():
     if section.name.startswith(("core", "IPython.core", "IPython.utils")):
         plugins.append(IPythonDoctest())
         argv.extend(
-            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt",]
+            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt", ]
         )
 
     # Use working directory set by parent process (see iptestcontroller)

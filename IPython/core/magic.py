@@ -16,6 +16,22 @@
     types (method and function), so we generate them here once and reuse the
     templates below.
 
+Also, if this endlessly confuses you, here's the source on which functions
+from this module to use.::
+
+    # Create the actual decorators for public use
+
+    # These three are used to decorate methods in class definitions
+    line_magic = _method_magic_marker("line")
+    cell_magic = _method_magic_marker("cell")
+    line_cell_magic = _method_magic_marker("line_cell")
+
+    # These three decorate standalone functions and perform the decoration
+    # immediately.  They can only run where get_ipython() works
+    register_line_magic = _function_magic_marker("line")
+    register_cell_magic = _function_magic_marker("cell")
+    register_line_cell_magic = _function_magic_marker("line_cell")
+
 """
 
 # -----------------------------------------------------------------------------
@@ -33,6 +49,7 @@ import re
 import sys
 from getopt import getopt, GetoptError
 from logging import error
+from textwrap import dedent
 
 from decorator import decorator
 from traitlets import Bool, Dict, Instance, observe
@@ -43,7 +60,6 @@ from IPython.core.error import UsageError
 from IPython.core.inputtransformer2 import ESC_MAGIC, ESC_MAGIC2
 from IPython.utils.ipstruct import Struct
 from IPython.utils.process import arg_split
-from IPython.utils.text import dedent
 
 # -----------------------------------------------------------------------------
 # Globals
@@ -198,8 +214,9 @@ def _method_magic_marker(magic_kind):
     This is a closure to capture the magic_kind.  We could also use a class,
     but it's overkill for just that one bit of state.
 
+    But then we end up using 3 nested functions so maybe reinvestigate
+    that comment.
     """
-
     validate_type(magic_kind)
 
     # why does doing this crash the entire interpreter
@@ -261,7 +278,6 @@ def _function_magic_marker(magic_kind):
     """
     validate_type(magic_kind)
 
-    # @functools.wraps
     def magic_deco(arg):
         """Hey if you're seeing this in a stack trace, skip this part.
 
@@ -759,6 +775,7 @@ class MagicAlias:
 
     Use the :meth:`MagicsManager.register_alias` method or the
     `%alias_magic` magic function to create and register a new alias.
+
     """
 
     def __init__(self, shell, magic_name, magic_kind, magic_params=None):
@@ -772,15 +789,18 @@ class MagicAlias:
 
         self._in_call = False
 
+    def __repr__(self):
+        return "{!r}".format(self.magic_name)
+
     def __call__(self, *args, **kwargs):
         """Call the magic alias."""
         fn = self.shell.find_magic(self.magic_name, self.magic_kind)
         if fn is None:
             raise UsageError("Magic `%s` not found." % self.pretty_target)
 
-        # Protect against infinite recursion.
+        # Protect against infinite recursion. So RecursionError is a thing now
         if self._in_call:
-            raise UsageError(
+            raise RecursionError(
                 "Infinite recursion detected; " "magic aliases cannot call themselves."
             )
         self._in_call = True

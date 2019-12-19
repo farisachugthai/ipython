@@ -20,7 +20,7 @@ class ShimImporter:
 
     def _mirror_name(self, fullname):
         """get the name of the mirrored module"""
-        return self.mirror + fullname[len(self.src) :]
+        return self.mirror + fullname[len(self.src):]
 
     def find_module(self, fullname, path=None):
         """Return self if we should be used to import the module."""

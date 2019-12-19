@@ -1552,7 +1552,7 @@ def parse_breakpoint(text, current_file):
     if colon == -1:
         return current_file, int(text)
     else:
-        return text[:colon], int(text[colon + 1 :])
+        return text[:colon], int(text[colon + 1:])
 
 
 def _format_time(timespan, precision=3):

@@ -1096,7 +1096,7 @@ def _pngxy(data):
     """read the (width, height) from a PNG header"""
     ihdr = data.index(b"IHDR")
     # next 8 bytes are width/height
-    return struct.unpack(">ii", data[ihdr + 4 : ihdr + 12])
+    return struct.unpack(">ii", data[ihdr + 4: ihdr + 12])
 
 
 def _jpegxy(data):
@@ -1105,9 +1105,9 @@ def _jpegxy(data):
 
     idx = 4
     while True:
-        block_size = struct.unpack(">H", data[idx : idx + 2])[0]
+        block_size = struct.unpack(">H", data[idx: idx + 2])[0]
         idx = idx + block_size
-        if data[idx : idx + 2] == b"\xFF\xC0":
+        if data[idx: idx + 2] == b"\xFF\xC0":
             # found Start of Frame
             iSOF = idx
             break
@@ -1115,7 +1115,7 @@ def _jpegxy(data):
             # read another block
             idx += 2
 
-    h, w = struct.unpack(">HH", data[iSOF + 5 : iSOF + 9])
+    h, w = struct.unpack(">HH", data[iSOF + 5: iSOF + 9])
     return w, h
 
 

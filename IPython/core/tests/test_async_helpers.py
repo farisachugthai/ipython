@@ -3,6 +3,7 @@ Test for async helpers.
 
 Should only trigger on python 3.5+ or will have syntax errors.
 """
+from IPython.core.async_helpers import _should_be_async
 from itertools import chain, repeat
 import nose.tools as nt
 from textwrap import dedent, indent
@@ -10,10 +11,10 @@ from unittest import TestCase
 from IPython.testing.decorators import skip_without
 
 
-iprc = lambda x: ip.run_cell(dedent(x)).raise_error()
-iprc_nr = lambda x: ip.run_cell(dedent(x))
+def iprc(x): return ip.run_cell(dedent(x)).raise_error()
 
-from IPython.core.async_helpers import _should_be_async
+
+def iprc_nr(x): return ip.run_cell(dedent(x))
 
 
 class AsyncTest(TestCase):

@@ -378,7 +378,7 @@ class ProfileCreate(BaseIPythonApplication):
             from ipyparallel.apps.ipclusterapp import IPClusterStart
 
             apps.extend(
-                [IPControllerApp, IPEngineApp, IPClusterStart,]
+                [IPControllerApp, IPEngineApp, IPClusterStart, ]
             )
         for App in apps:
             app = App()

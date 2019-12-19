@@ -175,7 +175,7 @@ def load_next(mod, altmod, name, buf):
         next = None
     else:
         subname = name[:dot]
-        next = name[dot + 1 :]
+        next = name[dot + 1:]
 
     if buf != "":
         buf += "."
@@ -343,7 +343,7 @@ def deep_reload_hook(m):
         except KeyError:
             modules_reloading.clear()
             raise ImportError("reload(): parent %.200s not in sys.modules" % name[:dot])
-        subname = name[dot + 1 :]
+        subname = name[dot + 1:]
         path = getattr(parent, "__path__", None)
 
     try:

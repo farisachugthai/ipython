@@ -13,6 +13,7 @@ In addition, the :func:`display_page` function utilizes IPython's display API.
 
 from io import UnsupportedOperation
 import os
+from os import system
 import io
 import re
 from shutil import get_terminal_size
@@ -24,7 +25,6 @@ from IPython.core.getipython import get_ipython
 from IPython.core.display import display
 from IPython.core.error import TryNext
 from IPython.utils.data import chop
-from IPython.utils.process import system
 
 esc_re = re.compile(r"(\x1b[^m]+m)")
 

@@ -259,7 +259,7 @@ class BaseIPythonApplication(Application):
     def _ipython_dir_default(self):
         d = get_ipython_dir()
         self._ipython_dir_changed(
-            {"name": "ipython_dir", "old": d, "new": d,}
+            {"name": "ipython_dir", "old": d, "new": d, }
         )
         return d
 

@@ -774,7 +774,7 @@ class EmbeddedSphinxShell:
                     source, content, "\n".join(input_lines), repr(found), TAB=TAB
                 )
                 raise RuntimeError(e)
-            found = found[len(output_prompt) :].strip()
+            found = found[len(output_prompt):].strip()
 
             # Handle the actual doctest comparison.
             if decorator.strip() == "@doctest":
@@ -1012,7 +1012,7 @@ class EmbeddedSphinxShell:
                     if len(nextline) - len(nextline.lstrip()) > 3:
                         continue
                 try:
-                    mod = ast.parse("\n".join(content[multiline_start : lineno + 1]))
+                    mod = ast.parse("\n".join(content[multiline_start: lineno + 1]))
                     if isinstance(mod.body[0], ast.FunctionDef):
                         # check to see if we have the whole function
                         for element in mod.body[0].body:

@@ -1,13 +1,15 @@
 # encoding: utf-8
-"""
-Utilities for working with strings and text.
+"""Utilities for working with strings and text.
+
+**Reminder**: Do we still need DollarFormatter and FullEvalFormatter?
 
 Inheritance diagram:
 
 .. inheritance-diagram:: IPython.utils.text
    :parts: 3
-"""
 
+
+"""
 import os
 import re
 import sys
@@ -93,19 +95,6 @@ class LSString(str):
             return self.__paths
 
     p = paths = property(get_paths)
-
-
-# FIXME: We need to reimplement type specific displayhook and then add this
-# back as a custom printer. This should also be moved outside utils into the
-# core.
-
-# def print_lsstring(arg):
-#     """ Prettier (non-repr-like) and more informative printer for LSString """
-#     print "LSString (.p, .n, .l, .s available). Value:"
-#     print arg
-#
-#
-# print_lsstring = result_display.register(LSString)(print_lsstring)
 
 
 class SList(list):
@@ -300,22 +289,6 @@ class SList(list):
         return SList([t[1] for t in dsu])
 
 
-# FIXME: We need to reimplement type specific displayhook and then add this
-# back as a custom printer. This should also be moved outside utils into the
-# core.
-
-# def print_slist(arg):
-#     """ Prettier (non-repr-like) and more informative printer for SList """
-#     print "SList (.p, .n, .l, .s, .grep(), .fields(), sort() available):"
-#     if hasattr(arg,  'hideonce') and arg.hideonce:
-#         arg.hideonce = False
-#         return
-#
-#     nlprint(arg)   # This was a nested list printer, now removed.
-#
-# print_slist = result_display.register(SList)(print_slist)
-
-
 def indent(instr, nspaces=4, ntabs=0, flatten=False):
     """Indent a string a given number of spaces or tabstops.
 
@@ -421,7 +394,8 @@ def num_ini_spaces(strng):
 def format_screen(strng):
     """Format a string for screen printing.
 
-    This removes some latex-type format codes."""
+    This removes some latex-type format codes.
+    """
     # Paragraph continue
     par_re = re.compile(r"\\$", re.MULTILINE)
     strng = par_re.sub("", strng)
@@ -463,8 +437,8 @@ def wrap_paragraphs(text, ncols=80):
 
     Returns
     -------
-
-    list of complete paragraphs, wrapped to fill `ncols` columns.
+    out_ps : list
+        list of complete paragraphs, wrapped to fill `ncols` columns.
     """
     paragraph_re = re.compile(r"\n(\s*\n)+", re.MULTILINE)
     text = dedent(text).strip()
@@ -484,14 +458,17 @@ def wrap_paragraphs(text, ncols=80):
 def long_substr(data):
     """Return the longest common substring in a list of strings.
 
-    Credit: http://stackoverflow.com/questions/2892931/longest-common-substring-from-more-than-two-strings-python
+    Credit:
+
+    `<https://stackoverflow.com/questions/2892931/longest-common-substring-from-more-than-two-strings-python>`_
+
     """
     substr = ""
     if len(data) > 1 and len(data[0]) > 0:
         for i in range(len(data[0])):
             for j in range(len(data[0]) - i + 1):
-                if j > len(substr) and all(data[0][i : i + j] in x for x in data):
-                    substr = data[0][i : i + j]
+                if j > len(substr) and all(data[0][i: i + j] in x for x in data):
+                    substr = data[0][i: i + j]
     elif len(data) == 1:
         substr = data[0]
     return substr
@@ -546,8 +523,7 @@ def strip_email_quotes(text):
 
 
 def strip_ansi(source):
-    """
-    Remove ansi escape codes from text.
+    """Remove ansi escape codes from text.
 
     Parameters
     ----------
@@ -594,11 +570,6 @@ class EvalFormatter(Formatter):
         """
         v = eval(name, kwargs)
         return v, name
-
-
-# XXX: As of Python 3.4, the format string parsing no longer splits on a colon
-# inside [], so EvalFormatter can handle slicing. Once we only support 3.4 and
-# above, it should be possible to remove FullEvalFormatter.
 
 
 class FullEvalFormatter(Formatter):
@@ -673,8 +644,10 @@ class FullEvalFormatter(Formatter):
 
 
 class DollarFormatter(FullEvalFormatter):
-    """Formatter allowing Itpl style $foo replacement, for names and attribute
-    access only. Standard {foo} replacement also works, and allows full
+    """Formatter allowing Itpl style $foo replacement.
+
+    For names and attribute access only.
+    Standard {foo} replacement also works, and allows full
     evaluation of its arguments.
 
     Examples
@@ -742,7 +715,7 @@ def _col_chunks(l, max_rows, row_first=False):
             yield [l[j] for j in range(i, len(l), ncols)]
     else:
         for i in range(0, len(l), max_rows):
-            yield l[i : (i + max_rows)]
+            yield l[i: (i + max_rows)]
 
 
 def _find_optimal(rlist, row_first=False, separator_size=2, displaywidth=80):

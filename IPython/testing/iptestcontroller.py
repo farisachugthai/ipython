@@ -53,6 +53,7 @@ class TestController:
         process stdout+stderr
 
     """
+
     section = None
     process = None
 
@@ -99,7 +100,9 @@ class TestController:
         self.stdout_capturer.start()
         stdout = c.writefd if capture_output else None
         stderr = subprocess.STDOUT if capture_output else None
-        self.process = subprocess.Popen(self.cmd, stdout=stdout, stderr=stderr, env=self.env)
+        self.process = subprocess.Popen(
+            self.cmd, stdout=stdout, stderr=stderr, env=self.env
+        )
 
     def wait(self):
         """
@@ -171,7 +174,7 @@ class PyTestController(TestController):
         self.dirs.append(ipydir)
         self.env["IPYTHONDIR"] = ipydir.name
 
-        self.workingdir =  TemporaryDirectory()
+        self.workingdir = TemporaryDirectory()
         self.dirs.append(self.workingdir)
 
         self.env["IPTEST_WORKING_DIR"] = self.workingdir.name
@@ -191,7 +194,6 @@ class PyTestController(TestController):
         else:
             PATH = self.noaccess
         self.env["PATH"] = PATH
-
 
     def setup(self):
         """Create a TemporaryDirectory, set the workingdir to a different one."""
@@ -396,9 +398,9 @@ def run_iptestall(options):
     failed = []
     t_start = time.time()
 
-    if platform.platform().startswith('Win'):
-        if not hasattr(options, 'fast'):
-            options.__setattr__('fast', 1)
+    if platform.platform().startswith("Win"):
+        if not hasattr(options, "fast"):
+            options.__setattr__("fast", 1)
 
     if options.fast == 1:
         # This actually means sequential, i.e. with 1 job
@@ -548,7 +550,9 @@ def parse_testing_arguments():
         help="Run test sections in parallel. This starts as many "
         "processes as you have cores, or you can specify a number.",
     )
-    argparser.add_argument("--xunit", action="store_true", help="Produce Xunit XML results")
+    argparser.add_argument(
+        "--xunit", action="store_true", help="Produce Xunit XML results"
+    )
     argparser.add_argument(
         "--coverage",
         nargs="?",

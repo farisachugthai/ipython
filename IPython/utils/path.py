@@ -115,7 +115,7 @@ def compress_user(path):
     """
     home = os.path.expanduser("~")
     if path.startswith(home):
-        path = "~" + path[len(home) :]
+        path = "~" + path[len(home):]
     return path
 
 

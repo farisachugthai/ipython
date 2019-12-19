@@ -24,7 +24,7 @@ def test_install_editor():
 
         """
         called.append(
-            {"args": args, "kwargs": kwargs,}
+            {"args": args, "kwargs": kwargs, }
         )
         return mock.MagicMock(**{"wait.return_value": 0})
 

@@ -4,6 +4,12 @@ from IPython.core.displayhook import CapturingDisplayHook
 from IPython.utils.capture import CapturedIO
 
 
+def setup_module():
+    global ip
+    from IPython.core.getipython import get_ipython
+    ip = get_ipython()
+
+
 def test_output_displayed():
     """Checking to make sure that output is displayed"""
 

@@ -361,7 +361,7 @@ def test_display_id():
     nt.assert_equal(pub.call_count, 3)
     args, kwargs = pub.call_args_list[0]
     nt.assert_equal(args, ())
-    nt.assert_equal(kwargs, {"data": {"text/plain": repr("x")}, "metadata": {},})
+    nt.assert_equal(kwargs, {"data": {"text/plain": repr("x")}, "metadata": {}, })
     args, kwargs = pub.call_args_list[1]
     nt.assert_equal(args, ())
     nt.assert_equal(
@@ -369,7 +369,7 @@ def test_display_id():
         {
             "data": {"text/plain": repr("y")},
             "metadata": {},
-            "transient": {"display_id": handle.display_id,},
+            "transient": {"display_id": handle.display_id, },
         },
     )
     args, kwargs = pub.call_args_list[2]
@@ -379,7 +379,7 @@ def test_display_id():
         {
             "data": {"text/plain": repr("z")},
             "metadata": {},
-            "transient": {"display_id": handle2.display_id,},
+            "transient": {"display_id": handle2.display_id, },
         },
     )
 
@@ -398,7 +398,7 @@ def test_update_display():
         {
             "data": {"text/plain": repr("x")},
             "metadata": {},
-            "transient": {"display_id": "1",},
+            "transient": {"display_id": "1", },
             "update": True,
         },
     )
@@ -409,7 +409,7 @@ def test_update_display():
         {
             "data": {"text/plain": repr("y")},
             "metadata": {},
-            "transient": {"display_id": "2",},
+            "transient": {"display_id": "2", },
             "update": True,
         },
     )
@@ -432,7 +432,7 @@ def test_display_handle():
         {
             "data": {"text/plain": repr("x")},
             "metadata": {},
-            "transient": {"display_id": handle.display_id,},
+            "transient": {"display_id": handle.display_id, },
         },
     )
     args, kwargs = pub.call_args_list[1]
@@ -442,7 +442,7 @@ def test_display_handle():
         {
             "data": {"text/plain": repr("y")},
             "metadata": {},
-            "transient": {"display_id": handle.display_id,},
+            "transient": {"display_id": handle.display_id, },
             "update": True,
         },
     )

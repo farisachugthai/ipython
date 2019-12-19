@@ -310,7 +310,7 @@ class Parser(Colorable):
                 % (
                     colors[token.ERRORTOKEN],
                     msg,
-                    self.raw[self.lines[line] :],
+                    self.raw[self.lines[line]:],
                     colors.normal,
                 )
             )

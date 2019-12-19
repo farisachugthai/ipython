@@ -169,7 +169,7 @@ def assemble_continued_line(lines, start: Tuple[int, int], end_line: int):
     Used to allow ``%magic`` and ``!system`` commands to be continued over
     multiple lines.
     """
-    parts = [lines[start[0]][start[1] :]] + lines[start[0] + 1 : end_line + 1]
+    parts = [lines[start[0]][start[1]:]] + lines[start[0] + 1: end_line + 1]
     return " ".join(
         [p[:-2] for p in parts[:-1]] + [parts[-1][:-1]]  # Strip backslash+newline
     )  # Strip newline from last line
@@ -264,7 +264,7 @@ class MagicAssign(TokenTransformBase):
         lines_before = lines[:start_line]
         call = "get_ipython().run_line_magic({!r}, {!r})".format(magic_name, args)
         new_line = lhs + call + "\n"
-        lines_after = lines[end_line + 1 :]
+        lines_after = lines[end_line + 1:]
 
         return lines_before + [new_line] + lines_after
 
@@ -307,7 +307,7 @@ class SystemAssign(TokenTransformBase):
         lines_before = lines[:start_line]
         call = "get_ipython().getoutput({!r})".format(cmd)
         new_line = lhs + call + "\n"
-        lines_after = lines[end_line + 1 :]
+        lines_after = lines[end_line + 1:]
 
         return lines_before + [new_line] + lines_after
 
@@ -448,7 +448,7 @@ class EscapedCommand(TokenTransformBase):
 
         lines_before = lines[:start_line]
         new_line = indent + call + "\n"
-        lines_after = lines[end_line + 1 :]
+        lines_after = lines[end_line + 1:]
 
         return lines_before + [new_line] + lines_after
 
@@ -492,10 +492,10 @@ class HelpEnd(TokenTransformBase):
     def transform(self, lines):
         """Transform a help command found by the ``find()`` classmethod.
         """
-        piece = "".join(lines[self.start_line : self.q_line + 1])
-        indent, content = piece[: self.start_col], piece[self.start_col :]
+        piece = "".join(lines[self.start_line: self.q_line + 1])
+        indent, content = piece[: self.start_col], piece[self.start_col:]
         lines_before = lines[: self.start_line]
-        lines_after = lines[self.q_line + 1 :]
+        lines_after = lines[self.q_line + 1:]
 
         m = _help_end_re.search(content)
         if not m:

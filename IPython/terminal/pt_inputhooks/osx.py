@@ -113,7 +113,9 @@ if __name__ == "__main__":
     CFFileDescriptorCreate.restype = void_p
     CFFileDescriptorCreate.argtypes = [void_p, ctypes.c_int, ctypes.c_bool, void_p]
 
-    CFFileDescriptorGetNativeDescriptor = CoreFoundation.CFFileDescriptorGetNativeDescriptor
+    CFFileDescriptorGetNativeDescriptor = (
+        CoreFoundation.CFFileDescriptorGetNativeDescriptor
+    )
     CFFileDescriptorGetNativeDescriptor.restype = ctypes.c_int
     CFFileDescriptorGetNativeDescriptor.argtypes = [void_p]
 
@@ -121,7 +123,9 @@ if __name__ == "__main__":
     CFFileDescriptorEnableCallBacks.restype = None
     CFFileDescriptorEnableCallBacks.argtypes = [void_p, ctypes.c_ulong]
 
-    CFFileDescriptorCreateRunLoopSource = CoreFoundation.CFFileDescriptorCreateRunLoopSource
+    CFFileDescriptorCreateRunLoopSource = (
+        CoreFoundation.CFFileDescriptorCreateRunLoopSource
+    )
     CFFileDescriptorCreateRunLoopSource.restype = void_p
     CFFileDescriptorCreateRunLoopSource.argtypes = [void_p, void_p, void_p]
 

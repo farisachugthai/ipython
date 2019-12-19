@@ -8,10 +8,10 @@ In [5]: %gui gtk
 In [6]: %run gui-gtk.py
 """
 
+import gtk
 import pygtk
 
 pygtk.require("2.0")
-import gtk
 
 
 def hello_world(wigdet, data=None):

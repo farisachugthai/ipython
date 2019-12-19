@@ -1,3 +1,4 @@
+from ipyparallel.apps.daemonize import daemonize
 from warnings import warn
 
 warn(
@@ -5,4 +6,3 @@ warn(
     DeprecationWarning,
     stacklevel=2,
 )
-from ipyparallel.apps.daemonize import daemonize

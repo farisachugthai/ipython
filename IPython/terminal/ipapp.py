@@ -16,6 +16,10 @@ line :command:`ipython` program.
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
+from traitlets.config.loader import Config
+from traitlets.config.application import boolean_flag, catch_config_error
+from traitlets import Bool, List, Type, default, observe
+from IPython.terminal.interactiveshell import TerminalInteractiveShell
 import logging
 import os
 import sys
@@ -39,11 +43,6 @@ from IPython.core.application import (
 
 base_aliases = BaseAliases().base_aliases
 
-from IPython.terminal.interactiveshell import TerminalInteractiveShell
-
-from traitlets import Bool, List, Type, default, observe
-from traitlets.config.application import boolean_flag, catch_config_error
-from traitlets.config.loader import Config
 
 # This should probably be in ipapp.py.
 # From IPython/__init__
@@ -274,8 +273,10 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         klass=object,
         # use default_value otherwise which only allow subclasses.
         default_value=TerminalInteractiveShell,
-        help=("Class to use to instantiate the TerminalInteractiveShell object."
-        "Useful for custom Frontends"),
+        help=(
+            "Class to use to instantiate the TerminalInteractiveShell object."
+            "Useful for custom Frontends"
+        ),
     ).tag(config=True)
 
     subcommands = dict(

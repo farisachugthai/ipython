@@ -161,11 +161,11 @@ def strip_initial_indent(lines):
     if indent_match:
         # First line was indented
         indent = indent_match.group()
-        yield first_line[len(indent) :]
+        yield first_line[len(indent):]
 
         for line in it:
             if line.startswith(indent):
-                yield line[len(indent) :]
+                yield line[len(indent):]
             else:
                 # Less indented than the first line - stop dedenting
                 yield line

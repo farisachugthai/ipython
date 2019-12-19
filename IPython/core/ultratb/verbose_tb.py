@@ -156,7 +156,7 @@ def find_recursion(etype, value, records):
 
     # Select filename, lineno, func_name to track frames with
     records = [r[1:4] for r in records]
-    inner_frames = records[-(len(records) // 4) :]
+    inner_frames = records[-(len(records) // 4):]
     frames_repeated = set(inner_frames)
 
     last_seen_at = {}

@@ -83,6 +83,7 @@ import subprocess
 import sys
 
 from IPython.core.error import TryNext
+from IPython.utils.ipstruct import Struct
 
 # List here all the default hooks.  For now it's just the editor functions
 # but over time we'll move here all the public API for user-accessible things.
@@ -139,7 +140,7 @@ def editor(self, filename, linenum=None, wait=True):
         raise TryNext()
 
 
-class CommandChainDispatcher:
+class CommandChainDispatcher(Struct):
     """Dispatch calls to a chain of commands until some func can handle it.
 
     Usage
@@ -152,7 +153,7 @@ class CommandChainDispatcher:
 
     """
 
-    def __init__(self, chain=None):
+    def __init__(self, chain=None, *args, **kwargs):
         """Initialize.
 
         Parameters
@@ -161,6 +162,7 @@ class CommandChainDispatcher:
             Commands to try for a hook.
 
         """
+        super().__init__(*args, **kwargs)
         self.chain = chain or []
 
     def call(self, args=None, kw=None):
@@ -180,14 +182,10 @@ class CommandChainDispatcher:
             # print "prio",prio,"cmd",cmd #dbg
             try:
                 return cmd(*args, **kw)
-            except TryNext:
-                # if no function will accept it, raise TryNext up to the caller
-                pass
+            except TryNext as exc:
+                last_exc = exc
         # if no function will accept it, raise TryNext up to the caller
         raise last_exc
-
-    def __call__(self, *args, **kwargs):
-        self.call(*args, **kwargs)
 
     def __repr__(self):
         return "{!r}\n{!r}".format(self.__class__.__name__, self.chain)
@@ -204,13 +202,16 @@ class CommandChainDispatcher:
         """
         return iter(self.chain)
 
+    def __call__(self):
+        """Goddamn I am really struggling with this one."""
+        super().__call__()
+
 
 def shutdown_hook(self):
     """Default shutdown hook.
 
     Typically, shutdown hooks should raise TryNext so all shutdown ops are done
     """
-    self.log.info("default shutdown hook ok")
     return
 
 
@@ -267,16 +268,14 @@ def clipboard_get(self):
     """
     if sys.platform == "win32":
         from IPython.lib.clipboard import win32_clipboard_get
-
-        chain = [win32_clipboard_get, tkinter_clipboard_get]
+        chain = [win32_clipboard_get]
     elif sys.platform == "darwin":
         from IPython.lib.clipboard import osx_clipboard_get
-
-        chain = [osx_clipboard_get, tkinter_clipboard_get]
+        chain = [osx_clipboard_get]
     else:
         from IPython.lib.clipboard import tkinter_clipboard_get
-
         chain = [tkinter_clipboard_get]
+
     dispatcher = CommandChainDispatcher()
     for func in chain:
         dispatcher.add(func)

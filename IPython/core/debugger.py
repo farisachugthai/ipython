@@ -294,7 +294,6 @@ class CorePdb(Pdb):
 
         # s = filename + '(' + `lineno` + ')'
         filename = self.canonic(frame.f_code.co_filename)
-        link = tpl_link % filename
 
         if frame.f_code.co_name:
             func = frame.f_code.co_name
@@ -315,13 +314,13 @@ class CorePdb(Pdb):
             ret.append("> ")
         else:
             ret.append("  ")
-        ret.append("%s(%s)%s\n" % (link, lineno, call))
+        ret.append("%s(%s)%s\n" % (lineno, call))
 
         start = lineno - 1 - context // 2
         lines = linecache.getlines(filename)
         start = min(start, len(lines) - context)
         start = max(start, 0)
-        lines = lines[start : start + context]
+        lines = lines[start: start + context]
 
         for i, line in enumerate(lines):
             show_arrow = start + 1 + i == lineno
@@ -335,8 +334,6 @@ class CorePdb(Pdb):
 
     def __format_line(self, tpl_line, filename, lineno, line, arrow=False):
         bp_mark = ""
-        bp_mark_color = ""
-
         new_line, err = self.parser.format2(line, "str")
         if not err:
             line = new_line
@@ -348,9 +345,6 @@ class CorePdb(Pdb):
 
         if bp:
             bp_mark = str(bp.number)
-            bp_mark_color = Colors.breakpoint_enabled
-            if not bp.enabled:
-                bp_mark_color = Colors.breakpoint_disabled
 
         numbers_width = 7
         if arrow:
@@ -360,7 +354,7 @@ class CorePdb(Pdb):
         else:
             num = "%*s" % (numbers_width - len(bp_mark), str(lineno))
 
-        return tpl_line % (bp_mark_color + bp_mark, num, line)
+        return tpl_line % (bp_mark, num, line)
 
     def print_list_lines(self, filename, first, last):
         """The printing. (as opposed to the parsing part of a 'list' command."""

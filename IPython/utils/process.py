@@ -5,15 +5,17 @@
 
 # from ._process_common import getoutputerror, get_output_error_code, process_handler
 import os
+from os import system
 import shutil
 import sys
 
 from subprocess import CalledProcessError as FindCmdError
+from subprocess import check_output as getoutput
 
 if sys.platform == "win32":
-    from ._process_win32 import system, getoutput, arg_split, check_pid
+    from ._process_win32 import arg_split, check_pid
 else:
-    from ._process_posix import system, getoutput, arg_split, check_pid
+    from ._process_posix import arg_split, check_pid
 
 
 def find_cmd(cmd):

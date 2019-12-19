@@ -16,7 +16,10 @@ from IPython.utils.utils_io import IOStream, Tee, capture_output
 
 
 def test_tee_simple():
-    """Very simple check with stdout only"""
+    """Very simple check with stdout only.
+
+    Is this supposed to use tee for the channel?
+    """
     chan = StringIO()
     text = "Hello"
     tee = Tee(chan, channel="stdout")
@@ -55,16 +58,18 @@ class TeeTestCase(unittest.TestCase):
             self.tchan(chan)
 
 
+class BadStringIO(StringIO):
+    """Cause a failure from getattr and dir(). (Issue #6386)."""
+
+    def __dir__(self):
+        attrs = super().__dir__()
+        attrs.append("name")
+        return attrs
+
+
 class TestIOStream(unittest.TestCase):
     def test_IOStream_init(self):
         """IOStream initializes from a file-like object missing attributes. """
-
-        # Cause a failure from getattr and dir(). (Issue #6386)
-        class BadStringIO(StringIO):
-            def __dir__(self):
-                attrs = super().__dir__()
-                attrs.append("name")
-                return attrs
 
         with self.assertWarns(DeprecationWarning):
             iostream = IOStream(BadStringIO())

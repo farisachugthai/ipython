@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Qt4's inputhook support function
+"""Qt4's inputhook support function
+
+This code probably isn't in use anymore. I dropped `import sys` by accident
+and hadn't even noticed...
 
 Author: Christian Boos
+
 """
 
 # -----------------------------------------------------------------------------
@@ -18,6 +21,7 @@ Author: Christian Boos
 
 import os
 import signal
+import sys
 import threading
 
 from IPython.core.interactiveshell import InteractiveShell

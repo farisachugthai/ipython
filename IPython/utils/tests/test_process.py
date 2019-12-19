@@ -23,7 +23,11 @@ from os import system
 import nose.tools as nt
 
 from IPython.utils.process import arg_split
-from IPython.utils._process_common import getoutput, getoutputerror, get_output_error_code
+from IPython.utils._process_common import (
+    getoutput,
+    getoutputerror,
+    get_output_error_code,
+)
 
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
