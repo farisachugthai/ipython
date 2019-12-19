@@ -95,8 +95,7 @@ def get_options():
         return [qt_api]
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     from IPython.external.qt_loaders import (
         load_qt,

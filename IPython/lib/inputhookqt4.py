@@ -226,7 +226,7 @@ def create_inputhook_qt4(mgr, app=None):
     return app, inputhook_qt4
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     if os.name == "posix":
         import select

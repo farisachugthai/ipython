@@ -178,6 +178,7 @@ def isidentifier(s, dotted=False):
         return all(isidentifier(a) for a in s.split("."))
     return s.isidentifier()
 
+
 getcwd = os.getcwd
 MethodType = types.MethodType
 

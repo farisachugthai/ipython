@@ -287,6 +287,17 @@ class InteractiveShell(SingletonConfigurable):
     This class has no less than 10 methods for handling exceptions. It
     calls classes and functions from at least 3 different files. It's
     really confusing and most immediately needs the most help.
+
+    Sphinx Errors:
+
+    Didn't find InteractiveShell.more in IPython.core.interactiveshell
+    Didn't find InteractiveShell.compile in IPython.core.interactiveshell
+    Didn't find InteractiveShell.meta in IPython.core.interactiveshell
+    Didn't find InteractiveShell.tempfiles in IPython.core.interactiveshell
+    Didn't find InteractiveShell.starting_dir in IPython.core.interactiveshell
+    Didn't find InteractiveShell.hooks in IPython.core.interactiveshell
+    Didn't find InteractiveShell.strdispatcher in IPython.core.interactiveshell
+    Didn't find InteractiveShell.self.pdb in IPython.core.interactiveshell
     """
 
     _instance = None
@@ -654,6 +665,7 @@ class InteractiveShell(SingletonConfigurable):
         # These are relatively independent and stateless
         self.init_ipython_dir(ipython_dir)
         self.init_profile_dir(profile_dir)
+        # None of these vars are showing up?
         self.init_instance_attrs()
         self.init_environment()
 

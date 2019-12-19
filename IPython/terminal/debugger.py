@@ -145,7 +145,6 @@ class TerminalPdb(CorePdb):
             # This happens when the user used `asyncio.run()`.
             old_loop = None
 
-
         self.preloop()
 
         try:
@@ -159,7 +158,9 @@ class TerminalPdb(CorePdb):
                     line = self.cmdqueue.pop(0)
                 else:
                     self._ptcomp.ipy_completer.namespace = self.curframe_locals
-                    self._ptcomp.ipy_completer.global_namespace = self.curframe.f_globals
+                    self._ptcomp.ipy_completer.global_namespace = (
+                        self.curframe.f_globals
+                    )
 
                     asyncio.set_event_loop(self.pt_loop)
                     self._ptcomp.ipy_completer.global_namespace = (
@@ -170,7 +171,7 @@ class TerminalPdb(CorePdb):
                         line = self.pt_app.prompt()
                     except EOFError:
                         line = "EOF"
-                        line = 'EOF'
+                        line = "EOF"
                     finally:
                         # Restore the original event loop.
                         asyncio.set_event_loop(old_loop)

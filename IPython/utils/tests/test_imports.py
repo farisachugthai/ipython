@@ -1,4 +1,6 @@
 # encoding: utf-8
+# noqa F401
+# Kinda the point of the module don't ya think?
 
 
 def test_import_coloransi():

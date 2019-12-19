@@ -39,7 +39,7 @@ import os
 import shutil
 import sys
 
-from traitlets.config import Configurable, ConfigurableError
+from traitlets.config import Configurable
 from traitlets.config.application import Application, catch_config_error
 from traitlets.config.loader import ConfigFileNotFound, PyFileConfigLoader
 
@@ -52,7 +52,6 @@ from traitlets import (
     List,
     Unicode,
     Type,
-    Dict,
     Bool,
     Set,
     Instance,
@@ -260,7 +259,7 @@ class BaseIPythonApplication(Application):
     def _ipython_dir_default(self):
         d = get_ipython_dir()
         self._ipython_dir_changed(
-            {"name": "ipython_dir", "old": d, "new": d,}
+            {"name": "ipython_dir", "old": d, "new": d, }
         )
         return d
 

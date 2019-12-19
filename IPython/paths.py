@@ -10,7 +10,6 @@ from importlib import import_module
 import os
 from pathlib import Path
 import shutil
-import sys
 from warnings import warn
 
 from IPython.utils.path import (
@@ -51,8 +50,8 @@ def get_ipython_dir() -> str:
         if _writable_dir(xdg_ipdir):
             deprecated_profile_warning(ipdir, xdg_dir)
 
-    # Let's short-circuit this logic a little. Most people have their profiles in the spot we assume it's in
-    # pathlib.Path.is_dir docs
+    # Let's short-circuit this logic a little. Most people have their profiles
+    # in the spot we assume it's in pathlib.Path.is_dir docs
     # False is also returned if the path doesn’t exist or is a broken
     # symlink; other errors(such as permission errors) are propagated.)
     if ipdir.is_dir():

@@ -1,7 +1,31 @@
+import abc
 import sys
 
 from IPython.core.excolors import exception_colors
 from IPython.utils.PyColorize import Colorable
+
+
+class TBToolsABC(abc.ABC):
+    """Refactored the :meth:`structured_traceback` method out of TBTools.
+
+    Seemed more sensible to make it an ABC class.
+    """
+
+    @abc.abstractmethod
+    def structured_traceback(
+        self, etype, evalue, tb, tb_offset=None, context=5, mode=None
+    ):
+        """Return a list of traceback frames.
+
+        Must be implemented by each class.
+
+        See Also
+        --------
+        :class:`~AutoFormattedTB`.
+        :class:`~SyntaxTB`.
+
+        """
+        raise NotImplementedError()
 
 
 class TBTools(Colorable):
@@ -37,7 +61,7 @@ class TBTools(Colorable):
 
     def __init__(
         self,
-        color_scheme="NoColor",
+        color_scheme="LightBG",
         call_pdb=False,
         ostream=None,
         parent=None,

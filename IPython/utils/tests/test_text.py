@@ -15,7 +15,6 @@
 import os
 import math
 import random
-import sys
 
 import nose.tools as nt
 from pathlib import Path

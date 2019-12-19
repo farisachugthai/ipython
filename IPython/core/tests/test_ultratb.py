@@ -13,7 +13,11 @@ import unittest
 from unittest import mock
 
 from IPython.core.ultratb.formatted_tb import ColorTB
-from IPython.core.ultratb.verbose_tb import VerboseTB, _FRAME_RECURSION_LIMIT, find_recursion
+from IPython.core.ultratb.verbose_tb import (
+    VerboseTB,
+    _FRAME_RECURSION_LIMIT,
+    find_recursion,
+)
 from IPython.core.getipython import get_ipython
 from IPython.testing import tools as tt
 from IPython.testing.decorators import onlyif_unicode_paths

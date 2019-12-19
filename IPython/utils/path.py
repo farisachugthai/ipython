@@ -227,6 +227,7 @@ def expand_path(s):
 
 def unescape_glob(s):
     """Unescape glob pattern in `string`. Dont use the word string wtf?"""
+
     def unescape(s):
         for pattern in "*[]!?":
             s = s.replace(r"\{0}".format(pattern), pattern)

@@ -18,6 +18,7 @@ import nose.tools as nt
 
 import IPython
 from IPython import paths
+from IPython.lib.dreload import reload
 from IPython.testing import decorators as dec
 from IPython.testing.decorators import (
     skip_if_not_win32,

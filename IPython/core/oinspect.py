@@ -177,7 +177,6 @@ def _get_wrapped(obj):
     return obj
 
 
-
 def find_source_lines(obj):
     """Find the line number in a file where an object was defined.
 

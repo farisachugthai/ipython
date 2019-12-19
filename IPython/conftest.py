@@ -5,12 +5,6 @@
     Stop calling inject directly.
 
 """
-import types
-import sys
-import builtins
-import os
-import pathlib
-import shutil
 
 import pytest
 

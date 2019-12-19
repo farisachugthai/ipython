@@ -184,7 +184,6 @@ if __name__ == "__main__":
             else:
                 return False
 
-
     elif sys.platform == "win32":
         import msvcrt
 
@@ -196,5 +195,3 @@ if __name__ == "__main__":
 
             """
             return msvcrt.kbhit()
-
-

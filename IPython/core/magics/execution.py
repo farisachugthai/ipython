@@ -53,7 +53,6 @@ else:
     # see https://github.com/ipython/ipython/issues/11590
     from ast import Module as OriginalModule
 
-
     def Module(nodelist, type_ignores):
         """
 
@@ -118,8 +117,8 @@ class TimeitResult:
         """
         mean = self.average
         return (
-                       math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)
-               ) ** 0.5
+            math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)
+        ) ** 0.5
 
     def __str__(self):
         """TODO: This dunder should probably be a full method."""
@@ -127,15 +126,17 @@ class TimeitResult:
         if hasattr(sys.stdout, "encoding") and sys.stdout.encoding:
             "\xb1".encode(sys.stdout.encoding)
             pm = "\xb1"
-        return "{mean} {pm} {std} per loop (mean {pm} std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} " \
-               "each)".format(
-            pm=pm,
-            runs=self.repeat,
-            loops=self.loops,
-            loop_plural="" if self.loops == 1 else "s",
-            run_plural="" if self.repeat == 1 else "s",
-            mean=_format_time(self.average, self._precision),
-            std=_format_time(self.stdev, self._precision),
+        return (
+            "{mean} {pm} {std} per loop (mean {pm} std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} "
+            "each)".format(
+                pm=pm,
+                runs=self.repeat,
+                loops=self.loops,
+                loop_plural="" if self.loops == 1 else "s",
+                run_plural="" if self.repeat == 1 else "s",
+                mean=_format_time(self.average, self._precision),
+                std=_format_time(self.stdev, self._precision),
+            )
         )
 
     def _repr_pretty_(self, p, cycle):
@@ -829,7 +830,7 @@ python-profiler package from non-free."""
                 code = "run_module(modulename, prog_ns)"
                 code_ns = {
                     "run_module": self.shell.safe_run_module,
-                    "prog_ns"   : prog_ns,
+                    "prog_ns": prog_ns,
                     "modulename": modulename,
                 }
             else:
@@ -840,7 +841,7 @@ python-profiler package from non-free."""
                     code = "execfile(filename, prog_ns)"
                 code_ns = {
                     "execfile": self.shell.safe_execfile,
-                    "prog_ns" : prog_ns,
+                    "prog_ns": prog_ns,
                     "filename": get_py_filename(filename),
                 }
 
@@ -927,7 +928,7 @@ python-profiler package from non-free."""
         return stats
 
     def _run_with_debugger(
-            self, code, code_ns, filename=None, bp_line=None, bp_file=None
+        self, code, code_ns, filename=None, bp_line=None, bp_file=None
     ):
         """Run `code` in debugger with a break point.
 
@@ -981,11 +982,11 @@ python-profiler package from non-free."""
                         break
                 else:
                     msg = (
-                            "\nI failed to find a valid line to set "
-                            "a breakpoint\n"
-                            "after trying up to line: %s.\n"
-                            "Please set a valid breakpoint manually "
-                            "with the -b option." % bp
+                        "\nI failed to find a valid line to set "
+                        "a breakpoint\n"
+                        "after trying up to line: %s.\n"
+                        "Please set a valid breakpoint manually "
+                        "with the -b option." % bp
                     )
                     raise UsageError(msg)
             # if we find a good linenumber, set the breakpoint
@@ -1551,7 +1552,7 @@ def parse_breakpoint(text, current_file):
     if colon == -1:
         return current_file, int(text)
     else:
-        return text[:colon], int(text[colon + 1:])
+        return text[:colon], int(text[colon + 1 :])
 
 
 def _format_time(timespan, precision=3):

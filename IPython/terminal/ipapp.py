@@ -490,7 +490,7 @@ def load_default_config(ipython_dir=None):
 
     Parameters
     ----------
-    ipython_dir : str (path-like), optional
+    ipython_dir : str (os.Pathlike), optional
         The directory where IPython config files live. If `None`, then
         `IPython.paths.get_ipython_dir` is queried.
 

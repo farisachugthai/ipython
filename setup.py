@@ -63,6 +63,11 @@ from distutils.util import change_root, convert_path
 
 from setuptools import find_packages, setup
 
+if False:  # shut the linters up
+    from IPython.core.release import (name, version, description, long_description,
+                                      author, author_email, url, license, platforms,
+                                      keywords, classifiers)
+
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
 if os.path.exists("MANIFEST"):
@@ -172,8 +177,8 @@ needs_setuptools = {
     "build_sdist",
 }
 
-if len(needs_setuptools.intersection(sys.argv)) > 0:
-    import setuptools
+# if len(needs_setuptools.intersection(sys.argv)) > 0:
+#     import setuptools
 
 # This dict is used for passing extra arguments that are setuptools
 # specific to setup
@@ -245,7 +250,7 @@ if not any(arg.startswith("bdist") for arg in sys.argv):
                 )
                 extras_require[new_key] = extras_require.pop(key)
 
-everything =[]
+everything = []
 for key, deps in extras_require.items():
     if ":" not in key:
         everything.append(deps)

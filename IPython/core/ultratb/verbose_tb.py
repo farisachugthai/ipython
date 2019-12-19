@@ -1,27 +1,21 @@
 # coding=utf-8
-import abc
+import functools
+import inspect
 import keyword
+import linecache
+import pydoc
+import os
 import sys
 import time
+import tokenize
+import traceback
 from importlib._bootstrap_external import source_from_cache
 from logging import debug, error, info
 from shutil import get_terminal_size
 
 from IPython.core import get_ipython
-from IPython.core.display_trap import DisplayTrap
-from IPython.utils import path as util_path
-from IPython.utils import PyColorize
+from IPython.utils import path as util_path, PyColorize
 from IPython.utils.data import uniq_stable
-
-import functools
-import inspect
-import linecache
-import logging
-import pydoc
-import tokenize
-import traceback
-from inspect import findsource, getargs
-
 from .tb_tools import TBTools
 from .. import debugger
 from ..display_trap import DisplayTrap
@@ -30,59 +24,6 @@ generate_tokens = tokenize.tokenize
 INDENT_SIZE = 8
 DEFAULT_SCHEME = "NoColor"
 _FRAME_RECURSION_LIMIT = 500
-
-
-def inspect_error():
-    """Print a message about internal inspect errors.
-
-    These are unfortunately quite common.
-    """
-    logging.error(
-        "Internal Python error in the inspect module.\n"
-        "Below is the traceback from this internal error.\n"
-    )
-
-
-def with_patch_inspect(f, *args, **kwargs):
-    """Decorator for monkeypatching inspect.findsource.
-
-    Deprecated since IPython 6.0
-
-    Parameters
-    ----------
-    f
-        Function to inspect
-
-    Returns
-    -------
-
-    """
-
-    @functools.wraps
-    def wrapped(f, *args, **kwargs):
-        """
-
-        Parameters
-        ----------
-        f :
-        args :
-        kwargs :
-
-        Returns
-        -------
-
-        """
-        save_findsource = inspect.findsource
-        save_getargs = inspect.getargs
-        inspect.findsource = findsource
-        inspect.getargs = getargs
-        try:
-            return f(*args, **kwargs)
-        finally:
-            inspect.findsource = save_findsource
-            inspect.getargs = save_getargs
-
-    return wrapped(f, *args, **kwargs)
 
 
 def fix_frame_records_filenames(records):
@@ -115,39 +56,6 @@ def fix_frame_records_filenames(records):
                 filename = better_fn
         fixed_records.append((frame, filename, line_no, func_name, lines, index))
     return fixed_records
-
-
-@with_patch_inspect
-def _fixed_getinnerframes(etb, context=1, tb_offset=0):
-    """
-    If the error is at the console, don't build any context, since it would
-    otherwise produce 5 blank lines printed out (there is no file at the
-    console)
-    """
-    LNUM_POS, LINES_POS, INDEX_POS = 2, 4, 5
-
-    records = fix_frame_records_filenames(inspect.getinnerframes(etb, context))
-    rec_check = records[tb_offset:]
-    try:
-        rname = rec_check[0][1]
-        if rname == "<ipython console>" or rname.endswith("<string>"):
-            return rec_check
-    except IndexError:
-        pass
-
-    aux = traceback.extract_tb(etb)
-    assert len(records) == len(aux)
-    for i, (file, lnum, _, _) in enumerate(aux):
-        maybeStart = lnum - 1 - context // 2
-        start = max(maybeStart, 0)
-        end = start + context
-        lines = linecache.getlines(file)[start:end]
-        buf = list(records[i])
-        buf[LNUM_POS] = lnum
-        buf[INDEX_POS] = lnum - 1 - start
-        buf[LINES_POS] = lines
-        records[i] = tuple(buf)
-    return records[tb_offset:]
 
 
 def _format_traceback_lines(lnum, index, lines, Colors, lvals, _line_format):
@@ -498,8 +406,6 @@ class VerboseTB(TBTools, UltraDbg):
         if check_cache is None:
             check_cache = linecache.checkcache
         self.check_cache = check_cache
-
-        from IPython.core import debugger
 
     def format_records(self, records, last_unique, recursion_repeat):
         """Format the stack frames of the traceback"""
@@ -872,7 +778,6 @@ class VerboseTB(TBTools, UltraDbg):
             # file a bug report against inspect (if that's the real problem).
             # So far, I haven't been able to find an isolated example to
             # reproduce the problem.
-            inspect_error()
             traceback.print_exc(file=self.ostream)
             info("\nUnfortunately, your original traceback can not be constructed.\n")
             return None
@@ -978,26 +883,3 @@ class VerboseTB(TBTools, UltraDbg):
             self.debugger()
         except KeyboardInterrupt:
             print("\nKeyboardInterrupt")
-
-
-class TBToolsABC(abc.ABC):
-    """Refactored the :meth:`structured_traceback` method out of TBTools.
-
-    Seemed more sensible to make it an ABC class.
-    """
-
-    @abc.abstractmethod
-    def structured_traceback(
-        self, etype, evalue, tb, tb_offset=None, context=5, mode=None
-    ):
-        """Return a list of traceback frames.
-
-        Must be implemented by each class.
-
-        See Also
-        --------
-        :class:`~AutoFormattedTB`.
-        :class:`~SyntaxTB`.
-
-        """
-        raise NotImplementedError()

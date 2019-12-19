@@ -374,9 +374,7 @@ class AliasManager(Configurable):
             raise ValueError("%s is not an alias" % name)
 
     def clear_aliases(self):
-        """
-
-        """
+        """Call :meth:`undefine_alias on all defined aliases."""
         for name, cmd in self.aliases:
             self.undefine_alias(name)
 

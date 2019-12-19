@@ -21,9 +21,9 @@ def pytest_check():
 if pytest_check() is not None:
 
     from pytest import mark
+
     # TODO: check that this worked
     KnownFailure = mark.xfail
     # knownfailureif = pytest.importorskip('numpy.testing.knownfailureif')
 
     # TODO:
-
