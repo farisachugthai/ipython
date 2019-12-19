@@ -2,16 +2,18 @@
 # Config file for automatic testing at travis-ci.org
 # http://travis-ci.org/#!/ipython/ipython
 language: python            # this works for Linux but is an error on macOS or Windows
-sudo: true
+os: linux
 env:
   global:
     - PATH=$TRAVIS_BUILD_DIR/pandoc:$PATH
     - LANG=C.UTF-8
+group: edge   # ?
 cache:
   - pip
 jobs:
   include:
     - name: "Python 3.8.0 on Xenial Linux"
+      dist: "bionic"        # because now we get py3.6 and py3.7 for free
       python: 3.8           # this works for Linux but is ignored on macOS or Windows
       before_install:
         - python setup.py build
@@ -45,18 +47,13 @@ jobs:
           - pip3 install -U -e . -r requirements.txt
     - name: "Python 3.8.0 on Windows"
       os: windows           # Windows 10.0.17134 N/A Build 17134
-      language: sh       # 'language: python' is an error on Travis CI Windows
+      language: shell       # 'language: python' is an error on Travis CI Windows
       python: 3.8
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
       before_install:
         - choco install python --version 3.8.0
         - python setup.py build
         - python -m pip install --upgrade pip -e . -r requirements.txt
-        - |
-          if [[ $GROUP == docs ]]; then
-            pip install -r docs/doc-requirements.txt
-            pip install --upgrade pytest
-          fi
 
 install:
   - |
@@ -71,17 +68,53 @@ install:
     else
     python -m pip install -U pip -r requirements.txt -e .
     fi
+
+
 script:
   - iptest --coverage xml
   - pytest IPython
   - |
     if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      pip3 install -U -r docs/requirements.txt
+      pip install -U -r docs/requirements.txt
       sphinx-build -c docs/source -W --keep-going docs/source docs/build
     fi
 
 after_success:
   - codecov
+
+matrix:
+  include:
+    - python: "3.7"
+      dist: "bionic"
+      sudo: true
+    - python: "3.8-dev"
+      dist: "bionic"
+      sudo: true
+    - python: "3.7-dev"
+      dist: "bionic"
+      sudo: true
+    - python: "nightly"
+      dist: "bionic"
+      sudo: true
+    - os: osx
+      language: generic
+      python: 3.6
+      env: TRAVIS_PYTHON_VERSION=3.6
+    - os: osx
+      language: generic
+      python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7
+    - os: windows
+      language: shell
+      env: TRAVIS_PYTHON_VERSION=3.8
+      python: 3.8
+      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
+      before_install:
+        - choco install python --version 3.8.0
+        - python setup.py build
+        - python -m pip install --upgrade pip -e . -r requirements.txt
+  allow_failures:
+    - python: nightly
 
 before_deploy:
   - rm -rf dist/
@@ -94,7 +127,7 @@ deploy:
     secure: Y/Ae9tYs5aoBU8bDjN2YrwGG6tCbezj/h3Lcmtx8HQavSbBgXnhnZVRb2snOKD7auqnqjfT/7QMm4ZyKvaOEgyggGktKqEKYHC8KOZ7yp8I5/UMDtk6j9TnXpSqqBxPiud4MDV76SfRYEQiaDoG4tGGvSfPJ9KcNjKrNvSyyxns=
   file: dist/*
   file_glob: true
-  skip_cleanup: true
+  cleanup: true
   on:
     repo: ipython/ipython
     all_branches: true  # Backports are released from e.g. 5.x branch
