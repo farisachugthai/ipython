@@ -152,21 +152,15 @@ def test_import_pylab():
     nt.assert_equal(ns["np"], np)
 
 
+class Shell(InteractiveShell):
+    """I guess this module needs a fresh instance of the shell?"""
+
+    def enable_gui(self, gui):
+        pass
+
+
 class TestPylabSwitch:
-    class Shell(InteractiveShell):
-        def enable_gui(self, gui):
-            """
-
-            Parameters
-            ----------
-            gui :
-            """
-            pass
-
     def setup(self):
-        """
-
-        """
         import matplotlib
 
         def act_mpl(backend):
@@ -193,14 +187,9 @@ class TestPylabSwitch:
         pt.configure_inline_support = lambda *a, **kw: None
 
     def teardown(self):
-        """
-
-        """
         pt.activate_matplotlib = self._save_am
         pt.import_pylab = self._save_ip
         pt.configure_inline_support = self._save_cis
-        import matplotlib
-
         matplotlib.rcParams = self._saved_rcParams
         matplotlib.rcParamsOrig = self._saved_rcParamsOrig
 

@@ -2,14 +2,15 @@
 
 These are decorators that allow standalone functions and docstrings to be seen
 as tests by unittest, replicating some of nose's functionality.  Additionally,
-IPython-syntax docstrings can be auto-converted to '>>>' so that ipython
+IPython-syntax docstrings can be auto-converted to :kbd:`>>>` so that IPython
 sessions can be copy-pasted as tests.
 
-This file can be run as a script, and it will call unittest.main().  We must
+This file can be run as a script, and it will call `unittest.main`.  We must
 check that it works with unittest as well as with nose...
 
 
-Notes:
+Notes
+------
 
 - Using nosetests --with-doctest --doctest-tests testfile.py
   will find docstrings as tests wherever they are, even in methods.  But
@@ -27,10 +28,13 @@ Notes:
   one docstring test, the one embedded in the Foo object method.  Since our
   approach relies on using decorators that create standalone TestCase
   instances, it can only be used for functions, not for methods of objects.
+
+
 Authors
 -------
 
 - Fernando Perez <Fernando.Perez@berkeley.edu>
+
 """
 
 # -----------------------------------------------------------------------------
@@ -50,6 +54,7 @@ from IPython.testing.ipunittest import ipdoctest, ipdocstring
 # -----------------------------------------------------------------------------
 # Test classes and functions
 # -----------------------------------------------------------------------------
+
 @ipdoctest
 def simple_dt():
     """
@@ -68,13 +73,14 @@ In [26]: for i in range(4):
    ....:     print(i)
    ....:
    ....:
-0
-1
-2
-3
+         0
+         1
+         2
+         3
 
 In [27]: 3+4
 Out[27]: 7
+
 """
 
 
@@ -95,6 +101,7 @@ def ipdt_indented_test():
 
     In [27]: 3+4
     Out[27]: 7
+
     """
 
 
@@ -103,6 +110,7 @@ class Foo(object):
 
     But rewriting the docstring with ip2py does, *but only if using nose
     --with-doctest*.  Do we want to have that as a dependency?
+
     """
 
     @ipdocstring
@@ -122,10 +130,12 @@ class Foo(object):
 
         In [27]: 3+4
         Out[27]: 7
+
         """
 
     def normaldt_method(self):
         """
         >>> print(1+1)
         2
+
         """

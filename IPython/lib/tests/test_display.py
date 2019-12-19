@@ -14,7 +14,6 @@
 # -----------------------------------------------------------------------------
 from tempfile import NamedTemporaryFile, mkdtemp
 from os.path import split, join as pjoin, dirname
-import sys
 import pathlib
 from unittest import TestCase, mock
 import struct
@@ -27,7 +26,7 @@ import nose.tools as nt
 try:
     import numpy
 except ImportError:
-    pass
+    numpy = None
 
 # Our own imports
 from IPython.lib import display

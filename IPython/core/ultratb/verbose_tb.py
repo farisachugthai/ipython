@@ -17,13 +17,9 @@ from IPython.core import get_ipython
 from IPython.utils import path as util_path, PyColorize
 from IPython.utils.data import uniq_stable
 from .tb_tools import TBTools
-from .. import debugger
-from ..display_trap import DisplayTrap
+from ._verbose_tb import UltraDbg
 
-generate_tokens = tokenize.tokenize
 INDENT_SIZE = 8
-DEFAULT_SCHEME = "NoColor"
-_FRAME_RECURSION_LIMIT = 500
 
 
 def fix_frame_records_filenames(records):
@@ -127,6 +123,7 @@ def is_recursion_error(etype, value, records):
 
     """
     recursion_error_type = RecursionError
+    _FRAME_RECURSION_LIMIT = 500
     return (
         (etype is recursion_error_type)
         and "recursion" in str(value).lower()
@@ -282,71 +279,6 @@ def nullrepr(value, repr=text_repr):
 
     """
     return ""
-
-
-class UltraDbg:
-    def __init__(self, call_pdb=None, debugger_cls=None):
-        self.call_pdb = call_pdb
-        self.debugger_cls = debugger_cls or debugger.CorePdb
-
-    def debugger(self, force=False):
-        """Call up the pdb debugger if desired, always clean up the tb
-        reference.
-
-        Keywords:
-
-          - force(False): by default, this routine checks the instance call_pdb
-            flag and does not actually invoke the debugger if the flag is false.
-            The 'force' option forces the debugger to activate even if the flag
-            is false.
-
-        If the :param:`call_pdb` flag is set, the pdb interactive debugger is
-        invoked. In all cases, the self.tb reference to the current traceback
-        is deleted to prevent lingering references which hamper memory
-        management.
-
-        Note that each call to pdb() does an 'import readline', so if your app
-        requires a special setup for the readline completers, you'll have to
-        fix that by hand after invoking the exception handler.
-
-        This method in particular should be easy enough to refactor out.
-        ostream is just sys.stdout, call_pdb and force are now keyword
-        parameters, sys.exc_info() replaces the evalue nonsense.
-
-        It'll probably be a cleaner implementation if we do it this way.
-        Check that out!
-
-        Parameters
-        ----------
-        force :
-
-        Returns
-        -------
-        object
-        """
-
-        if force or self.call_pdb:
-            if self.pdb is None:
-                self.pdb = self.debugger_cls()
-            # the system displayhook may have changed, restore the original
-            # for pdb
-            display_trap = DisplayTrap(hook=sys.__displayhook__)
-            with display_trap:
-                self.pdb.reset()
-                # Find the right frame so we don't pop up inside ipython itself
-                if hasattr(self, "tb") and self.tb is not None:
-                    etb = self.tb
-                else:
-                    etb = self.tb = sys.last_traceback
-                while self.tb is not None and self.tb.tb_next is not None:
-                    self.tb = self.tb.tb_next
-                if etb and etb.tb_next:
-                    etb = etb.tb_next
-                self.pdb.botframe = etb.tb_frame
-                self.pdb.interaction(None, etb)
-
-        if hasattr(self, "tb"):
-            del self.tb
 
 
 class VerboseTB(TBTools, UltraDbg):
@@ -537,7 +469,7 @@ class VerboseTB(TBTools, UltraDbg):
             names = []
             name_cont = False
 
-            for token_type, token, start, end, line in generate_tokens(linereader):
+            for token_type, token, start, end, line in tokenize.tokenize(linereader):
                 # build composite names
                 if token_type == tokenize.NAME and token not in keyword.kwlist:
                     if name_cont:

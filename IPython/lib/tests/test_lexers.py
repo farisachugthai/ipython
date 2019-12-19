@@ -5,7 +5,7 @@
 
 from unittest import TestCase
 from pygments.token import Token
-from pygments.lexers import BashLexer
+from pygments.lexers.shell import BashLexer
 
 from .. import lexers
 

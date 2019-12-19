@@ -5,8 +5,8 @@ colorama
 coverage
 curio
 decorator
-docutils
 docrepr
+docutils
 ipykernel
 ipyparallel
 ipython-genutils
@@ -19,6 +19,7 @@ parso
 pexpect
 pickleshare
 pillow
+pip
 prompt-toolkit
 ptyprocess
 pyparsing

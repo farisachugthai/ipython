@@ -182,8 +182,10 @@ import os
 import re
 import shlex
 import sys
+
 import pygments
 
+from IPython.core.getipython import get_ipython
 from IPython.utils.text import marquee
 from IPython.utils import openpy
 from IPython.utils import py3compat

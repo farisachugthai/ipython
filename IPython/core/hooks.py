@@ -202,9 +202,9 @@ class CommandChainDispatcher(Struct):
         """
         return iter(self.chain)
 
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         """Goddamn I am really struggling with this one."""
-        super().__call__()
+        super().update(*args, **kwargs)
 
 
 def shutdown_hook(self):

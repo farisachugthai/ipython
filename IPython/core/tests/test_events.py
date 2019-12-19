@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import nose.tools as nt
 
 from IPython.core import events
+from IPython.core.getipython import get_ipython
 import IPython.testing.tools as tt
 
 

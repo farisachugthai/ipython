@@ -7,22 +7,21 @@
 
 # stdlib
 import codecs
-import io
 import os
+import sqlite3
 import sys
 import tempfile
 from datetime import datetime
-import sqlite3
 
 # third party
 import nose.tools as nt
-
 # our own packages
 from traitlets.config.loader import Config
-from IPython.utils.tempdir import TemporaryDirectory
+
 from IPython.core.getipython import get_ipython
-from IPython.core.history import HistoryManager, extract_hist_ranges
+from IPython.core.history import extract_hist_ranges, HistoryManager
 from IPython.testing.decorators import skipif
+from IPython.utils.tempdir import TemporaryDirectory
 
 
 def test_proper_default_encoding():

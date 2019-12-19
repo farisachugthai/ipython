@@ -12,40 +12,29 @@ Got rid of it. Now all I can see are the walls of tempdir calls like jeez.
 
 """
 import codecs
-import io
 import os
 import re
-import sys
 import shlex
+import sys
 import warnings
-from textwrap import dedent
-from unittest import TestCase
-from unittest import mock
 from importlib import invalidate_caches
 from io import StringIO
+from textwrap import dedent
+from unittest import mock, TestCase
 
 import nose.tools as nt
 from nose.tools.nontrivial import nottest
 
-from IPython.core.getipython import get_ipython
 from IPython.core import magic
 from IPython.core.error import UsageError
-from IPython.core.magic import (
-    Magics,
-    magics_class,
-    line_magic,
-    cell_magic,
-    register_line_magic,
-    register_cell_magic,
-)
-
+from IPython.core.getipython import get_ipython
+from IPython.core.magic import (cell_magic, line_magic, Magics, magics_class, register_cell_magic, register_line_magic)
 # Renamed to avoid std lib collision
-from IPython.core.magics import execution, script, code, ipy_logging, osm
-from IPython.testing import decorators as dec
-from IPython.testing import tools as tt
+from IPython.core.magics import code, execution, ipy_logging, osm, script
+from IPython.testing import decorators as dec, tools as tt
 from IPython.utils.capture import capture_output
-from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
 from IPython.utils.process import find_cmd
+from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
 
 
 def setup_module():

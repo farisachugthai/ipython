@@ -19,7 +19,6 @@ from warnings import warn
 from traitlets.config.configurable import LoggingConfigurable
 
 from decorator import decorator
-from IPython.utils.decorators import undoc
 from IPython.paths import locate_profile
 from traitlets import (
     Any,
@@ -276,12 +275,13 @@ class HistoryAccessor(HistoryAccessorBase):
         Parameters
         ----------
         profile : str
-          The name of the profile from which to open history.
+            The name of the profile from which to open history.
         hist_file : str
-          Path to an SQLite history database stored by IPython. If specified,
-          hist_file overrides profile.
-        config : :class:`~traitlets.config.loader.Config`
-          Config object. hist_file can also be set through this.
+            Path to an SQLite history database stored by IPython. If specified,
+            hist_file overrides profile.
+        traits : :class:`~traitlets.config.loader.Config`
+            Config object. hist_file can also be set through this.
+
         """
         # We need a pointer back to the shell for various tasks.
         super(HistoryAccessor, self).__init__(**traits)

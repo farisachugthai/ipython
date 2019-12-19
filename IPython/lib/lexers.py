@@ -16,16 +16,14 @@ Defines a variety of Pygments lexers for highlighting IPython code.
 import re
 
 # Third party
-from pygments.lexers import (
-    BashLexer,
-    HtmlLexer,
-    JavascriptLexer,
-    RubyLexer,
-    PerlLexer,
-    PythonLexer,
-    Python3Lexer,
-    TexLexer,
-)
+from pygments.lexers import TexLexer
+from pygments.lexers.html import HtmlLexer
+from pygments.lexers.javascript import JavascriptLexer
+from pygments.lexers.perl import PerlLexer
+from pygments.lexers.python import PythonLexer, Python3Lexer
+from pygments.lexers.ruby import RubyLexer
+from pygments.lexers.shell import BashLexer
+
 from pygments.lexer import (
     Lexer,
     DelegatingLexer,

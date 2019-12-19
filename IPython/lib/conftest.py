@@ -1,5 +1,4 @@
 import pytest
-from IPython import lib
 
 
 def todo():

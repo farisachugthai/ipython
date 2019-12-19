@@ -317,7 +317,7 @@ class CorePdb(Pdb):
             ret.append("> ")
         else:
             ret.append("  ")
-        ret.append("%s(%s)%s\n" % (lineno, call))
+        ret.append("%s  (%s)\n" % (lineno, call))
 
         start = lineno - 1 - context // 2
         lines = linecache.getlines(filename)
