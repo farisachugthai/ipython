@@ -22,7 +22,10 @@ from pathlib import Path
 import re
 import shutil
 import sys
-from typing import Dict, Any
+
+# I love having to do this one
+if False:
+    from typing import Dict, Any
 
 from pygments.lexers.python import NumPyLexer
 import sphinx
@@ -488,6 +491,7 @@ def setup(app: "Sphinx") -> None:
     app.add_lexer("ipythontb", IPythonTracebackLexer)
     app.add_lexer("ipython", IPyLexer)
     app.add_lexer("ipython3", IPython3Lexer)
+    app.add_lexer("numpy", NumPyLexer)
 
     fdesc = GroupedField(
         "param", label="Parameters", names=["param"], can_collapse=True

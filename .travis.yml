@@ -27,7 +27,6 @@ jobs:
       before_install:
         - pip install --upgrade setuptools wheel nose coverage codecov
         - |
-          # install Python on macOS
           if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
             env | sort
             if ! which python$TRAVIS_PYTHON_VERSION; then
@@ -57,7 +56,16 @@ jobs:
           fi
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
-install: pip3 install --upgrade pip -r requirements.txt -e . # all three OSes agree about 'pip3'
+install:
+  - |
+    if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then
+    # forgot the user ughhhh
+    pip3 install --upgrade --user pip -r requirements.txt -e .
+    # all three OSes agree about 'pip3'
+    # no they don't travis you lied to me!
+    else
+    python -m pip install -U pip -r requirements.txt -e .
+    fi
 script:
   - iptest --coverage xml
   - pytest IPython
