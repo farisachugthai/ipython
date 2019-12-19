@@ -63,10 +63,8 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
         A command to be executed by the system, using :class:`subprocess.Popen`.
         If a string is passed, it will be run in the system shell. If a list is
         passed, it will be used directly as arguments.
-
     callback : callable
         A one-argument function that will be called with the Popen object.
-
     stderr : file descriptor number, optional
         By default this is set to ``subprocess.PIPE``, but you can also pass the
         value ``subprocess.STDOUT`` to force the subprocess' stderr to go into
@@ -80,9 +78,9 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
     Notes
     -----
     On POSIX systems run shell commands with user-preferred shell.
-    Should probably clean up that shell check though.
+    Should probably clean up that shell check though.::
 
-    >>> shell = isinstance(cmd, 'str')
+        shell = isinstance(cmd, 'str')
 
     Is a terrible check. I guess for now add it as a parameter and allow None.
     Same with executable. Damn this should probably just be a class

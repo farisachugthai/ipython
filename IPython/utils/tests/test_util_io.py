@@ -12,6 +12,7 @@ import unittest
 
 import nose.tools as nt
 
+from IPython.utils.capture import capture_output
 from IPython.utils.utils_io import IOStream, Tee, capture_output
 
 

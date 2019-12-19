@@ -26,10 +26,25 @@ from prompt_toolkit.filters import (
     has_completions,
     vi_mode,
 )
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
 from prompt_toolkit.key_binding.bindings.completion import (
     display_completions_like_readline,
 )
-from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding.bindings.cpr import load_cpr_bindings
+from prompt_toolkit.key_binding.bindings.emacs import (
+    load_emacs_bindings,
+    load_emacs_search_bindings,
+)
+from prompt_toolkit.key_binding.bindings.mouse import load_mouse_bindings
+from prompt_toolkit.key_binding.bindings.vi import (
+    load_vi_bindings,
+    load_vi_search_bindings,
+)
+from prompt_toolkit.key_binding.key_bindings import (
+    ConditionalKeyBindings,
+    merge_key_bindings,
+)
 
 
 class VerbosePrompt:
@@ -149,6 +164,13 @@ def create_ipython_shortcuts(shell):
     if sys.platform == "win32":
         kb.add("c-v", filter=(has_focus(DEFAULT_BUFFER) & ~vi_mode))(win_paste)
 
+    # don't do this one of these keys steals <C-d>
+    # kb = merge_key_bindings([
+    #     load_cpr_bindings(),
+    #     load_basic_bindings(),
+    #     load_mouse_bindings(),
+    #     kb,
+    # ])
     return kb
 
 

@@ -15,7 +15,8 @@ from subprocess import check_output as getoutput
 if sys.platform == "win32":
     from ._process_win32 import arg_split, check_pid
 else:
-    from ._process_posix import arg_split, check_pid
+    from ._process_posix import check_pid
+    from ._process_common import arg_split
 
 
 def find_cmd(cmd):

@@ -24,6 +24,12 @@ import shutil
 import sys
 from typing import Dict, Any
 
+from pygments.lexers.python import NumPyLexer
+import sphinx
+from sphinx.util.docfields import GroupedField
+from sphinx.util.logging import getLogger
+from sphinx.application import Sphinx
+
 from IPython import sphinxext  # noqa
 from IPython.sphinxext import (
     configtraits,
@@ -31,11 +37,7 @@ from IPython.sphinxext import (
     magics,
     github,
 )  # noqa F401
-from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer
-import sphinx
-from sphinx.util.docfields import GroupedField
-from sphinx.util.logging import getLogger
-from sphinx.application import Sphinx
+from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer, IPython3Lexer
 
 try:
     # See more at the bottom where we configure extensions
@@ -485,6 +487,7 @@ def setup(app: "Sphinx") -> None:
 
     app.add_lexer("ipythontb", IPythonTracebackLexer)
     app.add_lexer("ipython", IPyLexer)
+    app.add_lexer("ipython3", IPython3Lexer)
 
     fdesc = GroupedField(
         "param", label="Parameters", names=["param"], can_collapse=True

@@ -21,6 +21,15 @@ import pytest
 import IPython
 
 
+def get_test_shell():
+    """Changed the name from canonical get_ipython.
+
+    If we need to call that function direclty, import it and do so.
+    """
+    # This will get replaced by the real thing once we start IPython below
+    return start_test_shell()
+
+
 @pytest.fixture(scope="session", autouse=True)
 def ip():
     return get_test_shell()
@@ -30,15 +39,6 @@ def ip():
 def _ip():
     """I'm gonna try and catch both of the typical calls to the shell with this."""
     return get_test_shell()
-
-
-def get_test_shell():
-    """Changed the name from canonical get_ipython.
-
-    If we need to call that function direclty, import it and do so.
-    """
-    # This will get replaced by the real thing once we start IPython below
-    return start_test_shell()
 
 
 def start_test_shell():
