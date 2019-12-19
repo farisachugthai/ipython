@@ -128,25 +128,19 @@ def publish_display_data(data, metadata=None, source=None, *, transient=None, **
         A dictionary having keys that are valid MIME types (like
         'text/plain' or 'image/svg+xml') and values that are the data for
         that MIME type.
-
         The data itself must be a JSON'able data structure.
-
         Minimally all data should have the 'text/plain' data,
         which can be displayed by all frontends.
-
         If more than the plain text is given, it is up to the frontend
         to decide which representation to use.
-
     metadata : dict, optional
         A dictionary for metadata related to the data. This can contain
         arbitrary key, value pairs that frontends can use to interpret
         the data.
         mime-type keys matching those in data can be used
         to specify metadata about particular representations.
-
     source : str, deprecated
         Unused.
-
     transient : dict, keyword-only
         A dictionary of transient data, such as display_id.
 
@@ -256,12 +250,10 @@ def display(
 
     See Also
     --------
-
     :func:`update_display`
 
     Notes
     -----
-
     In Python, objects can declare their textual representation using the
     `__repr__` method. IPython expands on this idea and allows objects to declare
     other, rich representations including:
@@ -311,7 +303,7 @@ def display(
     Since IPython 5.4 and 6.1 :func:`display` is automatically made available to
     the user without import. If you are using display in a document that might
     be used in a pure python context or with older version of IPython, use the
-    following import at the top of your file::
+    following import at the top of your file:
 
         from IPython.display import display
 
@@ -683,9 +675,6 @@ class Pretty(TextDisplayObject):
 
 
 class HTML(TextDisplayObject):
-    """
-
-    """
 
     def __init__(self, data=None, url=None, filename=None, metadata=None):
         def warn():

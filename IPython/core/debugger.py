@@ -171,9 +171,6 @@ class CorePdb(Pdb):
 
         self.prompt = prompt or Prompts
 
-    def __doc__(self):
-        return decorate_fn_with_doc(super().__doc__())
-
     def __repr__(self):
         return "{!r}\t{!r}".format(self.__class__.__name__, self.prompt)
 

@@ -427,9 +427,9 @@ def reset_completer(self, event):
 
     Returns
     -------
-    uhhh just this line.::
+    uhhh just this line.:
 
-        return '-f -s in out array dhist'.split()
+    return '-f -s in out array dhist'.split()
 
     """
     return "-f -s in out array dhist".split()
