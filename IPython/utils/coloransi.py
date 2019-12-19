@@ -12,28 +12,10 @@ Default Dark scheme by Chris Kempson (http://chriskempson.com)
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
-from collections import defaultdict
 import copy
 import os
 
 from IPython.utils.ipstruct import Struct
-from pygments.style import Style
-from pygments.token import (
-    Keyword,
-    Name,
-    Comment,
-    String,
-    Error,
-    Text,
-    Number,
-    Operator,
-    Literal,
-    Token,
-)
-
-# TODO:
-# from pygments import highlight
-# from pygments.console import ansiformat
 
 color_templates = (
     # Dark colors
@@ -284,90 +266,3 @@ j        """
         #     self.active_colors = self[active].colors
         #     # Now allow using '' as an index for the current active scheme
         #     self[''] = self[active]
-
-
-class DefaultDark(defaultdict):
-    """Rewriting the ColorSchemeTable.
-
-    See http://chriskempson.com/projects/base16/ for a description of the role
-    of the different colors in the base16 palette.
-
-    .. todo:: This raises
-
-    TypeError: Can't instantiate abstract class DefaultDark with abstract methods __delitem__, __getitem__, __iter__, __len__, __setitem__
-
-    """
-
-    def __init__(self):
-        super(DefaultDark, self).__init__()
-        self.color_scheme = ColorScheme(
-            "default_dark",
-            colordict={
-                "base00": "#181818",
-                "base01": "#282828",
-                "base02": "#383838",
-                "base03": "#585858",
-                "base04": "#b8b8b8",
-                "base05": "#d8d8d8",
-                "base06": "#e8e8e8",
-                "base07": "#f8f8f8",
-                "base08": "#ab4642",
-                "base09": "#dc9656",
-                "base0A": "#f7ca88",
-                "base0B": "#a1b56c",
-                "base0C": "#86c1b9",
-                "base0D": "#7cafc2",
-                "base0E": "#ba8baf",
-                "base0F": "#a16946",
-            },
-        )
-
-    @property
-    def colors(self):
-        """Should be a property as we shouldn't be able to assign to this."""
-        return self.color_scheme
-
-
-class Base16Style(defaultdict):
-    """I feel like I did this really wrong."""
-
-    # See http://pygments.org/docs/tokens/ for a description of the different
-    # pygments tokens.
-    background_color = "base00"
-    highlight_color = "base02"
-    default_style = "base05"
-
-    styles = {
-        Text: "base05",
-        Error: "%s bold" % "base08",
-        Comment: "base03",
-        Keyword: "base0E",
-        Keyword.Constant: "base09",
-        Keyword.Namespace: "base0D",
-        Name.Builtin: "base0D",
-        Name.Function: "base0D",
-        Name.Class: "base0D",
-        Name.Decorator: "base0E",
-        Name.Exception: "base08",
-        Number: "base09",
-        Operator: "base0E",
-        Literal: "base0B",
-        String: "base0B",
-    }
-
-    @property
-    def colors(self):
-        return styles
-
-    # See https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/prompt_toolkit/styles/defaults.py
-    # for a description of prompt_toolkit related pseudo-tokens.
-
-    overrides = {
-        Token.Prompt: "base0B",
-        Token.PromptNum: "%s bold" % "base0B",
-        Token.OutPrompt: "base08",
-        Token.OutPromptNum: "%s bold" % "base08",
-        Token.Menu.Completions.Completion: "bg:%s %s" % ("base01", "base04"),
-        Token.Menu.Completions.Completion.Current: "bg:%s %s" % ("base04", "base01"),
-        Token.MatchingBracket.Other: "bg:%s %s" % ("base03", "base00"),
-    }

@@ -7,7 +7,7 @@
 import sys
 from io import StringIO
 
-from subprocess import Popen, PIPE
+# from subprocess import Popen, PIPE
 import unittest
 
 import nose.tools as nt
@@ -55,25 +55,14 @@ class TeeTestCase(unittest.TestCase):
             self.tchan(chan)
 
 
-# Was deprecated and also renamed to avoid the name collision
-# def test_io_init():
-#     """Test that io.stdin/out/err exist at startup"""
-#     for name in ('stdin', 'stdout', 'stderr'):
-#         cmd = "from IPython.utils import io;print(io.%s.__class__)" % name
-#         with Popen([sys.executable, '-c', cmd], stdout=PIPE) as p:
-#             p.wait()
-#             classname = p.stdout.read().strip().decode('ascii')
-#         # __class__ is a reference to the class object in Python 3, so we can't
-#         # just test for string equality.
-#         assert 'IPython.utils.io.IOStream' in classname, classname
-
-
 class TestIOStream(unittest.TestCase):
+
     def test_IOStream_init(self):
         """IOStream initializes from a file-like object missing attributes. """
 
         # Cause a failure from getattr and dir(). (Issue #6386)
         class BadStringIO(StringIO):
+
             def __dir__(self):
                 attrs = super().__dir__()
                 attrs.append("name")

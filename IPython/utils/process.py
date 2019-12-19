@@ -5,7 +5,7 @@ Utilities for working with external processes.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from ._process_common import getoutputerror, get_output_error_code, process_handler
+# from ._process_common import getoutputerror, get_output_error_code, process_handler
 import os
 import shutil
 import sys

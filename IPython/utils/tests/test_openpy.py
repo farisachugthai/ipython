@@ -1,5 +1,5 @@
 import codecs
-import io
+# import io
 import os.path
 
 import nose.tools as nt

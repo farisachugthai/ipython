@@ -15,17 +15,13 @@ This file is only meant to be imported by process.py, not by end-users.
 # -----------------------------------------------------------------------------
 
 # Stdlib
+import codecs
 import errno
 import os
 import subprocess as sp
 import sys
 
 import pexpect
-
-# Our own
-from ._process_common import getoutput, arg_split
-from IPython.utils import py3compat
-from IPython.utils.encoding import DEFAULT_ENCODING
 
 # -----------------------------------------------------------------------------
 # Function definitions
@@ -38,12 +34,11 @@ def _find_cmd(cmd):
     path = sp.Popen(
         ["/usr/bin/env", "which", cmd], stdout=sp.PIPE, stderr=sp.PIPE
     ).communicate()[0]
-    return py3compat.decode(path)
+    return codecs.decode(path)
 
 
-class ProcessHandler(object):
-    """Execute subprocesses under the control of pexpect.
-    """
+class ProcessHandler:
+    """Execute subprocesses under the control of pexpect."""
 
     # Timeout in seconds to wait on each reading of the subprocess' output.
     # This should not be set too low to avoid cpu overusage from our side,
@@ -142,7 +137,7 @@ class ProcessHandler(object):
         int : child's exitstatus
         """
         # Get likely encoding for the output.
-        enc = DEFAULT_ENCODING
+        enc = sys.getfilesystemencoding()
 
         # Patterns to match on the output, for pexpect.  We read input and
         # allow either a short timeout or EOF

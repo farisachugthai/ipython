@@ -288,16 +288,6 @@ class InteractiveShell(SingletonConfigurable):
     calls classes and functions from at least 3 different files. It's
     really confusing and most immediately needs the most help.
 
-    Sphinx Errors:
-
-    Didn't find InteractiveShell.more in IPython.core.interactiveshell
-    Didn't find InteractiveShell.compile in IPython.core.interactiveshell
-    Didn't find InteractiveShell.meta in IPython.core.interactiveshell
-    Didn't find InteractiveShell.tempfiles in IPython.core.interactiveshell
-    Didn't find InteractiveShell.starting_dir in IPython.core.interactiveshell
-    Didn't find InteractiveShell.hooks in IPython.core.interactiveshell
-    Didn't find InteractiveShell.strdispatcher in IPython.core.interactiveshell
-    Didn't find InteractiveShell.self.pdb in IPython.core.interactiveshell
     """
 
     _instance = None
@@ -855,9 +845,6 @@ class InteractiveShell(SingletonConfigurable):
         self.dir_stack = []
 
     def init_logger(self):
-        """
-
-        """
         self.logger = Logger(self.home_dir, logfname="ipython_log.py", logmode="rotate")
 
     def init_logstart(self):
@@ -934,10 +921,7 @@ class InteractiveShell(SingletonConfigurable):
 
         Dude those classes don't even exist anymore wth.
         """
-        # with warnings.catch_warnings():
-        #     warnings.simplefilter('ignore', DeprecationWarning)
-        #     utils_io.stdout = io.IOStream(sys.stdout)
-        #     utils_io.stderr = io.IOStream(sys.stderr)
+        pass
 
     def init_prompts(self):
         """Set system prompts, so that scripts can decide if they're interactive."""
@@ -2005,11 +1989,9 @@ class InteractiveShell(SingletonConfigurable):
         """
         from ..ultratb.list_tb import SyntaxTB
         from ..ultratb.formatted_tb import AutoFormattedTB
-        from IPython.utils.coloransi import DefaultDark
 
-        new_colors = DefaultDark()
         self.SyntaxTB = SyntaxTB(
-            color_scheme=new_colors.color_scheme, parent=self, config=self.config
+            color_scheme="LightBG", parent=self, config=self.config
         )
 
         self.InteractiveTB = AutoFormattedTB(

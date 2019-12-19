@@ -90,8 +90,8 @@ class Logger:
         # activity control flags
         self.log_active = False
 
-    # logmode is a validated property
     def _set_mode(self, mode):
+        """'logmode' is a validated property."""
         if mode not in ["append", "backup", "global", "over", "rotate"]:
             raise ValueError("invalid log mode %s given" % mode)
         self._logmode = mode
@@ -273,38 +273,138 @@ which already exists. But you must first start the logging process with
 
 
 class LoggerManager(Configurable):
-    """Let's give cleanup a shot."""
+    """Let's give cleanup a shot.
+
+    Attributes
+    ----------
+    logfile : str (os.Pathlike)
+        Be careful to not set this immediately. We set it with
+        :meth:`logstart` and it will raise an error if set early.
+    log_raw_input : bool
+        Whether to log raw or processed input.
+    log_output : bool
+        Whether to also log output.
+    timestamp : bool
+        Whether to put timestamps before each log entry.
+    log_active : bool
+        activity control flags
+    home : str
+        Not in init because it doesn't make any sense to override where
+        your home directory is.
+
+    """
 
     log_raw_input = Bool(False, help="Whether to log raw or processed input").tag(
         config=True
     )
-
     log_output = Bool(False, help="Whether to also log output.").tag(config=True)
-
     timestamp = Bool(
         False, help="Whether to put timestamps before each log entry."
     ).tag(config=True)
-
     log_active = Bool(False, help="activity control flags").tag(config=True)
 
     def __init__(
-        self,
-        home=None,
-        logfname="Logger.log",
-        loghead=None,
-        logmode=None,
-        logfile=None,
-        *args,
-        **kwargs
+        self, logfname="Logger.log", loghead=None, logmode=None, *args, **kwargs
     ):
+        """New LoggerManager.
+
+        Parameters
+        ----------
+        logfname : str
+            Is set to the attribute 'logfile' in method :meth:`logstart`.
+
+        """
         super().__init__(*args, **kwargs)
-        self.home = home or Path.home()
+        self.home = Path.home().__fspath__()
         self.logfname = logfname
         self.loghead = loghead
         self.logmode = logmode
-        self.logfile = None
+        self.log_raw_input = log_raw_input
+        self.log_output = log_output
+        self.timestamp = timestamp
+        self.log_active = log_active
 
-    def todo(self):
-        """Go through logstart. Honestly now that we have 4 vars bound to the class
-        and 5 on the instance this should take be like 5 lines of code...."""
-        pass
+    @property
+    def _mode(self):
+        return self._logmode
+
+    @_mode.setter
+    def _set_mode(self, mode):
+        """'logmode' is a validated property."""
+        if mode not in ["append", "backup", "global", "over", "rotate"]:
+            raise ValueError("invalid log mode %s given" % mode)
+        self._logmode = mode
+
+    def append(self):
+        """Called when logmode is set to append."""
+        return codecs.open(self.logfname, "a", encoding="utf-8")
+
+    def backup(self, backupext="~"):
+        """Added a backupext parameter so that can be changed.
+
+        Also changed the logfile to be open in append mode so we don't have
+        to worry about whether we have more.
+        """
+        if isfile(self.logfname):
+            backup_logname = self.logfname + backupext
+            os.rename(self.logfname, backup_logname)
+        return codecs.open(self.logfname, "a", encoding="utf-8")
+
+    def global_mode(self):
+        self.logfname = os.path.join(self.home_dir, self.logfname)
+        return codecs.open(self.logfname, "a", encoding="utf-8")
+
+    def over(self):
+        return codecs.open(self.logfname, "w", encoding="utf-8")
+
+    @property
+    def output_file(self):
+        return self.logfile
+
+    @output_file.setter
+    def set_output_file(self):
+        if logmode == "append":
+            self.logfile = self.append()
+
+        elif logmode == "backup":
+            self.logfile = self.backup()
+
+        elif logmode == "global":  # can't name a method global
+            self.logfile = self.global_mode()
+
+        elif logmode == "over":
+            self.logfile = self.over()
+
+        elif logmode == "rotate":
+            if isfile(self.logfname):
+                if isfile(self.logfname + ".001~"):
+                    old = sorted(glob.glob(self.logfname + ".*~"))
+                    old.reverse()
+                    for f in old:
+                        root, ext = os.path.splitext(f)
+                        num = int(ext[1:-1]) + 1
+                        os.rename(f, root + "." + repr(num).zfill(3) + "~")
+                os.rename(self.logfname, self.logfname + ".001~")
+            self.logfile = codecs.open(self.logfname, "w", encoding="utf-8")
+
+        return self.logfile
+
+    def logstart(self):
+        """Generate a new log-file with a default header.
+
+        Parameters
+        ----------
+        Raises
+        ------
+        :exc:`RuntimeError`
+            If the log has already been started via 'logfile' being set.
+
+        """
+        if self.logfile is not None:
+            raise RuntimeError("Log file is already active: %s" % self.logfname)
+        self.logfile = self.set_outputfile()
+
+        if logmode != "append":
+            self.logfile.write(self.loghead)
+        self.logfile.flush()
+        self.log_active = True

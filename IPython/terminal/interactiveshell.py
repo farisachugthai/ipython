@@ -475,10 +475,10 @@ environment variable is set, or the current terminal is not a tty.
         # Set up keyboard shortcuts
         from IPython.terminal.shortcuts import create_ipython_shortcuts
 
-        key_bindings = create_ipython_shortcuts(self)
+        self.key_bindings = create_ipython_shortcuts(self)
 
         # Pre-populate history from IPython's history database
-        history = InMemoryHistory()
+        self.history = InMemoryHistory()
         last_cell = u""
         for __, ___, cell in self.history_manager.get_tail(
             self.history_load_length, include_latest=True
@@ -486,14 +486,16 @@ environment variable is set, or the current terminal is not a tty.
             # Ignore blank lines and consecutive duplicates
             cell = cell.rstrip()
             if cell and (cell != last_cell):
-                history.append_string(cell)
+                self.history.append_string(cell)
                 last_cell = cell
 
         self._style = self._make_style_from_name_or_cls(self.highlighting_style)
-        # self.completer = self.init_completer()
+        self.completer = self.init_completer()
         self.style = DynamicStyle(lambda: self._style)
 
         self.pt_loop = asyncio.new_event_loop()
+        if self.pt_loop is not None:
+            self.enable_gui()
         self.pt_app = PromptSession(
             editing_mode=self.editing_mode.upper(),
             key_bindings=self.key_bindings,
@@ -782,6 +784,8 @@ environment variable is set, or the current terminal is not a tty.
                 DeprecationWarning,
                 stacklevel=2,
             )
+        self.init_prompt_toolkit_cli()
+
         while True:
             try:
                 self.interact()

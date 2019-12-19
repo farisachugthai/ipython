@@ -56,13 +56,10 @@ class TerminalPdb(CorePdb):
 
         """
         CorePdb.__init__(self, *args, **kwargs)
-        if _ptcomp is not None:
-            self._ptcomp = _ptcomp
-        else:
-            self.pt_init()
+        self.pt_comp = pt_comp or None
+        self.pt_init()
 
-        if kb is None:
-            kb = self.setup_prompt_keybindings()
+        self.kb = kb or self.setup_prompt_keybindings()
 
         options = dict(
             message=(lambda: PygmentsTokens(get_prompt_tokens())),

@@ -8,7 +8,6 @@ WHAT CONDITIONS????
 
 """
 import importlib
-import os
 
 
 def find_mod(module_name):
