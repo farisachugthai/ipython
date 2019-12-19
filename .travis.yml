@@ -2,7 +2,7 @@
 # Config file for automatic testing at travis-ci.org
 # http://travis-ci.org/#!/ipython/ipython
 language: python            # this works for Linux but is an error on macOS or Windows
-sudo: false
+sudo: true
 env:
   global:
     - PATH=$TRAVIS_BUILD_DIR/pandoc:$PATH
@@ -22,6 +22,7 @@ jobs:
           fi
     - name: "Python 3.7.4 on macOS"
       os: osx
+      python: 3.7
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
       before_install:
@@ -44,7 +45,9 @@ jobs:
           - pip3 install -U -e . -r requirements.txt
     - name: "Python 3.8.0 on Windows"
       os: windows           # Windows 10.0.17134 N/A Build 17134
-      language: shell       # 'language: python' is an error on Travis CI Windows
+      language: sh       # 'language: python' is an error on Travis CI Windows
+      python: 3.8
+      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
       before_install:
         - choco install python --version 3.8.0
         - python setup.py build
@@ -54,13 +57,15 @@ jobs:
             pip install -r docs/doc-requirements.txt
             pip install --upgrade pytest
           fi
-      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then
     # forgot the user ughhhh
-    pip3 install --upgrade --user pip -r requirements.txt -e .
+    # Can not perform a '--user' install. User site-packages are not visible in this virtualenv.
+    # Guys they gave me a permissions error AND an error about using --user in a venv
+    # I'm turning sudo on
+    pip3 install --upgrade pip -r requirements.txt -e .
     # all three OSes agree about 'pip3'
     # no they don't travis you lied to me!
     else
@@ -77,27 +82,6 @@ script:
 
 after_success:
   - codecov
-
-matrix:
-    # 5 environments in the matrix. linux 3.7 linux 3.8 macos 3.7 macos 3.8 windows 3.8
-  include:
-    - python: "3.7"
-      dist: xenial
-    - python: "3.8-dev"
-      dist: xenial
-    - os: osx
-      language: generic
-      python: 3.7
-      env: TRAVIS_PYTHON_VERSION=3.7
-    - os: osx
-      language: generic
-      python: 3.8
-      env: TRAVIS_PYTHON_VERSION=3.8
-    - os: windows
-      language: shell
-      python: 3.8
-  allow_failures:
-    - python: "3.8"
 
 before_deploy:
   - rm -rf dist/
