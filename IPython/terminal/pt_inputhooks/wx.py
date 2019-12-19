@@ -64,15 +64,6 @@ def inputhook_wx1(context):
     return 0
 
 
-class EventLoopTimer(wx.Timer):
-    def __init__(self, func):
-        self.func = func
-        wx.Timer.__init__(self)
-
-    def Notify(self):
-        self.func()
-
-
 class EventLoopRunner:
     def Run(self, time, input_is_ready):
         """
@@ -250,3 +241,13 @@ if __name__ == "__main__":
         inputhook = inputhook_wx2
     else:
         inputhook = inputhook_wx3
+
+    class EventLoopTimer(wx.Timer):
+        """Forgot this one. Still haven't imported wx yet."""
+
+        def __init__(self, func):
+            self.func = func
+            wx.Timer.__init__(self)
+
+        def Notify(self):
+            self.func()

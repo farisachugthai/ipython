@@ -26,6 +26,7 @@ import os.path as path
 import sys
 from threading import Thread, Lock, Event
 import warnings
+from warnings import warn
 
 import nose.plugins.builtin
 from nose.plugins.xunit import Xunit
@@ -45,27 +46,27 @@ from IPython.external.decorators import KnownFailure, knownfailureif
 pjoin = path.join
 
 # Enable printing all warnings raise by IPython's modules
-# warnings.filterwarnings(
-#     "ignore",
-#     message=".*Matplotlib is building the font cache.*",
-#     category=UserWarning,
-#     module=".*",
-# )
-# warnings.filterwarnings("error", message=".*", category=ResourceWarning, module=".*")
-# warnings.filterwarnings(
-#     "error", message=".*{'config': True}.*", category=DeprecationWarning, module="IPy.*"
-# )
-# warnings.filterwarnings("default", message=".*", category=Warning, module="IPy.*")
+warnings.filterwarnings(
+    "ignore",
+    message=".*Matplotlib is building the font cache.*",
+    category=UserWarning,
+    module=".*",
+)
+warnings.filterwarnings("error", message=".*", category=ResourceWarning, module=".*")
+warnings.filterwarnings(
+    "error", message=".*{'config': True}.*", category=DeprecationWarning, module="IPy.*"
+)
+warnings.filterwarnings("default", message=".*", category=Warning, module="IPy.*")
 
-# warnings.filterwarnings(
-#     "error", message=".*apply_wrapper.*", category=DeprecationWarning, module=".*"
-# )
-# warnings.filterwarnings(
-#     "error", message=".*make_label_dec", category=DeprecationWarning, module=".*"
-# )
-# warnings.filterwarnings(
-#     "error", message=".*decorated_dummy.*", category=DeprecationWarning, module=".*"
-# )
+warnings.filterwarnings(
+    "error", message=".*apply_wrapper.*", category=DeprecationWarning, module=".*"
+)
+warnings.filterwarnings(
+    "error", message=".*make_label_dec", category=DeprecationWarning, module=".*"
+)
+warnings.filterwarnings(
+    "error", message=".*decorated_dummy.*", category=DeprecationWarning, module=".*"
+)
 warnings.filterwarnings(
     "error", message=".*skip_file_no_x11.*", category=DeprecationWarning, module=".*"
 )
@@ -94,17 +95,6 @@ warnings.filterwarnings(
     category=FutureWarning,
     module=".*",
 )
-
-# if version_info < (6,):
-#     # nose.tools renames all things from `camelCase` to `snake_case` which raise an
-#     # warning with the runner they also import from standard import library. (as of Dec 2015)
-#     # Ignore, let's revisit that in a couple of years for IPython 6.
-#     warnings.filterwarnings(
-#         "ignore",
-#         message=".*Please use assertEqual instead",
-#         category=Warning,
-#         module="IPython.*",
-#     )
 
 if version_info < (8,):
     warnings.filterwarnings(
@@ -231,10 +221,7 @@ test_group_names = [
 ]
 
 
-class TestSection(object):
-    """
-
-    """
+class TestSection:
 
     def __init__(self, name, includes):
         self.name = name
@@ -335,11 +322,7 @@ test_group_names.append("autoreload")
 
 
 def check_exclusions_exist():
-    """
-
-    """
     from IPython.paths import get_ipython_package_dir
-    from warnings import warn
 
     parent = os.path.dirname(get_ipython_package_dir())
     for sec in test_sections:
@@ -366,7 +349,7 @@ class ExclusionPlugin(Plugin):
           expressions) are excluded from the tests.
         """
         self.exclude_patterns = exclude_patterns or []
-        super(ExclusionPlugin, self).__init__()
+        super().__init__()
 
     def options(self, parser, env=os.environ):
         """
@@ -406,15 +389,21 @@ class ExclusionPlugin(Plugin):
 
 
 class StreamCapturer(Thread):
-    """
+    """Ah here it is.
+
+    Used all over the place.
+
+    Attributes
+    ----------
+    daemon : bool
+    started : bool
 
     """
-
     daemon = True  # Don't hang if main thread crashes
     started = False
 
     def __init__(self, echo=False):
-        super(StreamCapturer, self).__init__()
+        super().__init__()
         self.echo = echo
         self.streams = []
         self.buffer = BytesIO()
@@ -423,9 +412,6 @@ class StreamCapturer(Thread):
         self.stop = Event()
 
     def run(self):
-        """
-
-        """
         self.started = True
 
         while not self.stop.is_set():
@@ -440,9 +426,6 @@ class StreamCapturer(Thread):
         os.close(self.writefd)
 
     def reset_buffer(self):
-        """
-
-        """
         with self.buffer_lock:
             self.buffer.truncate(0)
             self.buffer.seek(0)
@@ -458,9 +441,6 @@ class StreamCapturer(Thread):
             return self.buffer.getvalue()
 
     def ensure_started(self):
-        """
-
-        """
         if not self.started:
             self.start()
 
@@ -475,14 +455,11 @@ class StreamCapturer(Thread):
 
 
 class SubprocessStreamCapturePlugin(Plugin):
-    """
-
-    """
 
     name = "subprocstreams"
 
     def __init__(self):
-        Plugin.__init__(self)
+        super().__init__()
         self.stream_capturer = StreamCapturer()
         self.destination = os.environ.get("IPTEST_SUBPROC_STREAMS", "capture")
         # This is ugly, but distant parts of the test machinery need to be able
@@ -612,12 +589,6 @@ def run_iptest():
 
     argv = sys.argv + [
         "--detailed-errors",  # extra info in tracebacks
-        # We add --exe because of setuptools' imbecility (it
-        # blindly does chmod +x on ALL files).  Nose does the
-        # right thing and it tries to avoid executables,
-        # setuptools unfortunately forces our hand here.  This
-        # has been discussed on the distutils list and the
-        # setuptools devs refuse to fix this problem!
         "--exe",
     ]
     if "-a" not in argv and "-A" not in argv:

@@ -1,4 +1,7 @@
-"""Test help output of various IPython entry points"""
+"""Test help output of various IPython entry points.
+
+Wait what the hell is the trust subcommand?
+"""
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
@@ -31,5 +34,5 @@ def test_locate_profile_help():
     tt.help_all_output_test("locate profile")
 
 
-def test_trust_help():
-    tt.help_all_output_test("trust")
+# def test_trust_help():
+#     tt.help_all_output_test("trust")

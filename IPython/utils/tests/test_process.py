@@ -14,20 +14,17 @@ Tests for platutils.py
 # Imports
 # -----------------------------------------------------------------------------
 
+from shutil import which as find_cmd
+from subprocess import CalledProcessError as FindCmdError
 import sys
 import os
+from os import system
 
 import nose.tools as nt
 
-from IPython.utils.process import (
-    find_cmd,
-    FindCmdError,
-    arg_split,
-    system,
-    getoutput,
-    getoutputerror,
-    get_output_error_code,
-)
+from IPython.utils.process import arg_split
+from IPython.utils._process_common import getoutput, getoutputerror, get_output_error_code
+
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
 
@@ -38,11 +35,13 @@ python = os.path.basename(sys.executable)
 # -----------------------------------------------------------------------------
 
 
-@dec.skip_win32
+# @dec.skip_win32
+# believe it or not git for windows has ls. check it regardless
 def test_find_cmd_ls():
     """Make sure we can find the full path to ls."""
     path = find_cmd("ls")
-    nt.assert_true(path.endswith("ls"))
+    if path is not None:
+        nt.assert_true(path.endswith("ls"))
 
 
 def has_pywin32():

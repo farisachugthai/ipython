@@ -241,6 +241,7 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     flags = flags
     aliases = aliases
     classes = List()
+    custom_exceptions = None
 
     @default("classes")
     def _classes_default(self):
@@ -273,7 +274,8 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         klass=object,
         # use default_value otherwise which only allow subclasses.
         default_value=TerminalInteractiveShell,
-        help="Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends",
+        help=("Class to use to instantiate the TerminalInteractiveShell object."
+        "Useful for custom Frontends"),
     ).tag(config=True)
 
     subcommands = dict(

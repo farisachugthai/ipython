@@ -10,9 +10,11 @@ Also it's really quietly dependant on coverage. Let's add that to the requiremen
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 import argparse
+from codecs import decode
 import logging
 import multiprocessing.pool
 import os
+import platform
 import shutil
 import signal
 import stat
@@ -21,7 +23,6 @@ import sys
 import time
 
 from IPython.utils.path import compress_user
-from IPython.utils.py3compat import decode
 from IPython.utils.sysinfo import get_sys_info
 from IPython.utils.tempdir import TemporaryDirectory
 
@@ -52,19 +53,20 @@ class TestController:
         process stdout+stderr
 
     """
-
     section = None
-    cmd = None
-    env = None
-    dirs = None
     process = None
-    stdout = None
 
-    def __init__(self):
-        """Bind self.cmd to an empty list, env to a dict, and dirs to list."""
-        self.cmd = []
-        self.env = {}
-        self.dirs = []
+    def __init__(self, cmd=None, env=None, dirs=None, buffer_output=False):
+        """Bind self.cmd to an empty list, env to a dict, and dirs to list.
+
+        Adding in the stdout capturer because we can define all the needed
+        attributes right in init.
+        """
+        self.cmd = cmd or []
+        self.env = self.init_env(additional_vars=env)
+        self.dirs = dirs or []
+        self.buffer_output = buffer_output
+        self.stdout_capturer = StreamCapturer(echo=(not self.buffer_output))
 
     def setUp(self):
         """Create temporary directories etc.
@@ -74,25 +76,30 @@ class TestController:
         """
         pass
 
+    def init_env(self, additional_vars=None) -> dict:
+        user_env = os.environ.copy()
+        if additional_vars is None:
+            additional_vars = {}
+        user_env.update(additional_vars)
+        return user_env
+
     def launch(self, buffer_output=False, capture_output=False):
-        """
+        """Checks if we're capturing output
 
         Parameters
         ----------
-        buffer_output :
-        capture_output :
+        buffer_output : bool
+        capture_output : bool
+            No idea why these are 2 separate parameters.
         """
         logging.debug("*** ENV:", self.env)
         logging.debug("*** CMD:", self.cmd)
-        env = os.environ.copy()
-        env.update(self.env)
         if buffer_output:
             capture_output = True
-        self.stdout_capturer = c = StreamCapturer(echo=not buffer_output)
-        c.start()
+        self.stdout_capturer.start()
         stdout = c.writefd if capture_output else None
         stderr = subprocess.STDOUT if capture_output else None
-        self.process = subprocess.Popen(self.cmd, stdout=stdout, stderr=stderr, env=env)
+        self.process = subprocess.Popen(self.cmd, stdout=stdout, stderr=stderr, env=self.env)
 
     def wait(self):
         """
@@ -115,7 +122,8 @@ class TestController:
         try:
             print("Cleaning up stale PID: %d" % subp.pid)
             subp.kill()
-        except Exception:  # (OSError, WindowsError) ?
+        except subprocess.CalledProcessError:
+            # This module only exports 1 error so catch that and not everything else
             # This is just a best effort, if we fail or the process was
             # really gone, ignore it.
             pass
@@ -136,7 +144,8 @@ class TestController:
         for td in self.dirs:
             td.cleanup()
 
-    __del__ = cleanup
+    def __del__(self):
+        return self.cleanup()
 
 
 class PyTestController(TestController):
@@ -149,44 +158,43 @@ class PyTestController(TestController):
 
     """
 
-    pycmd = None
-
-    def __init__(self, section, options):
+    def __init__(self, section, options, *args, **kwargs):
         """Create new test runner."""
-        TestController.__init__(self)
+        super().__init__(*args, **kwargs)
         self.section = section
         # pycmd is put into cmd[2] in PyTestController.launch()
         self.cmd = [sys.executable, "-c", None, section]
         self.pycmd = "from IPython.testing.iptest import run_iptest; run_iptest()"
         self.options = options
 
-    def setup(self):
-        """
-
-        """
         ipydir = TemporaryDirectory()
         self.dirs.append(ipydir)
         self.env["IPYTHONDIR"] = ipydir.name
-        self.workingdir = workingdir = TemporaryDirectory()
-        self.dirs.append(workingdir)
-        self.env["IPTEST_WORKING_DIR"] = workingdir.name
+
+        self.workingdir =  TemporaryDirectory()
+        self.dirs.append(self.workingdir)
+
+        self.env["IPTEST_WORKING_DIR"] = self.workingdir.name
         # This means we won't get odd effects from our own matplotlib config
-        self.env["MPLCONFIGDIR"] = workingdir.name
+        self.env["MPLCONFIGDIR"] = self.workingdir.name
         # For security reasons (http://bugs.python.org/issue16202), use
         # a temporary directory to which other users have no access.
-        self.env["TMPDIR"] = workingdir.name
+        self.env["TMPDIR"] = self.workingdir.name
 
+        # Uh this probably needed to be here and not in setup.
         # Add a non-accessible directory to PATH (see gh-7053)
-        noaccess = os.path.join(self.workingdir.name, "_no_access_")
-        self.noaccess = noaccess
-        os.mkdir(noaccess, 0)
-
+        self.noaccess = os.path.join(self.workingdir.name, "_no_access_")
+        os.mkdir(self.noaccess, 0)
         PATH = os.environ.get("PATH", "")
         if PATH:
-            PATH = noaccess + os.pathsep + PATH
+            PATH = self.noaccess + os.pathsep + PATH
         else:
-            PATH = noaccess
+            PATH = self.noaccess
         self.env["PATH"] = PATH
+
+
+    def setup(self):
+        """Create a TemporaryDirectory, set the workingdir to a different one."""
 
         # From options:
         if self.options.xunit:
@@ -201,8 +209,8 @@ class PyTestController(TestController):
         Make the non-accessible directory created in setup() accessible
         again, otherwise deleting the workingdir will fail.
         """
-        os.chmod(self.noaccess, stat.S_IRWXU)
-        TestController.cleanup(self)
+        # os.chmod(self.noaccess, stat.S_IRWXU)
+        super().cleanup()
 
     @property
     def will_run(self):
@@ -254,12 +262,17 @@ class PyTestController(TestController):
         buffer_output :
         """
         self.cmd[2] = self.pycmd
-        super(PyTestController, self).launch(buffer_output=buffer_output)
+        if buffer_output:
+            super().launch(buffer_output=buffer_output)
+        else:
+            super().launch()
 
 
 def prepare_controllers(options):
-    """Returns two lists of TestController instances, those to run, and those
-    not to run."""
+    """
+    Returns two lists of TestController instances, those to run, and those
+    not to run.
+    """
     testgroups = options.testgroups
     if not testgroups:
         testgroups = py_test_group_names
@@ -281,10 +294,10 @@ def do_run(controller, buffer_output=True):
     Returns
     -------
     controller : TestController
-      The same controller as passed in, as a convenience for using map() type
-      APIs.
+        The same controller as passed in, as a convenience for using map() type
+        APIs.
     exitcode : int
-      The exit code of the test subprocess. Non-zero indicates failure.
+        The exit code of the test subprocess. Non-zero indicates failure.
     """
     try:
         try:
@@ -315,9 +328,9 @@ def report():
 
     _add("IPython version", inf["ipython_version"])
     _add("IPython commit", "{} ({})".format(inf["commit_hash"], inf["commit_source"]))
-    _add("IPython package", compress_user(inf["ipython_path"]))
-    _add("Python version", inf["sys_version"].replace("\n", ""))
-    _add("sys.executable", compress_user(inf["sys_executable"]))
+    _add("IPython package", inf["ipython_path"])
+    _add("Python version", sys.version)
+    _add("sys.executable", sys.executable)
     _add("Platform", inf["platform"])
 
     width = max(len(n) for (n, v) in out)
@@ -355,7 +368,8 @@ def run_iptestall(options):
 
     Parameters
     ----------
-    options :
+    options : dict
+        Apparently fast means run sequentially with 1 thread.
 
     """
     to_run, not_run = prepare_controllers(options)
@@ -382,11 +396,14 @@ def run_iptestall(options):
     failed = []
     t_start = time.time()
 
-    print()
+    if platform.platform().startswith('Win'):
+        if not hasattr(options, 'fast'):
+            options.__setattr__('fast', 1)
+
     if options.fast == 1:
         # This actually means sequential, i.e. with 1 job
         for controller in to_run:
-            print("Test group:", controller.section)
+            print("Test group:", controller.section + "\n")
             sys.stdout.flush()  # Show in correct order when output is piped
             controller, res = do_run(controller, buffer_output=False)
             if res:
@@ -394,7 +411,6 @@ def run_iptestall(options):
                 if res == -signal.SIGINT:
                     print("Interrupted")
                     break
-            print()
 
     else:
         # Run tests concurrently
@@ -503,41 +519,6 @@ def run_iptestall(options):
         sys.exit(1)
 
 
-argparser = argparse.ArgumentParser(description="Run IPython test suite")
-argparser.add_argument(
-    "testgroups",
-    nargs="*",
-    help="Run specified groups of tests. If omitted, run " "all tests.",
-)
-argparser.add_argument(
-    "--all", action="store_true", help="Include slow tests not run by default."
-)
-argparser.add_argument(
-    "-j",
-    "--fast",
-    nargs="?",
-    const=None,
-    default=1,
-    type=int,
-    help="Run test sections in parallel. This starts as many "
-    "processes as you have cores, or you can specify a number.",
-)
-argparser.add_argument("--xunit", action="store_true", help="Produce Xunit XML results")
-argparser.add_argument(
-    "--coverage",
-    nargs="?",
-    const=True,
-    default=False,
-    help="Measure test coverage. Specify 'html' or " "'xml' to get reports.",
-)
-argparser.add_argument(
-    "--subproc-streams",
-    default="capture",
-    help="What to do with stdout/stderr from subprocesses. "
-    "'capture' (default), 'show' and 'discard' are the options.",
-)
-
-
 def default_options():
     """Get an argparse Namespace object with the default arguments, to pass to
     :func:`run_iptestall`.
@@ -545,6 +526,44 @@ def default_options():
     options = argparser.parse_args([])
     options.extra_args = []
     return options
+
+
+def parse_testing_arguments():
+    argparser = argparse.ArgumentParser(description="Run IPython test suite")
+    argparser.add_argument(
+        "testgroups",
+        nargs="*",
+        help="Run specified groups of tests. If omitted, run " "all tests.",
+    )
+    argparser.add_argument(
+        "--all", action="store_true", help="Include slow tests not run by default."
+    )
+    argparser.add_argument(
+        "-j",
+        "--fast",
+        nargs="?",
+        const=None,
+        default=1,
+        type=int,
+        help="Run test sections in parallel. This starts as many "
+        "processes as you have cores, or you can specify a number.",
+    )
+    argparser.add_argument("--xunit", action="store_true", help="Produce Xunit XML results")
+    argparser.add_argument(
+        "--coverage",
+        nargs="?",
+        const=True,
+        default=False,
+        help="Measure test coverage. Specify 'html' or " "'xml' to get reports.",
+    )
+    argparser.add_argument(
+        "--subproc-streams",
+        default="capture",
+        help="What to do with stdout/stderr from subprocesses. "
+        "'capture' (default), 'show' and 'discard' are the options.",
+    )
+
+    return argparser
 
 
 def main():
@@ -564,6 +583,7 @@ def main():
     # first.
 
     """
+    argparser = parse_testing_arguments()
     try:
         ix = sys.argv.index("--")
     except ValueError:
@@ -571,7 +591,7 @@ def main():
         extra_args = []
     else:
         to_parse = sys.argv[1:ix]
-        extra_args = sys.argv[ix + 1 :]
+        extra_args = sys.argv[ix + 1:]
 
     options = argparser.parse_args(to_parse)
     options.extra_args = extra_args
