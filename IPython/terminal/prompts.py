@@ -12,9 +12,6 @@ from IPython.core.displayhook import DisplayHook
 
 
 class Prompts:
-    """
-
-    """
 
     def __init__(self, shell):
         self.shell = shell

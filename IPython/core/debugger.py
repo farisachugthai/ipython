@@ -53,6 +53,7 @@ import bdb
 import functools
 import inspect
 import linecache
+from pprint import pprint
 import re
 import reprlib
 import sys
@@ -65,17 +66,11 @@ from IPython.core.error import (
     BdbQuit_IPython_excepthook,
     UsageError,
 )
-from IPython.core.excolors import exception_colors
 from IPython.core.getipython import get_ipython
-from IPython.utils import PyColorize, coloransi
+from IPython.terminal.prompts import Prompts
 
-# We have to check this directly from sys.argv, config struct not yet available
-prompt = "ipdb> "
 
-# Allow the set_trace code to operate outside of an ipython instance, even if
-# it does so with some limitations.  The rest of this support is implemented in
-# the Tracer constructor.
-# Didn't we deprecate Tracer?
+RGX_EXTRA_INDENT = re.compile(r'(?<=\n)\s+')
 
 
 def make_arrow(pad):
@@ -88,35 +83,16 @@ def make_arrow(pad):
 
 
 def strip_indentation(multiline_string):
-    """textwrap.dedent?"""
-    RGX_EXTRA_INDENT = re.compile(r"(?<=\n)\s+")
-    return RGX_EXTRA_INDENT.sub("", multiline_string)
+    return RGX_EXTRA_INDENT.sub('', multiline_string)
 
 
 def decorate_fn_with_doc(new_fn, old_fn, additional_text=""):
     """Make new_fn have old_fn's doc string. This is particularly useful
     for the ``do_...`` commands that hook into the help system.
-
     Adapted from from a comp.lang.python posting
     by Duncan Booth.
-
-    Uhhh so what the hell does this do that functools.wraps() doesn't?
-
-    Still can't tell and it's used 3 different times in this mod.
     """
-
     def wrapper(*args, **kw):
-        """
-
-        Parameters
-        ----------
-        args :
-        kw :
-
-        Returns
-        -------
-
-        """
         return new_fn(*args, **kw)
 
     if old_fn.__doc__:
@@ -130,12 +106,6 @@ class CorePdb(Pdb):
     For a standalone version that uses prompt_toolkit, see
     `IPython.terminal.debugger.TerminalPdb` and
     `IPython.terminal.debugger.set_trace()`
-
-    Comments from the constructor.:
-
-        # Create color table: we copy the default one from the traceback
-        # module and add a few attributes needed for debugging
-
     """
 
     def __init__(
@@ -146,7 +116,7 @@ class CorePdb(Pdb):
         stdout=None,
         context=5,
         aliases=None,
-        prompt="IPdb> ",
+        prompt=None,
         shell=None,
         **kwargs,
     ):
@@ -167,9 +137,9 @@ class CorePdb(Pdb):
         :param aliases: User defined aliases.
         :param prompt: ``$PS1``
         :param shell: IPython instance.
-        :param kwargs: Passed to pdb.Pdb.
-            The possibilities are python version dependent, see the python
-            docs for more info.
+        :param kwargs: Passed to `pdb.Pdb`.
+                       The possibilities are python version dependent,
+                       see the python docs for more info.
 
         """
         # Parent constructor:
@@ -198,47 +168,13 @@ class CorePdb(Pdb):
 
         self.aliases = aliases or {}
 
-        # Set the prompt - the default prompt is '(Pdb)'
-        self.prompt = prompt
+        self.prompt = prompt or Prompts
 
-    def debug_colors(self):
-        """Ah the plethora of meaning here.
+    def __doc__(self):
+        return decorate_fn_with_doc(super().__doc__())
 
-        Both this method and set_colors need some heavy debugging.
-
-        The modules they import from are the problem children of this repo.
-        """
-        self.color_scheme_table = exception_colors()
-
-        # shorthands
-        C = coloransi.TermColors
-        cst = self.color_scheme_table
-
-        cst["NoColor"].colors.prompt = C.NoColor
-        cst["NoColor"].colors.breakpoint_enabled = C.NoColor
-        cst["NoColor"].colors.breakpoint_disabled = C.NoColor
-
-        cst["Linux"].colors.prompt = C.Green
-        cst["Linux"].colors.breakpoint_enabled = C.LightRed
-        cst["Linux"].colors.breakpoint_disabled = C.Red
-
-        cst["LightBG"].colors.prompt = C.Blue
-        cst["LightBG"].colors.breakpoint_enabled = C.LightRed
-        cst["LightBG"].colors.breakpoint_disabled = C.Red
-
-        cst["Neutral"].colors.prompt = C.Blue
-        cst["Neutral"].colors.breakpoint_enabled = C.LightRed
-        cst["Neutral"].colors.breakpoint_disabled = C.Red
-
-        # Add a python parser so we can syntax highlight source while
-        # debugging.
-        self.parser = PyColorize.Parser(style=color_scheme)
-        self.set_colors(color_scheme)
-
-    def set_colors(self, scheme):
-        """Shorthand access to the color table scheme selector method."""
-        self.color_scheme_table.set_active_scheme(scheme)
-        self.parser.style = scheme
+    def __repr__(self):
+        return '{!r}\t{!r}'.format(self.__class__.__name__, self.prompt)
 
     def interaction(self, frame, traceback):
         """
@@ -254,42 +190,19 @@ class CorePdb(Pdb):
             self.stdout.write("\n" + self.shell.get_exception_only())
 
     def new_do_up(self, arg):
-        """So this calls the superclasses method directly. Should we turn into a super call? How do we handle this?"""
-        Pdb.do_up(self, arg)
+        super().do_up(self, arg)
 
     do_u = do_up = decorate_fn_with_doc(new_do_up, Pdb.do_up)
 
     def new_do_down(self, arg):
-        """
-
-        Parameters
-        ----------
-        arg :
-        """
-        Pdb.do_down(self, arg)
+        super().do_down(self, arg)
 
     do_d = do_down = decorate_fn_with_doc(new_do_down, Pdb.do_down)
 
     def new_do_frame(self, arg):
-        """
-
-        Parameters
-        ----------
-        arg :
-        """
-        Pdb.do_frame(self, arg)
+        super().do_frame(self, arg)
 
     def new_do_quit(self, arg):
-        """
-
-        Parameters
-        ----------
-        arg :
-
-        Returns
-        -------
-
-        """
         if hasattr(self, "old_all_completions"):
             self.shell.Completer.all_completions = self.old_all_completions
 
@@ -297,11 +210,11 @@ class CorePdb(Pdb):
 
     do_q = do_quit = decorate_fn_with_doc(new_do_quit, Pdb.do_quit)
 
-    def new_do_restart(self, arg):
-        """Restart command. In the context of ipython this is exactly the same
-        thing as 'quit'."""
-        self.msg("Restart doesn't make sense here. Using 'quit' instead.")
-        return self.do_quit(arg)
+    def new_do_restart(self, arg=None):
+        """Restart absolutely makes sense just restart the program like you're told."""
+        # self.msg("Restart doesn't make sense here. Using 'quit' instead.")
+        super().do_restart()
+        # return self.do_quit(arg)
 
     def print_stack_trace(self, context=None):
         """
@@ -369,13 +282,6 @@ class CorePdb(Pdb):
 
         ret = []
 
-        Colors = self.color_scheme_table.active_colors
-        ColorsNormal = Colors.Normal
-        tpl_link = "%s%%s%s" % (Colors.filenameEm, ColorsNormal)
-        tpl_call = "%s%%s%s%%s%s" % (Colors.vName, Colors.valEm, ColorsNormal)
-        tpl_line = "%%s%s%%s %s%%s" % (Colors.lineno, ColorsNormal)
-        tpl_line_em = "%%s%s%%s %s%%s%s" % (Colors.linenoEm, Colors.line, ColorsNormal)
-
         frame, lineno = frame_lineno
 
         return_value = ""
@@ -414,7 +320,7 @@ class CorePdb(Pdb):
         lines = linecache.getlines(filename)
         start = min(start, len(lines) - context)
         start = max(start, 0)
-        lines = lines[start : start + context]
+        lines = lines[start: start + context]
 
         for i, line in enumerate(lines):
             show_arrow = start + 1 + i == lineno
@@ -440,7 +346,6 @@ class CorePdb(Pdb):
             bp = bps[-1]
 
         if bp:
-            Colors = self.color_scheme_table.active_colors
             bp_mark = str(bp.number)
             bp_mark_color = Colors.breakpoint_enabled
             if not bp.enabled:
@@ -459,14 +364,6 @@ class CorePdb(Pdb):
     def print_list_lines(self, filename, first, last):
         """The printing. (as opposed to the parsing part of a 'list' command."""
         try:
-            Colors = self.color_scheme_table.active_colors
-            ColorsNormal = Colors.Normal
-            tpl_line = "%%s%s%%s %s%%s" % (Colors.lineno, ColorsNormal)
-            tpl_line_em = "%%s%s%%s %s%%s%s" % (
-                Colors.linenoEm,
-                Colors.line,
-                ColorsNormal,
-            )
             src = []
             if filename == "<string>" and hasattr(self, "_exec_filename"):
                 filename = self._exec_filename
@@ -478,11 +375,11 @@ class CorePdb(Pdb):
 
                 if lineno == self.curframe.f_lineno:
                     line = self.__format_line(
-                        tpl_line_em, filename, lineno, line, arrow=True
+                        filename, lineno, line, arrow=True
                     )
                 else:
                     line = self.__format_line(
-                        tpl_line, filename, lineno, line, arrow=False
+                        filename, lineno, line, arrow=False
                     )
 
                 src.append(line)
@@ -495,8 +392,7 @@ class CorePdb(Pdb):
             print("Interrupted!")
 
     def do_list(self, arg):
-        """Print lines of code from the current stack frame.
-        """
+        """Print lines of code from the current stack frame."""
         self.lastcmd = "list"
         last = None
         if arg:
@@ -566,21 +462,24 @@ class CorePdb(Pdb):
     do_ll = do_longlist
 
     def do_debug(self, arg):
-        """debug code
+        """debug code.
+
+        Guys it is SUCH a bad idea to assign to globals and locals!
+
         Enter a recursive debugger that steps through the code
         argument (which is an arbitrary expression or statement to be
         executed in the current environment).
         """
         sys.settrace(None)
-        globals = self.curframe.f_globals
-        locals = self.curframe_locals
+        cur_frame_globals = self.curframe.f_globals
+        cur_frame_locals = self.curframe_locals
         p = self.__class__(
             completekey=self.completekey, stdin=self.stdin, stdout=self.stdout
         )
         p.use_rawinput = self.use_rawinput
         p.prompt = "(%s) " % self.prompt.strip()
         self.message("ENTERING RECURSIVE DEBUGGER")
-        sys.call_tracing(p.run, (arg, globals, locals))
+        sys.call_tracing(p.run, (arg, cur_frame_globals, cur_frame_locals))
         self.message("LEAVING RECURSIVE DEBUGGER")
         sys.settrace(self.trace_dispatch)
         self.lastcmd = p.lastcmd
