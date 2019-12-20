@@ -10,6 +10,7 @@ from IPython.utils.tempdir import TemporaryDirectory
 def setup_module():
     global _ip
     from IPython.core.getipython import get_ipython
+
     _ip = get_ipython()
 
 

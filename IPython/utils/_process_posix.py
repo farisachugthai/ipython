@@ -52,6 +52,7 @@ class ProcessHandler:
         Shell to call for subprocesses to execute.
 
     """
+
     read_timeout = 0.05
     terminate_timeout = 0.2
     logfile = None

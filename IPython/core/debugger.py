@@ -53,10 +53,13 @@ API
 # import functools
 import inspect
 import linecache
+
 # from pprint import pprint
 import re
+
 # import reprlib
 import sys
+
 # import warnings
 # from bdb import BdbQuit
 from pdb import Pdb
@@ -323,11 +326,11 @@ class CorePdb(Pdb):
         lines = linecache.getlines(filename)
         start = min(start, len(lines) - context)
         start = max(start, 0)
-        lines = lines[start: start + context]
+        lines = lines[start : start + context]
 
         for i, line in enumerate(lines):
             show_arrow = start + 1 + i == lineno
-            linetpl = (frame is self.curframe or show_arrow)
+            linetpl = frame is self.curframe or show_arrow
             ret.append(
                 self.__format_line(
                     linetpl, filename, start + 1 + i, line, arrow=show_arrow

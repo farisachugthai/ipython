@@ -217,7 +217,7 @@ def newline_or_execute_outer(shell):
 
         # if all we have after the cursor is whitespace: reformat current text
         # before cursor
-        after_cursor = d.text[d.cursor_position:]
+        after_cursor = d.text[d.cursor_position :]
         if not after_cursor.strip():
             reformat_text_before_cursor(b, d, shell)
 

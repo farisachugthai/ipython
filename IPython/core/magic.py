@@ -78,6 +78,7 @@ magic_escapes = dict(line=ESC_MAGIC, cell=ESC_MAGIC2)
 
 class Bunch:
     """Where is this class used?"""
+
     pass
 
 
@@ -584,6 +585,7 @@ class MagicsManager(Configurable):
     def __add__(self, *magic_objects):
         """Is this a terrible idea?"""
         return self.register(*magic_objects)
+
 
 class Magics(Configurable):
     """Base class for implementing magic functions.

@@ -595,7 +595,7 @@ def main():
         extra_args = []
     else:
         to_parse = sys.argv[1:ix]
-        extra_args = sys.argv[ix + 1:]
+        extra_args = sys.argv[ix + 1 :]
 
     options = argparser.parse_args(to_parse)
     options.extra_args = extra_args

@@ -15,6 +15,7 @@ from datetime import datetime
 
 # third party
 import nose.tools as nt
+
 # our own packages
 from traitlets.config.loader import Config
 

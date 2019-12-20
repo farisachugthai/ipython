@@ -11,10 +11,12 @@ from unittest import TestCase
 from IPython.testing.decorators import skip_without
 
 
-def iprc(x): return ip.run_cell(dedent(x)).raise_error()
+def iprc(x):
+    return ip.run_cell(dedent(x)).raise_error()
 
 
-def iprc_nr(x): return ip.run_cell(dedent(x))
+def iprc_nr(x):
+    return ip.run_cell(dedent(x))
 
 
 class AsyncTest(TestCase):

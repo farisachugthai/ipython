@@ -347,7 +347,7 @@ def _deduplicate_completions(text: str, completions: _IC) -> _IC:
 
     seen = set()
     for c in completions:
-        new_text = text[new_start: c.start] + c.text + text[c.end: new_end]
+        new_text = text[new_start : c.start] + c.text + text[c.end : new_end]
         if new_text not in seen:
             yield c
             seen.add(new_text)
@@ -400,7 +400,7 @@ def rectify_completions(text: str, completions: _IC, *, _debug=False) -> _IC:
     seen_jedi = set()
     seen_python_matches = set()
     for c in completions:
-        new_text = text[new_start: c.start] + c.text + text[c.end: new_end]
+        new_text = text[new_start : c.start] + c.text + text[c.end : new_end]
         if c._origin == "jedi":
             seen_jedi.add(new_text)
         elif c._origin == "IPCompleter.python_matches":
@@ -534,7 +534,7 @@ def match_dict_keys(keys: List[str], prefix: str, delims: str):
             continue
 
         # reformat remainder of key to begin with prefix
-        rem = key[len(prefix_str):]
+        rem = key[len(prefix_str) :]
         # force repr wrapped in '
         rem_repr = repr(rem + '"') if isinstance(rem, str) else repr(rem + b'"')
         if rem_repr.startswith("u") and prefix[0] not in "uU":
@@ -545,7 +545,7 @@ def match_dict_keys(keys: List[str], prefix: str, delims: str):
             except UnicodeEncodeError:
                 continue
 
-        rem_repr = rem_repr[1 + rem_repr.index("'"): -2]
+        rem_repr = rem_repr[1 + rem_repr.index("'") : -2]
         if quote == '"':
             # The entered prefix is quoted with ",
             # but the match is quoted with '.

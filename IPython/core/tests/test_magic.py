@@ -28,7 +28,15 @@ from nose.tools.nontrivial import nottest
 from IPython.core import magic
 from IPython.core.error import UsageError
 from IPython.core.getipython import get_ipython
-from IPython.core.magic import (cell_magic, line_magic, Magics, magics_class, register_cell_magic, register_line_magic)
+from IPython.core.magic import (
+    cell_magic,
+    line_magic,
+    Magics,
+    magics_class,
+    register_cell_magic,
+    register_line_magic,
+)
+
 # Renamed to avoid std lib collision
 from IPython.core.magics import code, execution, ipy_logging, osm, script
 from IPython.testing import decorators as dec, tools as tt
@@ -953,7 +961,7 @@ def test_file():
     """Basic %%writefile"""
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -965,7 +973,7 @@ def test_file_single_quote():
     """Basic %%writefile with embedded single quotes"""
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "'file1'")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -977,7 +985,7 @@ def test_file_double_quote():
     """Basic %%writefile with embedded double quotes"""
     with TemporaryDirectory() as td:
         fname = os.path.join(td, '"file1"')
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -989,7 +997,7 @@ def test_file_var_expand():
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
         ip.user_ns["filename"] = fname
-        ip.run_cell_magic("writefile", "$filename", "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("writefile", "$filename", "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -1000,7 +1008,7 @@ def test_file_unicode():
     """%%writefile with unicode cell"""
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file1")
-        ip.run_cell_magic("writefile", fname, "\n".join(["liné1", "liné2", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["liné1", "liné2",]))
         with codecs.open(fname, encoding="utf-8") as f:
             s = f.read()
         nt.assert_in("liné1\n", s)
@@ -1011,8 +1019,8 @@ def test_file_amend():
     """%%writefile -a amends files"""
     with TemporaryDirectory() as td:
         fname = os.path.join(td, "file2")
-        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2", ]))
-        ip.run_cell_magic("writefile", "-a %s" % fname, "\n".join(["line3", "line4", ]))
+        ip.run_cell_magic("writefile", fname, "\n".join(["line1", "line2",]))
+        ip.run_cell_magic("writefile", "-a %s" % fname, "\n".join(["line3", "line4",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)
@@ -1023,7 +1031,7 @@ def test_file_spaces():
     """%%file with spaces in filename"""
     with TemporaryWorkingDirectory() as td:
         fname = "file name"
-        ip.run_cell_magic("file", '"%s"' % fname, "\n".join(["line1", "line2", ]))
+        ip.run_cell_magic("file", '"%s"' % fname, "\n".join(["line1", "line2",]))
         with open(fname) as f:
             s = f.read()
         nt.assert_in("line1\n", s)

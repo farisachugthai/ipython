@@ -184,6 +184,7 @@ def getoutput(cmd):
     """
     return subprocess.getoutput(cmd)
 
+
 try:
     CommandLineToArgvW = ctypes.windll.shell32.CommandLineToArgvW
     CommandLineToArgvW.arg_types = [LPCWSTR, POINTER(c_int)]

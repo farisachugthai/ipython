@@ -7,6 +7,7 @@ from IPython.utils.capture import CapturedIO
 def setup_module():
     global ip
     from IPython.core.getipython import get_ipython
+
     ip = get_ipython()
 
 

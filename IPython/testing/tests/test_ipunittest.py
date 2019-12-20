@@ -55,6 +55,7 @@ from IPython.testing.ipunittest import ipdoctest, ipdocstring
 # Test classes and functions
 # -----------------------------------------------------------------------------
 
+
 @ipdoctest
 def simple_dt():
     """

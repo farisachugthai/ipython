@@ -7,6 +7,7 @@ class UltraDbg:
     """Refactoring things out of VerboseTB
 
     """
+
     def __init__(self, call_pdb=None, debugger_cls=None):
         self.call_pdb = call_pdb
         self.debugger_cls = debugger_cls or Pdb
@@ -79,5 +80,3 @@ class UltraDbg:
 
         if hasattr(self, "tb"):
             del self.tb
-
-

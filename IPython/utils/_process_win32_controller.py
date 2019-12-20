@@ -416,7 +416,7 @@ class Win32ShellCommandController(object):
                         return
                     raise ctypes.WinError()
                 # print("Called writefile")
-                data = data[bytesWritten.value:]
+                data = data[bytesWritten.value :]
 
     def _stdout_thread(self, handle, func):
         # Allocate the output buffer
@@ -430,7 +430,7 @@ class Win32ShellCommandController(object):
                 else:
                     raise ctypes.WinError()
             # FIXME: Python3
-            s = data.value[0: bytesRead.value]
+            s = data.value[0 : bytesRead.value]
             # print("\nv: %s" % repr(s), file=sys.stderr)
             func(s.decode("utf_8", "replace"))
 

@@ -36,7 +36,7 @@ basic_data = {
     "text/html": "<b>bold</b>",
 }
 basic_metadata = {
-    "image/png": {"width": 10, "height": 20, },
+    "image/png": {"width": 10, "height": 20,},
 }
 
 full_data = {

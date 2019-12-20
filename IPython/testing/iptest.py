@@ -615,7 +615,7 @@ def run_iptest():
     if section.name.startswith(("core", "IPython.core", "IPython.utils")):
         plugins.append(IPythonDoctest())
         argv.extend(
-            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt", ]
+            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt",]
         )
 
     # Use working directory set by parent process (see iptestcontroller)

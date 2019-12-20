@@ -24,7 +24,9 @@ num_tests = 0
 def setup_module():
     global ip
     from IPython.core.getipython import get_ipython
+
     ip = get_ipython()
+
 
 # -----------------------------------------------------------------------------
 # Test functions
