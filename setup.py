@@ -26,6 +26,7 @@ And now it does on Windows as well.
 #   Distributed under the terms of the Modified BSD License.
 # -----------------------------------------------------------------------------
 import os
+import runpy
 import sys
 
 from distutils.command.install_data import install_data
@@ -68,8 +69,13 @@ def execfile(fname, globs, locs=None):
 
 # release.py contains version, authors, license, url, keywords, etc.
 repo_root = os.path.dirname(os.path.abspath(__file__))
-execfile(os.path.join(repo_root, "IPython", "core", "release.py"), globals())
-
+# execfile(os.path.join(repo_root, "IPython", "core", "release.py"), globals())
+compile_file = os.path.join(repo_root, "IPython", "core", "release.py")
+ns = runpy.run_path(compile_file, init_globals=globals())
+if getattr(ns, 'version_info', None):
+    _version_major, _version_minor, _version_patch, _version_extra = getattr(ns, 'version_info')
+name = ns['name']
+version = ns['version']
 # ------------------------------------------------------------------------------
 # Things related to the IPython documentation
 # ------------------------------------------------------------------------------
@@ -95,17 +101,17 @@ execfile(os.path.join(repo_root, "IPython", "core", "release.py"), globals())
 # data_files = find_data_files()
 
 setup_args = dict(
-    name=name,
-    version=version,
-    description=description,
-    long_description=long_description,
-    author=author,
-    author_email=author_email,
-    url=url,
-    license=license,
-    platforms=platforms,
-    keywords=keywords,
-    classifiers=classifiers,
+    name=ns['name'],
+    version=ns['version'],
+    description=ns['description'],
+    long_description=ns['long_description'],
+    author=ns['author'],
+    author_email=ns['author_email'],
+    url=ns['url'],
+    license=ns['license'],
+    platforms=ns['platforms'],
+    keywords=ns['keywords'],
+    classifiers=ns['classifiers'],
     # cmdclass={'install_data': install_data_ext},
     project_urls={
         "Documentation": "https://ipython.readthedocs.io/",

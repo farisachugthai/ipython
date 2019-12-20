@@ -47,7 +47,7 @@ After pressing the trigger key, characters such as arrow keys or
 dots may also be used. However, they need to be put after their
 counterpart which stands in contrast to a system like LaTex.
 
-That is to say, `F\\\\vec<tab>` is correct, not `\\\\vec<tab>F`.
+That is to say, ``F\\\\vec<tab>`` is correct, not ``\\\\vec<tab>F``.
 
 Some browsers are known to display combining characters incorrectly.
 
@@ -56,7 +56,7 @@ Backward latex completion
 
 It is sometime challenging to know how to type a character, if you are using
 IPython, or any compatible frontend you can prepend backslash to the character
-and press `<tab>` to expand it to its latex form.
+and press :kbd:`Tab` to expand it to its LaTex form.
 
 .. code::
 
@@ -74,7 +74,7 @@ Starting with IPython 6.0, this module can make use of the Jedi library to
 generate completions both using static analysis of the code, and dynamically
 inspecting multiple namespaces. Jedi is an autocompletion and static analysis
 for Python. The APIs attached to this new mechanism is unstable and will
-raise unless use in an :any:`provisionalcompleter` context manager.
+raise unless use in an :exc:`provisionalcompleter` context manager.
 
 You will find that the following are experimental:
 
@@ -92,7 +92,7 @@ You will find that the following are experimental:
 
 We welcome any feedback on these new API, and we also encourage you to try this
 module in debug mode (start IPython with ``--Completer.debug=True``) in order
-to have extra logging information if :any:`jedi` is crashing, or if current
+to have extra logging information if :mod:`jedi` is crashing, or if current
 IPython completer pending deprecations are returning results not yet handled
 by `jedi`
 
@@ -1323,7 +1323,7 @@ class IPCompleter(Completer):
 
         Yields
         ------
-        :any:`Completion` object
+        :class:`Completion` object
 
         The cursor on a text can either be seen as being "in between"
         characters or "On" a character depending on the interface visible to
@@ -1374,7 +1374,7 @@ class IPCompleter(Completer):
     ) -> Iterator[Completion]:
         """Core completion function.
 
-        Same signature as :any:`completions`, with the extra 'timeout'
+        Same signature as :class:`Completions`, with the extra 'timeout'
         parameter (in seconds).
 
         Computing `jedi` completion ``.type`` can be quite expensive (it is a
@@ -1537,7 +1537,7 @@ class IPCompleter(Completer):
         Like complete but can also returns raw jedi completions as well as the
         origin of the completion text. This could (and should) be made much
         cleaner but that will be simpler once we drop the old (and stateful)
-        :any:`complete` API.
+        :meth:`complete` API.
 
         With current provisional API, cursor_pos act both (depending on the
         caller) as the offset in the ``text`` or ``line_buffer``, or as the

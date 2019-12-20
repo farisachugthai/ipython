@@ -44,12 +44,14 @@ from typing import List
 # -----------------------------------------------------------------------------
 _suffixes = all_suffixes()
 
+# Both of these timeouts are only used in 1 spot. Are they used elsewhere?
 TIMEOUT_STORAGE = 2
 
 # Time in seconds after which we give up
 TIMEOUT_GIVEUP = 20
 
 # Regular expression for the python import statement
+# TODO: Is this still used anywhere?
 import_re = re.compile(
     r"(?P<name>[a-zA-Z_][a-zA-Z0-9_]*?)"
     r"(?P<package>[/\\]__init__)?"
@@ -57,6 +59,7 @@ import_re = re.compile(
 )
 
 # RE for the ipython %run command (python + ipython scripts)
+# TODO: Is this still used anywhere?
 magic_run_re = re.compile(r".*([.]ipy|[.]ipynb|[.]py[w]?)$")
 
 

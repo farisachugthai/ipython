@@ -114,6 +114,13 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
     """
 
     def __init__(self):
+        """Calls super and checks if py versino >= 3.8.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            Why ValueError?
+        """
         if sys.version_info >= (3, 8):
             raise ValueError("DEPRECATED in Python 3.8+")
         self.depth = 0
@@ -141,6 +148,10 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
             raise SyntaxError()
         else:
             super().generic_visit(node)
+
+    def visit(self, node):
+        """Idk if theres any point to doing this this way."""
+        return super().visit(node)
 
 
 def _async_parse_cell(cell: str) -> ast.AST:

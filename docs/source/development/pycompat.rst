@@ -31,3 +31,40 @@ be removed in the future.
    `Python-Future <http://python-future.org/>`_
      Another compatibility tool, which focuses on writing code for Python 3 and
      making it work on Python 2.
+
+
+Not related entirely but here's the old IPython.utils.path.filefind docstring.
+
+.. currentmodule:: IPython.utils.path
+   :noindex:
+
+.. function:: filefind
+
+    This iterates through a sequence of paths looking for a file and returns
+    the full, absolute path of the first occurrence of the file.  If no set of
+    path dirs is given, the filename is tested as is, after running through
+    :func:`expandvars` and :func:`expanduser`.  Thus a simple call::
+
+        filefind('myfile.txt')
+
+    will find the file in the current working dir, but::
+
+        filefind('~/myfile.txt')
+
+    Will find the file in the users home directory.  This function does not
+    automatically try any paths, such as the cwd or the user's home directory.
+
+Parameters
+----------
+filename : str
+  The filename to look for.
+path_dirs : str, None or sequence of str
+  The sequence of paths to look for the file in.  If None, the filename
+  need to be absolute or be in the cwd.  If a string, the string is
+  put into a sequence and the searched.  If a sequence, walk through
+  each element and join with ``filename``, calling :func:`expandvars`
+  and :func:`expanduser` before testing for existence.
+
+Returns
+-------
+Raises :exc:`IOError` or returns absolute path to file.
