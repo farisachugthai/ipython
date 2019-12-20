@@ -263,3 +263,10 @@ class ProfileDirError(Exception):
         if msg is None:
             msg = ""
         return "{}\t{}".format(self.__class__.__name__, msg)
+
+
+class DemoError(Exception):
+
+    pass
+
+

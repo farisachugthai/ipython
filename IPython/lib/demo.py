@@ -186,15 +186,10 @@ import sys
 import pygments
 
 from IPython.core.getipython import get_ipython
+from IPython.core.error import DemoError
 from IPython.utils.text import marquee
-from IPython.utils import openpy
-from IPython.utils import py3compat
 
 __all__ = ["Demo", "IPythonDemo", "LineDemo", "IPythonLineDemo", "DemoError"]
-
-
-class DemoError(Exception):
-    pass
 
 
 def re_mark(mark):
@@ -730,9 +725,11 @@ def slide(
     while not demo.finished:
         demo()
         try:
-            py3compat.input("\n" + delimiter)
+            input("\n" + delimiter)
         except KeyboardInterrupt:
-            exit(1)
+            # Wtf you just silently exit on us?
+            # exit(1)
+            raise KeyboardInterrupt("Interrupted!")
 
 
 if __name__ == "__main__":

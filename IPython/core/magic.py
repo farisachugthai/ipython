@@ -44,6 +44,7 @@ from this module to use.::
 # -----------------------------------------------------------------------------
 
 import functools
+import inspect
 import os
 import re
 import sys
@@ -55,7 +56,6 @@ from decorator import decorator
 from traitlets import Bool, Dict, Instance, observe
 from traitlets.config.configurable import Configurable
 
-from IPython.core import oinspect
 from IPython.core.error import UsageError
 from IPython.core.inputtransformer2 import ESC_MAGIC, ESC_MAGIC2
 from IPython.utils.ipstruct import Struct
@@ -77,6 +77,7 @@ magic_escapes = dict(line=ESC_MAGIC, cell=ESC_MAGIC2)
 
 
 class Bunch:
+    """Where is this class used?"""
     pass
 
 
@@ -436,6 +437,9 @@ class MagicsManager(Configurable):
         # registered magic containers can be found there.
         self.registry[user_magics.__class__.__name__] = user_magics
 
+    def __repr__(self):
+        return "<Magics Manager>: {!r}".format(self.magic_name)
+
     def auto_status(self):
         """Return descriptive string with automagic status."""
         return self._auto_status[self.auto_magic]
@@ -577,6 +581,9 @@ class MagicsManager(Configurable):
         setattr(self.user_magics, alias_name, alias)
         record_magic(self.magics, magic_kind, alias_name, alias)
 
+    def __add__(self, *magic_objects):
+        """Is this a terrible idea?"""
+        return self.register(*magic_objects)
 
 class Magics(Configurable):
     """Base class for implementing magic functions.
@@ -653,10 +660,13 @@ class Magics(Configurable):
         # magics get screwed up.
         super(Magics, self).__init__(**kwargs)
 
+    def __repr__(self):
+        return "<Magic>: {!r}".format(self.magic_name)
+
     def arg_err(self, func):
         """Print docstring if incorrect arguments were passed"""
         print("Error in arguments:")
-        print(oinspect.getdoc(func))
+        print(inspect.getdoc(func))
 
     def format_latex(self, strng):
         """Format a string for latex inclusion.
@@ -790,7 +800,7 @@ class MagicAlias:
         self._in_call = False
 
     def __repr__(self):
-        return "{!r}".format(self.magic_name)
+        return "<Magic>: {!r}".format(self.magic_name)
 
     def __call__(self, *args, **kwargs):
         """Call the magic alias."""

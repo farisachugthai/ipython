@@ -32,6 +32,7 @@ except ImportError:
     LPCWSTR = None
     HLOCAL = None
 
+import subprocess
 from subprocess import STDOUT
 
 # our own imports
@@ -157,7 +158,17 @@ def system(cmd):
 
 
 def getoutput(cmd):
-    """Return standard output of executing cmd in a shell.
+    """Return output (stdout or stderr) of executing cmd in a shell.
+
+    Dude don't tell me the stdlib wasn't inspired by IPython, they phrase the
+    first sentence the same way.
+
+    Like getstatusoutput(), except the exit status is ignored and the return
+    value is a string containing the command's output.  Example:
+
+    >>> import subprocess
+    >>> subprocess.getoutput('ls /bin/ls')
+    '/bin/ls'
 
     Accepts the same arguments as os.system().
 
@@ -171,18 +182,7 @@ def getoutput(cmd):
     stdout : str
 
     """
-
-    with AvoidUNCPath() as path:
-        if path is not None:
-            cmd = '"pushd %s &&"%s' % (path, cmd)
-        out = process_handler(cmd, lambda p: p.communicate()[0], STDOUT)
-
-    if out is None:
-        # out = b''
-        # Wait why do we return bytes here?
-        out = ""
-    return out
-
+    return subprocess.getoutput(cmd)
 
 try:
     CommandLineToArgvW = ctypes.windll.shell32.CommandLineToArgvW

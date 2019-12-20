@@ -310,6 +310,7 @@ class IFrame:
         """return the embed iframe"""
         if self.params:
             from urllib.parse import urlencode  # Py 3
+
             params = "?" + urlencode(self.params)
         else:
             params = ""

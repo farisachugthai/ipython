@@ -14,15 +14,26 @@ cache:
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then
-    # forgot the user ughhhh
-    # Can not perform a '--user' install. User site-packages are not visible in this virtualenv.
-    # Guys they gave me a permissions error AND an error about using --user in a venv
-    # I'm turning sudo on. Actually sudo isn't used anymore
-    pip3 install --upgrade pip -r requirements.txt -e .
-    # all three OSes agree about 'pip3'
-    # no they don't travis you lied to me!
+    # this command works on linux but not on mac because of permission issues.
+
+        if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
+            - pip3 install --upgrade pip -r requirements.txt -e .
+
+        else
+            - wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+            - bash miniconda.sh -b -p $HOME/miniconda
+            - export PATH="$HOME/miniconda/bin:$PATH"
+            - hash -r
+            - conda config --set always_yes yes --set changeps1 no
+            - conda update -q conda
+            - conda config --add channels conda-forge
+            # Useful for debugging any issues with conda
+            - conda info -a
+            - conda create -q -n test-environment python=$CONDA_PY 'prompt_toolkit<3' ipython pytest matplotlib setuptools wheel nose coverage codecov
+            - source activate test-environment
+        fi
     else
-    python -m pip install -U pip -r requirements.txt -e .
+        - python -m pip install -U pip -r requirements.txt -e .
     fi
 
 script:
@@ -51,7 +62,7 @@ matrix:
           fi
     - python: "3.8-dev"
       dist: "bionic"
-      name: "Python 3.7.0 on Bionic Linux"
+      name: "Python 3.8-dev on Bionic Linux"
       before_install:
         - python setup.py build
         - |
@@ -59,9 +70,9 @@ matrix:
             pip install -r docs/doc-requirements.txt
             pip install --upgrade pytest
           fi
-    - python: "3.7-dev"
+    - python: "3.6"
       dist: "bionic"
-      name: "Python 3.7-dev on Bionic Linux"
+      name: "Python 3.6 on Bionic Linux"
       before_install:
         - python setup.py build
         - |
@@ -77,9 +88,8 @@ matrix:
       python: 3.6
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       env: TRAVIS_PYTHON_VERSION=3.6
-      name: "Python 3.6 on macOS"
+      name: "Python 3.6 on macOS - Conda"
       before_install:
-        - pip install --upgrade setuptools wheel nose coverage codecov
         - |
           if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
             env | sort
@@ -101,24 +111,24 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=3.7
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
-      before_install:
-        - pip install --upgrade setuptools wheel nose coverage codecov
-        - |
-          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-            env | sort
-            if ! which python$TRAVIS_PYTHON_VERSION; then
-              HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
-              HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
-            fi
-              python3 -m pip install virtualenv
-              python3 -m virtualenv -p $(which python$TRAVIS_PYTHON_VERSION) ~/travis-env
-              source ~/travis-env/bin/activate
-          fi
-          if [[ $GROUP == docs ]]; then
-            pip install -r docs/doc-requirements.txt
-            pip install --upgrade pytest
-          fi
-          - pip3 install -U -e . -r requirements.txt
+      # before_install:
+      #   - pip install --upgrade setuptools wheel nose coverage codecov
+      #   - |
+      #     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      #       env | sort
+      #       if ! which python$TRAVIS_PYTHON_VERSION; then
+      #         HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
+      #         HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
+      #       fi
+      #         python3 -m pip install virtualenv
+      #         python3 -m virtualenv -p $(which python$TRAVIS_PYTHON_VERSION) ~/travis-env
+      #         source ~/travis-env/bin/activate
+      #     fi
+      #     if [[ $GROUP == docs ]]; then
+      #       pip install -r docs/doc-requirements.txt
+      #       pip install --upgrade pytest
+      #     fi
+      #     - pip3 install -U -e . -r requirements.txt
     - os: windows
       language: shell
       env:

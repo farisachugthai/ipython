@@ -55,6 +55,18 @@ class TBTools(Colorable):
         handling, debugging, user interaction, user configuration, traceback
         formatting, and differentiating exceptions based on cause IN ONE CLASS.
 
+    Notes
+    -----
+    The superclass is a really simple implementation.::
+
+        class Colorable(Configurable):
+            default_style = Unicode("LightBG").tag(config=True)
+
+    No joke. So if you want to move it here or simply remove
+    it as the superclass, continue subclassing Configurable and add the
+    default_style attribute.
+    it's not like it's that hard.
+
     """
 
     tb_offset = 0
