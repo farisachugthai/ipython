@@ -1,47 +1,20 @@
-"""IPython terminal interface using prompt_toolkit.
+"""IPython terminal interface using prompt_toolkit"""
 
-.. todo::
-    Should we move IPython.utils.terminal into this file? Or at least into
-    this directory? Because *I think* this is the only file where it's used
-    and seeing the method :meth:`~TerminalInteractiveShell.restore_term_title`
-    simply calling a function restore_term_title is
-
-    A) Confusing because idk if it's bound to anything or we're just having fun
-       with abbreviations
-
-    B) Indirect and not a mixin
-
-.. data:: _use_simple_prompt
-
-    ('IPY_TEST_SIMPLE_PROMPT' in os.environ) or (not _is_tty)
-
-"""
 import asyncio
 import os
 import sys
-import traceback
+import warnings
 from warnings import warn
 
-from pygments.token import Token
-from pygments.style import Style
-from pygments.styles import get_style_by_name
-from prompt_toolkit import __version__ as ptk_version
-from prompt_toolkit.styles.pygments import (
-    style_from_pygments_cls,
-    style_from_pygments_dict,
+from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
+from IPython.utils import utils_io
+from IPython.utils.py3compat import input
+from IPython.utils.terminal import (
+    toggle_set_term_title,
+    set_term_title,
+    restore_term_title,
 )
-from prompt_toolkit.styles import DynamicStyle, merge_styles
-from prompt_toolkit.shortcuts import PromptSession, CompleteStyle
-from prompt_toolkit.patch_stdout import patch_stdout
-from prompt_toolkit.output import ColorDepth
-from prompt_toolkit.layout.processors import (
-    ConditionalProcessor,
-    HighlightMatchingBracketProcessor,
-)
-from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.formatted_text import PygmentsTokens
-from prompt_toolkit.filters import HasFocus, Condition, IsDone
-from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
+from IPython.utils.process import abbrev_cwd
 from traitlets import (
     Bool,
     Unicode,
@@ -56,19 +29,36 @@ from traitlets import (
     Any,
     validate,
 )
-from IPython.utils.process import abbrev_cwd
-from IPython.utils.terminal import (
-    toggle_set_term_title,
-    set_term_title,
-    restore_term_title,
-)
-from IPython.core.profiledir import ProfileDir, ProfileDirError
-from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
-from IPython.terminal.prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
 
-# from .ptutils import IPythonPTCompleter
-# from prompt_toolkit.completion.base import ThreadedCompleter, merge_completers
-# from prompt_toolkit.completion.fuzzy_completer import FuzzyCompleter
+from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
+from prompt_toolkit.filters import HasFocus, Condition, IsDone
+from prompt_toolkit.formatted_text import PygmentsTokens
+from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.layout.processors import (
+    ConditionalProcessor,
+    HighlightMatchingBracketProcessor,
+)
+from prompt_toolkit.output import ColorDepth
+from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.shortcuts import PromptSession, CompleteStyle, print_formatted_text
+from prompt_toolkit.styles import DynamicStyle, merge_styles
+from prompt_toolkit.styles.pygments import (
+    style_from_pygments_cls,
+    style_from_pygments_dict,
+)
+from prompt_toolkit import __version__ as ptk_version
+
+from pygments.styles import get_style_by_name
+from pygments.style import Style
+from pygments.token import Token
+
+from IPython.core.debugger import CorePdb as Pdb
+from .debugger import TerminalPdb
+from .magics import TerminalMagics
+from .pt_inputhooks import get_inputhook_name_and_func
+from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
+from .ptutils import IPythonPTCompleter, IPythonPTLexer
+from .shortcuts import create_ipython_shortcuts
 
 DISPLAY_BANNER_DEPRECATED = object()
 PTK3 = ptk_version.startswith("3.")
@@ -94,19 +84,6 @@ _style_overrides_linux = {
 
 
 def get_default_editor():
-    """Check user environment for the editor.
-
-    If :envvar:`EDITOR` doesn't exist, it returns vi on POSIX systems and
-    notepad on Windows.
-
-    .. todo:: Why don't we use something in IPython.lib.editorhooks?
-
-    Returns
-    -------
-    environ_key : str
-        os.environ.EDITOR
-
-    """
     try:
         return os.environ["EDITOR"]
     except KeyError:
@@ -139,16 +116,6 @@ _use_simple_prompt = ("IPY_TEST_SIMPLE_PROMPT" in os.environ) or (not _is_tty)
 
 
 def black_reformat_handler(text_before_cursor):
-    """
-
-    Parameters
-    ----------
-    text_before_cursor :
-
-    Returns
-    -------
-
-    """
     import black
 
     formatted_text = black.format_str(text_before_cursor, mode=black.FileMode())
@@ -158,17 +125,6 @@ def black_reformat_handler(text_before_cursor):
 
 
 class TerminalInteractiveShell(InteractiveShell):
-    """The interactive shell component for the terminal.
-
-    .. note:: All attributes are :class:`traitlets.config.Configurables`.
-
-    .. caution::
-        Still reorganizing all class attributes and moving them to the top.
-        This list is not comprehensive.
-
-    """
-
-    rl_next_input = None
     mime_renderers = Dict().tag(config=True)
 
     space_for_menu = Integer(
@@ -177,33 +133,23 @@ class TerminalInteractiveShell(InteractiveShell):
         "to reserve for the completion menu",
     ).tag(config=True)
 
-    pt_app = Any(help="Prompt toolkit PromptSession", allow_none=True).tag(config=True)
+    pt_app = None
+    debugger_history = None
 
     simple_prompt = Bool(
         _use_simple_prompt,
-        help="""Use `raw_input` for the REPL, without
-completion and prompt colors.
-Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR.
-Known usage are:
+        help="""Use `raw_input` for the REPL, without completion and prompt colors.
 
-IPython own testing machinery, and emacs inferior-shell integration through elpy.
+            Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
+            IPython own testing machinery, and emacs inferior-shell integration through elpy.
 
-This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
-environment variable is set, or the current terminal is not a tty.
-""",
+            This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
+            environment variable is set, or the current terminal is not a tty.""",
     ).tag(config=True)
 
     @property
     def debugger_cls(self):
-        """
-
-        Returns
-        -------
-
-        """
-        from .debugger import TerminalPdb, CorePdb
-
-        return CorePdb if self.simple_prompt else TerminalPdb
+        return Pdb if self.simple_prompt else TerminalPdb
 
     confirm_exit = Bool(
         True,
@@ -213,11 +159,8 @@ environment variable is set, or the current terminal is not a tty.
         you can force a direct exit without any confirmation.""",
     ).tag(config=True)
 
-    # TODO: Would it make more sense to use the
-    # prompt_toolkit.enums.EditingMode class here?
     editing_mode = Unicode(
-        default_value="EditingMode.EMACS".lower(),
-        help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
+        "emacs", help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
     ).tag(config=True)
 
     autoformatter = Unicode(
@@ -233,7 +176,7 @@ environment variable is set, or the current terminal is not a tty.
 
     # We don't load the list of styles for the help string, because loading
     # Pygments plugins takes time and can cause unexpected errors.
-    highlighting_style: Union = Union(
+    highlighting_style = Union(
         [Unicode("legacy"), Type(klass=Style)],
         help="""The name or class of a Pygments style to use for syntax
         highlighting. To see available styles, run `pygmentize -L styles`.""",
@@ -253,51 +196,9 @@ environment variable is set, or the current terminal is not a tty.
 
     @observe("editing_mode")
     def _editing_mode(self, change):
-        """Observes editing mode parameter.
-
-        Parameters
-        ----------
-        change : dict
-            See the traitlets documentation for an explanation of this parameter
-            as it's been special cased and doesn't behave as other possible
-            parameters to the observe decorator do.
-
-        """
         u_mode = change.new.upper()
         if self.pt_app:
             self.pt_app.editing_mode = u_mode
-
-    @observe("autoformatter")
-    def _autoformatter_changed(self, change):
-        """Observe the autoformatter parameter of the config dict.
-
-        Raises
-        ------
-        :exc:`ValueError`
-
-        Notes
-        -----
-        Honestly haven't figured out where the reformat handler is implemented
-        yet.
-        Just wanted to note that :mod:`fileinput` was literally made for this.
-
-        From the Official Docs:
-
-            A FileInput instance can be used as a context manager in the
-            with statement. In this example, input is closed after the with
-            statement is exited, even if an exception occurs:
-
-                with FileInput(files=('spam.txt', 'eggs.txt')) as input:
-                    process(input)
-
-        """
-        formatter = change.new
-        if formatter is None:
-            self.reformat_handler = lambda x: x
-        elif formatter == "black":
-            self.reformat_handler = black_reformat_handler
-        else:
-            raise ValueError
 
     @observe("autoformatter")
     def _autoformatter_changed(self, change):
@@ -315,7 +216,6 @@ environment variable is set, or the current terminal is not a tty.
         self.refresh_style()
 
     def refresh_style(self):
-        """Invokes :meth:`_make_style_from_name_or_cls` on 'highlighting_style'."""
         self._style = self._make_style_from_name_or_cls(self.highlighting_style)
 
     highlighting_style_overrides = Dict(
@@ -330,40 +230,39 @@ environment variable is set, or the current terminal is not a tty.
             "should print 'TRUECOLOR' in orange: "
             'printf "\\x1b[38;2;255;100;0mTRUECOLOR\\x1b[0m\\n"'
         ),
-        allow_none=True,
     ).tag(config=True)
 
     editor = Unicode(
         get_default_editor(),
         help="Set the editor used by IPython (default to $EDITOR/vi/notepad).",
-        allow_none=True,
     ).tag(config=True)
 
     prompts_class = Type(
         Prompts, help="Class used to generate Prompt token for prompt_toolkit"
     ).tag(config=True)
 
-    prompts = Instance(Prompts, help="I think it's just an alias for prompts_class")
+    prompts = Instance(Prompts)
 
     @default("prompts")
     def _prompts_default(self):
         return self.prompts_class(self)
 
+    #    @observe('prompts')
+    #    def _(self, change):
+    #        self._update_layout()
+
     @default("displayhook_class")
     def _displayhook_class_default(self):
         return RichPromptDisplayHook
 
-    term_title = Bool(
-        True, help="Automatically set the terminal title", allow_none=True,
-    ).tag(config=True)
+    term_title = Bool(True, help="Automatically set the terminal title").tag(
+        config=True
+    )
 
     term_title_format = Unicode(
         "IPython: {cwd}",
-        help=(
-            "Customize the terminal title format."
-            "This is a python format string. "
-            "Available substitutions are: {cwd}."
-        ),
+        help="Customize the terminal title format.  This is a python format string. "
+        + "Available substitutions are: {cwd}.",
     ).tag(config=True)
 
     display_completions = Enum(
@@ -401,13 +300,6 @@ environment variable is set, or the current terminal is not a tty.
         True, help="Display the current vi mode (when using vi editing mode)."
     ).tag(config=True)
 
-    Completer = Any(
-        help="Completer for the shell",
-        # allow_none=False
-        # tried setting it to both the string Completer and the
-        # imported object IPythonPTCompleter and that didn't go well
-    ).tag(config=True)
-
     @observe("term_title")
     def init_term_title(self, change=None):
         # Enable or disable the terminal title.
@@ -422,42 +314,16 @@ environment variable is set, or the current terminal is not a tty.
             restore_term_title()
 
     def init_display_formatter(self):
-        super().init_display_formatter()
+        super(TerminalInteractiveShell, self).init_display_formatter()
         # terminal only supports plain text
         self.display_formatter.active_types = ["text/plain"]
         # disable `_ipython_display_`
         self.display_formatter.ipython_display_formatter.enabled = False
 
-    def init_completer(self):
-        from IPython.core.completer import IPCompleter
-
-        self.Completer = IPCompleter(shell=self)
-        super().init_completer()
-        # Nope doesn't work. Or at least we have to configure more things
-        # Error raised on TerminalInteractiveShell not having user_ns???
-        # super().init_completer()
-
     def init_prompt_toolkit_cli(self):
-        """The entry point for prompt_toolkit!
-
-        Originally didn't have a docstring so easy to over look but this is a
-        really important method here.
-
-        .. todo:: If this method or the class could take ``**kwargs`` so that
-                  we could pass a glob to PromptSession and arbitrarily add stuff
-                  that'd be dope. Also if we could refactor more of the details out
-                  of here so that by the time we're actually calling this function,
-                  everything's set up and we're just putting instance attributes together,
-                  I'd imagine that'd make debugging 1000x easier.
-
-        Notes
-        -----
-        Whoo! Now the call to PromptSession is entirely made from attributes
-        of self. No more locals that make this all hard to read.
-
-        """
         if self.simple_prompt:
-
+            # Fall back to plain non-interactive output for tests.
+            # This is very limited.
             def prompt():
                 prompt_text = "".join(x[1] for x in self.prompts.in_prompt_tokens())
                 lines = [input(prompt_text)]
@@ -472,12 +338,10 @@ environment variable is set, or the current terminal is not a tty.
             return
 
         # Set up keyboard shortcuts
-        from IPython.terminal.shortcuts import create_ipython_shortcuts
-
-        self.key_bindings = create_ipython_shortcuts(self)
+        key_bindings = create_ipython_shortcuts(self)
 
         # Pre-populate history from IPython's history database
-        self.history = InMemoryHistory()
+        history = InMemoryHistory()
         last_cell = u""
         for __, ___, cell in self.history_manager.get_tail(
             self.history_load_length, include_latest=True
@@ -485,21 +349,20 @@ environment variable is set, or the current terminal is not a tty.
             # Ignore blank lines and consecutive duplicates
             cell = cell.rstrip()
             if cell and (cell != last_cell):
-                self.history.append_string(cell)
+                history.append_string(cell)
                 last_cell = cell
 
         self._style = self._make_style_from_name_or_cls(self.highlighting_style)
-        self.completer = self.init_completer()
         self.style = DynamicStyle(lambda: self._style)
 
+        editing_mode = getattr(EditingMode, self.editing_mode.upper())
+
         self.pt_loop = asyncio.new_event_loop()
-        if self.pt_loop is not None:
-            self.enable_gui()
         self.pt_app = PromptSession(
-            editing_mode=self.editing_mode.upper(),
-            key_bindings=self.key_bindings,
-            history=self.history,
-            completer=self.Completer,
+            editing_mode=editing_mode,
+            key_bindings=key_bindings,
+            history=history,
+            completer=IPythonPTCompleter(shell=self),
             enable_history_search=self.enable_history_search,
             style=self.style,
             include_default_pygments_style=False,
@@ -510,7 +373,8 @@ environment variable is set, or the current terminal is not a tty.
         )
 
     def _make_style_from_name_or_cls(self, name_or_cls):
-        """Small wrapper that make an IPython compatible style from a style name.
+        """
+        Small wrapper that make an IPython compatible style from a style name
 
         We need that to add style for prompt ... etc.
         """
@@ -556,10 +420,6 @@ environment variable is set, or the current terminal is not a tty.
                     )
             elif legacy == "nocolor":
                 style_cls = _NoStyle
-                # hold up how is this missing from master
-                # elif legacy == 'nocolor':
-                #     style_cls = _NoStyle
-
                 style_overrides = {}
             else:
                 raise ValueError("Got unknown colors: ", legacy)
@@ -568,7 +428,6 @@ environment variable is set, or the current terminal is not a tty.
                 style_cls = get_style_by_name(name_or_cls)
             else:
                 style_cls = name_or_cls
-
             style_overrides = {
                 Token.Prompt: "#009900",
                 Token.PromptNum: "#ansibrightgreen bold",
@@ -587,15 +446,6 @@ environment variable is set, or the current terminal is not a tty.
 
     @property
     def pt_complete_style(self):
-        """Shows options for prompt toolkits completion styles.
-
-        prompt_toolkit.shortcuts.CompleteStyle[self.display_completions]
-
-        Returns
-        -------
-        Parameter 'display_completions'
-
-        """
         return {
             "multicolumn": CompleteStyle.MULTI_COLUMN,
             "column": CompleteStyle.COLUMN,
@@ -604,17 +454,15 @@ environment variable is set, or the current terminal is not a tty.
 
     @property
     def color_depth(self):
-        """Return (ColorDepth.TRUE_COLOR if self.true_color else None)."""
         return ColorDepth.TRUE_COLOR if self.true_color else None
 
     def _extra_prompt_options(self):
-        """Return the current layout option for the current InteractiveShell."""
+        """
+        Return the current layout option for the current Terminal InteractiveShell
+        """
 
         def get_message():
-            """return PygmentsTokens(self.prompts.in_prompt_tokens())."""
             return PygmentsTokens(self.prompts.in_prompt_tokens())
-
-        from .ptutils import IPythonPTLexer
 
         if self.editing_mode == "emacs":
             # with emacs mode the prompt is (usually) static, so we call only
@@ -655,25 +503,23 @@ environment variable is set, or the current terminal is not a tty.
         return options
 
     def prompt_for_code(self):
-        """
-        In order to make sure that asyncio code written in the
-        interactive shell doesn't interfere with the prompt, we run the
-        prompt in a different event loop.
-
-        If we don't do this, people could spawn coroutine with a
-        while/true inside which will freeze the prompt.
-        """
         if self.rl_next_input:
             default = self.rl_next_input
             self.rl_next_input = None
         else:
             default = ""
 
-            try:
-                old_loop = asyncio.get_event_loop()
-            except RuntimeError:
-                # This happens when the user used `asyncio.run()`.
-                old_loop = None
+        # In order to make sure that asyncio code written in the
+        # interactive shell doesn't interfere with the prompt, we run the
+        # prompt in a different event loop.
+        # If we don't do this, people could spawn coroutine with a
+        # while/true inside which will freeze the prompt.
+
+        try:
+            old_loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # This happens when the user used `asyncio.run()`.
+            old_loop = None
 
         asyncio.set_event_loop(self.pt_loop)
         try:
@@ -687,52 +533,73 @@ environment variable is set, or the current terminal is not a tty.
 
         return text
 
+    def enable_win_unicode_console(self):
+        # Since IPython 7.10 doesn't support python < 3.6 and PEP 528, Python uses the unicode APIs for the Windows
+        # console by default, so WUC shouldn't be needed.
+        from warnings import warn
+
+        warn(
+            "`enable_win_unicode_console` is deprecated since IPython 7.10, does not do anything and will be removed in the future",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
     def init_io(self):
-        """Literally only imports colorama if sys.platform==win32 or cli.
+        if sys.platform not in {"win32", "cli"}:
+            return
 
-        Got rid of it in the superclass as well. Both invoke classes we got rid
-        """
+        import colorama
 
-    pass
+        colorama.init()
+
+        # For some reason we make these wrappers around stdout/stderr.
+        # For now, we need to reset them so all output gets coloured.
+        # https://github.com/ipython/ipython/issues/8669
+        # io.std* are deprecated, but don't show our own deprecation warnings
+        # during initialization of the deprecated API.
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            io.stdout = utils_io.IOStream(sys.stdout)
+            io.stderr = utils_io.IOStream(sys.stderr)
 
     def init_magics(self):
-        super().init_magics()
-        from IPython.terminal.magics import TerminalMagics
-
+        super(TerminalInteractiveShell, self).init_magics()
         self.register_magics(TerminalMagics)
 
     def init_alias(self):
-        """The parent class defines aliases that can be safely used with any
-        frontend.
+        # The parent class defines aliases that can be safely used with any
+        # frontend.
+        super(TerminalInteractiveShell, self).init_alias()
 
-        After calling the super method.
-
-        Now define aliases that only make sense on the terminal, because they
-        need direct access to the console in a way that we can't emulate in
-        GUI or web frontend.
-
-        Gotta admit I'm very confused why this code exists at all though.::
-
-        """
-        super().init_alias()
-
+        # Now define aliases that only make sense on the terminal, because they
+        # need direct access to the console in a way that we can't emulate in
+        # GUI or web frontend
         if os.name == "posix":
             for cmd in ("clear", "more", "less", "man"):
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
+    def __init__(self, *args, **kwargs):
+        super(TerminalInteractiveShell, self).__init__(*args, **kwargs)
+        self.init_prompt_toolkit_cli()
+        self.init_term_title()
+        self.keep_running = True
+
+        self.debugger_history = InMemoryHistory()
+
     def ask_exit(self):
-        """Sets 'keep_running' parameter to False."""
         self.keep_running = False
 
-    def interact(self):
-        """An oddly undocumented method.
+    rl_next_input = None
 
-        When running this is the method that calls a lot of the mixin classes'
-        methods. For example, this will initiate ``run_code``.
+    def interact(self, display_banner=DISPLAY_BANNER_DEPRECATED):
 
-        Also of all the places to have no try/excepts, our self.run_code
-        block DEFINITELY should have one.
-        """
+        if display_banner is not DISPLAY_BANNER_DEPRECATED:
+            warn(
+                "interact `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         self.keep_running = True
         while self.keep_running:
             print(self.separate_in, end="")
@@ -740,41 +607,16 @@ environment variable is set, or the current terminal is not a tty.
             try:
                 code = self.prompt_for_code()
             except EOFError:
-                self.check_exit()
+                if (not self.confirm_exit) or self.ask_yes_no(
+                    "Do you really want to exit ([y]/n)?", "y", "n"
+                ):
+                    self.ask_exit()
 
             else:
                 if code:
-                    try:
-                        self.run_cell(code, store_history=True)
-                    except KeyboardInterrupt:
-                        self.log.warning("Interrupted!")
-                    except EOFError:
-                        self.check_exit()
-                    except ModuleNotFoundError:
-                        self.log.error("Error: Module Not Found!")
-                    except OSError as e:
-                        self.log.error("Error: {}".format(e.__traceback__))
-                    except BaseException as e:
-                        self.log.warning(e)
-
-    def check_exit(self):
-        """A quicker way of checking if the user really wants to exit."""
-        if (not self.confirm_exit) or self.ask_yes_no(
-            "Do you really want to exit ([y]/n)?", "y", "n"
-        ):
-            self.ask_exit()
+                    self.run_cell(code, store_history=True)
 
     def mainloop(self, display_banner=DISPLAY_BANNER_DEPRECATED):
-        """I think this is the method to drives the whole application.
-
-        It calls ``while True:: self.interact()`` which seems like it.
-
-        Parameters
-        -----------
-        display_banner : str
-            Deprecated parameter don't worry about it.
-
-        """
         # An extra layer of protection in case someone mashing Ctrl-C breaks
         # out of our internal code.
         if display_banner is not DISPLAY_BANNER_DEPRECATED:
@@ -783,8 +625,6 @@ environment variable is set, or the current terminal is not a tty.
                 DeprecationWarning,
                 stacklevel=2,
             )
-        self.init_prompt_toolkit_cli()
-
         while True:
             try:
                 self.interact()
@@ -804,27 +644,13 @@ environment variable is set, or the current terminal is not a tty.
     _inputhook = None
 
     def inputhook(self, context):
-        """
-
-        Parameters
-        ----------
-        context :
-        """
         if self._inputhook is not None:
             self._inputhook(context)
 
     active_eventloop = None
 
     def enable_gui(self, gui=None):
-        """
-
-        Parameters
-        ----------
-        gui :
-        """
         if gui and (gui != "inline"):
-            from IPython.terminal.pt_inputhooks import get_inputhook_name_and_func
-
             self.active_eventloop, self._inputhook = get_inputhook_name_and_func(gui)
         else:
             self.active_eventloop = self._inputhook = None
@@ -846,7 +672,8 @@ environment variable is set, or the current terminal is not a tty.
                 # this inputhook for the prompt.
                 self.pt_loop = new_eventloop_with_inputhook(self._inputhook)
             else:
-
+                # When there's no inputhook, run the prompt in a separate
+                # asyncio event loop.
                 self.pt_loop = asyncio.new_event_loop()
 
     # Run !system commands directly, not through pipes, so terminal programs
@@ -854,21 +681,7 @@ environment variable is set, or the current terminal is not a tty.
     system = InteractiveShell.system_raw
 
     def auto_rewrite_input(self, cmd):
-        """Overridden from the parent class to use fancy rewriting prompt.
-
-        Parameters
-        ----------
-        cmd : str
-            Tokens to print for the new prompt.
-
-        Notes
-        ------
-        Probably worth mentioning to anyone implementing a modified
-        :class:`~IPython.terminal.prompts.Prompts` class that this method
-        expects the new class to have a method
-        :meth:`~prompts.rewrite_prompt_tokens`.
-
-        """
+        """Overridden from the parent class to use fancy rewriting prompt"""
         if not self.show_rewritten_input:
             return
 
@@ -884,14 +697,6 @@ environment variable is set, or the current terminal is not a tty.
 
     _prompts_before = None
 
-    @staticmethod
-    def execfile(fname, globs, locs=None):
-        """Nabbed from the setup.py. Honestly it's surprising that we don't have these sitting around."""
-        locs = locs or globs
-        with open(fname) as f:
-            # exec(compile(f.read(), fname, "exec"), globs, locs)
-            exec(compile(f.read(), "<string>", "exec"), globs, locs)
-
     def switch_doctest_mode(self, mode):
         """Switch prompts to classic for %doctest_mode"""
         if mode:
@@ -901,80 +706,8 @@ environment variable is set, or the current terminal is not a tty.
             self.prompts = self._prompts_before
             self._prompts_before = None
 
-    def __repr__(self):
-        return "{}\t{}".format(self.__class__.__name__, self.ipython_dir)
 
-    def init_profile_dir(self, profile_dir=None):
-        """Modify this so we have a none argument for profile_dir.
-
-        Wait hold on did we bind the ipython dir argument yet?
-        """
-        self.log.debug(
-            "IPython_dir is bound to: %s in"
-            "terminal.interactiveshell: init_profile_dir",
-            self.ipython_dir,
-        )
-        if profile_dir is not None:
-            # can't do this. ipython_dir == str. profile_dir is instance of ProfileDir
-            # self.ipython_dir = profile_dir
-            self.profile_dir = profile_dir
-        else:
-            if self.ipython_dir is not None:
-                super().init_ipython_dir(ipython_dir=self.ipython_dir)
-            else:
-                super().init_ipython_dir()
-        super().init_profile_dir(self.profile_dir)
-
-    def showsyntaxerror(self, filename=None, **kwargs):
-        """Display the syntax error that just occurred.
-
-        Sorry JetBrains but I'm gonna opt out of deciphering the
-        interactive shell implementation, and rather then do so
-        simply copy paste your version :D
-
-        Parameters
-        ----------
-        filename :
-        **kwargs :
-
-        """
-        # Override for avoid using sys.excepthook PY-12600
-        exception_type, value, tb = sys.exc_info()
-        sys.last_type = exception_type
-        sys.last_value = value
-        sys.last_traceback = tb
-        if filename and exception_type is SyntaxError:
-            # Work hard to stuff the correct filename in the exception
-            try:
-                msg, (dummy_filename, lineno, offset, line) = value.args
-            except ValueError:
-                # Not the format we expect; leave it alone
-                pass
-            else:
-                # Stuff in the right filename
-                value = SyntaxError(msg, (filename, lineno, offset, line))
-                sys.last_value = value
-        _ = traceback.format_exception_only(exception_type, value)
-        sys.stderr.write("".join(_))
-
-    def showtraceback(self, *args, **kwargs):
-        """Display the exception that just occurred."""
-        # Override for avoid using sys.excepthook PY-12600
-        try:
-            exception_type, value, tb = sys.exc_info()
-            sys.last_type = exception_type
-            sys.last_value = value
-            sys.last_traceback = tb
-            tblist = traceback.extract_tb(tb)
-            del tblist[:1]
-            lines = traceback.format_list(tblist)
-            if lines:
-                lines.insert(0, "Traceback (most recent call last):\n")
-            lines.extend(traceback.format_exception_only(exception_type, value))
-        finally:
-            tblist = tb = None
-        sys.stderr.write("".join(lines))
-
+#        self._update_layout()
 
 InteractiveShellABC.register(TerminalInteractiveShell)
 

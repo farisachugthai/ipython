@@ -1,9 +1,12 @@
+.. _building:
+
 ================
 Building IPython
 ================
 
 .. module:: building-ipython
    :synopsis: Notes for those interested in contributing to IPython.
+
 
 Documentation
 =============
@@ -110,3 +113,38 @@ The IPython project currently uses ``nose`` for it's unit testing.
 
 A :file:`../../IPython/conftest.py` file exists for usage with pytest;
 however, this integration is still being actively worked on.
+
+I don't know where to note this because it looks like these docs are devoid
+of any mention of the test suite.
+
+I simply wanted to note that we have a nose plugin; even though, it's not
+well advertised.
+
+.. code-block:: rst
+
+   File:        /usr/lib/python3.8/site-packages/nose/sphinx/pluginopts.py
+   Docstring:
+   Adds a sphinx directive that can be used to automatically document a plugin.
+
+   this::
+
+    .. autoplugin :: nose.plugins.foo
+       :plugin: Pluggy
+
+   produces::
+
+     .. automodule :: nose.plugins.foo
+
+     Options
+     -------
+
+     .. cmdoption :: --foo=BAR, --fooble=BAR
+
+       Do the foo thing to the new thing.
+
+     Plugin
+     ------
+
+     .. autoclass :: nose.plugins.foo.Pluggy
+        :members:
+

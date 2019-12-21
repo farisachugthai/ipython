@@ -190,6 +190,9 @@ match PEP 440, in order to avoid surprise at the time of build upload.
 
 We encourage creating a test build of the docs as well.
 
+Is this section the only spot where the tests are even mentioned???
+I guess I'll start taking notes at :ref:`building`.
+
 6. Create and push the new tag
 ------------------------------
 

@@ -133,34 +133,35 @@ class SubProcessTestCase(tt.TempFileMixin):
         out = getoutput('%s "%s"' % (python, self.fname))
         # we can't rely on the order the line buffered streams are flushed
         try:
-            self.assertEqual(out, "on stderron stdout")
+            self.assertEqual(out, b"on stderron stdout")
         except AssertionError:
-            self.assertEqual(out, "on stdouton stderr")
+            self.assertEqual(out, b"on stdouton stderr")
 
     def test_getoutput_quoted(self):
         out = getoutput('%s -c "print (1)"' % python)
-        self.assertEqual(out.strip(), "1")
+        self.assertEqual(out.strip(), b"1")
 
     # Invalid quoting on windows
     @dec.skip_win32
     def test_getoutput_quoted2(self):
+        """Uh I'm sorry if this isn't kosher but I'm changing the assert equals to bytes."""
         out = getoutput("%s -c 'print (1)'" % python)
-        self.assertEqual(out.strip(), "1")
+        self.assertEqual(out.strip(), b"1")
         out = getoutput("%s -c 'print (\"1\")'" % python)
-        self.assertEqual(out.strip(), "1")
+        self.assertEqual(out.strip(), b"1")
 
     def test_getoutput_error(self):
         out, err = getoutputerror('%s "%s"' % (python, self.fname))
-        self.assertEqual(out, "on stdout")
-        self.assertEqual(err, "on stderr")
+        self.assertEqual(out, b"on stdout")
+        self.assertEqual(err, b"on stderr")
 
     def test_get_output_error_code(self):
         quiet_exit = '%s -c "import sys; sys.exit(1)"' % python
         out, err, code = get_output_error_code(quiet_exit)
-        self.assertEqual(out, "")
-        self.assertEqual(err, "")
+        self.assertEqual(out, b"")
+        self.assertEqual(err, b"")
         self.assertEqual(code, 1)
         out, err, code = get_output_error_code('%s "%s"' % (python, self.fname))
-        self.assertEqual(out, "on stdout")
-        self.assertEqual(err, "on stderr")
+        self.assertEqual(out, b"on stdout")
+        self.assertEqual(err, b"on stderr")
         self.assertEqual(code, 0)

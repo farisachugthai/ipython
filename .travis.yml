@@ -111,24 +111,24 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=3.7
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
-      # before_install:
-      #   - pip install --upgrade setuptools wheel nose coverage codecov
-      #   - |
-      #     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      #       env | sort
-      #       if ! which python$TRAVIS_PYTHON_VERSION; then
-      #         HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
-      #         HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
-      #       fi
-      #         python3 -m pip install virtualenv
-      #         python3 -m virtualenv -p $(which python$TRAVIS_PYTHON_VERSION) ~/travis-env
-      #         source ~/travis-env/bin/activate
-      #     fi
-      #     if [[ $GROUP == docs ]]; then
-      #       pip install -r docs/doc-requirements.txt
-      #       pip install --upgrade pytest
-      #     fi
-      #     - pip3 install -U -e . -r requirements.txt
+      before_install:
+        - pip install --upgrade setuptools wheel nose coverage codecov
+        - |
+          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+            env | sort
+            if ! which python$TRAVIS_PYTHON_VERSION; then
+              HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
+              HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
+            fi
+              python3 -m pip install virtualenv
+              python3 -m virtualenv -p $(which python$TRAVIS_PYTHON_VERSION) ~/travis-env
+              source ~/travis-env/bin/activate
+          fi
+          if [[ $GROUP == docs ]]; then
+            pip install -r docs/doc-requirements.txt
+            pip install --upgrade pytest
+          fi
+          - pip3 install -U -e . -r requirements.txt
     - os: windows
       language: shell
       env:
