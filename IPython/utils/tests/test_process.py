@@ -30,6 +30,7 @@ from IPython.utils._process_common import (
 )
 
 from IPython.testing import decorators as dec
+from IPython.testing.decorators import has_pywin32
 from IPython.testing import tools as tt
 
 python = os.path.basename(sys.executable)
@@ -46,20 +47,6 @@ def test_find_cmd_ls():
     path = find_cmd("ls")
     if path is not None:
         nt.assert_true(path.endswith("ls"))
-
-
-def has_pywin32():
-    """
-
-    Returns
-    -------
-
-    """
-    try:
-        import win32api
-    except ImportError:
-        return False
-    return True
 
 
 @dec.onlyif(has_pywin32, "This test requires win32api to run")

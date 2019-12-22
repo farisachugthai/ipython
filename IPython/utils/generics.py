@@ -22,5 +22,6 @@ def complete_object(obj, prev_completions):
     own_attrs + prev_completions.
 
     Wow. This is imported at core.tests.test_completer *sigh*
+    q:;v:q:q
     """
     raise TryNext

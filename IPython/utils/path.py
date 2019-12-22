@@ -117,7 +117,7 @@ def get_py_filename(name, force_win32=None):
         Uses pathlib instead of os.path.
         IOError tmk got deprecated so raise OSError.
         Is also recursive because that was an interesting way to do it IMO.
-        Now the functions only 4 lines! *And 30 lines of docstring.* Aren't
+        Now the functions only 8 lines! *And 30 lines of docstring.* Aren't
         I the worst?
 
     """
@@ -261,8 +261,14 @@ def target_update(target, deps, cmd):
 def link(src, dst):
     """Create a hard link ``src`` to ``dst``, returning 0 or errno.
 
-    Note that the special errno ``ENOLINK`` will be returned if ``os.link``
-    isn't supported by the operating system.
+    .. note:: Special :mod:`errno` ``ENOLINK`` will be returned if ``os.link``
+              isn't supported by the operating system. This is true on Android.
+
+    Parameters
+    ----------
+    src :
+    dst :
+
     """
     ENOLINK = 1998
 
@@ -321,10 +327,6 @@ def ensure_dir_exists(path, mode=0o755):
 
     The default permissions are 755, which differ from os.makedirs default of 777.
 
-    Note
-    ----
-    All this fucking does is call os.makedirs() and raise a bunch of errors.
-    This isn't very well implemented at all.
     """
     if not os.path.exists(path):
         try:
@@ -333,4 +335,4 @@ def ensure_dir_exists(path, mode=0o755):
             if e.errno != errno.EEXIST:
                 raise
     elif not os.path.isdir(path):
-        raise IOError("%r exists but is not a directory" % path)
+        raise OSError("%r exists but is not a directory" % path)

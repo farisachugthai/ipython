@@ -102,9 +102,10 @@ class TestController:
         self.stdout_capturer.start()
         stdout = c.writefd if capture_output else None
         stderr = subprocess.STDOUT if capture_output else None
-        self.process = subprocess.Popen(
-            self.cmd, stdout=stdout, stderr=stderr, env=self.env
-        )
+        self.process = subprocess.Popen(self.cmd,
+                                        stdout=stdout,
+                                        stderr=stderr,
+                                        env=self.env)
 
     def wait(self):
         """
@@ -170,7 +171,6 @@ class PyTestController(TestController):
         Python command to execute in subprocess
 
     """
-
     def __init__(self, section, options, *args, **kwargs):
         """Create new test runner."""
         super().__init__(*args, **kwargs)
@@ -253,12 +253,14 @@ class PyTestController(TestController):
         except KeyError:
             sources = ["IPython"]
 
-        coverage_rc = (
-            "[run]\n" "data_file = {data_file}\n" "source =\n" "  {source}\n"
-        ).format(
-            data_file=os.path.abspath(".coverage." + self.section),
-            source="\n  ".join(sources),
-        )
+        coverage_rc = ("[run]\n"
+                       "data_file = {data_file}\n"
+                       "source =\n"
+                       "  {source}\n").format(
+                           data_file=os.path.abspath(".coverage." +
+                                                     self.section),
+                           source="\n  ".join(sources),
+                       )
         config_file = os.path.join(self.workingdir.name, ".coveragerc")
         with open(config_file, "w") as f:
             f.write(coverage_rc)
@@ -339,7 +341,8 @@ def report():
         out.append((name, value))
 
     _add("IPython version", inf["ipython_version"])
-    _add("IPython commit", "{} ({})".format(inf["commit_hash"], inf["commit_source"]))
+    _add("IPython commit", "{} ({})".format(inf["commit_hash"],
+                                            inf["commit_source"]))
     _add("IPython package", inf["ipython_path"])
     _add("Python version", sys.version)
     _add("sys.executable", sys.executable)
@@ -461,8 +464,7 @@ def run_iptestall(options):
         failed_sections = [c.section for c in failed]
         print(
             "ERROR - {} out of {} test groups failed ({}).".format(
-                nfail, nrunners, ", ".join(failed_sections)
-            ),
+                nfail, nrunners, ", ".join(failed_sections)),
             took,
         )
         print()
@@ -481,7 +483,8 @@ def run_iptestall(options):
         if options.coverage == "html":
             html_dir = "ipy_htmlcov"
             shutil.rmtree(html_dir, ignore_errors=True)
-            print("Writing HTML coverage report to %s/ ... " % html_dir, end="")
+            print("Writing HTML coverage report to %s/ ... " % html_dir,
+                  end="")
             sys.stdout.flush()
 
             # Custom HTML reporter to clean up module names.
@@ -545,11 +548,12 @@ def parse_testing_arguments():
     argparser.add_argument(
         "testgroups",
         nargs="*",
-        help="Run specified groups of tests. If omitted, run " "all tests.",
+        help="Run specified groups of tests. If omitted, run "
+        "all tests.",
     )
-    argparser.add_argument(
-        "--all", action="store_true", help="Include slow tests not run by default."
-    )
+    argparser.add_argument("--all",
+                           action="store_true",
+                           help="Include slow tests not run by default.")
     argparser.add_argument(
         "-j",
         "--fast",
@@ -560,15 +564,16 @@ def parse_testing_arguments():
         help="Run test sections in parallel. This starts as many "
         "processes as you have cores, or you can specify a number.",
     )
-    argparser.add_argument(
-        "--xunit", action="store_true", help="Produce Xunit XML results"
-    )
+    argparser.add_argument("--xunit",
+                           action="store_true",
+                           help="Produce Xunit XML results")
     argparser.add_argument(
         "--coverage",
         nargs="?",
         const=True,
         default=False,
-        help="Measure test coverage. Specify 'html' or " "'xml' to get reports.",
+        help="Measure test coverage. Specify 'html' or "
+        "'xml' to get reports.",
     )
     argparser.add_argument(
         "--subproc-streams",

@@ -175,7 +175,7 @@ class ApiDocWriter:
         module_skip_patterns=None,
         names_from__all__=None,
     ):
-        """Initialize package for parsing.
+        r"""Initialize package for parsing.
 
         Parameters
         ----------
@@ -195,6 +195,7 @@ class ApiDocWriter:
             regexps.  If is None, gives default.
 
             Defaults to:
+
                 ['\\.tests$']
 
         module_skip_patterns : None or sequence
@@ -205,6 +206,7 @@ class ApiDocWriter:
             ``.util.console``
 
             Defaults to:
+
                 ['\\.setup$', '\\._']
 
         names_from__all__ : set, optional
@@ -255,7 +257,7 @@ class ApiDocWriter:
     )
 
     def _uri2path(self, uri):
-        """ Convert uri to absolute filepath.
+        """Convert uri to absolute filepath.
 
         Parameters
         ----------
@@ -311,7 +313,7 @@ class ApiDocWriter:
         return relpath.replace(os.path.sep, ".")
 
     def _parse_module(self, uri):
-        """ Parse module defined in *uri* """
+        """Parse module defined in *uri*."""
         filename = self._uri2path(uri)
         if filename is None:
             # nothing that we could handle here.
@@ -321,7 +323,7 @@ class ApiDocWriter:
         return FuncClsScanner().scan(mod)
 
     def _import_funcs_classes(self, uri):
-        """Import * from uri, and separate out functions and classes.
+        """Import ``*`` from uri, and separate out functions and classes.
 
         Please tell me that this is like 10 year old code here because
         why else would you run a blind exec?
@@ -339,7 +341,7 @@ class ApiDocWriter:
         return sorted(funcs), sorted(classes, key=lambda x: x.name)
 
     def find_funcs_classes(self, uri):
-        """Find the functions and classes defined in the module ``uri``"""
+        """Find the functions and classes defined in the module ``uri``."""
         if uri in self.names_from__all__:
             # For API modules which expose things defined elsewhere, import them
             return self._import_funcs_classes(uri)
@@ -348,7 +350,7 @@ class ApiDocWriter:
             return self._parse_module(uri)
 
     def generate_api_doc(self, uri):
-        """Make autodoc documentation template string for a module
+        """Make autodoc documentation template string for a module.
 
         Parameters
         ----------
@@ -410,7 +412,7 @@ class ApiDocWriter:
         return ad
 
     def _survives_exclude(self, matchstr, match_type):
-        """ Returns True if *matchstr* does not match patterns
+        """ Returns True if *matchstr* does not match patterns.
 
         ``self.package_name`` removed from front of string if present
 
@@ -459,7 +461,7 @@ class ApiDocWriter:
         return True
 
     def discover_modules(self):
-        """Return module sequence discovered from ``self.package_name``
+        """Return module sequence discovered from ``self.package_name``.
 
         Returns
         -------
@@ -546,7 +548,7 @@ class ApiDocWriter:
         self.write_modules_api(modules, outdir)
 
     def write_index(self, outdir, path="gen", relative_to=None):
-        """Make a reST API index file from written files
+        """Make a reST API index file from written files.
 
         Parameters
         ----------
@@ -559,6 +561,7 @@ class ApiDocWriter:
             component of the written file path will be removed from
             outdir, in the generated index.  Default is None, meaning,
             leave path as it is.
+
         """
         if self.written_modules is None:
             raise ValueError("No modules written")

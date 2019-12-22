@@ -1,4 +1,6 @@
-"""Utilities for working with terminals.
+# encoding: utf-8
+"""
+Utilities for working with terminals.
 
 Authors:
 
@@ -6,11 +8,14 @@ Authors:
 * Fernando Perez
 * Alexander Belchenko (e-mail: bialix AT ukr.net)
 """
+
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
 import os
 import sys
+import warnings
+from shutil import get_terminal_size as _get_terminal_size
 
 # This variable is part of the expected API of the module:
 ignore_termtitle = True
@@ -54,7 +59,16 @@ def toggle_set_term_title(val=False):
 
     """
     global ignore_termtitle
-    ignore_termtitle = not val
+    ignore_termtitle = not(val)
+
+
+def _set_term_title(*args, **kw):
+    """Dummy no-op."""
+    pass
+
+
+def _restore_term_title():
+    pass
 
 
 def _set_term_title_xterm(title):
@@ -116,4 +130,14 @@ def restore_term_title():
     """Restore, if possible, terminal title to the original state."""
     if ignore_termtitle:
         return
-    # _restore_term_title()
+    _restore_term_title()
+
+
+def freeze_term_title():
+    warnings.warn("This function is deprecated, use toggle_set_term_title()")
+    global ignore_termtitle
+    ignore_termtitle = True
+
+
+def get_terminal_size(defaultx=80, defaulty=25):
+    return _get_terminal_size((defaultx, defaulty))

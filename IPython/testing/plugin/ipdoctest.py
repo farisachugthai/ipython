@@ -20,6 +20,8 @@ Limitations:
 # Module imports
 
 # From the standard library
+from nose.plugins import doctests, Plugin
+from nose.util import anyp, tolist
 import builtins as builtin_mod
 import doctest
 import inspect
@@ -30,13 +32,13 @@ import sys
 from importlib import import_module
 from io import StringIO
 
-from testpath import modified_env
-
 from inspect import getmodule
 
 # We are overriding the default doctest runner, so we need to import a few
 # things from doctest directly
 from doctest import REPORTING_FLAGS, _unittest_reportflags, DocTestRunner
+
+log = logging.getLogger(__name__)
 
 try:
     from IPython.core.getipython import get_ipython
@@ -45,14 +47,16 @@ except Exception:
 
 # Third-party modules
 
-from nose.plugins import doctests, Plugin
-from nose.util import anyp, tolist
+try:
+    from testpath import modified_env
+except ImportError:
+    log.critical("Testpath not installed. Exiting.")
+    sys.exit(1)
+
 
 # -----------------------------------------------------------------------------
 # Module globals and other constants
 # -----------------------------------------------------------------------------
-
-log = logging.getLogger(__name__)
 
 
 def setup_module():
@@ -428,12 +432,8 @@ class IPDocTestParser(doctest.DocTestParser):
         argument `name` is a name identifying this string, and is only
         used for error messages.
         """
-
-        # print 'Parse string:\n',string # dbg
-
-        string = string.expandtabs()
         # If all lines begin with the same indentation, then strip it.
-        min_indent = self._min_indent(string)
+        min_indent = self._min_indent(string.expandtabs())
         if min_indent > 0:
             string = "\n".join([l[min_indent:] for l in string.split("\n")])
 
@@ -478,6 +478,7 @@ class IPDocTestParser(doctest.DocTestParser):
 
         for m in terms:
             # Add the pre-example text to `output`.
+            output.append(string[charno : m.start()])
             output.append(string[charno : m.start()])
             # Update lineno (lines before this example)
             lineno += string.count("\n", charno, m.start())

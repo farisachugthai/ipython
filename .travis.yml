@@ -53,35 +53,19 @@ matrix:
       dist: "bionic" # because now we get py3.6 and py3.7 for free
       before_install:
         - python setup.py build
-        - |
-          if [[ $GROUP == docs ]]; then
-            pip install -r docs/doc-requirements.txt
-            pip install --upgrade pytest
-          fi
     - python: "3.8-dev"
       dist: "bionic"
       name: "Python 3.8-dev on Bionic Linux"
       before_install:
         - python setup.py build
-        - |
-          if [[ $GROUP == docs ]]; then
-            pip install -r docs/doc-requirements.txt
-            pip install --upgrade pytest
-          fi
     - python: "3.6"
       dist: "bionic"
       name: "Python 3.6 on Bionic Linux"
       before_install:
         - python setup.py build
-        - |
-          if [[ $GROUP == docs ]]; then
-            pip install -r docs/doc-requirements.txt
-            pip install --upgrade pytest
-          fi
     - python: "nightly"
       dist: "bionic"
     - os: osx
-      # language: generic
       language: shell # 'language: python' is an error on Travis CI macOS
       python: 3.6
       osx_image: xcode11.2 # Python 3.7.4 running on macOS 10.14.4

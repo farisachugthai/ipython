@@ -20,7 +20,9 @@ itself from the command line. There are two ways of running this script:
 import glob
 from importlib import import_module
 
+from codecs import decode
 from io import BytesIO
+import io
 import os
 import os.path as path
 import sys
@@ -35,7 +37,7 @@ from nose.core import TestProgram
 from nose.plugins import Plugin
 from nose.util import safe_str
 
-from IPython import version_info
+from IPython.core.release import version_info
 
 # from IPython.utils.py3compat import decode
 # ?
@@ -109,10 +111,11 @@ else:
         FutureWarning,
     )
 
-
 # ------------------------------------------------------------------------------
 # Monkeypatch Xunit to count known failures as skipped.
 # ------------------------------------------------------------------------------
+
+
 def monkeypatch_xunit():
     """
 
@@ -479,7 +482,7 @@ class SubprocessStreamCapturePlugin(Plugin):
         elif self.destination == "discard":
             return os.open(os.devnull, os.O_WRONLY)
         else:
-            return sys.__stdout__.fileno()
+            return io.RawIOBase().fileno
 
     def configure(self, options, config):
         """
@@ -617,7 +620,6 @@ def run_iptest():
         argv.extend(
             ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt",]
         )
-
     # Use working directory set by parent process (see iptestcontroller)
     if "IPTEST_WORKING_DIR" in os.environ:
         os.chdir(os.environ["IPTEST_WORKING_DIR"])

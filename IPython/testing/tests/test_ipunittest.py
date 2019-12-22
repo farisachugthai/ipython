@@ -50,7 +50,6 @@ Authors
 
 from IPython.testing.ipunittest import ipdoctest, ipdocstring
 
-
 # -----------------------------------------------------------------------------
 # Test classes and functions
 # -----------------------------------------------------------------------------
@@ -113,7 +112,6 @@ class Foo(object):
     --with-doctest*.  Do we want to have that as a dependency?
 
     """
-
     @ipdocstring
     def ipdt_method(self):
         """

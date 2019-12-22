@@ -4,15 +4,16 @@
 Decorators that merely return a modified version of the original function
 object are straightforward.  Decorators that return a new function object need
 to use :func:`nose.tools.make_decorator(original_function)(decorator)`
-in returning the decorator, in order to preserve metadata such as function name, setup and
-teardown functions and so on - see nose.tools for more information.
+in returning the decorator, in order to preserve metadata such as function
+name, setup and teardown functions and so on - see
+:mod:`nose.tools` for more information.
 
 This module provides a set of useful decorators meant to be ready to use in
 your own tests.  See the bottom of the file for the ready-made ones, and if you
 find yourself writing a new one that may be of generic use, add it here.
 
 Included decorators:
-
+    todo
 
 Lightweight testing that remains unittest-compatible.
 
@@ -62,7 +63,6 @@ from IPython.external.decorators import knownfailureif
 
 def as_unittest(func):
     """Decorator to make a simple function into a normal test via unittest."""
-
     class Tester(unittest.TestCase):
         def test(self):
             func()
@@ -109,7 +109,6 @@ def skipif(skip_condition, msg=None):
     transmit function name, and various other metadata.
 
     """
-
     def skip_decorator(f):
         """
 
@@ -194,10 +193,8 @@ def skip(msg=None):
         to be raised, with the optional message added.
       """
     if msg and not isinstance(msg, str):
-        raise ValueError(
-            "invalid object passed to `@skip` decorator, did you "
-            "meant `@skip()` with brackets ?"
-        )
+        raise ValueError("invalid object passed to `@skip` decorator, did you "
+                         "meant `@skip()` with brackets ?")
     return skipif(True, msg)
 
 
@@ -248,26 +245,50 @@ def module_not_available(module):
     return mod_not_avail
 
 
+def has_pywin32():
+    """This can be used with the dec.onlyif as an argument.
+
+    Returns
+    -------
+    bool
+
+    Examples
+    --------
+    .. ipython::
+
+        @dec.onlyif(has_pywin32, "This test requires win32api to run")
+        def somefunc():
+            pass
+
+    """
+    try:
+        import win32api
+    except ImportError:
+        return False
+    return True
+
+
 # -----------------------------------------------------------------------------
 # Decorators for public use
 
 # Decorators to skip certain tests on specific platforms.
-skip_win32 = skipif(sys.platform == "win32", "This test does not run under Windows")
-skip_linux = skipif(
-    sys.platform.startswith("linux"), "This test does not run under Linux"
-)
-skip_osx = skipif(sys.platform == "darwin", "This test does not run under OS X")
+skip_win32 = skipif(sys.platform == "win32",
+                    "This test does not run under Windows")
+skip_linux = skipif(sys.platform.startswith("linux"),
+                    "This test does not run under Linux")
+skip_osx = skipif(sys.platform == "darwin",
+                  "This test does not run under OS X")
 
 # Decorators to skip tests if not on specific platforms.
-skip_if_not_win32 = skipif(sys.platform != "win32", "This test only runs under Windows")
-skip_if_not_linux = skipif(
-    not sys.platform.startswith("linux"), "This test only runs under Linux"
-)
-skip_if_not_osx = skipif(sys.platform != "darwin", "This test only runs under OSX")
+skip_if_not_win32 = skipif(sys.platform != "win32",
+                           "This test only runs under Windows")
+skip_if_not_linux = skipif(not sys.platform.startswith("linux"),
+                           "This test only runs under Linux")
+skip_if_not_osx = skipif(sys.platform != "darwin",
+                         "This test only runs under OSX")
 
-_x11_skip_cond = (
-    sys.platform not in ("darwin", "win32") and os.environ.get("DISPLAY", "") == ""
-)
+_x11_skip_cond = (sys.platform not in ("darwin", "win32")
+                  and os.environ.get("DISPLAY", "") == "")
 _x11_skip_msg = "Skipped under *nix when X11/XOrg not available"
 
 skip_if_no_x11 = skipif(_x11_skip_cond, _x11_skip_msg)
@@ -353,7 +374,8 @@ else:
 
 onlyif_unicode_paths = onlyif(
     unicode_paths,
-    "This test is only applicable " "where we can use unicode in filenames.",
+    "This test is only applicable "
+    "where we can use unicode in filenames.",
 )
 
 
