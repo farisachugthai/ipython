@@ -1,4 +1,3 @@
-# coding=utf-8
 """Define text roles for GitHub
 
 * ghissue - Issue
@@ -10,18 +9,16 @@ https://bitbucket.org/birkenfeld/sphinx-contrib/src/tip/bitbucket/sphinxcontrib/
 
 Authors
 -------
+
 * Doug Hellmann
 * Min RK
-
-
-# Original Copyright (c) 2010 Doug Hellmann.  All rights reserved.
-
 """
+#
+# Original Copyright (c) 2010 Doug Hellmann.  All rights reserved.
+#
+
 from docutils import nodes, utils
 from docutils.parsers.rst.roles import set_classes
-from sphinx.util.logging import getLogger
-
-info = getLogger(__name__).info
 
 
 def make_link_node(rawtext, app, type, slug, options):
@@ -33,6 +30,7 @@ def make_link_node(rawtext, app, type, slug, options):
     :param slug: ID of the thing to link to
     :param options: Options dictionary passed to role func.
     """
+
     try:
         base = app.config.github_project_url
         if not base:
@@ -40,9 +38,7 @@ def make_link_node(rawtext, app, type, slug, options):
         if not base.endswith("/"):
             base += "/"
     except AttributeError as err:
-        raise ValueError(
-            "github_project_url configuration value is not set (%s)" % str(err)
-        )
+        raise ValueError(f"github_project_url configuration value is not set ({err})")
 
     ref = base + type + "/" + slug + "/"
     set_classes(options)
@@ -55,7 +51,7 @@ def make_link_node(rawtext, app, type, slug, options):
     return node
 
 
-def ghissue_role(name, rawtext, text, lineno, inliner, options=None, content=None):
+def ghissue_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     """Link to a GitHub issue.
 
     Returns 2 part tuple containing list of nodes to insert into the
@@ -70,10 +66,7 @@ def ghissue_role(name, rawtext, text, lineno, inliner, options=None, content=Non
     :param options: Directive options for customization.
     :param content: The directive content for customization.
     """
-    if options is None:
-        options = {}
-    if content is None:
-        content = []
+
     try:
         issue_num = int(text)
         if issue_num <= 0:
@@ -87,7 +80,6 @@ def ghissue_role(name, rawtext, text, lineno, inliner, options=None, content=Non
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
     app = inliner.document.settings.env.app
-    # info('issue %r' % text)
     if "pull" in name.lower():
         category = "pull"
     elif "issue" in name.lower():
@@ -103,7 +95,7 @@ def ghissue_role(name, rawtext, text, lineno, inliner, options=None, content=Non
     return [node], []
 
 
-def ghuser_role(name, rawtext, text, lineno, inliner, options=None, content=None):
+def ghuser_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     """Link to a GitHub user.
 
     Returns 2 part tuple containing list of nodes to insert into the
@@ -118,18 +110,12 @@ def ghuser_role(name, rawtext, text, lineno, inliner, options=None, content=None
     :param options: Directive options for customization.
     :param content: The directive content for customization.
     """
-    if content is None:
-        content = []
-    if options is None:
-        options = {}
-    app = inliner.document.settings.env.app
-    # info('user link %r' % text)
     ref = "https://www.github.com/" + text
     node = nodes.reference(rawtext, text, refuri=ref, **options)
     return [node], []
 
 
-def ghcommit_role(name, rawtext, text, lineno, inliner, options=None, content=None):
+def ghcommit_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     """Link to a GitHub commit.
 
     Returns 2 part tuple containing list of nodes to insert into the
@@ -144,12 +130,7 @@ def ghcommit_role(name, rawtext, text, lineno, inliner, options=None, content=No
     :param options: Directive options for customization.
     :param content: The directive content for customization.
     """
-    if options is None:
-        options = {}
-    if content is None:
-        content = []
     app = inliner.document.settings.env.app
-    # info('user link %r' % text)
     try:
         base = app.config.github_project_url
         if not base:
@@ -157,9 +138,7 @@ def ghcommit_role(name, rawtext, text, lineno, inliner, options=None, content=No
         if not base.endswith("/"):
             base += "/"
     except AttributeError as err:
-        raise ValueError(
-            "github_project_url configuration value is not set (%s)" % str(err)
-        )
+        raise ValueError(f"github_project_url configuration value is not set ({err})")
 
     ref = base + text
     node = nodes.reference(rawtext, text[:6], refuri=ref, **options)
@@ -171,7 +150,6 @@ def setup(app):
 
     :param app: Sphinx application context.
     """
-    info("Initializing GitHub plugin")
     app.add_role("ghissue", ghissue_role)
     app.add_role("ghpull", ghissue_role)
     app.add_role("ghuser", ghuser_role)
