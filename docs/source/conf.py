@@ -39,10 +39,10 @@ from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer, IPython3Lexer
 
 try:
     from IPython.sphinxext import (
-    magics,
-    github,
-    configtraits,
-    ) # noqa F401
+        magics,
+        github,
+        configtraits,
+    )  # noqa F401
 except (ImportError, ModuleNotFoundError):  # only python3.7+
     pass
 
@@ -79,13 +79,13 @@ else:
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # We load the ipython release info into a dict by explicit execution
-iprelease = runpy.run_module('IPython.core.release')
+iprelease = runpy.run_module("IPython.core.release")
 # If this didn't work then runpy
 # yeah exec doesn't return things
 # iprelease = exec(
-    # compile(open("../../IPython/core/release.py").read(), "<string>", "exec"),
-    # globals(),
-    # locals()
+# compile(open("../../IPython/core/release.py").read(), "<string>", "exec"),
+# globals(),
+# locals()
 # )
 
 # General configuration
@@ -417,7 +417,7 @@ autosummary_generate = True
 
 autosummary_imported_members = False
 
-autoclass_content = u'both'
+autoclass_content = u"both"
 # autodoc_member_order = u'bysource'
 autodoc_member_order = u"groupwise"
 autodoc_docstring_signature = True

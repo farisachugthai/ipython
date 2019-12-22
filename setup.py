@@ -72,10 +72,12 @@ repo_root = os.path.dirname(os.path.abspath(__file__))
 # execfile(os.path.join(repo_root, "IPython", "core", "release.py"), globals())
 compile_file = os.path.join(repo_root, "IPython", "core", "release.py")
 ns = runpy.run_path(compile_file, init_globals=globals())
-if getattr(ns, 'version_info', None):
-    _version_major, _version_minor, _version_patch, _version_extra = getattr(ns, 'version_info')
-name = ns['name']
-version = ns['version']
+if getattr(ns, "version_info", None):
+    _version_major, _version_minor, _version_patch, _version_extra = getattr(
+        ns, "version_info"
+    )
+name = ns["name"]
+version = ns["version"]
 # ------------------------------------------------------------------------------
 # Things related to the IPython documentation
 # ------------------------------------------------------------------------------
@@ -101,17 +103,17 @@ version = ns['version']
 # data_files = find_data_files()
 
 setup_args = dict(
-    name=ns['name'],
-    version=ns['version'],
-    description=ns['description'],
-    long_description=ns['long_description'],
-    author=ns['author'],
-    author_email=ns['author_email'],
-    url=ns['url'],
-    license=ns['license'],
-    platforms=ns['platforms'],
-    keywords=ns['keywords'],
-    classifiers=ns['classifiers'],
+    name=ns["name"],
+    version=ns["version"],
+    description=ns["description"],
+    long_description=ns["long_description"],
+    author=ns["author"],
+    author_email=ns["author_email"],
+    url=ns["url"],
+    license=ns["license"],
+    platforms=ns["platforms"],
+    keywords=ns["keywords"],
+    classifiers=ns["classifiers"],
     # cmdclass={'install_data': install_data_ext},
     project_urls={
         "Documentation": "https://ipython.readthedocs.io/",

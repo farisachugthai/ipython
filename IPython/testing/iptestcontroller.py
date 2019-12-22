@@ -22,6 +22,8 @@ import subprocess
 import sys
 import time
 
+iplogger = logging.getLogger(name=__name__)
+
 from IPython.utils.path import compress_user
 from IPython.utils.sysinfo import get_sys_info
 from IPython.utils.tempdir import TemporaryDirectory
@@ -145,7 +147,12 @@ class TestController:
         """Kill process if it's still alive, and clean up temporary directories"""
         self.cleanup_process()
         for td in self.dirs:
-            shutil.rmtree(td)
+            try:
+                shutil.rmtree(td)
+            except PermissionError:
+                iplogger.warning("PermissionError in cleanup")
+            except OSError:
+                iplogger.warning("OSError in cleanup")
 
     def __del__(self):
         return self.cleanup()

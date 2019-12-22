@@ -28,7 +28,7 @@ prefixes_line = lines.index('# "font" prefixes')
 symbols_line = lines.index("# manual additions:")
 
 prefix_dict = {}
-for l in lines[prefixes_line + 1: symbols_line]:
+for l in lines[prefixes_line + 1 : symbols_line]:
     p = l.split()
     if not p or p[1] == "latex_symbols":
         continue
