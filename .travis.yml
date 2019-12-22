@@ -17,23 +17,22 @@ install:
     # this command works on linux but not on mac because of permission issues.
 
         if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
-            - pip3 install --upgrade pip -r requirements.txt -e .
-
+            pip3 install --upgrade pip -r requirements.txt -e .
         else
-            - wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
-            - bash miniconda.sh -b -p $HOME/miniconda
-            - export PATH="$HOME/miniconda/bin:$PATH"
-            - hash -r
-            - conda config --set always_yes yes --set changeps1 no
-            - conda update -q conda
-            - conda config --add channels conda-forge
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+            bash miniconda.sh -b -p $HOME/miniconda
+            export PATH="$HOME/miniconda/bin:$PATH"
+            hash -r
+            conda config --set always_yes yes --set changeps1 no
+            conda update -q conda
+            conda config --add channels conda-forge
             # Useful for debugging any issues with conda
-            - conda info -a
-            - conda create -q -n test-environment python=$CONDA_PY 'prompt_toolkit<3' ipython pytest matplotlib setuptools wheel nose coverage codecov
-            - source activate test-environment
+            conda info -a
+            conda create -q -n test-environment python=$CONDA_PY 'prompt_toolkit<3' ipython pytest matplotlib setuptools wheel nose coverage codecov
+            source activate test-environment
         fi
     else
-        - python -m pip install -U pip -r requirements.txt -e .
+        python -m pip install -U pip -r requirements.txt -e .
     fi
 
 script:
@@ -90,45 +89,16 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=3.6
       name: "Python 3.6 on macOS - Conda"
       before_install:
-        - |
-          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-            env | sort
-            if ! which python$TRAVIS_PYTHON_VERSION; then
-              HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
-              HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
-            fi
-              python3 -m pip install virtualenv
-              python3 -m virtualenv -p $(which python$TRAVIS_PYTHON_VERSION) ~/travis-env
-              source ~/travis-env/bin/activate
-          fi
-          if [[ $GROUP == docs ]]; then
-            pip install -r docs/doc-requirements.txt
-            pip install --upgrade pytest
-          fi
-          - pip3 install -U -e . -r requirements.txt
+        - python setup.py build
     - os: osx
       python: 3.7
       env: TRAVIS_PYTHON_VERSION=3.7
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
+      name: "Python 3.7 on macOS - Conda"
       before_install:
-        - pip install --upgrade setuptools wheel nose coverage codecov
-        - |
-          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-            env | sort
-            if ! which python$TRAVIS_PYTHON_VERSION; then
-              HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
-              HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
-            fi
-              python3 -m pip install virtualenv
-              python3 -m virtualenv -p $(which python$TRAVIS_PYTHON_VERSION) ~/travis-env
-              source ~/travis-env/bin/activate
-          fi
-          if [[ $GROUP == docs ]]; then
-            pip install -r docs/doc-requirements.txt
-            pip install --upgrade pytest
-          fi
-          - pip3 install -U -e . -r requirements.txt
+        - python setup.py build
+        - python -m pip install --us--upgrade pip -e . -r requirements.txt
     - os: windows
       language: shell
       env:

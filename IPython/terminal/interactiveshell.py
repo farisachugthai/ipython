@@ -3,6 +3,7 @@
 import asyncio
 import os
 import sys
+from textwrap import dedent
 import warnings
 from warnings import warn
 
@@ -138,13 +139,13 @@ class TerminalInteractiveShell(InteractiveShell):
 
     simple_prompt = Bool(
         _use_simple_prompt,
-        help="""Use `raw_input` for the REPL, without completion and prompt colors.
-
-            Useful when controlling IPython as a subprocess, and piping STDIN/OUT/ERR. Known usage are:
-            IPython own testing machinery, and emacs inferior-shell integration through elpy.
-
-            This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
-            environment variable is set, or the current terminal is not a tty.""",
+        help=dedent(
+            """Use `raw_input` for the REPL, without completion and prompt colors.
+                    Useful when controlling IPython as a subprocess, and piping STDIN / OUT / ERR. Known usage are:
+                    IPython own testing machinery, and emacs inferior - shell integration through elpy.
+                    This mode default to `True` if the `IPY_TEST_SIMPLE_PROMPT`
+                    environment variable is set, or the current terminal is not a tty."""
+        ),
     ).tag(config=True)
 
     @property
@@ -261,8 +262,10 @@ class TerminalInteractiveShell(InteractiveShell):
 
     term_title_format = Unicode(
         "IPython: {cwd}",
-        help="Customize the terminal title format.  This is a python format string. "
-        + "Available substitutions are: {cwd}.",
+        help=(
+            "Customize the terminal title format.  This is a python format string. "
+            "Available substitutions are: {cwd}."
+        ),
     ).tag(config=True)
 
     display_completions = Enum(
@@ -503,17 +506,19 @@ class TerminalInteractiveShell(InteractiveShell):
         return options
 
     def prompt_for_code(self):
+        """
+        In order to make sure that asyncio code written in the
+        interactive shell doesn't interfere with the prompt, we run the
+        prompt in a different event loop.
+
+        If we don't do this, people could spawn coroutine with a
+        while/true inside which will freeze the prompt.
+        """
         if self.rl_next_input:
             default = self.rl_next_input
             self.rl_next_input = None
         else:
             default = ""
-
-        # In order to make sure that asyncio code written in the
-        # interactive shell doesn't interfere with the prompt, we run the
-        # prompt in a different event loop.
-        # If we don't do this, people could spawn coroutine with a
-        # while/true inside which will freeze the prompt.
 
         try:
             old_loop = asyncio.get_event_loop()
@@ -534,12 +539,12 @@ class TerminalInteractiveShell(InteractiveShell):
         return text
 
     def enable_win_unicode_console(self):
-        # Since IPython 7.10 doesn't support python < 3.6 and PEP 528, Python uses the unicode APIs for the Windows
+        """Since IPython 7.10 doesn't support python < 3.6 and PEP 528,
+        Python uses the unicode APIs for the Windows."""
         # console by default, so WUC shouldn't be needed.
-        from warnings import warn
-
         warn(
-            "`enable_win_unicode_console` is deprecated since IPython 7.10, does not do anything and will be removed in the future",
+            "`enable_win_unicode_console` is deprecated since IPython 7.10, "
+            "does not do anything and will be removed in the future",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -547,7 +552,6 @@ class TerminalInteractiveShell(InteractiveShell):
     def init_io(self):
         if sys.platform not in {"win32", "cli"}:
             return
-
         import colorama
 
         colorama.init()
@@ -594,8 +598,10 @@ class TerminalInteractiveShell(InteractiveShell):
     def interact(self, display_banner=DISPLAY_BANNER_DEPRECATED):
 
         if display_banner is not DISPLAY_BANNER_DEPRECATED:
+            # Why does this appear in mainloop and here?
             warn(
-                "interact `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.",
+                "interact `display_banner` argument is deprecated since "
+                "IPython 5.0. Call `show_banner()` if needed.",
                 DeprecationWarning,
                 stacklevel=2,
             )
@@ -617,11 +623,12 @@ class TerminalInteractiveShell(InteractiveShell):
                     self.run_cell(code, store_history=True)
 
     def mainloop(self, display_banner=DISPLAY_BANNER_DEPRECATED):
-        # An extra layer of protection in case someone mashing Ctrl-C breaks
-        # out of our internal code.
+        """An extra layer of protection in case someone mashing Ctrl-C breaks
+        out of our internal code."""
         if display_banner is not DISPLAY_BANNER_DEPRECATED:
             warn(
-                "mainloop `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.",
+                "mainloop `display_banner` argument is deprecated since "
+                "IPython 5.0. Call `show_banner()` if needed.",
                 DeprecationWarning,
                 stacklevel=2,
             )
