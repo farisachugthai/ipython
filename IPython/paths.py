@@ -37,17 +37,17 @@ def get_ipython_dir() -> str:
     """
     home_dir = Path.home()
     ipdir = home_dir.joinpath(".ipython")
-    xdg_dir = Path(get_xdg_dir())
-    xdg_ipdir = xdg_dir.joinpath(".ipython")
+    xdg_dir = get_xdg_dir()
+    if xdg_dir:
+        xdg_dir = Path(xdg_dir)
+        xdg_ipdir = xdg_dir.joinpath(".ipython")
 
     if os.environ.get("IPYTHON_DIR"):
         warn(
             "The environment variable IPYTHON_DIR is deprecated. "
             "Please use IPYTHONDIR instead."
         )
-
-    if os.environ.get("IPYTHONDIR", os.environ.get("IPYTHON_DIR", None)):
-        if _writable_dir(xdg_ipdir):
+        if _writable_dir(os.environ.get("IPYTHON_DIR")):
             deprecated_profile_warning(ipdir, xdg_dir)
 
     # Let's short-circuit this logic a little. Most people have their profiles

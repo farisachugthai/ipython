@@ -1,13 +1,13 @@
 ---
 # Config file for automatic testing at travis-ci.org
 # http://travis-ci.org/#!/ipython/ipython
-language: python            # this works for Linux but is an error on macOS or Windows
+language: python # this works for Linux but is an error on macOS or Windows
 os: linux
 env:
   global:
     - PATH=$TRAVIS_BUILD_DIR/pandoc:$PATH
     - LANG=C.UTF-8
-group: edge   # ?
+group: edge # ?
 cache:
   - pip
 
@@ -28,7 +28,7 @@ install:
             conda config --add channels conda-forge
             # Useful for debugging any issues with conda
             conda info -a
-            conda create -q -n test-environment python=$CONDA_PY 'prompt_toolkit<3' ipython pytest matplotlib setuptools wheel nose coverage codecov
+            conda create -q -n test-environment python=$CONDA_PY ipython pytest matplotlib setuptools wheel nose coverage codecov pyqt5 sphinx testpath
             source activate test-environment
         fi
     else
@@ -51,7 +51,7 @@ matrix:
   include:
     - python: "3.7"
       name: "Python 3.7.0 on Bionic Linux"
-      dist: "bionic"        # because now we get py3.6 and py3.7 for free
+      dist: "bionic" # because now we get py3.6 and py3.7 for free
       before_install:
         - python setup.py build
         - |
@@ -83,9 +83,9 @@ matrix:
       dist: "bionic"
     - os: osx
       # language: generic
-      language: shell       # 'language: python' is an error on Travis CI macOS
+      language: shell # 'language: python' is an error on Travis CI macOS
       python: 3.6
-      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
+      osx_image: xcode11.2 # Python 3.7.4 running on macOS 10.14.4
       env: TRAVIS_PYTHON_VERSION=3.6
       name: "Python 3.6 on macOS - Conda"
       before_install:
@@ -93,12 +93,11 @@ matrix:
     - os: osx
       python: 3.7
       env: TRAVIS_PYTHON_VERSION=3.7
-      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
-      language: shell       # 'language: python' is an error on Travis CI macOS
+      osx_image: xcode11.2 # Python 3.7.4 running on macOS 10.14.4
+      language: shell # 'language: python' is an error on Travis CI macOS
       name: "Python 3.7 on macOS - Conda"
       before_install:
         - python setup.py build
-        - python -m pip install --us--upgrade pip -e . -r requirements.txt
     - os: windows
       language: shell
       env:
@@ -127,9 +126,7 @@ deploy:
   cleanup: true
   on:
     repo: ipython/ipython
-    all_branches: true  # Backports are released from e.g. 5.x branch
+    all_branches: true # Backports are released from e.g. 5.x branch
     tags: true
-    python: 3.7  # Any version should work, but we only need one
+    python: 3.7 # Any version should work, but we only need one
     condition: $TRAVIS_OS_NAME = "linux"
-
-...

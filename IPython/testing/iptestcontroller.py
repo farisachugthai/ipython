@@ -145,7 +145,7 @@ class TestController:
         """Kill process if it's still alive, and clean up temporary directories"""
         self.cleanup_process()
         for td in self.dirs:
-            td.cleanup()
+            shutil.rmtree(td)
 
     def __del__(self):
         return self.cleanup()
