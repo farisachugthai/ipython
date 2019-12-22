@@ -22,7 +22,7 @@ IPython 6.4.0
 Everything new in :ref:`IPython 5.7 <whatsnew570>`
 
 * Fix display object not emitting metadata :ghpull:`11106`
-* Comments failing Jedi test :ghpull:`11110` 
+* Comments failing Jedi test :ghpull:`11110`
 
 
 .. _whatsnew631:
@@ -56,7 +56,7 @@ IPython 6.3 contains all the bug fixes and features in
 * The *post* event callbacks are now always called, even when the execution failed
   (for example because of a ``SyntaxError``).
 * The execution info and result objects are now made available in the
-  corresponding *pre* or *post* ``*_run_cell`` :doc:`event callbacks </config/callbacks>`
+  corresponding *pre* or *post* ``*_run_cell`` :doc:`event callbacks <callbacks>`
   in a backward compatible manner (:ghissue:`10774` and :ghpull:`10795`).
 * Performance with very long code cells (hundreds of lines) is greatly improved
   (:ghpull:`10898`). Further improvements are planned for IPython 7.
@@ -162,7 +162,8 @@ IPython 6.1
 - ``%run -m <module>`` now ``<module>`` passes extra arguments to ``<module>``. :ghpull:`10546`
 - completer now understand "snake case auto complete": if ``foo_bar_kittens`` is
   a valid completion, I can type ``f_b<tab>`` will complete to it. :ghpull:`10537`
-- tracebacks are better standardized and will compress `/path/to/home` to `~`. :ghpull:`10515`
+- tracebacks are better standardized and will compress ``/path/to/home`` to
+  :kbd:`~`. :ghpull:`10515`
 
 The following changes were also added to IPython 5.4, see :ref:`what's new in IPython 5.4 <whatsnew540>`
 for more detail description:
@@ -199,7 +200,7 @@ You should be able to update by using:
 .. note::
 
     If your pip version is greater than or equal to pip 9.0.1 you will automatically get
-    the most recent version of IPython compatible with your system: on Python 2 you 
+    the most recent version of IPython compatible with your system: on Python 2 you
     will get the latest IPython 5.x bugfix, while in Python 3
     you will get the latest 6.x stable version.
 
@@ -244,7 +245,7 @@ Extra patches and updates will be needed to the :mod:`ipykernel` package for
 this feature to be available to other clients like Jupyter Notebook, Lab,
 Nteract, Hydrogen...
 
-The use of Jedi should be barely noticeable on recent machines, but 
+The use of Jedi should be barely noticeable on recent machines, but
 can be slower on older ones.  To tweak the performance, the amount
 of time given to Jedi to compute type inference can be adjusted with
 ``c.IPCompleter.jedi_compute_type_timeout``. The objects whose type were not
@@ -280,7 +281,7 @@ of advantages. Most of the newly written code make use of `optional function typ
 annotation <https://www.python.org/dev/peps/pep-0484/>`_ leading to clearer code
 and better documentation.
 
-The total size of the repository has also decreased by about 1500 lines (for the 
+The total size of the repository has also decreased by about 1500 lines (for the
 first time excluding the big split for 4.0). The decrease is potentially
 a bit more for the sour as some documents like this one are append only and
 are about 300 lines long.

@@ -20,6 +20,7 @@ import logging
 import os
 from pathlib import Path
 import re
+import runpy
 import shutil
 import sys
 
@@ -33,14 +34,18 @@ from sphinx.util.docfields import GroupedField
 from sphinx.util.logging import getLogger
 from sphinx.application import Sphinx
 
-from IPython import sphinxext  # noqa
-from IPython.sphinxext import (
-    configtraits,
-    ipython_directive,
+from IPython.sphinxext import ipython_directive  # noqa F401
+from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer, IPython3Lexer
+
+try:
+    from IPython.sphinxext import (
     magics,
     github,
-)  # noqa F401
-from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer, IPython3Lexer
+    configtraits,
+    ) # noqa F401
+except (ImportError, ModuleNotFoundError):  # only python3.7+
+    pass
+
 
 try:
     # See more at the bottom where we configure extensions
@@ -74,12 +79,14 @@ else:
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # We load the ipython release info into a dict by explicit execution
-iprelease = {}
-# exec(compile(open('../../IPython/core/release.py').read(),
-#              '../../IPython/core/release.py', 'exec'), iprelease)
-exec(
-    compile(open("../../IPython/core/release.py").read(), "<string>", "exec"), iprelease
-)
+iprelease = runpy.run_module('IPython.core.release')
+# If this didn't work then runpy
+# yeah exec doesn't return things
+# iprelease = exec(
+    # compile(open("../../IPython/core/release.py").read(), "<string>", "exec"),
+    # globals(),
+    # locals()
+# )
 
 # General configuration
 # ---------------------
@@ -375,9 +382,11 @@ ipython_execlines = [
 # -------------------------------------------------------------------
 # matplotlib plot_directive
 # -------------------------------------------------------------------
+
 mpl.rcParams["font.family"] = "DejaVu Sans"
 mpl.rcParams["text.hinting"] = False
 mpl.rcParams["text.hinting_factor"] = 8
+
 # -------------------------------------------------------------------
 # Autosummary
 # -------------------------------------------------------------------
@@ -404,11 +413,11 @@ apidoc_options = {
 }
 
 autodoc_inherit_docstrings = False
-# autosummary_generate = True
+autosummary_generate = True
 
 autosummary_imported_members = False
 
-# autoclass_content = u'both'
+autoclass_content = u'both'
 # autodoc_member_order = u'bysource'
 autodoc_member_order = u"groupwise"
 autodoc_docstring_signature = True

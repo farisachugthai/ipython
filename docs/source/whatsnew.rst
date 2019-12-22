@@ -1,10 +1,10 @@
 .. Developers should add in this file, during each release cycle, information
-.. about important changes they've made, in a summary format that's meant for
-.. end users.  For each release we normally have three sections: features,  bug
-.. fixes and api breakage.
-.. Please remember to credit the authors of the contributions by name,
-.. especially when they are new users or developers who do not regularly
-.. participate  in IPython's development.
+   about important changes they've made, in a summary format that's meant for
+   end users.  For each release we normally have three sections: features,  bug
+   fixes and api breakage.
+   Please remember to credit the authors of the contributions by name,
+   especially when they are new users or developers who do not regularly
+   participate  in IPython's development.
 
 .. _whatsnew_index:
 
@@ -19,7 +19,7 @@ What's new in IPython
 .. only:: ipydev
 
    Development version in-progress features:
-   
+
    .. toctree::
 
       development
@@ -62,7 +62,7 @@ development work they do here in a user friendly format.
    this makes a hidden toctree that keeps sphinx from complaining about
    documents included nowhere when building docs for stable
    We place it at the end as it will still be reachable via prev/next links.
-   
+
 .. only:: ipystable
 
    .. toctree::

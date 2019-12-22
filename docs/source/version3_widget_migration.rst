@@ -11,7 +11,7 @@ Upgrading Notebooks
    "Widget" suffix was removed from the end of the class name. i.e.
    ``ButtonWidget`` is now ``Button``.
 3. ``ContainerWidget`` was renamed to ``Box``.
-4. ``PopupWidget`` was removed from IPython, because bootstrapjs was 
+4. ``PopupWidget`` was removed from IPython, because bootstrapjs was
    problematic (creates global variables, etc.). If you use the
    ``PopupWidget``, try using a ``Box`` widget instead. If your notebook
    can't live without the popup functionality, subclass the ``Box``
@@ -298,7 +298,7 @@ made in earlier PRs:
   `#7227 <https://github.com/ipython/ipython/pull/7227>`__
 - Widget values as positional arguments
   `#7260 <https://github.com/ipython/ipython/pull/7260>`__
-- Remove the popup widget
+- Remove the pop-up widget
   `#7341 <https://github.com/ipython/ipython/pull/7341>`__
 - document and validate link, dlink
   `#7468 <https://github.com/ipython/ipython/pull/7468>`__
@@ -314,7 +314,7 @@ made in earlier PRs:
   `#7602 <https://github.com/ipython/ipython/pull/7602>`__
 - only show prompt overlay if there's a prompt
   `#7661 <https://github.com/ipython/ipython/pull/7661>`__
-- Allow predictate to be used for comparison in selection widgets
+- Allow predicate to be used for comparison in selection widgets
   `#7674 <https://github.com/ipython/ipython/pull/7674>`__
 - Fix widget view persistence.
   `#7680 <https://github.com/ipython/ipython/pull/7680>`__

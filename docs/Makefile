@@ -55,14 +55,16 @@ dist: html
 
 api: apidoc
 
+# Idk why the apidoc command isn't ignoring stuff right
 apidoc:
 	mkdir -p build/html build/.doctrees
 	@echo "Generating API docs"
-	$(SPHINXAPIDOC) -d 1 -Mef --tocfile index -o source/api/generated -t source/_templates ../IPython ".*[conf]?test.**"
+	$(SPHINXAPIDOC) -d 1 -Mef --tocfile index -o source/api/generated -t source/_templates ../IPython "IPython/**tests**"
+	-rm -f source/api/generated/*test*
 
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here
-html: apidoc html_build
+html: api html_build
 
 html_build:
 	$(SPHINXBUILD) -b html -c $(SRCDIR) -w sphinx.log $(ALLSPHINXOPTS) $(SRCDIR) build/html
@@ -76,20 +78,20 @@ html_noapi:
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 
-htmlhelp: api
+htmlhelp:
 	mkdir -p build/htmlhelp build/doctrees
 	$(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) $(SRCDIR) build/htmlhelp
 	@echo
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in build/htmlhelp."
 
-changes: api
+changes:
 	mkdir -p build/changes build/doctrees
 	$(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(SRCDIR) build/changes
 	@echo
 	@echo "The overview file is in build/changes."
 
-linkcheck: api
+linkcheck:
 	mkdir -p build/linkcheck build/doctrees
 	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(SRCDIR) build/linkcheck
 	@echo

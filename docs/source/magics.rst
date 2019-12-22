@@ -226,12 +226,14 @@ configuration  option of IPython.
 Session logging and restoring
 -----------------------------
 
+.. magic:: logstart
+
 .. option:: --logfile
 
 You can log all input from a session either by starting IPython with the
 command line switch ``--logfile=foo.py``.
 
-(See :ref:`here <command_line_options>`)
+.. (See :ref:`here <command_line_options>`)
 
 In addition, this can be initialized at any moment with the magic function
 :magic:`logstart`.
@@ -274,8 +276,9 @@ one of (note that the modes are given unquoted):
 
 .. option:: -o, --output
 
-Adding the '-o' flag to '%logstart' magic (as in '%logstart -o [log_name [log_mode]]')
-will also include output from iPython in the log file.
+Adding the '-o' flag to the '%logstart' magic
+(as in '%logstart -o [log_name [log_mode]]')
+will also include output from IPython in the log file.
 
 The :magic:`%logoff` and :magic:`%logon` functions allow you to
 temporarily stop and resume logging to a file which had previously
@@ -359,7 +362,7 @@ replaced by a positional parameter to the call to %parts::
 If called with no parameters, :magic:`alias` prints the table of currently
 defined aliases.
 
-The :magic:`rehashx` magic allows you to load your entire $PATH as
+The :magic:`rehashx` magic allows you to load your entire :envvar:`PATH` as
 ipython aliases. See its docstring for further details.
 
 
@@ -387,7 +390,7 @@ to parse visually.
 
 See the magic :magic:`xmode` and :magic:`colors` functions for details.
 
-These features are basically a terminal version of Ka-Ping Yee's cgitb
+These features are basically a terminal version of Ka-Ping Yee's :mod:`cgitb`
 module, now part of the standard Python library.
 
 
@@ -425,15 +428,15 @@ are strings), modify or exec them.
 You can also re-execute multiple lines of input easily by using the magic
 :magic:`rerun` or :magic:`macro` functions. The macro system also allows you to
 re-execute previous lines which include magic function calls (which require
-special processing). Type %macro? for more details on the macro system.
+special processing). Type ``%macro?`` for more details on the macro system.
 
 A history function :magic:`history` allows you to see any part of your input
 history by printing a range of the _i variables.
 
-You can also search ('grep') through your history by typing
+You can also search (:command:`grep`) through your history by typing
 ``%hist -g somestring``. This is handy for searching for URLs, IP addresses,
 etc. You can bring history entries listed by '%hist -g' up for editing
-with the %recall command, or run them immediately with :magic:`rerun`.
+with the `%recall` command, or run them immediately with :magic:`rerun`.
 
 .. _output_caching:
 
@@ -460,7 +463,7 @@ available as _<n> (don't use the angle brackets, just the number, e.g.
 
 These variables are also stored in a global dictionary (not a
 list, since it only has entries for lines which returned a result)
-available under the names _oh and Out (similar to _ih and In). So the
+available under the names _oh and Out (similar to ``_ih`` and ``In[i]``). So the
 output from line 12 can be obtained as ``_12``, ``Out[12]`` or ``_oh[12]``. If you
 accidentally overwrite the Out variable you can recover it by typing
 ``Out=_oh`` at the prompt.
@@ -484,7 +487,7 @@ conveniently view the directory history.
 Automatic parentheses and quotes
 --------------------------------
 
-These features were adapted from Nathan Gray's LazyPython. They are
+These features were adapted from Nathan Gray's ``LazyPython``. They are
 meant to allow less typing for common situations.
 
 Callable objects (i.e. functions, methods, etc) can be invoked like this
@@ -539,4 +542,3 @@ Note that the ',' or ';' MUST be the first character on the line! This
 won't work::
 
     In [4]: x = ,my_function /home/me # syntax error
-

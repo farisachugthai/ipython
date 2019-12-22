@@ -231,7 +231,7 @@ What's New In IPython and About Us
    :titlesonly:
    :caption: About us
 
-   whatsnew/index
+   whatsnew
    history
    license_and_copyright
 

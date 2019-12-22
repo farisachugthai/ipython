@@ -128,7 +128,7 @@ with IPython so that these mechanisms work.
 Typing unicode identifiers
 --------------------------
 
-.. image:: /_images/unicode_completion.png
+.. image:: ../_images/unicode_completion.png
 
 Complex expressions can be much cleaner when written with a wider choice of
 characters. Python 3 allows unicode identifiers, and IPython 3 makes it easier
@@ -163,7 +163,7 @@ Other new features
   __ https://pypi.python.org/pypi/cloud
 
 * Added a .ipynb exporter to nbconvert.  It can be used by passing `--to notebook`
-  as a commandline argument to nbconvert.
+  as a command-line argument to nbconvert.
 
 * New nbconvert preprocessor called :class:`~.ClearOutputPreprocessor`. This
   clears the output from IPython notebooks.
@@ -281,7 +281,7 @@ Backwards incompatible changes
 * The notebook format has been updated from version 3 to version 4.
   Read-only support for v4 notebooks has been backported to IPython 2.4.
   Notable changes:
-  
+
   * heading cells are removed in favor or markdown headings
   * notebook outputs and output messages are more consistent with each other
   * use :func:`IPython.nbformat.read` and :func:`~IPython.nbformat.write`
@@ -289,9 +289,9 @@ Backwards incompatible changes
     instead of the deprecated :mod:`IPython.nbformat.current` APIs.
 
   You can downgrade a notebook to v3 via ``nbconvert``::
-  
+
       ipython nbconvert --to notebook --nbformat 3 <notebook>
-  
+
   which will create :file:`notebook.v3.ipynb`, a copy of the notebook in v3 format.
 
 * :func:`IPython.core.oinspect.getsource` call specification has changed:
@@ -385,7 +385,7 @@ There is a `report-uri <https://developer.mozilla.org/en-US/docs/Web/HTTP/Header
     }
 
 It simply provides the CSP report as a warning in IPython's logs. The default
-CSP sets this report-uri relative to the ``base_url`` (not shown above).
+CSP sets this report-URI relative to the ``base_url`` (not shown above).
 
 For a more thorough and accurate guide on Content Security Policies, check out
 `MDN's Using Content Security Policy <https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Using_Content_Security_Policy>`_ for more examples.

@@ -4,6 +4,8 @@
 Overview
 ========
 
+.. am i just being dumb. what is a samp role?
+
 One of Python's most useful features is its interactive interpreter.
 It allows for very fast testing of ideas without the overhead of
 creating test files as is typical in most programming languages.
@@ -21,7 +23,7 @@ has three main components:
   the web-based notebook provided with `Jupyter <https://jupyter.org>`_.
 
 * An architecture for interactive parallel computing now part of the
-  `ipyparallel` package.
+  :mod:`ipyparallel` package.
 
 All of IPython is open source (released under the revised BSD license).
 
@@ -160,7 +162,7 @@ Main features of the interactive shell
 
 * Profiler support. You can run single statements (similar to
   :samp:`profile.run()`) or complete programs under the profiler's control.
-  While this is possible with standard cProfile or profile modules,
+  While this is possible with standard :mod:`cProfile` or profile modules,
   IPython wraps this functionality with magic commands (see :samp:`%prun`
   and :samp:`%run -p`) convenient for rapid interactive work.
 
