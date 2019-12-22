@@ -23,6 +23,10 @@ def _writable_dir(path):
     """Whether `path` is a directory, to which the user has write access."""
     return os.path.isdir(path) and os.access(path, os.W_OK)
 
+def get_home_dir(*args, **kwargs):
+    """Silently gobble up any args."""
+    return Path.home().__fspath__()
+
 
 def get_ipython_dir() -> str:
     """Get the IPython directory for this platform and user.

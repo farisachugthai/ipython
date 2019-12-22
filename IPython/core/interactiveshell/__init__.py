@@ -25,6 +25,7 @@ import codecs
 import functools
 import inspect
 import os
+from os import system
 import re
 import runpy
 import subprocess
@@ -87,16 +88,13 @@ from IPython.core.usage import default_banner
 
 from IPython.paths import get_ipython_dir
 
-# from IPython.testing.skipdoctest import skip_doctest
-
 from IPython.utils import PyColorize, openpy
 from IPython.utils.ipstruct import Struct
 from IPython.utils.path import ensure_dir_exists, get_py_filename
-from IPython.utils.process import getoutput, system
+from IPython.utils.process import getoutput
 from IPython.utils.strdispatch import StrDispatch
 from IPython.utils.syspathcontext import prepended_to_syspath
 
-# from IPython.utils.tempdir import TemporaryDirectory
 from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
 from IPython.utils.utils_io import ask_yes_no
 
@@ -1171,9 +1169,6 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
 
     def init_events(self):
-        """
-
-        """
         self.events = EventManager(self, available_events)
         self.events.register("pre_execute", self._clear_warning_registry)
 
@@ -2231,7 +2226,7 @@ class InteractiveShell(SingletonConfigurable):
         Return as a string (ending with a newline) the exception that
         just occurred, without any traceback.
         """
-        etype, value, tb = self._get_exc_info(exc_tuple)
+        etype, value, tb = sys.exc_info()
         msg = traceback.format_exception_only(etype, value)
         return "".join(msg)
 
@@ -2269,7 +2264,7 @@ class InteractiveShell(SingletonConfigurable):
         in the engines. This should return a list of strings.
 
         """
-        if hasattr(sys, "exc_info", None):
+        if hasattr(sys, "exc_info"):
             etype, value, stb = sys.exc_info()
         else:
             print("No traceback available to show.", file=sys.stderr)
@@ -2282,28 +2277,18 @@ class InteractiveShell(SingletonConfigurable):
         elif etype is UsageError:
             self.show_usage_error(value)
         else:
+            stb.extend(traceback.format_exception_only(etype, value))
             if exception_only:
-                stb = [
+                stb.insert(0, [
                     "An exception has occurred, use %tb to see " "the full traceback.\n"
-                ]
-                stb.extend(traceback.format_exception_only(etype, value))
+                ])
             else:
-                try:
-                    stb = value._render_traceback_()
-                except Exception:
-                    stb = self.InteractiveTB.structured_traceback(
-                        (etype, value, tb), tb_offset=tb_offset
-                    )
+                self._showtraceback(etype, value, stb)
+                if self.call_pdb:
+                    # drop into debugger
+                    self.debugger(force=True)
 
-                    self._showtraceback(etype, value, stb)
-                    if self.call_pdb:
-                        # drop into debugger
-                        self.debugger(force=True)
-                    return
-
-                except KeyboardInterrupt:
-                    # print('\n' + self.get_exception_only(), file=sys.stderr)
-                    self.log.error("Interrupted!")
+        return
 
     def _showtraceback(self, etype=None, evalue=None, stb=None):
         """Actually show a traceback.
@@ -2355,9 +2340,9 @@ class InteractiveShell(SingletonConfigurable):
         # full stacktrace.
         elist = traceback.extract_tb(last_traceback) if running_compiled_code else []
 
-        stb = self.SyntaxTB.structured_traceback(etype, value, elist)
+        stb = traceback.format_exception(etype, value, elist)
 
-        self._showtraceback(etype, value, stb)
+        self._showtraceback(etype=etype, evalue=value, stb=stb)
 
     def showindentationerror(self):
         """Called by :meth:`_run_cell` when there's an :exc:`IndentationError`
@@ -2695,15 +2680,7 @@ class InteractiveShell(SingletonConfigurable):
         if fn is None:
             cm = self.find_cell_magic(magic_name)
             etpl = "Line magic function `%%%s` not found%s."
-            extra = (
-                ""
-                if cm is None
-                else (
-                    " (But cell magic `%%%%%s` exists, "
-                    "did you mean that instead?)" % magic_name
-                )
-            )
-            raise UsageError(etpl % (magic_name, extra))
+            raise UsageError(etpl % (magic_name))
         else:
             # Note: this is the distance in the stack to the user's frame.
             # This will need to be updated if the internal calling logic gets
@@ -2745,15 +2722,7 @@ class InteractiveShell(SingletonConfigurable):
         if fn is None:
             lm = self.find_line_magic(magic_name)
             etpl = "Cell magic `%%{0}` not found{1}."
-            extra = (
-                ""
-                if lm is None
-                else (
-                    " (But line magic `%{0}` exists, "
-                    "did you mean that instead?)".format(magic_name)
-                )
-            )
-            raise UsageError(etpl.format(magic_name, extra))
+            raise UsageError(etpl.format(magic_name))
         elif cell == "":
             message = "%%{0} is a cell magic, but the cell body is empty.".format(
                 magic_name

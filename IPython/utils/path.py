@@ -121,10 +121,10 @@ def get_py_filename(name, force_win32=None):
         I the worst?
 
     """
-    name = Path(name).expanduser()
-    if name.is_file():
+    path_name = Path(name).expanduser()
+    if path_name.is_file():
         return str(name)
-    if name.stem != ".py":
+    if path_name.stem != ".py":
         name = Path(name + ".py")
         get_py_filename(name)
     else:

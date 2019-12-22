@@ -27,7 +27,7 @@ install:
             conda config --add channels conda-forge
             # Useful for debugging any issues with conda
             conda info -a
-            conda create -q -n test-environment python=$CONDA_PY ipython pytest matplotlib setuptools wheel nose coverage codecov pyqt sphinx testpath flake8 flake8-rst
+            conda create -q -n test-environment python=$CONDA_PY ipython pytest matplotlib setuptools wheel nose coverage codecov pyqt sphinx testpath flake8 flake8-rst nbformat
             source activate test-environment
         fi
     else

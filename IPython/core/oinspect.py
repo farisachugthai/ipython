@@ -294,7 +294,11 @@ class Inspector(Configurable):
         return hdef
 
     def __head(self, h) -> str:
-        """Return a header string with proper colors."""
+        """Return a header string with proper colors.
+
+        Before deleting really ensure nobody calls this. I think I got most
+        calls to it.
+        """
         return "%s%s%s" % (
             self.color_table.active_colors.header,
             h,
@@ -309,7 +313,6 @@ class Inspector(Configurable):
                 self.log(
                     '{} missing attribute "color_table"'.format(self.__class__.__name__)
                 )
-            # self.parser.color_table.set_active_scheme(scheme)
 
     def noinfo(self, msg, oname=None):
         """Generic message when no information is found."""
@@ -332,7 +335,7 @@ class Inspector(Configurable):
         header = ""
 
         if inspect.isclass(obj):
-            header = self.__head("Class constructor information:\n")
+            header = "Class constructor information:\n"
             obj = obj.__init__
 
         output = self._getdef(obj, oname)
@@ -377,11 +380,10 @@ class Inspector(Configurable):
         No documentation found for obj2
 
         """
-        head = self.__head  # For convenience
         lines = []
         ds = getdoc(obj)
         if ds:
-            lines.append(head("Class docstring:"))
+            lines.append("Class docstring:")
             lines.append(indent(ds))
         if inspect.isclass(obj) and hasattr(obj, "__init__"):
             init_ds = getdoc(obj.__init__)
@@ -450,14 +452,13 @@ class Inspector(Configurable):
 
         """
         out = []
-        header = self.__head
         if not title_width:
             title_width = max(len(title) + 2 for title, _ in fields)
         for title, content in fields:
             if len(content.splitlines()) > 1:
-                title = header(title + ":") + "\n"
+                title = title + ":\n"
             else:
-                title = header((title + ":").ljust(title_width))
+                title = (title + ":").ljust(title_width)
             out.append(title + content)
         return "\n".join(out)
 
@@ -515,9 +516,7 @@ class Inspector(Configurable):
         for head, body in zip(heads, bodies):
             body = body.strip("\n")
             delim = "\n" if "\n" in body else " "
-            text += (
-                self.__head(head + ":") + (_len - len(head)) * " " + delim + body + "\n"
-            )
+            text += (head + ":") + (_len - len(head)) * " " + delim + body + "\n"
 
         bundle["text/plain"] = text
         return bundle

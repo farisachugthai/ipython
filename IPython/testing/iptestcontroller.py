@@ -147,12 +147,15 @@ class TestController:
         """Kill process if it's still alive, and clean up temporary directories"""
         self.cleanup_process()
         for td in self.dirs:
-            try:
-                shutil.rmtree(td)
-            except PermissionError:
-                iplogger.warning("PermissionError in cleanup")
-            except OSError:
-                iplogger.warning("OSError in cleanup")
+            if getattr(td, 'cleanup', None):
+                td.cleanup()
+            else:
+                try:
+                    shutil.rmtree(td)
+                except PermissionError:
+                    iplogger.warning("PermissionError in cleanup")
+                except OSError:
+                    iplogger.warning("OSError in cleanup")
 
     def __del__(self):
         return self.cleanup()
