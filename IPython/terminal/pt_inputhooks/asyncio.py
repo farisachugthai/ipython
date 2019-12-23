@@ -32,7 +32,6 @@ from prompt_toolkit import __version__ as ptk_version
 
 PTK3 = ptk_version.startswith("3.")
 
-
 # Keep reference to the original asyncio loop, because getting the event loop
 # within the input hook would return the other loop.
 loop = asyncio.get_event_loop()

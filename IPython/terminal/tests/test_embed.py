@@ -77,9 +77,9 @@ def test_nest_embed():
     env = os.environ.copy()
     env["IPY_TEST_SIMPLE_PROMPT"] = "1"
 
-    child = pexpect.spawn(
-        sys.executable, ["-m", "IPython", "--colors=nocolor"], env=env
-    )
+    child = pexpect.spawn(sys.executable,
+                          ["-m", "IPython", "--colors=nocolor"],
+                          env=env)
     child.timeout = 5 * IPYTHON_TESTING_TIMEOUT_SCALE
     child.expect(ipy_prompt)
     child.sendline("import IPython")
@@ -100,7 +100,8 @@ def test_nest_embed():
     child.sendline("print('true' if embed1 is not ip0 else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
-    child.sendline("print('true' if IPython.get_ipython() is embed1 else 'false')")
+    child.sendline(
+        "print('true' if IPython.get_ipython() is embed1 else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
     # enter second nested embed
@@ -118,7 +119,8 @@ def test_nest_embed():
     child.sendline("print('true' if embed2 is not embed1 else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
-    child.sendline("print('true' if embed2 is IPython.get_ipython() else 'false')")
+    child.sendline(
+        "print('true' if embed2 is IPython.get_ipython() else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
     child.sendline("exit")
@@ -127,7 +129,8 @@ def test_nest_embed():
     child.sendline("print('true' if get_ipython() is embed1 else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
-    child.sendline("print('true' if IPython.get_ipython() is embed1 else 'false')")
+    child.sendline(
+        "print('true' if IPython.get_ipython() is embed1 else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
     child.sendline("exit")
@@ -136,7 +139,8 @@ def test_nest_embed():
     child.sendline("print('true' if get_ipython() is ip0 else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
-    child.sendline("print('true' if IPython.get_ipython() is ip0 else 'false')")
+    child.sendline(
+        "print('true' if IPython.get_ipython() is ip0 else 'false')")
     assert child.expect(["true\r\n", "false\r\n"]) == 0
     child.expect(ipy_prompt)
     child.sendline("exit")

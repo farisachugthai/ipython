@@ -36,10 +36,8 @@ def _wake(NSApp):
     """Wake the Application"""
     event = msg(
         C("NSEvent"),
-        n(
-            "otherEventWithType:location:modifierFlags:"
-            "timestamp:windowNumber:context:subtype:data1:data2:"
-        ),
+        n("otherEventWithType:location:modifierFlags:"
+          "timestamp:windowNumber:context:subtype:data1:data2:"),
         15,  # Type
         0,  # location
         0,  # flags
@@ -107,15 +105,17 @@ if __name__ == "__main__":
     # end obj-c boilerplate from appnope
 
     # CoreFoundation C-API calls we will use:
-    CoreFoundation = ctypes.cdll.LoadLibrary(ctypes.util.find_library("CoreFoundation"))
+    CoreFoundation = ctypes.cdll.LoadLibrary(
+        ctypes.util.find_library("CoreFoundation"))
 
     CFFileDescriptorCreate = CoreFoundation.CFFileDescriptorCreate
     CFFileDescriptorCreate.restype = void_p
-    CFFileDescriptorCreate.argtypes = [void_p, ctypes.c_int, ctypes.c_bool, void_p]
+    CFFileDescriptorCreate.argtypes = [
+        void_p, ctypes.c_int, ctypes.c_bool, void_p
+    ]
 
     CFFileDescriptorGetNativeDescriptor = (
-        CoreFoundation.CFFileDescriptorGetNativeDescriptor
-    )
+        CoreFoundation.CFFileDescriptorGetNativeDescriptor)
     CFFileDescriptorGetNativeDescriptor.restype = ctypes.c_int
     CFFileDescriptorGetNativeDescriptor.argtypes = [void_p]
 
@@ -124,8 +124,7 @@ if __name__ == "__main__":
     CFFileDescriptorEnableCallBacks.argtypes = [void_p, ctypes.c_ulong]
 
     CFFileDescriptorCreateRunLoopSource = (
-        CoreFoundation.CFFileDescriptorCreateRunLoopSource
-    )
+        CoreFoundation.CFFileDescriptorCreateRunLoopSource)
     CFFileDescriptorCreateRunLoopSource.restype = void_p
     CFFileDescriptorCreateRunLoopSource.argtypes = [void_p, void_p, void_p]
 
@@ -146,4 +145,5 @@ if __name__ == "__main__":
 
     # From CFFileDescriptor.h
     kCFFileDescriptorReadCallBack = 1
-    kCFRunLoopCommonModes = void_p.in_dll(CoreFoundation, "kCFRunLoopCommonModes")
+    kCFRunLoopCommonModes = void_p.in_dll(CoreFoundation,
+                                          "kCFRunLoopCommonModes")

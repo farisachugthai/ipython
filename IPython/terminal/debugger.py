@@ -21,8 +21,7 @@ from prompt_toolkit.filters import (
 )
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.completion import (
-    display_completions_like_readline,
-)
+    display_completions_like_readline, )
 
 # Nov 27, 2019: Just added this
 from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
@@ -43,7 +42,6 @@ PTK3 = ptk_version.startswith("3.")
 
 class TerminalPdb(CorePdb):
     """Standalone IPython debugger."""
-
     def __init__(self, _ptcomp=None, kb=None, *args, **kwargs):
         """Refactored to encourage visibility in parameters.
 
@@ -109,8 +107,7 @@ class TerminalPdb(CorePdb):
                 "tab",
                 filter=(
                     has_focus(DEFAULT_BUFFER) & ~has_selection & vi_insert_mode
-                    | emacs_insert_mode & ~cursor_in_leading_ws
-                ),
+                    | emacs_insert_mode & ~cursor_in_leading_ws),
             )(display_completions_like_readline)
 
         kb.add(load_basic_bindings())
@@ -156,13 +153,11 @@ class TerminalPdb(CorePdb):
                 else:
                     self._ptcomp.ipy_completer.namespace = self.curframe_locals
                     self._ptcomp.ipy_completer.global_namespace = (
-                        self.curframe.f_globals
-                    )
+                        self.curframe.f_globals)
 
                     asyncio.set_event_loop(self.pt_loop)
                     self._ptcomp.ipy_completer.global_namespace = (
-                        self.curframe.f_globals
-                    )
+                        self.curframe.f_globals)
                     try:
                         # reset_current_buffer=True)
                         line = self.pt_app.prompt()

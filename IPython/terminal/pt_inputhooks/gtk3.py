@@ -13,7 +13,8 @@ def inputhook(context):
     ----------
     context :
     """
-    GLib.io_add_watch(context.fileno(), GLib.PRIORITY_DEFAULT, GLib.IO_IN, _main_quit)
+    GLib.io_add_watch(context.fileno(), GLib.PRIORITY_DEFAULT, GLib.IO_IN,
+                      _main_quit)
     Gtk.main()
 
 

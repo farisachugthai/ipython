@@ -26,7 +26,8 @@ def inputhook(context):
     app = QtCore.QCoreApplication.instance()
     if not app:
         if sys.platform == "linux":
-            if not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"):
+            if not os.environ.get("DISPLAY") and not os.environ.get(
+                    "WAYLAND_DISPLAY"):
                 import warnings
 
                 global _already_warned
@@ -35,8 +36,7 @@ def inputhook(context):
                     warnings.warn(
                         "The DISPLAY or WAYLAND_DISPLAY environment variable is "
                         "not set or empty and Qt5 requires this environment "
-                        "variable. Deactivate Qt5 code."
-                    )
+                        "variable. Deactivate Qt5 code.")
                 return
         _appref = app = QtGui.QApplication([" "])
     event_loop = QtCore.QEventLoop(app)
@@ -53,7 +53,8 @@ def inputhook(context):
     else:
         # On POSIX platforms, we can use a file descriptor to quit the event
         # loop when there is input ready to read.
-        notifier = QtCore.QSocketNotifier(context.fileno(), QtCore.QSocketNotifier.Read)
+        notifier = QtCore.QSocketNotifier(context.fileno(),
+                                          QtCore.QSocketNotifier.Read)
         try:
             # connect the callback we care about before we turn it on
             notifier.activated.connect(event_loop.exit)

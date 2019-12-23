@@ -28,22 +28,22 @@ class TestContextAwareCompletion(unittest.TestCase):
     def test_adjust_completion_text_based_on_context(self):
         # Adjusted case
         nt.assert_equal(
-            _adjust_completion_text_based_on_context("arg1=", "func1(a=)", 7), "arg1"
-        )
+            _adjust_completion_text_based_on_context("arg1=", "func1(a=)", 7),
+            "arg1")
 
         # Untouched cases
         nt.assert_equal(
-            _adjust_completion_text_based_on_context("arg1=", "func1(a)", 7), "arg1="
-        )
+            _adjust_completion_text_based_on_context("arg1=", "func1(a)", 7),
+            "arg1=")
         nt.assert_equal(
-            _adjust_completion_text_based_on_context("arg1=", "func1(a", 7), "arg1="
-        )
+            _adjust_completion_text_based_on_context("arg1=", "func1(a", 7),
+            "arg1=")
         nt.assert_equal(
-            _adjust_completion_text_based_on_context("%magic", "func1(a=)", 7), "%magic"
-        )
+            _adjust_completion_text_based_on_context("%magic", "func1(a=)", 7),
+            "%magic")
         nt.assert_equal(
-            _adjust_completion_text_based_on_context("func2", "func1(a=)", 7), "func2"
-        )
+            _adjust_completion_text_based_on_context("func2", "func1(a=)", 7),
+            "func2")
 
 
 # Decorator for interaction loop tests -----------------------------------
@@ -54,7 +54,6 @@ class mock_input_helper(object):
 
     Used by the mock_input decorator.
     """
-
     def __init__(self, testgen):
         self.testgen = testgen
         self.exception = None
@@ -92,7 +91,6 @@ def mock_input(testfunc):
     Write the test as a generator, yield-ing the input strings, which IPython
     will see as if they were typed in at the prompt.
     """
-
     def test_method(self):
         testgen = testfunc(self)
         with mock_input_helper(testgen) as mih:
@@ -131,7 +129,8 @@ class InteractiveShellTestCase(unittest.TestCase):
             with tt.AssertPrints("4", suppress=False):
                 yield u"print(2*2)"
 
-            with tt.AssertPrints("SyntaxError: input contains", suppress=False):
+            with tt.AssertPrints("SyntaxError: input contains",
+                                 suppress=False):
                 yield u"print(2345) # syntaxerror"
 
             with tt.AssertPrints("16", suppress=False):

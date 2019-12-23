@@ -18,8 +18,7 @@ def get_pasted_lines(sentinel, l_input=input, quiet=False):
     if not quiet:
         print(
             "Pasting code; enter '%s' alone on the line to stop or use Ctrl-D."
-            % sentinel
-        )
+            % sentinel)
         prompt = ":"
     else:
         prompt = ""
@@ -40,7 +39,6 @@ class TerminalMagics(Magics):
     """
 
     """
-
     def __init__(self, shell):
         super(TerminalMagics, self).__init__(shell)
 
@@ -84,16 +82,19 @@ class TerminalMagics(Magics):
         if b is None:
             raise UsageError("No previous pasted block available")
         if not isinstance(b, str):
-            raise UsageError("Variable 'pasted_block' is not a string, can't execute")
+            raise UsageError(
+                "Variable 'pasted_block' is not a string, can't execute")
 
-        print("Re-executing '%s...' (%d chars)" % (b.split("\n", 1)[0], len(b)))
+        print("Re-executing '%s...' (%d chars)" %
+              (b.split("\n", 1)[0], len(b)))
         self.shell.run_cell(b)
 
     @line_magic
     def autoindent(self):
         """Toggle autoindent on/off (deprecated)"""
         self.shell.set_autoindent()
-        print("Automatic indentation is:", ["OFF", "ON"][self.shell.autoindent])
+        print("Automatic indentation is:", ["OFF",
+                                            "ON"][self.shell.autoindent])
 
     @line_magic
     def cpaste(self, parameter_s=""):

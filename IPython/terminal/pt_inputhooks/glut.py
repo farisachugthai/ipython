@@ -141,25 +141,22 @@ if __name__ == "__main__":
         except AttributeError:
             raise RuntimeError(
                 """Your glut implementation does not allow interactive sessions"""
-                """Consider installing freeglut."""
-            )
+                """Consider installing freeglut.""")
         glutMainLoopEvent = glutCheckLoop
     elif glut.HAVE_FREEGLUT:
         glutMainLoopEvent = glut.glutMainLoopEvent
     else:
         raise RuntimeError(
             """Your glut implementation does not allow interactive sessions. """
-            """Consider installing freeglut."""
-        )
+            """Consider installing freeglut.""")
 
     # Initialisation code
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut_display_mode)
     # This is specific to freeglut
     if bool(glut.glutSetOption):
-        glut.glutSetOption(
-            glut.GLUT_ACTION_ON_WINDOW_CLOSE, glut.GLUT_ACTION_GLUTMAINLOOP_RETURNS
-        )
+        glut.glutSetOption(glut.GLUT_ACTION_ON_WINDOW_CLOSE,
+                           glut.GLUT_ACTION_GLUTMAINLOOP_RETURNS)
     glut.glutCreateWindow(b"ipython")
     glut.glutReshapeWindow(1, 1)
     glut.glutHideWindow()

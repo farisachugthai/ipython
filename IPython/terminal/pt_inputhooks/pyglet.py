@@ -12,7 +12,6 @@ import sys
 import time
 from timeit import default_timer as clock
 
-
 if sys.platform.startswith("linux"):
 
     def flip(window):
@@ -26,7 +25,6 @@ if sys.platform.startswith("linux"):
             window.flip()
         except AttributeError:
             pass
-
 
 else:
 

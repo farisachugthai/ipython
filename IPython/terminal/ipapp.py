@@ -19,7 +19,6 @@ line :command:`ipython` program.
 from traitlets.config.loader import Config
 from traitlets.config.application import boolean_flag, catch_config_error
 from traitlets import Bool, List, Type, default, observe
-from IPython.terminal.interactiveshell import TerminalInteractiveShell
 import logging
 import os
 import sys
@@ -43,21 +42,12 @@ from IPython.core.application import (
 
 base_aliases = BaseAliases().base_aliases
 
-
-# This should probably be in ipapp.py.
 # From IPython/__init__
+# This should probably be in ipapp.py.
 dirname = Path().resolve()
 root = dirname.parent
 extension_dir = dirname.joinpath("extensions")
 sys.path.append(extension_dir.__fspath__())
-
-# -----------------------------------------------------------------------------
-# Globals, utilities and helpers
-# -----------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------
-# Crash handler for this application
-# -----------------------------------------------------------------------------
 
 
 class IPAppCrashHandler(CrashHandler):
@@ -156,17 +146,10 @@ script arguments.
 """,
     ),
 }
-# log doesn't make so much sense this way anymore
-# ...does that say paa?
-# paa('--log','-l',
-#     action='store_true', dest='InteractiveShell.logstart',
-#     help="Start logging to the default log file (./ipython_log.py).")
-#
-# # quick is harder to implement
 
 flags.update(frontend_flags)
 
-aliases = base_aliases
+aliases = dict(base_aliases)
 aliases.update(shell_aliases)
 
 # -----------------------------------------------------------------------------
@@ -181,7 +164,7 @@ class LocateIPythonApp(BaseIPythonApplication):
     from IPython.core.profileapp.ProfileApp?
     """
 
-    description = """Print the path to the IPython dir."""
+    description = "Print the path to the IPython dir."
     subcommands = dict(
         profile=(
             "IPython.core.profileapp.ProfileLocate",
@@ -256,6 +239,7 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         """
         from IPython.core.completer import IPCompleter
         from IPython.core.profiledir import ProfileDir
+        from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
         return [
             InteractiveShellApp,  # ShellApp comes before TerminalApp, because
@@ -269,15 +253,32 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             LoggingMagics,
         ]
 
-    interactive_shell_class = Type(
-        klass=object,
-        # use default_value otherwise which only allow subclasses.
-        default_value=TerminalInteractiveShell,
-        help=(
-            "Class to use to instantiate the TerminalInteractiveShell object."
-            "Useful for custom Frontends"
+    deprecated_subcommands = dict(
+        qtconsole=(
+            "qtconsole.qtconsoleapp.JupyterQtConsoleApp",
+            "DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter Qt Console.",
         ),
-    ).tag(config=True)
+        notebook=(
+            "notebook.notebookapp.NotebookApp",
+            """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter HTML Notebook Server.""",
+        ),
+        console=(
+            "jupyter_console.app.ZMQTerminalIPythonApp",
+            """DEPRECATED, Will be removed in IPython 6.0 : Launch the Jupyter terminal-based Console.""",
+        ),
+        nbconvert=(
+            "nbconvert.nbconvertapp.NbConvertApp",
+            "DEPRECATED, Will be removed in IPython 6.0 : Convert notebooks to/from other formats.",
+        ),
+        trust=(
+            "nbformat.sign.TrustNotebookApp",
+            "DEPRECATED, Will be removed in IPython 6.0 : Sign notebooks to trust their potentially unsafe contents at load.",
+        ),
+        kernelspec=(
+            "jupyter_client.kernelspecapp.KernelSpecApp",
+            "DEPRECATED, Will be removed in IPython 6.0 : Manage Jupyter kernel specifications.",
+        ),
+    )
 
     subcommands = dict(
         profile=(
@@ -297,6 +298,11 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             "Manage the IPython history database.",
         ),
     )
+    deprecated_subcommands["install-nbextension"] = (
+        "notebook.nbextensions.InstallNBExtensionApp",
+        "DEPRECATED, Will be removed in IPython 6.0 : Install Jupyter notebook extension files",
+    )
+    subcommands.update(deprecated_subcommands)
 
     # *do* autocreate requested profile, but don't create the config file.
     auto_create = Bool(True)
@@ -402,7 +408,7 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             # don't bother initializing further, starting subapp
             return
 
-        self.log.info("{}: Extra args were:: {}".format(__file__, self.extra_args))
+        self.log.info("ipapp: initialize: Extra args were:: {}".format(self.extra_args))
 
         if self.extra_args and not self.something_to_run:
             self.file_to_run = self.extra_args[0]
@@ -513,7 +519,6 @@ def load_default_config(ipython_dir=None):
 
 
 launch_new_instance = TerminalIPythonApp.launch_instance
-
 
 if __name__ == "__main__":
     launch_new_instance()

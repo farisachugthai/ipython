@@ -22,11 +22,10 @@ class Prompts:
         -------
 
         """
-        if (
-            getattr(self.shell.pt_app, "editing_mode", None) == "VI"
-            and self.shell.prompt_includes_vi_mode
-        ):
-            return "[" + str(self.shell.pt_app.app.vi_state.input_mode)[3:6] + "] "
+        if (getattr(self.shell.pt_app, "editing_mode", None) == "VI"
+                and self.shell.prompt_includes_vi_mode):
+            return "[" + str(
+                self.shell.pt_app.app.vi_state.input_mode)[3:6] + "] "
         return ""
 
     def in_prompt_tokens(self):
@@ -135,7 +134,6 @@ class ClassicPrompts(Prompts):
 
 class RichPromptDisplayHook(DisplayHook):
     """Subclass of base display hook using coloured prompt"""
-
     def write_output_prompt(self):
         """
 
@@ -154,7 +152,9 @@ class RichPromptDisplayHook(DisplayHook):
 
             if self.shell.pt_app:
                 print_formatted_text(
-                    PygmentsTokens(tokens), style=self.shell.pt_app.app.style, end="",
+                    PygmentsTokens(tokens),
+                    style=self.shell.pt_app.app.style,
+                    end="",
                 )
             else:
                 sys.stdout.write(prompt_txt)
