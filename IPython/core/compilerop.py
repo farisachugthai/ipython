@@ -36,6 +36,7 @@ Authors
 import __future__
 from ast import PyCF_ONLY_AST
 import codeop
+from codeop import _maybe_compile
 import functools
 import hashlib
 import linecache
@@ -81,7 +82,7 @@ class CachingCompiler(codeop.Compile):
     """
 
     def __init__(self):
-        codeop.Compile.__init__(self)
+        self.compiler = codeop.Compile.__init__(self)
 
         # This is ugly, but it must be done this way to allow multiple
         # simultaneous ipython instances to coexist.  Since Python itself
@@ -101,6 +102,29 @@ class CachingCompiler(codeop.Compile):
         # stdlib that call it outside our control go through our codepath
         # (otherwise we'd lose our tracebacks).
         linecache.checkcache = check_linecache_ipython
+
+    def __call__(self, source, filename="<input>", symbol="single"):
+        r"""Compile a command and determine whether it is incomplete.
+
+        Now this class is a callable.
+
+        Arguments:
+
+        source -- the source string; may contain \n characters
+        filename -- optional filename from which source was read;
+                    default "<input>"
+        symbol -- optional grammar start symbol; "single" (default) or
+                  "eval"
+
+        Return value / exceptions raised:
+
+        - Return a code object if the command is complete and valid
+        - Return None if the command is incomplete
+        - Raise SyntaxError, ValueError or OverflowError if the command is a
+          syntax error (OverflowError and ValueError can be produced by
+          malformed literals).
+        """
+        return _maybe_compile(self.compiler, source, filename, symbol)
 
     def ast_parse(self, source, filename="<unknown>", symbol="exec"):
         """Parse code to an AST with the current compiler flags active.

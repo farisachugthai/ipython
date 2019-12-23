@@ -1606,11 +1606,18 @@ class IPCompleter(Completer):
         self.text_until_cursor = self.line_buffer[:cursor_pos]
 
         # Do magic arg matches
+        if not getattr(self, "magic_arg_matchers", None):
+            logging.error(
+                "IPCompleter: _complete: Self doesn't have magic_arg_matchers"
+            )
+            return
         for matcher in self.magic_arg_matchers:
-            matches = list(matcher(line_buffer))[:MATCHES_LIMIT]
-            if matches:
-                origins = [matcher.__qualname__] * len(matches)
-                return text, matches, origins, ()
+            maybe_matches = matcher(self.line_buffer)
+            if maybe_matches:
+                matches = maybe_matches[:MATCHES_LIMIT]
+                if matches:
+                    origins = [matcher.__qualname__] * len(matches)
+                    return text, matches, origins, ()
 
         # Start with a clean slate of completions
         matches = []

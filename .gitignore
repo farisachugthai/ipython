@@ -1,3 +1,4 @@
+**htmlcov**
 *.ignore
 coverage.xml
 docs/source/savefig/*.png

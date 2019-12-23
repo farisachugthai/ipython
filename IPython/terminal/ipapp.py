@@ -178,7 +178,7 @@ class LocateIPythonApp(BaseIPythonApplication):
             return self.subapp.start()
         else:
             print(self.ipython_dir)
-            # return self.ipython_dir
+            return self.ipython_dir
 
 
 class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):

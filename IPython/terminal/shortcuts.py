@@ -1,19 +1,20 @@
 """Module to define and register Terminal IPython shortcuts.
 
-Heavily utilizes :mod:`prompt_toolkit`.
-
+.. todo:: Change the strings to `prompt_toolkit.keys.Keys`.
 
 """
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+import reprlib
 import warnings
 import signal
 import sys
 from typing import Callable
 
 from IPython.core.getipython import get_ipython
+from IPython.utils.text import SList
 
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import DEFAULT_BUFFER, SEARCH_BUFFER
@@ -26,6 +27,7 @@ from prompt_toolkit.filters import (
     has_completions,
     vi_mode,
 )
+from prompt_toolkit.keys import Keys
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
 from prompt_toolkit.key_binding.bindings.completion import (
@@ -44,19 +46,6 @@ from prompt_toolkit.key_binding.key_bindings import (
     ConditionalKeyBindings,
     merge_key_bindings,
 )
-
-
-class VerbosePrompt:
-    """Because I can't ever remember how these classes resolve."""
-    def __init__(self):
-        self.shell = get_ipython()
-        if getattr(self.shell, "pt_app", None):
-            self.app = self.shell.pt_app
-            self.buffer = self.shell.pt_app.buffer
-            self.document = self.shell.pt_app.buffer.document
-
-    def __repr__(self):
-        return "{}".format(i for i in dir(self) if not i.startswith("_"))
 
 
 @Condition
@@ -105,8 +94,8 @@ def create_ipython_shortcuts(shell):
         event.current_buffer.validate_and_handle()
 
     kb.add(
-        "escape",
-        "enter",
+        Keys.Escape,
+        Keys.Enter,
         filter=(has_focus(DEFAULT_BUFFER) & ~has_selection & insert_mode),
     )(reformat_and_execute)
 

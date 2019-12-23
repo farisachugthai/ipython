@@ -148,7 +148,7 @@ class TestController:
         """Kill process if it's still alive, and clean up temporary directories"""
         self.cleanup_process()
         for td in self.dirs:
-            if getattr(td, 'cleanup', None):
+            if getattr(td, "cleanup", None):
                 td.cleanup()
             else:
                 try:

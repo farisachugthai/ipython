@@ -8,9 +8,7 @@ cut and paste use once you understand how to use the system."""
 # embedded in another IPython session (helps avoid confusion)
 
 try:
-from IPython.terminal.embed import InteractiveShellEmbed
-from IPython import embed
-get_ipython
+    get_ipython
 except NameError:
     banner = exit_msg = ""
 else:
@@ -18,6 +16,7 @@ else:
     exit_msg = "*** Back in main IPython ***"
 
 # First import the embed function
+from IPython.terminal.embed import InteractiveShellEmbed
 
 # Now create the IPython shell instance. Put ipshell() anywhere in your code
 # where you want it to open.
@@ -27,6 +26,7 @@ ipshell = InteractiveShellEmbed(banner1=banner, exit_msg=exit_msg)
 # This code will load an embeddable IPython shell always with no changes for
 # nested embededings.
 
+from IPython import embed
 
 # Now embed() will open IPython anywhere in the code.
 

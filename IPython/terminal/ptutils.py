@@ -5,11 +5,14 @@ Everything in this module is a private API, not to be used outside IPython.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+import keyword
 import os
+import re
 
 import unicodedata
 from wcwidth import wcwidth
 
+from traitlets.config.application import TraitError
 from IPython.core.getipython import get_ipython
 
 # So how does __all__ work is a relevant question I have now...
@@ -21,7 +24,17 @@ from IPython.core._completer import (
     _deduplicate_completions,
 )
 
-# from IPython.lib.lexers import IPyLexer
+from IPython.lib.lexers import IPyLexer
+
+
+from prompt_toolkit.completion import (
+    CompleteEvent,
+    FuzzyWordCompleter,
+    NestedCompleter,
+    PathCompleter,
+    WordCompleter,
+)
+from prompt_toolkit.document import Document
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.lexers import Lexer
@@ -77,9 +90,51 @@ def _adjust_completion_text_based_on_context(text, body, offset):
         return text
 
 
+class SimpleWordCompletions:
+    def __init__(self, shell):
+        self.shell = shell or get_ipython()
+        self._initialize_word_completer()
+
+    @property
+    def user_ns(self):
+        return self.shell.user_ns
+
+    def _initialize_word_completer(self, *args, **kwargs):
+        if not args and not kwargs:
+            self.word_completer = WordCompleter(
+                self.user_ns, pattern=re.compile(r"^([a-zA-Z0-9_.]+|[^a-zA-Z0-9_.\s]+)")
+            )
+        # TODO: else:
+
+    def get_document(self):
+        """Is this how you do this?"""
+        return self.shell.pt_app.app.current_buffer.document
+
+    def get_completions(self, doc=None, complete_event=None, **kwargs):
+
+        if doc is None:
+            doc = self.get_document()
+        yield WordCompleter.get_completions(
+            document=doc, complete_event=CompleteEvent(), **kwargs
+        )
+
+
+def get_path_completer():
+    """Basically took this from Jon's unit tests."""
+    return PathCompleter(min_input_len=1, expanduser=True)
+
+
+def get_keyword_completer():
+    """Return all valid Python keywords."""
+    return WordCompleter(
+        keyword.kwlist, pattern=re.compile(r"^([a-zA-Z0-9_.]+|[^a-zA-Z0-9_.\s]+)")
+    )
+
+
 class IPythonPTCompleter(Completer):
     """Adaptor to provide IPython completions to prompt_toolkit"""
-    def __init__(self, ipy_completer=None, shell=None):
+
+    def __init__(self, ipy_completer=None, shell=None, *args, **kwargs):
         if shell is None and ipy_completer is None:
             # raise TypeError("Please pass shell=an InteractiveShell instance.")
             # why can't we do this? all the machinery is up and moving
@@ -88,6 +143,7 @@ class IPythonPTCompleter(Completer):
                 raise TraitError
         self._ipy_completer = ipy_completer
         self.shell = shell
+        super().__init__(*args, **kwargs)
 
     @property
     def ipy_completer(self):
@@ -192,7 +248,7 @@ class IPythonPTLexer(Lexer):
         # available there
         self.python_lexer = PygmentsLexer(pygments.lexers.python.Python3Lexer)
         self.shell_lexer = PygmentsLexer(pygments.lexers.shell.BashLexer)
-
+        self.ipython_lexer = PygmentsLexer(IPyLexer)
         self.magic_lexers = {
             "HTML": PygmentsLexer(pygments.lexers.html.HtmlLexer),
             "html": PygmentsLexer(pygments.lexers.html.HtmlLexer),
@@ -217,8 +273,6 @@ class IPythonPTLexer(Lexer):
         """
         text = document.text.lstrip()
 
-        lexer = self.python_lexer
-
         if text.startswith("!") or text.startswith("%%bash"):
             lexer = self.shell_lexer
 
@@ -227,5 +281,7 @@ class IPythonPTLexer(Lexer):
                 if text.startswith("%%" + magic):
                     lexer = l
                     break
+        else:
+            lexer = self.ipython_lexer
 
         return lexer.lex_document(document)

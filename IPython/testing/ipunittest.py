@@ -34,9 +34,13 @@ Authors
 # -----------------------------------------------------------------------------
 
 # Stdlib
+import faulthandler
+import tracemalloc
+import cgitb
 import re
 import unittest
 from doctest import DocTestFinder, DocTestRunner, TestResults
+
 from IPython.terminal.interactiveshell import InteractiveShell
 
 # -----------------------------------------------------------------------------
@@ -175,3 +179,6 @@ def ipdocstring(func):
 # Make an instance of the classes for public use
 ipdoctest = Doc2UnitTester()
 ip2py = IPython2PythonConverter()
+
+faulthandler.enable()
+tracemalloc.start()

@@ -31,6 +31,7 @@ from traitlets import (
     validate,
 )
 
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
 from prompt_toolkit.filters import HasFocus, Condition, IsDone
 from prompt_toolkit.formatted_text import PygmentsTokens
@@ -58,7 +59,7 @@ from .debugger import TerminalPdb
 from .magics import TerminalMagics
 from .pt_inputhooks import get_inputhook_name_and_func
 from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
-from .ptutils import IPythonPTCompleter, IPythonPTLexer
+from .ptutils import IPythonPTCompleter, IPythonPTLexer, get_path_completer
 from .shortcuts import create_ipython_shortcuts
 
 DISPLAY_BANNER_DEPRECATED = object()
@@ -260,6 +261,14 @@ class TerminalInteractiveShell(InteractiveShell):
         config=True
     )
 
+    right_prompt = Unicode(
+        allow_none=True, help=("Why don't we have this as an option?")
+    ).tag(config=True)
+
+    bottom_toolbar = Unicode(
+        allow_none=True, help=("Why don't we have this as an option?")
+    ).tag(config=True)
+
     term_title_format = Unicode(
         "IPython: {cwd}",
         help=(
@@ -302,6 +311,8 @@ class TerminalInteractiveShell(InteractiveShell):
     prompt_includes_vi_mode = Bool(
         True, help="Display the current vi mode (when using vi editing mode)."
     ).tag(config=True)
+
+    auto_suggest = Bool(True, help="Auto suggest from history?").tag(config=True)
 
     @observe("term_title")
     def init_term_title(self, change=None):
@@ -361,13 +372,23 @@ class TerminalInteractiveShell(InteractiveShell):
         editing_mode = getattr(EditingMode, self.editing_mode.upper())
 
         self.pt_loop = asyncio.new_event_loop()
+        if self.auto_suggest:
+            auto_suggester = (AutoSuggestFromHistory(),)
+        else:
+            auto_suggester = None
+
         self.pt_app = PromptSession(
             editing_mode=editing_mode,
             key_bindings=key_bindings,
             history=history,
-            completer=IPythonPTCompleter(shell=self),
+            # completer=IPythonPTCompleter(shell=self),
+            completer=get_path_completer(),
             enable_history_search=self.enable_history_search,
             style=self.style,
+            bottom_toolbar=self.bottom_toolbar,
+            rprompt=self.right_prompt,
+            # apparently it's not that easy.
+            # auto_suggest=auto_suggester,
             include_default_pygments_style=False,
             mouse_support=self.mouse_support,
             enable_open_in_editor=self.extra_open_editor_shortcuts,
@@ -459,9 +480,11 @@ class TerminalInteractiveShell(InteractiveShell):
     def color_depth(self):
         return ColorDepth.TRUE_COLOR if self.true_color else None
 
-    def _extra_prompt_options(self):
+    def _extra_prompt_options(self, **kwargs):
         """
         Return the current layout option for the current Terminal InteractiveShell
+
+        Why doesn't this method take an arbitrary number of keywords though.
         """
 
         def get_message():
@@ -499,6 +522,7 @@ class TerminalInteractiveShell(InteractiveShell):
                     & Condition(lambda: self.highlight_matching_brackets),
                 )
             ],
+            **kwargs,
         }
         if not PTK3:
             options["inputhook"] = self.inputhook

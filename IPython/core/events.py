@@ -35,7 +35,6 @@ from IPython.core.getipython import get_ipython
 
 from backcall import callback_prototype
 
-
 # event_name -> prototype mapping
 available_events = {}
 

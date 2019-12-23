@@ -2279,9 +2279,13 @@ class InteractiveShell(SingletonConfigurable):
         else:
             stb.extend(traceback.format_exception_only(etype, value))
             if exception_only:
-                stb.insert(0, [
-                    "An exception has occurred, use %tb to see " "the full traceback.\n"
-                ])
+                stb.insert(
+                    0,
+                    [
+                        "An exception has occurred, use %tb to see "
+                        "the full traceback.\n"
+                    ],
+                )
             else:
                 self._showtraceback(etype, value, stb)
                 if self.call_pdb:
@@ -4133,7 +4137,8 @@ class InteractiveShell(SingletonConfigurable):
             return True
         return ask_yes_no(prompt, default, interrupt)
 
-    def show_usage(self):
+    @staticmethod
+    def show_usage():
         """Show a usage message using :func:IPython.core.page.page`.
 
         Prints off :func:`IPython.core.usage.interactive_usage`.
@@ -4224,6 +4229,8 @@ class InteractiveShell(SingletonConfigurable):
         In each case, ``.args[0]`` is a printable message.
 
         """
+        from IPython.core.macro import Macro
+
         code = self.extract_input_lines(target, raw=raw)  # Grab history
         if code:
             return code
@@ -4239,12 +4246,13 @@ class InteractiveShell(SingletonConfigurable):
 
                 response = urlopen(target)
                 return response.read().decode("latin1")
-            raise ValueError("'%s' seem to be unreadable." % target)
+            else:
+                raise ValueError("'%s' seem to be unreadable." % target)
 
         potential_target = [target]
         try:
             potential_target.insert(0, get_py_filename(target))
-        except IOError:
+        except OSError:
             pass
 
         for tgt in potential_target:
