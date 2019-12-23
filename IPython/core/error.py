@@ -64,7 +64,8 @@ class StdinNotImplementedError(IPythonCoreError, NotImplementedError):
 class InputRejected(Exception):
     """Input rejected by ast transformer.
 
-    Raise this in your NodeTransformer to indicate that InteractiveShell should
+    Raise this in your :class:`ast.NodeTransformer` to indicate that
+    :class:`~IPython.core.interactiveshell.InteractiveShell` should
     not execute the supplied input.
     """
 
@@ -86,7 +87,7 @@ class KillEmbedded(Exception):
 
 
 class ColorSwitchErr(UsageError):
-    """Nov 01, 2019: From ./magics/basic.
+    r"""Nov 01, 2019: From ./magics/basic.
 
     Here's the original.:
 
@@ -111,7 +112,9 @@ class ColorSwitchErr(UsageError):
 
 
 class XmodeSwitchErr(ColorSwitchErr):
-    """Also from magics/basic.
+    r"""Also from magics/basic.
+
+    ::
 
         def xmode_switch_err(name):
             warn('Error changing %s exception modes.\n%s' %
@@ -124,7 +127,7 @@ class XmodeSwitchErr(ColorSwitchErr):
 
 
 class ProvisionalWarning(DeprecationWarning):
-    """Warning class for unstable features. Moved out of ./interactiveshell.py"""
+    """Warning class for unstable features. Moved out of ./interactiveshell.py."""
 
     pass
 
@@ -138,8 +141,8 @@ class SpaceInInput(Exception):
 class ProvisionalCompleterWarning(FutureWarning):
     """Exception raise by an experimental feature in this module.
 
-    Wrap code in :any:`provisionalcompleter` context manager if you
-    are certain you want to use an unstable feature.
+    Wrap code in :class:`~IPython.core.completerlib.ProvisionalCompleter`
+    context manager if you are certain you want to use an unstable feature.
 
     From completerlib.
     """
@@ -190,9 +193,6 @@ def BdbQuit_excepthook(et, ev, tb, excepthook=None):
 
 
 def BdbQuit_IPython_excepthook():
-    """
-
-    """
     print("Exiting Debugger.")
 
 

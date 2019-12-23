@@ -26,6 +26,7 @@ if sys.platform.startswith("linux"):
         except AttributeError:
             pass
 
+
 else:
 
     def flip(window):

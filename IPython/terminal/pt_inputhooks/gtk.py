@@ -14,6 +14,7 @@ def inputhook(context):
 
     :param context: An `InputHookContext` instance.
     """
+
     def _main_quit(*a, **kw):
         gtk.main_quit()
         return False

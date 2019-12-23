@@ -112,6 +112,7 @@ class Foo(object):
     --with-doctest*.  Do we want to have that as a dependency?
 
     """
+
     @ipdocstring
     def ipdt_method(self):
         """

@@ -30,8 +30,8 @@ Integrating with a new event loop in the terminal
 
    There is a new API for event loop integration using prompt_toolkit.
 
-In the terminal, IPython uses prompt_toolkit to prompt the user for input.
-prompt_toolkit provides hooks to integrate with an external event loop.
+In the terminal, IPython uses ``prompt_toolkit`` to prompt the user for input.
+``prompt_toolkit`` provides hooks to integrate with an external event loop.
 
 To integrate an event loop, define a function which runs the GUI event loop
 until there is input waiting for prompt_toolkit to process. There are two ways
@@ -52,7 +52,7 @@ to detect this condition::
 
 Once you have defined this function, register it with IPython:
 
-.. currentmodule:: IPython.terminal.pt_inputhooks
+.. .. currentmodule:: IPython.terminal.pt_inputhooks
 
 .. function:: register(name, inputhook)
 

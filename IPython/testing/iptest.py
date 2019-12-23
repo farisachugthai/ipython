@@ -58,46 +58,6 @@ warnings.filterwarnings("error", message=".*", category=ResourceWarning, module=
 warnings.filterwarnings(
     "error", message=".*{'config': True}.*", category=DeprecationWarning, module="IPy.*"
 )
-warnings.filterwarnings("default", message=".*", category=Warning, module="IPy.*")
-
-warnings.filterwarnings(
-    "error", message=".*apply_wrapper.*", category=DeprecationWarning, module=".*"
-)
-warnings.filterwarnings(
-    "error", message=".*make_label_dec", category=DeprecationWarning, module=".*"
-)
-warnings.filterwarnings(
-    "error", message=".*decorated_dummy.*", category=DeprecationWarning, module=".*"
-)
-warnings.filterwarnings(
-    "error", message=".*skip_file_no_x11.*", category=DeprecationWarning, module=".*"
-)
-warnings.filterwarnings(
-    "error",
-    message=".*onlyif_any_cmd_exists.*",
-    category=DeprecationWarning,
-    module=".*",
-)
-
-warnings.filterwarnings(
-    "error", message=".*disable_gui.*", category=DeprecationWarning, module=".*"
-)
-
-warnings.filterwarnings(
-    "error",
-    message=".*ExceptionColors global is deprecated.*",
-    category=DeprecationWarning,
-    module=".*",
-)
-
-# Jedi older versions
-warnings.filterwarnings(
-    "error",
-    message=".*elementwise != comparison failed and.*",
-    category=FutureWarning,
-    module=".*",
-)
-
 if version_info < (8,):
     warnings.filterwarnings(
         "ignore",
@@ -117,12 +77,6 @@ else:
 
 
 def monkeypatch_xunit():
-    """
-
-    Returns
-    -------
-
-    """
     try:
         dec.knownfailureif(True)(lambda: None)()
     except Exception as e:
@@ -156,17 +110,8 @@ def monkeypatch_xunit():
 
 
 def extract_version(mod):
-    """
-
-    Parameters
-    ----------
-    mod :
-
-    Returns
-    -------
-
-    """
-    return mod.__version__
+    if hasattr(mod, "__version__"):
+        return mod.__version__
 
 
 def test_for(item, min_version=None, callback=extract_version):
@@ -391,26 +336,32 @@ class ExclusionPlugin(Plugin):
 
 
 class StreamCapturer(Thread):
-    """Ah here it is.
+    """Subclass :class:`threading.Thread` to modify test output in place.
 
-    Used all over the place.
+    Frequently used through the test suite.
 
     Attributes
     ----------
     daemon : bool
+        Don't hang if main thread crashes
     started : bool
 
     """
 
-    daemon = True  # Don't hang if main thread crashes
+    daemon = True
     started = False
 
     def __init__(self, echo=False):
+        """Bind a :class:`io.BytesIO` instance to the StreamCapturer."""
         super().__init__()
         self.echo = echo
         self.streams = []
         self.buffer = BytesIO()
-        self.readfd, self.writefd = os.pipe()
+        if hasattr(os, "pipe"):
+            # todo: double check that this function is available on all platforms
+            self.readfd, self.writefd = os.pipe()
+        else:
+            self.readfd, self.writefd = None
         self.buffer_lock = Lock()
         self.stop = Event()
 
@@ -434,12 +385,6 @@ class StreamCapturer(Thread):
             self.buffer.seek(0)
 
     def get_buffer(self):
-        """
-
-        Returns
-        -------
-
-        """
         with self.buffer_lock:
             return self.buffer.getvalue()
 
@@ -463,6 +408,9 @@ class SubprocessStreamCapturePlugin(Plugin):
 
     def __init__(self):
         super().__init__()
+        self.enabled = None
+        # we keep getting errors about this and it's probably because the attribute is accessed
+        # before the right method is called
         self.stream_capturer = StreamCapturer()
         self.destination = os.environ.get("IPTEST_SUBPROC_STREAMS", "capture")
         # This is ugly, but distant parts of the test machinery need to be able
@@ -470,12 +418,6 @@ class SubprocessStreamCapturePlugin(Plugin):
         nose.iptest_stdstreams_fileno = self.get_write_fileno
 
     def get_write_fileno(self):
-        """
-
-        Returns
-        -------
-
-        """
         if self.destination == "capture":
             self.stream_capturer.ensure_started()
             return self.stream_capturer.writefd

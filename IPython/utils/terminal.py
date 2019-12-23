@@ -59,7 +59,7 @@ def toggle_set_term_title(val=False):
 
     """
     global ignore_termtitle
-    ignore_termtitle = not(val)
+    ignore_termtitle = not (val)
 
 
 def _set_term_title(*args, **kw):

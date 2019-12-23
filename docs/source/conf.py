@@ -36,6 +36,7 @@ from sphinx.application import Sphinx
 
 from IPython.sphinxext import ipython_directive  # noqa F401
 from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer, IPython3Lexer
+from IPython.core.release import __version__, version_info
 
 try:
     from IPython.sphinxext import (
@@ -77,16 +78,6 @@ else:
 
     html_theme = "sphinx_rtd_theme"
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
-# We load the ipython release info into a dict by explicit execution
-iprelease = runpy.run_module("IPython.core.release")
-# If this didn't work then runpy
-# yeah exec doesn't return things
-# iprelease = exec(
-# compile(open("../../IPython/core/release.py").read(), "<string>", "exec"),
-# globals(),
-# locals()
-# )
 
 # General configuration
 # ---------------------
@@ -138,7 +129,7 @@ def is_stable(extra):
     return True
 
 
-if is_stable(iprelease["_version_extra"]):
+if is_stable(version_info):
     tags.add("ipystable")
     logger.info("Adding Tag: ipystable")
 else:
@@ -185,9 +176,9 @@ warning_is_error = False
 # other places throughout the built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "%s" % iprelease["version"]
+release = str(version_info)
 # Just the X.Y.Z part, no '-dev'
-version = iprelease["version"].split("-", 1)[0]
+version = __version__
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -432,13 +423,6 @@ extlinks = {
     "pr": ("https://github.com/ipython/ipython/pull/%s", "PR #"),
     "issue": ("https://github.com/ipython/ipython/issues/%s", "Issue #"),
 }
-
-
-# Cleanup
-# -------
-# delete release info to avoid pickling errors from sphinx
-
-del iprelease
 
 
 # Extension Interface

@@ -60,17 +60,20 @@ def default_aliases():
     The aliases defined here should be safe to use on a kernel
     regardless of what frontend it is attached to.  Frontends that use a
     kernel in-process can define additional aliases that will only work in
-    their case.  For example, things like 'less' or 'clear' that manipulate
-    the terminal should NOT be declared here, as they will only work if the
-    kernel is running inside a true terminal, and not over the network.
+    their case.  For example, things like :command:`less` or
+    :command:`clear` that manipulate the terminal should NOT be declared
+    here, as they will only work if the kernel is running inside a true
+    terminal, and not over the network.
 
-    We define a useful set of ls aliases.  The GNU and BSD options are a little
+    We define a useful set of :command:`ls` aliases.
+
+    The GNU and BSD options are a little
     different, so we make aliases that provide as similar as possible
-    behavior in ipython, by passing the right flags for each platform.
+    behavior in IPython, by passing the right flags for each platform.
 
     .. versionchanged:: 7.10.0
 
-        Added %l to all of the aliases because they shouldn't be missing that.
+        Added ``%l`` to all of the aliases because they shouldn't be missing that.
 
     """
     if os.name == "posix":
@@ -151,7 +154,9 @@ class Alias:
 
     Instances are registered as magic functions to allow use of aliases.
 
-    .. todo:: More dunders. It would be sweet if we had a container we could ``+`` and ``-`` to.
+    .. todo::
+        More dunders.
+        It would be sweet if we had a container we could ``+`` and ``-`` to.
 
     Attributes
     ----------
@@ -267,10 +272,6 @@ class AliasManager(Configurable):
         OS dependant aliases.
     user_aliases : list
 
-    Properties
-    ----------
-    aliases
-
     """
 
     # is that supposed to say default_aliases or default_value?
@@ -332,13 +333,17 @@ class AliasManager(Configurable):
 
         Parameters
         ----------
-        name :
-        cmd :
+        name : str
+            Name of the new alias.
+        cmd : str
+            Corresponding shell command. Can be given with flags. Quotes
+            aren't necessary for correct parsing.
 
         Raises
-        ------
-        This will raise an :exc:`AliasError` if there are validation
-        problems.
+        -------
+        :exc:`AliasError`
+            If there are validation problems with the given alias.
+
         """
         caller = Alias(shell=self.shell, name=name, cmd=cmd)
         self.shell.magics_manager.register_function(
@@ -374,7 +379,7 @@ class AliasManager(Configurable):
             raise ValueError("%s is not an alias" % name)
 
     def clear_aliases(self):
-        """Call :meth:`undefine_alias on all defined aliases."""
+        """Call :meth:`undefine_alias` on all defined aliases."""
         for name, cmd in self.aliases:
             self.undefine_alias(name)
 

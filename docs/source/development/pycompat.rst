@@ -33,10 +33,9 @@ be removed in the future.
      making it work on Python 2.
 
 
-Not related entirely but here's the old IPython.utils.path.filefind docstring.
+Not related entirely but here's the old ``IPython.utils.path.filefind`` docstring.
 
 .. currentmodule:: IPython.utils.path
-   :noindex:
 
 .. function:: filefind
 

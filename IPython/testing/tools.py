@@ -113,8 +113,7 @@ def parse_test_output(txt):
         nfail = int(fail_m.group(1))
         return nerr, nfail
 
-    both_m = re.search(r"^FAILED [(]errors=(\d+), failures=(\d+)[)]", txt,
-                       re.MULTILINE)
+    both_m = re.search(r"^FAILED [(]errors=(\d+), failures=(\d+)[)]", txt, re.MULTILINE)
     if both_m:
         nerr = int(both_m.group(1))
         nfail = int(both_m.group(2))
@@ -149,7 +148,7 @@ def default_config():
     """
     config = Config()
     config.TerminalInteractiveShell.colors = "NoColor"
-    config.TerminalTerminalInteractiveShell.term_title = (False, )
+    config.TerminalTerminalInteractiveShell.term_title = (False,)
     config.TerminalInteractiveShell.autocall = 0
     f = tempfile.NamedTemporaryFile(suffix=u"test_hist.sqlite", delete=False)
     config.HistoryManager.hist_file = f.name
@@ -220,11 +219,7 @@ def ipexec(fname, options=None, commands=()):
     full_fname = os.path.join(test_dir, fname)
     full_cmd = ipython_cmd + cmdargs + [full_fname]
 
-    p = Popen(full_cmd,
-              stdout=PIPE,
-              stderr=PIPE,
-              stdin=PIPE,
-              env=os.environ.copy())
+    p = Popen(full_cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE, env=os.environ.copy())
 
     out, err = p.communicate(input=("\n".join(commands)) or None)
 
@@ -235,11 +230,7 @@ def ipexec(fname, options=None, commands=()):
     return out, err
 
 
-def ipexec_validate(fname,
-                    expected_out,
-                    expected_err="",
-                    options=None,
-                    commands=()):
+def ipexec_validate(fname, expected_out, expected_err="", options=None, commands=()):
     """Utility to call 'ipython filename' and validate output/error.
 
     This function raises an AssertionError if the validation fails.
@@ -279,8 +270,7 @@ def ipexec_validate(fname,
                 "\n".join(expected_err.strip().splitlines()),
             )
         else:
-            raise ValueError("Running file %r produced error: %r" %
-                             (fname, err))
+            raise ValueError("Running file %r produced error: %r" % (fname, err))
     # If no errors or output on stderr was expected, match stdout
     nt.assert_equal(
         "\n".join(out.strip().splitlines()),
@@ -295,6 +285,7 @@ class TempFileMixin(unittest.TestCase):
 
     Should be deprecated IMO. Pytest fixtures could very easily replace this.
     """
+
     def mktmp(self, src, ext=".py"):
         """Make a valid python temp file."""
         fname = temp_pyfile(src, ext)
@@ -325,13 +316,9 @@ class TempFileMixin(unittest.TestCase):
         self.tearDown()
 
 
-pair_fail_msg = ("Testing {0}\n\n"
-                 "In:\n"
-                 "  {1!r}\n"
-                 "Expected:\n"
-                 "  {2!r}\n"
-                 "Got:\n"
-                 "  {3!r}\n")
+pair_fail_msg = (
+    "Testing {0}\n\n" "In:\n" "  {1!r}\n" "Expected:\n" "  {2!r}\n" "Got:\n" "  {3!r}\n"
+)
 
 
 def check_pairs(func, pairs):
@@ -379,6 +366,7 @@ class AssertPrints(object):
     abcd
     def
     """
+
     def __init__(self, s, channel="stdout", suppress=True):
         self.s = s
         if isinstance(self.s, (str, _re_type)):
@@ -403,10 +391,10 @@ class AssertPrints(object):
             for s in self.s:
                 if isinstance(s, _re_type):
                     assert s.search(printed), notprinted_msg.format(
-                        s.pattern, self.channel, printed)
+                        s.pattern, self.channel, printed
+                    )
                 else:
-                    assert s in printed, notprinted_msg.format(
-                        s, self.channel, printed)
+                    assert s in printed, notprinted_msg.format(s, self.channel, printed)
             return False
         finally:
             self.tee.close()
@@ -424,6 +412,7 @@ class AssertNotPrints(AssertPrints):
 
     Counterpart of AssertPrints.
     """
+
     def __exit__(self, etype, value, traceback):
         try:
             if value is not None:
@@ -436,10 +425,12 @@ class AssertNotPrints(AssertPrints):
             for s in self.s:
                 if isinstance(s, _re_type):
                     assert not s.search(printed), printed_msg.format(
-                        s.pattern, self.channel, printed)
+                        s.pattern, self.channel, printed
+                    )
                 else:
                     assert s not in printed, printed_msg.format(
-                        s, self.channel, printed)
+                        s, self.channel, printed
+                    )
             return False
         finally:
             self.tee.close()

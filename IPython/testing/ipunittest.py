@@ -61,6 +61,7 @@ class IPython2PythonConverter(object):
 
     Eventually this code may grow to be the full IPython syntax conversion
     implementation, but for now it only does prompt conversion."""
+
     def __init__(self):
         self.rps1 = re.compile(r"In \[\d+\]: ")
         self.rps2 = re.compile(r" {3}[.][.][.]+: ")
@@ -116,6 +117,7 @@ class Doc2UnitTester(object):
     no attempt is made at turning it into a singleton, there is no need for
     that).
     """
+
     def __init__(self, verbose=False):
         """New decorator.
 

@@ -20,6 +20,7 @@ def ignore_keyboardinterrupts(func):
     presses :kbd:`CTRL-C` while IPython is idle, and the inputhook loop
     is running. In this case, we want to ignore interrupts.
     """
+
     @functools.wraps
     def wrapper(*args, **kwargs):
         """
@@ -243,6 +244,7 @@ if __name__ == "__main__":
 
     class EventLoopTimer(wx.Timer):
         """Forgot this one. Still haven't imported wx yet."""
+
         def __init__(self, func):
             self.func = func
             wx.Timer.__init__(self)
