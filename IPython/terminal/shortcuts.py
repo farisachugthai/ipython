@@ -31,7 +31,8 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
 from prompt_toolkit.key_binding.bindings.completion import (
-    display_completions_like_readline, )
+    display_completions_like_readline,
+)
 from prompt_toolkit.key_binding.bindings.cpr import load_cpr_bindings
 from prompt_toolkit.key_binding.bindings.emacs import (
     load_emacs_bindings,
@@ -78,9 +79,9 @@ def create_ipython_shortcuts(shell):
     else:
         return_handler = newline_or_execute_outer(shell)
 
-    kb.add("enter",
-           filter=(has_focus(DEFAULT_BUFFER) & ~has_selection
-                   & insert_mode))(return_handler)
+    kb.add("enter", filter=(has_focus(DEFAULT_BUFFER) & ~has_selection & insert_mode))(
+        return_handler
+    )
 
     def reformat_and_execute(event):
         """
@@ -89,8 +90,9 @@ def create_ipython_shortcuts(shell):
         ----------
         event :
         """
-        reformat_text_before_cursor(event.current_buffer,
-                                    event.current_buffer.document, shell)
+        reformat_text_before_cursor(
+            event.current_buffer, event.current_buffer.document, shell
+        )
         event.current_buffer.validate_and_handle()
 
     kb.add(
@@ -101,17 +103,17 @@ def create_ipython_shortcuts(shell):
 
     kb.add("c-\\")(force_exit)
 
-    kb.add("c-p", filter=(
-        vi_insert_mode
-        & has_focus(DEFAULT_BUFFER)))(previous_history_or_previous_completion)
+    kb.add("c-p", filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER)))(
+        previous_history_or_previous_completion
+    )
 
-    kb.add(
-        "c-n",
-        filter=(vi_insert_mode
-                & has_focus(DEFAULT_BUFFER)))(next_history_or_next_completion)
+    kb.add("c-n", filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER)))(
+        next_history_or_next_completion
+    )
 
-    kb.add("c-g", filter=(has_focus(DEFAULT_BUFFER)
-                          & has_completions))(dismiss_completion)
+    kb.add("c-g", filter=(has_focus(DEFAULT_BUFFER) & has_completions))(
+        dismiss_completion
+    )
 
     kb.add("c-c", filter=has_focus(DEFAULT_BUFFER))(reset_buffer)
 
@@ -123,23 +125,28 @@ def create_ipython_shortcuts(shell):
     # Ctrl+I == Tab
     kb.add(
         "tab",
-        filter=(has_focus(DEFAULT_BUFFER)
-                & ~has_selection
-                & insert_mode
-                & cursor_in_leading_ws),
+        filter=(
+            has_focus(DEFAULT_BUFFER)
+            & ~has_selection
+            & insert_mode
+            & cursor_in_leading_ws
+        ),
     )(indent_buffer)
     kb.add("c-o", filter=(has_focus(DEFAULT_BUFFER) & emacs_insert_mode))(
-        newline_autoindent_outer(shell.input_transformer_manager))
+        newline_autoindent_outer(shell.input_transformer_manager)
+    )
 
     kb.add("f2", filter=has_focus(DEFAULT_BUFFER))(open_input_in_editor)
 
     if shell.display_completions == "readlinelike":
         kb.add(
             "c-i",
-            filter=(has_focus(DEFAULT_BUFFER)
-                    & ~has_selection
-                    & insert_mode
-                    & ~cursor_in_leading_ws),
+            filter=(
+                has_focus(DEFAULT_BUFFER)
+                & ~has_selection
+                & insert_mode
+                & ~cursor_in_leading_ws
+            ),
         )(display_completions_like_readline)
 
     if sys.platform == "win32":
@@ -164,8 +171,7 @@ def reformat_text_before_cursor(buffer, document, shell):
     document :
     shell :
     """
-    text = buffer.delete_before_cursor(
-        len(document.text[:document.cursor_position]))
+    text = buffer.delete_before_cursor(len(document.text[: document.cursor_position]))
     try:
         formatted_text = shell.reformat_handler(text)
         buffer.insert_text(formatted_text)
@@ -175,6 +181,7 @@ def reformat_text_before_cursor(buffer, document, shell):
 
 def newline_or_execute_outer(shell):
     """Admittedly there's a LOT going on and this probably should be broken up."""
+
     def newline_or_execute(event):
         """When the user presses return, insert a newline or execute the code."""
         b = event.current_buffer
@@ -193,7 +200,7 @@ def newline_or_execute_outer(shell):
         if d.line_count == 1:
             check_text = d.text
         else:
-            check_text = d.text[:d.cursor_position]
+            check_text = d.text[: d.cursor_position]
         status, indent = shell.check_complete(check_text)
 
         # if all we have after the cursor is whitespace: reformat current text
@@ -202,8 +209,10 @@ def newline_or_execute_outer(shell):
         if not after_cursor.strip():
             reformat_text_before_cursor(b, d, shell)
 
-        if not (d.on_last_line or d.cursor_position_row >=
-                d.line_count - d.empty_line_count_at_the_end()):
+        if not (
+            d.on_last_line
+            or d.cursor_position_row >= d.line_count - d.empty_line_count_at_the_end()
+        ):
             if shell.autoindent:
                 b.insert_text("\n" + indent)
             else:
@@ -313,6 +322,7 @@ def newline_autoindent_outer(inputsplitter) -> Callable[..., None]:
     by 4 extra space after a function definition, class definition, context
     manager... And dedent by 4 space after ``pass``, ``return``, ``raise ...``.
     """
+
     def newline_autoindent(event):
         """insert a newline after the cursor indented appropriately."""
         b = event.current_buffer
@@ -320,7 +330,7 @@ def newline_autoindent_outer(inputsplitter) -> Callable[..., None]:
 
         if b.complete_state:
             b.cancel_completion()
-        text = d.text[:d.cursor_position] + "\n"
+        text = d.text[: d.cursor_position] + "\n"
         _, indent = inputsplitter.check_complete(text)
         b.insert_text("\n" + (" " * (indent or 0)), move_cursor=False)
 

@@ -17,8 +17,10 @@ install:
     # this command works on linux but not on mac because of permission issues.
 
         if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
-            pip3 install --upgrade pip -r requirements.txt -e .
+            # ubuntu
+            pip3 install --upgrade pip -r requirements_dev.txt -e .
         else
+            # OSX
             wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
             bash miniconda.sh -b -p $HOME/miniconda
             export PATH="$HOME/miniconda/bin:$PATH"
@@ -30,8 +32,10 @@ install:
             conda create -q -n test-environment python=$CONDA_PY ipython pytest matplotlib setuptools wheel nose coverage codecov pyqt sphinx testpath flake8 flake8-rst nbformat
             source activate test-environment
         fi
+
     else
-        python -m pip install -U pip -r requirements.txt -e .
+        # windows
+        python -m pip install -U pip -r requirements_dev.txt -e .
     fi
 
 script:
@@ -112,3 +116,5 @@ deploy:
     tags: true
     python: 3.7 # Any version should work, but we only need one
     condition: $TRAVIS_OS_NAME = "linux"
+
+# Vim: set ft=yaml.sh:

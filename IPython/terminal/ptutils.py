@@ -72,13 +72,13 @@ def _elide(string, *, min_elide=30):
 
     if len(object_parts) > 3:
         return "{}.{}\N{HORIZONTAL ELLIPSIS}{}.{}".format(
-            object_parts[0], object_parts[1][0], object_parts[-2][-1],
-            object_parts[-1])
+            object_parts[0], object_parts[1][0], object_parts[-2][-1], object_parts[-1]
+        )
 
     elif len(file_parts) > 3:
-        return ("{}" + os.sep + "{}\N{HORIZONTAL ELLIPSIS}{}" + os.sep +
-                "{}").format(file_parts[0], file_parts[1][0],
-                             file_parts[-2][-1], file_parts[-1])
+        return ("{}" + os.sep + "{}\N{HORIZONTAL ELLIPSIS}{}" + os.sep + "{}").format(
+            file_parts[0], file_parts[1][0], file_parts[-2][-1], file_parts[-1]
+        )
 
     return string
 
@@ -182,8 +182,9 @@ class IPythonPTCompleter(Completer):
             cursor_col = document.cursor_position_col
             cursor_position = document.cursor_position
             offset = cursor_to_position(body, cursor_row, cursor_col)
-            yield from self._get_completions(body, offset, cursor_position,
-                                             self.ipy_completer)
+            yield from self._get_completions(
+                body, offset, cursor_position, self.ipy_completer
+            )
 
     @staticmethod
     def _get_completions(body, offset, cursor_position, ipyc):
@@ -191,8 +192,7 @@ class IPythonPTCompleter(Completer):
         Private equivalent of get_completions() use only for unit_testing.
         """
         debug = getattr(ipyc, "debug", False)
-        completions = _deduplicate_completions(body,
-                                               ipyc.completions(body, offset))
+        completions = _deduplicate_completions(body, ipyc.completions(body, offset))
         for c in completions:
             if not c.text:
                 # Guard against completion machinery giving us an empty string.
@@ -205,13 +205,13 @@ class IPythonPTCompleter(Completer):
             if not wcwidth(text[0]):
                 if cursor_position + c.start > 0:
                     char_before = body[c.start - 1]
-                    fixed_text = unicodedata.normalize("NFC",
-                                                       char_before + text)
+                    fixed_text = unicodedata.normalize("NFC", char_before + text)
 
                     # Yield the modified completion instead, if this worked.
                     if wcwidth(text[0:1]) == 1:
-                        yield Completion(fixed_text,
-                                         start_position=c.start - offset - 1)
+                        yield Completion(
+                            fixed_text, start_position=c.start - offset - 1
+                        )
                         continue
 
             # TODO: Use Jedi to determine meta_text
@@ -222,7 +222,8 @@ class IPythonPTCompleter(Completer):
             display_text = c.text
 
             adjusted_text = _adjust_completion_text_based_on_context(
-                c.text, body, offset)
+                c.text, body, offset
+            )
             if c.type == "function":
                 yield Completion(
                     adjusted_text,
@@ -241,6 +242,7 @@ class IPythonPTCompleter(Completer):
 
 class IPythonPTLexer(Lexer):
     """Wrapper around PythonLexer and BashLexer."""
+
     def __init__(self):
         """Don't we have lexers?"""
         # l = pygments_lexers
@@ -252,8 +254,7 @@ class IPythonPTLexer(Lexer):
         self.magic_lexers = {
             "HTML": PygmentsLexer(pygments.lexers.html.HtmlLexer),
             "html": PygmentsLexer(pygments.lexers.html.HtmlLexer),
-            "javascript":
-            PygmentsLexer(pygments.lexers.javascript.JavascriptLexer),
+            "javascript": PygmentsLexer(pygments.lexers.javascript.JavascriptLexer),
             "js": PygmentsLexer(pygments.lexers.javascript.JavascriptLexer),
             "perl": PygmentsLexer(pygments.lexers.perl.PerlLexer),
             "ruby": PygmentsLexer(pygments.lexers.ruby.RubyLexer),
