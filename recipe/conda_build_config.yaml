@@ -1,2 +1,0 @@
-variants = {'python': ['3.6', '3.7', '3.8']}
-api.build(path_to_recipe, variants=variants))]

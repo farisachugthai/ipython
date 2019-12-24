@@ -1,4 +1,4 @@
-"""A decorator-based method of constructing IPython magics.
+r"""A decorator-based method of constructing IPython magics.
 
 Utilizes :mod:`argparse` option handling.
 New magic functions can be defined like so::
@@ -12,13 +12,7 @@ New magic functions can be defined like so::
     def magic_cool(self, arg):
         pass
 
-.. data:: NAME_RE
-
-    re.compile(r"[a-zA-Z][a-zA-Z0-9_-]*$")
-
-
 """
-
 __all__ = ["magic_arguments", "argument", "argument_group", "kwds", "parse_argstring"]
 
 # -----------------------------------------------------------------------------

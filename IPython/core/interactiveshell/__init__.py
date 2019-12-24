@@ -1,8 +1,4 @@
-"""Main IPython class.
-
-.. highlight:: ipython
-
-"""
+"""Main IPython class."""
 
 # -----------------------------------------------------------------------------
 #  Copyright (C) 2001 Janko Hauser <jhauser@zscout.de>
@@ -33,15 +29,11 @@ import sys
 import tempfile
 import traceback
 import types
-
-# import warnings
 import warnings
 from ast import AST, Await, Expr, Return
 from importlib import import_module
 from logging import error
 from pathlib import Path
-
-# from reprlib import Repr
 from typing import List as ListType
 from typing import Tuple
 from warnings import warn
@@ -94,14 +86,9 @@ from IPython.utils.path import ensure_dir_exists, get_py_filename
 from IPython.utils.process import getoutput
 from IPython.utils.strdispatch import StrDispatch
 from IPython.utils.syspathcontext import prepended_to_syspath
-
 from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
 from IPython.utils.utils_io import ask_yes_no
 
-# guys its literally a pass statement. deleted.
-# NoOpContext is deprecated, but ipykernel imports it from here.
-# See https://github.com/ipython/ipykernel/issues/157
-# (2016, let's try to remove than in IPython 8.0)
 from .execution import (
     removed_co_newlocals,
     softspace,
@@ -109,10 +96,11 @@ from .execution import (
     ExecutionInfo,
     ExecutionResult,
 )
+from .ast_async import _ast_asyncify
+from .separate_unicode import SeparateUnicode
 
 try:
     import docrepr
-
 except ImportError:
     sphinxify = None
 else:
@@ -154,102 +142,13 @@ else:
 # compiled regexps for autoindent management
 dedent_re = re.compile(r"^\s+raise|^\s+return|^\s+pass")
 
-# -----------------------------------------------------------------------------
-# Await Helpers
-# -----------------------------------------------------------------------------
-
-
-# we still need to run things using the asyncio eventloop, but there is no
-# async integration
-
-# Why is this ALLLLL over this source code? Why not just do something like
 if hasattr("async_helpers", "curio_runner"):
-    # then import it fuck the version check it's gonna make everything so much
-    # harder to maintain!!!
     from IPython.core.async_helpers import _curio_runner, _trio_runner, _should_be_async
 else:
     _curio_runner = _trio_runner = None
 
     def _should_be_async(cell: str) -> bool:
         return False
-
-
-# -----------------------------------------------------------------------------
-# Utilities
-# -----------------------------------------------------------------------------
-
-
-def _ast_asyncify(cell: str, wrapper_name: str) -> ast.Module:
-    """
-    Parse a cell with top-level await and modify the AST to be able to run it later.
-
-    Parameters
-    ----------
-    cell : str
-        The code cell to asyncronify
-    wrapper_name : str
-        The name of the function to be used to wrap the passed `cell`. It is
-        advised to **not** use a python identifier in order to not pollute the
-        global namespace in which the function will be ran.
-
-    Returns
-    -------
-    A module object AST containing **one** function named `wrapper_name`.
-
-    The given code is wrapped in a async-def function, parsed into an AST, and
-    the resulting function definition AST is modified to return the last
-    expression.
-
-    The last expression or await node is moved into a return statement at the
-    end of the function, and removed from its original location. If the last
-    node is not Expr or Await nothing is done.
-
-    The function `__code__` will need to be later modified  (by
-    ``removed_co_newlocals``) in a subsequent step to not create new `locals()`
-    meaning that the local and global scope are the same, ie as if the body of
-    the function was at module level.
-
-    Lastly a call to `locals()` is made just before the last expression of the
-    function, or just after the last assignment or statement to make sure the
-    global dict is updated as python function work with a local fast cache which
-    is updated only on `local()` calls.
-    """
-    if sys.version_info >= (3, 8):
-        return ast.parse(cell)
-    tree = ast.parse(_asyncify(cell))
-
-    function_def = tree.body[0]
-    function_def.name = wrapper_name
-    try_block = function_def.body[0]
-    lastexpr = try_block.body[-1]
-    if isinstance(lastexpr, (Expr, Await)):
-        try_block.body[-1] = Return(lastexpr.value)
-    ast.fix_missing_locations(tree)
-    return tree
-
-
-class SeparateUnicode(Unicode):
-    r"""A Unicode subclass to validate separate_in, separate_out, etc.
-
-    This is a Unicode based trait that converts '0'->'' and ``'\\n'->'\n'``.
-    """
-
-    def validate(self, obj, value):
-        """
-
-        Parameters
-        ----------
-        obj :
-        value :
-
-        Returns
-        -------
-
-        """
-        if value == "0":
-            value = ""
-        value = value.replace("\\n", "\n")
-        return super(SeparateUnicode, self).validate(obj, value)
 
 
 class InteractiveShell(SingletonConfigurable):
@@ -641,6 +540,7 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         super().__init__(**kwargs)
+
         # TODO:
         self.input_splitter = None
         if "PromptManager" in self.config:
@@ -752,7 +652,9 @@ class InteractiveShell(SingletonConfigurable):
         -------
 
         """
-        self.log.debug("InteractiveShell: ProfileDir: %s", self.profile_dir)
+        self.log.debug(
+            "core.interactiveshell:init_ipython_dir: IPythonDir: %s", self.profile_dir
+        )
         self.ipython_dir = get_ipython_dir() or ipython_dir
 
     def init_profile_dir(self, profile_dir=None):
@@ -768,11 +670,18 @@ class InteractiveShell(SingletonConfigurable):
         """
         if profile_dir is not None:
             self.profile_dir = profile_dir
-            self.log.debug("InteractiveShell: ProfileDir: %s", self.profile_dir)
-            return
-        self.profile_dir = ProfileDir.create_profile_dir_by_name(
-            self.ipython_dir, "default", config=self.config
-        )
+            self.log.debug(
+                "core.interactiveshell:init_profile_dir: ProfileDir: %s",
+                self.profile_dir,
+            )
+        else:
+            self.profile_dir = ProfileDir.create_profile_dir_by_name(
+                self.ipython_dir, "default", config=self.config
+            )
+            self.log.debug(
+                "core.interactiveshell:init_profile_dir: ProfileDir: %s",
+                self.profile_dir,
+            )
 
     def init_instance_attrs(self):
         """Well this is sweet.
