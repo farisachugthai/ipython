@@ -31,7 +31,7 @@ from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.formatted_text import PygmentsTokens
 
-from IPython.core.debugger import CorePdb
+from IPython.core.debugger import CorePdb as Pdb
 from IPython.core.completer import IPCompleter
 from IPython.terminal.ptutils import IPythonPTCompleter
 from IPython.terminal.shortcuts import suspend_to_bg, cursor_in_leading_ws
@@ -41,7 +41,7 @@ from prompt_toolkit import __version__ as ptk_version
 PTK3 = ptk_version.startswith("3.")
 
 
-class TerminalPdb(CorePdb):
+class TerminalPdb(Pdb):
     """Standalone IPython debugger."""
 
     def __init__(self, _ptcomp=None, kb=None, *args, **kwargs):
@@ -55,7 +55,7 @@ class TerminalPdb(CorePdb):
             Defaults to standard IPython keybindings if None.
 
         """
-        CorePdb.__init__(self, *args, **kwargs)
+        super().__init__(self, *args, **kwargs)
         self.pt_comp = pt_comp or None
         self.pt_init()
 
