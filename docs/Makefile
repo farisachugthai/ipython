@@ -21,8 +21,7 @@ help:
 	@echo "  htmlhelp    HTML files and a HTML help project"
 	@echo "  changes     an overview over all changed/added/deprecated items"
 	@echo "  linkcheck   check all external links for integrity (takes a long time)"
-	@echo "  clean ..."
-	@echo "  api    maybe"
+	@echo "  clean       Clean output from documentation builds."
 	@echo
 	@echo "Compound utility targets:"
 	@echo "pdf          latex and then runs the PDF generation"
@@ -55,12 +54,14 @@ dist: html
 
 api: apidoc
 
-# Idk why the apidoc command isn't ignoring stuff right
+# Idk why the apidoc command isn't ignoring stuff right. Also delete that
+# random IPython file that has nothing in it.
 apidoc:
 	mkdir -p build/html build/.doctrees
 	@echo "Generating API docs"
 	$(SPHINXAPIDOC) -d 1 -Mef --tocfile index -o source/api/generated -t source/_templates ../IPython "IPython/**tests**"
 	-rm -f source/api/generated/*test*
+	-rm -f source/api/generated/IPython.rst
 
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here
