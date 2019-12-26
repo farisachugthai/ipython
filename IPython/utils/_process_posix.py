@@ -18,10 +18,10 @@ This file is only meant to be imported by process.py, not by end-users.
 import codecs
 import errno
 import os
-from os import system
-import subprocess
 import shutil
+import subprocess
 import sys
+from os import system
 
 # -----------------------------------------------------------------------------
 # Function definitions

@@ -3,7 +3,6 @@
 
 This file is deprecated and will be removed in a future version.
 """
-from codecs import encode, decode
 import builtins as builtin_mod
 import functools
 import os
@@ -11,7 +10,7 @@ import platform
 import re
 import shutil
 import types
-
+from codecs import decode, encode
 from sys import getfilesystemencoding
 
 DEFAULT_ENCODING = getfilesystemencoding()

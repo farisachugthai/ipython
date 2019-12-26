@@ -5,10 +5,9 @@
 
 # from ._process_common import getoutputerror, get_output_error_code, process_handler
 import os
-from os import system
 import shutil
 import sys
-
+from os import system
 from subprocess import CalledProcessError as FindCmdError
 from subprocess import check_output as getoutput
 

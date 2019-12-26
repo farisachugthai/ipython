@@ -3,11 +3,10 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+import tokenize
 from collections import namedtuple
 from io import StringIO
 from keyword import iskeyword
-
-import tokenize
 
 Token = namedtuple("Token", ["token", "text", "start", "end", "line"])
 

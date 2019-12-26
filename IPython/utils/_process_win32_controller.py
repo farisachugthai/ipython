@@ -10,16 +10,16 @@ This file is meant to be used by process.py
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 
+import ctypes
+import msvcrt
 # stdlib
 import os
 import sys
 import threading
-import ctypes
-import msvcrt
-
 # Win32 API types needed for the API calls
 from ctypes import POINTER
-from ctypes.wintypes import HANDLE, HLOCAL, LPVOID, WORD, DWORD, BOOL, ULONG, LPCWSTR
+from ctypes.wintypes import (BOOL, DWORD, HANDLE, HLOCAL, LPCWSTR, LPVOID,
+                             ULONG, WORD)
 
 LPDWORD = POINTER(DWORD)
 LPHANDLE = POINTER(HANDLE)

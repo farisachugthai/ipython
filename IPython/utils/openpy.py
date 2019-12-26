@@ -4,9 +4,9 @@ as per PEP 263.
 
 Much of the code is taken from the tokenize module in Python 3.2.
 """
-from io import TextIOWrapper, BytesIO
 import re
-from tokenize import open, detect_encoding
+from io import BytesIO, TextIOWrapper
+from tokenize import detect_encoding, open
 
 cookie_re = re.compile(r"coding[:=]\s*([-\w.]+)", re.UNICODE)
 cookie_comment_re = re.compile(r"^\s*#.*coding[:=]\s*([-\w.]+)", re.UNICODE)

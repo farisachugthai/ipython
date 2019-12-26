@@ -71,6 +71,11 @@ interactiveshell it's also used in completerlib. And wading into the deep
 end of how our completions work really starts getting into some interesting
 ways of how intertwined most of this package is.
 
+
+Also worth noting.
+
+./tests/test_magic_terminal.py also uses this module.
+
 """
 # *****************************************************************************
 #       Copyright (C) 2005 Fernando Perez. <fperez@colorado.edu>

@@ -25,11 +25,11 @@ import errno
 import glob
 import logging
 import os
-from os import system
-from pathlib import Path
 import random
 import shutil
 import sys
+from os import system
+from pathlib import Path
 
 # -----------------------------------------------------------------------------
 # Code

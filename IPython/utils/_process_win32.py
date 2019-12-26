@@ -19,12 +19,17 @@ Then define ``__all__`?
 # Imports
 # -----------------------------------------------------------------------------
 
+import ctypes
 # stdlib
 import os
+import subprocess
 import sys
-import ctypes
+from ctypes import POINTER, c_int
+from subprocess import STDOUT
 
-from ctypes import c_int, POINTER
+# our own imports
+from ._process_common import arg_split as py_arg_split
+from ._process_common import process_handler, read_no_interrupt
 
 try:
     from ctypes.wintypes import LPCWSTR, HLOCAL
@@ -32,15 +37,7 @@ except ImportError:
     LPCWSTR = None
     HLOCAL = None
 
-import subprocess
-from subprocess import STDOUT
 
-# our own imports
-from ._process_common import (
-    read_no_interrupt,
-    process_handler,
-    arg_split as py_arg_split,
-)
 
 
 class AvoidUNCPath:

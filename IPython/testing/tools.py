@@ -15,6 +15,7 @@ import re
 import sys
 import tempfile
 import unittest
+from warnings import warn
 
 from contextlib import contextmanager
 from io import StringIO
@@ -359,8 +360,6 @@ def check_pairs(func, pairs):
         assert out == expected, pair_fail_msg.format(name, inp, expected, out)
 
 
-MyStringIO = StringIO
-
 _re_type = type(re.compile(r""))
 
 notprinted_msg = """Did not find {0!r} in printed output (on {1}):
@@ -370,7 +369,7 @@ notprinted_msg = """Did not find {0!r} in printed output (on {1}):
 """
 
 
-class AssertPrints(object):
+class AssertPrints:
     """Context manager for testing that code prints certain text.
 
     Examples
@@ -392,7 +391,7 @@ class AssertPrints(object):
 
     def __enter__(self):
         self.orig_stream = getattr(sys, self.channel)
-        self.buffer = MyStringIO()
+        self.buffer = StringIO()
         self.tee = Tee(self.buffer, channel=self.channel)
         setattr(sys, self.channel, self.buffer if self.suppress else self.tee)
 
@@ -452,11 +451,6 @@ class AssertNotPrints(AssertPrints):
 
 @contextmanager
 def mute_warn():
-    """
-
-    """
-    from IPython.utils import warn
-
     save_warn = warn.warn
     warn.warn = lambda *a, **kw: None
     try:

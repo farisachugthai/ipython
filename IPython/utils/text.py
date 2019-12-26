@@ -14,8 +14,8 @@ import os
 import re
 import sys
 import textwrap
-from string import Formatter
 from pathlib import Path
+from string import Formatter
 
 # datetime.strftime date format for ipython
 if sys.platform == "win32":

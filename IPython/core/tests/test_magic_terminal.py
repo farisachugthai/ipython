@@ -33,7 +33,7 @@ def check_cpaste(code, should_fail=False):
     src = StringIO()
     if not hasattr(src, "encoding"):
         # IPython expects stdin to have an encoding attribute
-        src.encoding = None
+        src.encoding = sys.getfilesystemencoding()
     src.write(code)
     src.write("\n--\n")
     src.seek(0)
@@ -70,7 +70,7 @@ def test_cpaste():
             ">>> runf()",
             "   >>> runf()",
         ],
-        "fail": ["1 + runf()", "++ runf()",],
+        "fail": ["1 + runf()", "++ runf()", ],
     }
 
     ip.user_ns["runf"] = runf
@@ -91,18 +91,11 @@ class PasteTestCase(TestCase):
         ip.magic("paste " + flags)
 
     def setUp(self):
+        """ Inject fake clipboard hook but save original so we can restore it later.
         """
-
-        """
-        # Inject fake clipboard hook but save original so we can restore it
-        # later
         self.original_clip = ip.hooks.clipboard_get
 
     def tearDown(self):
-        """
-
-        """
-        # Restore original hook
         ip.hooks.clipboard_get = self.original_clip
 
     def test_paste(self):

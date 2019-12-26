@@ -246,9 +246,13 @@ def temp_pyfile(src=None, ext=".py"):
     fname: str(path-like)
         It is the caller's responsibility to close the open file and unlink it.
 
+    Notes
+    -----
+    Don't change to tempfile.mkdtemp because that returns a directory.
+
     """
-    fname = tempfile.mkdtemp(ext)
-    with open(fname, "w") as f:
+    fname = tempfile.NamedTemporaryFile(suffix=ext)
+    with open(fname.name, "w") as f:
         if src:
             f.write(src)
         f.flush()

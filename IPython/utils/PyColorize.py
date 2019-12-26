@@ -42,12 +42,8 @@ import pygments
 from traitlets import Unicode
 from traitlets.config import Configurable
 
-from IPython.utils.coloransi import (
-    ColorScheme,
-    ColorSchemeTable,
-    InputTermColors,
-    TermColors,
-)
+from IPython.utils.coloransi import (ColorScheme, ColorSchemeTable,
+                                     InputTermColors, TermColors)
 
 # Imports
 

@@ -10,11 +10,11 @@ Utilities for dealing with text encodings
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 
+import locale
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
 import sys
-import locale
 import warnings
 
 # to deal with the possibility of sys.std* not being a stream at all

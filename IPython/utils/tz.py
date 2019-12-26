@@ -16,7 +16,7 @@ Just UTC-awareness right now
 # Imports
 # -----------------------------------------------------------------------------
 
-from datetime import tzinfo, timedelta, datetime
+from datetime import datetime, timedelta, tzinfo
 
 # -----------------------------------------------------------------------------
 # Code

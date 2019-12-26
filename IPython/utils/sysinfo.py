@@ -16,12 +16,12 @@
 # Imports
 # -----------------------------------------------------------------------------
 
-from multiprocessing import cpu_count as num_cpus  # noqa F401
 import os
 import platform
 import pprint
-import sys
 import subprocess
+import sys
+from multiprocessing import cpu_count as num_cpus  # noqa F401
 
 from IPython.core import release
 
