@@ -182,5 +182,6 @@ def ipdocstring(func):
 ipdoctest = Doc2UnitTester()
 ip2py = IPython2PythonConverter()
 
-faulthandler.enable()
+# faulthandler.enable()
 tracemalloc.start()
+cgitb.enable(format='text')

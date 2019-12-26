@@ -9,6 +9,12 @@ Also it's really quietly dependant on coverage. Let's add that to the requiremen
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
+from IPython.testing.iptest import test_sections
+from IPython.testing.iptest import test_group_names as py_test_group_names
+from IPython.testing.iptest import StreamCapturer, have
+from IPython.utils.tempdir import TemporaryDirectory
+from IPython.utils.sysinfo import get_sys_info
+from IPython.utils.path import compress_user
 import argparse
 from codecs import decode
 import logging
@@ -23,14 +29,6 @@ import sys
 import time
 
 iplogger = logging.getLogger(name=__name__)
-
-from IPython.utils.path import compress_user
-from IPython.utils.sysinfo import get_sys_info
-from IPython.utils.tempdir import TemporaryDirectory
-
-from IPython.testing.iptest import StreamCapturer, have
-from IPython.testing.iptest import test_group_names as py_test_group_names
-from IPython.testing.iptest import test_sections
 
 
 class TestController:
@@ -103,7 +101,8 @@ class TestController:
         stdout = c.writefd if capture_output else None
         stderr = subprocess.STDOUT if capture_output else None
         self.process = subprocess.Popen(
-            self.cmd, stdout=stdout, stderr=stderr, env=self.env
+            self.cmd, stdout=stdout, stderr=stderr, env=self.env,
+            universal_newlines=True,
         )
 
     def wait(self):
@@ -148,7 +147,12 @@ class TestController:
         self.cleanup_process()
         for td in self.dirs:
             if getattr(td, "cleanup", None):
-                td.cleanup()
+                try:
+                    td.cleanup()
+                except PermissionError:
+                    iplogger.warning("PermissionError in cleanup")
+                except OSError:
+                    iplogger.warning("OSError in cleanup")
             else:
                 try:
                     shutil.rmtree(td)
@@ -531,15 +535,6 @@ def run_iptestall(options):
         sys.exit(1)
 
 
-def default_options():
-    """Get an argparse Namespace object with the default arguments, to pass to
-    :func:`run_iptestall`.
-    """
-    options = argparser.parse_args([])
-    options.extra_args = []
-    return options
-
-
 def parse_testing_arguments():
     argparser = argparse.ArgumentParser(description="Run IPython test suite")
     argparser.add_argument(
@@ -580,6 +575,17 @@ def parse_testing_arguments():
     return argparser
 
 
+def default_options():
+    """Get an argparse Namespace object with the default arguments, to pass to
+    :func:`run_iptestall`.
+
+    Fuck this function is called in the __main__ file in this package.
+    """
+    argparser = parse_testing_arguments()
+    options = argparser.parse_args([])
+    options.extra_args = []
+    return options
+
 def main():
     """Moved this out of the function and now it's harmless :D.
 
@@ -605,7 +611,7 @@ def main():
         extra_args = []
     else:
         to_parse = sys.argv[1:ix]
-        extra_args = sys.argv[ix + 1 :]
+        extra_args = sys.argv[ix + 1:]
 
     options = argparser.parse_args(to_parse)
     options.extra_args = extra_args

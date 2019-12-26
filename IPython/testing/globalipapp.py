@@ -77,7 +77,8 @@ def xsys(self, cmd):
 def _showtraceback(self, etype, evalue, stb):
     """Print the traceback purely on stdout for doctest to capture it.
     """
-    print(self.InteractiveTB.stb2text(stb), file=sys.stdout)
+    # print(self.InteractiveTB.stb2text(stb), file=sys.stdout)
+    print(traceback.print_exc(etype, evalue, stb), file=sys.stdout)
 
 
 def start_ipython():

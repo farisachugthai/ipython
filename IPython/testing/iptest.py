@@ -18,32 +18,36 @@ itself from the command line. There are two ways of running this script:
 # Distributed under the terms of the Modified BSD License.
 
 import glob
-from importlib import import_module
-
-from codecs import decode
-from io import BytesIO
 import io
+import logging
 import os
 import os.path as path
 import sys
-from threading import Thread, Lock, Event
 import warnings
+from codecs import decode
+from importlib import import_module
+from io import BytesIO
+from threading import Event, Lock, Thread
 from warnings import warn
 
 import nose.plugins.builtin
-from nose.plugins.xunit import Xunit
+from IPython.core.release import version_info
+from IPython.external.decorators import KnownFailure, knownfailureif
+from IPython.testing.plugin.ipdoctest import IPythonDoctest
+
 from nose import SkipTest
+
 from nose.core import TestProgram
 from nose.plugins import Plugin
+from nose.plugins.manager import DefaultPluginManager
+from nose.plugins.xunit import Xunit
 from nose.util import safe_str
 
-from IPython.core.release import version_info
+logging.basicConfig()
+
 
 # from IPython.utils.py3compat import decode
 # ?
-from codecs import decode
-from IPython.testing.plugin.ipdoctest import IPythonDoctest
-from IPython.external.decorators import KnownFailure, knownfailureif
 
 pjoin = path.join
 
@@ -171,6 +175,7 @@ test_group_names = [
 
 class TestSection:
     def __init__(self, name, includes):
+        """What are the excludes, dependencies and enalbed attributes?"""
         self.name = name
         self.includes = includes
         self.excludes = []
@@ -283,14 +288,15 @@ class ExclusionPlugin(Plugin):
     """A nose plugin to effect our exclusions of files and directories.
     """
 
+    enabled = None
     name = "exclusions"
     score = 3000  # Should come before any other plugins
 
     def __init__(self, exclude_patterns=None):
         """
+
         Parameters
         ----------
-
         exclude_patterns : sequence of strings, optional
           Filenames containing these patterns (as raw strings, not as regular
           expressions) are excluded from the tests.
@@ -306,7 +312,7 @@ class ExclusionPlugin(Plugin):
         parser :
         env :
         """
-        Plugin.options(self, parser, env)
+        super().options(parser, env)
 
     def configure(self, options, config):
         """
@@ -316,7 +322,7 @@ class ExclusionPlugin(Plugin):
         options :
         config :
         """
-        Plugin.configure(self, options, config)
+        super().configure(options, config)
         # Override nose trying to disable plugin.
         self.enabled = True
 
@@ -404,6 +410,7 @@ class StreamCapturer(Thread):
 
 class SubprocessStreamCapturePlugin(Plugin):
 
+    enabled = None
     name = "subprocstreams"
 
     def __init__(self):
@@ -534,7 +541,7 @@ def run_iptest():
 
     argv = sys.argv + [
         "--detailed-errors",  # extra info in tracebacks
-        "--exe",
+        # "--exe",
     ]
     if "-a" not in argv and "-A" not in argv:
         argv += ["-a", "!crash"]
@@ -560,7 +567,7 @@ def run_iptest():
     if section.name.startswith(("core", "IPython.core", "IPython.utils")):
         plugins.append(IPythonDoctest())
         argv.extend(
-            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt",]
+            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt", ]
         )
     # Use working directory set by parent process (see iptestcontroller)
     if "IPTEST_WORKING_DIR" in os.environ:
@@ -572,8 +579,13 @@ def run_iptest():
         globalipapp.start_ipython()
 
     # Now nose can run
+    logging.debug("argv after all of our tomfoolery was: ", argv)
+    logging.debug("plugins not loaded by default", plugins)
     TestProgram(argv=argv, addplugins=plugins)
 
 
 if __name__ == "__main__":
+    default_nose_plugins = DefaultPluginManager()
+    default_nose_plugins.load_plugins()
+    logging.debug("Default Nose Plugins: ", default_nose_plugins.plugins)
     run_iptest()

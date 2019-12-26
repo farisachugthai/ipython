@@ -17,7 +17,7 @@ def test(**kwargs):
 
     # Do the import internally, so that this function doesn't increase total
     # import time
-    from .iptestcontroller import run_iptestall, default_options
+    from IPython.testing.iptestcontroller import run_iptestall, default_options
 
     options = default_options()
     for name, val in kwargs.items():
@@ -26,6 +26,8 @@ def test(**kwargs):
 
 
 if __name__ == "__main__":
+    # Wait what? We don't call the function in this module?
     from IPython.testing import iptestcontroller
 
     iptestcontroller.main()
+    # test()
