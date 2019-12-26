@@ -19,9 +19,6 @@ Limitations:
 # -----------------------------------------------------------------------------
 # Module imports
 
-# From the standard library
-from nose.plugins import doctests, Plugin
-from nose.util import anyp, tolist
 import builtins as builtin_mod
 import doctest
 import inspect
@@ -29,14 +26,16 @@ import logging
 import os
 import re
 import sys
-from importlib import import_module
-from io import StringIO
-
-from inspect import getmodule
-
 # We are overriding the default doctest runner, so we need to import a few
 # things from doctest directly
-from doctest import REPORTING_FLAGS, _unittest_reportflags, DocTestRunner
+from doctest import REPORTING_FLAGS, DocTestRunner, _unittest_reportflags
+from importlib import import_module
+from inspect import getmodule
+from io import StringIO
+
+# From the standard library
+from nose.plugins import Plugin, doctests
+from nose.util import anyp, tolist
 
 log = logging.getLogger(__name__)
 

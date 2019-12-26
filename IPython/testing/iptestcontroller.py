@@ -7,16 +7,7 @@ test suite.
 Also it's really quietly dependant on coverage. Let's add that to the requirements.
 
 """
-# Copyright (c) IPython Development Team.
-# Distributed under the terms of the Modified BSD License.
-from IPython.testing.iptest import test_sections
-from IPython.testing.iptest import test_group_names as py_test_group_names
-from IPython.testing.iptest import StreamCapturer, have
-from IPython.utils.tempdir import TemporaryDirectory
-from IPython.utils.sysinfo import get_sys_info
-from IPython.utils.path import compress_user
 import argparse
-from codecs import decode
 import logging
 import multiprocessing.pool
 import os
@@ -27,6 +18,16 @@ import stat
 import subprocess
 import sys
 import time
+from codecs import decode
+
+# Copyright (c) IPython Development Team.
+# Distributed under the terms of the Modified BSD License.
+from IPython.testing.iptest import StreamCapturer, have
+from IPython.testing.iptest import test_group_names as py_test_group_names
+from IPython.testing.iptest import test_sections
+from IPython.utils.path import compress_user
+from IPython.utils.sysinfo import get_sys_info
+from IPython.utils.tempdir import TemporaryDirectory
 
 iplogger = logging.getLogger(name=__name__)
 

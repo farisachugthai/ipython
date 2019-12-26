@@ -33,11 +33,11 @@ Authors
 # Imports
 # -----------------------------------------------------------------------------
 
+import cgitb
 # Stdlib
 import faulthandler
-import tracemalloc
-import cgitb
 import re
+import tracemalloc
 import unittest
 from doctest import DocTestFinder, DocTestRunner, TestResults
 

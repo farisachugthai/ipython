@@ -15,19 +15,19 @@ import re
 import sys
 import tempfile
 import unittest
-from warnings import warn
-
 from contextlib import contextmanager
 from io import StringIO
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 from unittest.mock import patch
+from warnings import warn
 
-from . import skipdoctest
-from . import decorators as dec
-from IPython.utils.utils_io import temp_pyfile, Tee
-from IPython.utils.text import list_strings
 from IPython.utils._process_common import get_output_error_code
+from IPython.utils.text import list_strings
+from IPython.utils.utils_io import Tee, temp_pyfile
 from traitlets.config.loader import Config
+
+from . import decorators as dec
+from . import skipdoctest
 
 testing_logger = logging.getLogger(name=__name__)
 

@@ -34,9 +34,7 @@ import nose.plugins.builtin
 from IPython.core.release import version_info
 from IPython.external.decorators import KnownFailure, knownfailureif
 from IPython.testing.plugin.ipdoctest import IPythonDoctest
-
 from nose import SkipTest
-
 from nose.core import TestProgram
 from nose.plugins import Plugin
 from nose.plugins.manager import DefaultPluginManager

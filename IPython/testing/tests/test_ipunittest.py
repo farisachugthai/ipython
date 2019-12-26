@@ -48,7 +48,7 @@ Authors
 # Imports
 # -----------------------------------------------------------------------------
 
-from IPython.testing.ipunittest import ipdoctest, ipdocstring
+from IPython.testing.ipunittest import ipdocstring, ipdoctest
 
 # -----------------------------------------------------------------------------
 # Test classes and functions

@@ -15,11 +15,10 @@ import sys
 import types
 import warnings
 
-from IPython.testing import tools
-
 from IPython.core import page
-from IPython.utils import utils_io
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
+from IPython.testing import tools
+from IPython.utils import utils_io
 
 
 class StreamProxy(utils_io.IOStream):

@@ -43,7 +43,9 @@ script:
   - pytest
   - |
     if  [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      sphinx-build -c docs/source -W --keep-going docs/source docs/build
+      # sphinx-build -c docs/source -W --keep-going docs/source docs/build
+      cd docs
+      make html
     else
       iptest --coverage xml
     fi
