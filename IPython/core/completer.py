@@ -97,10 +97,10 @@ IPython completer pending deprecations are returning results not yet handled
 by `jedi`
 
 Using Jedi for tab completion allow snippets like the following to work without
-having to execute any code:
+having to execute any code::
 
-   >>> myvar = ['hello', 42]
-   ... myvar[1].bi<tab>
+    myvar = ['hello', 42]
+    myvar[1].bi<tab>
 
 Tab completion will be able to infer that ``myvar[1]`` is a real number without
 executing any code unlike the previously available ``IPCompleter.greedy``
@@ -354,11 +354,12 @@ class Completer(Configurable):
 
 
 def magic_color_matches(text: str) -> List[str]:
-    """Match color schemes for %colors magic.
+    """Match color schemes for `%colors` magic.
 
     Parameters
     ----------
     text :
+
     """
     # This used to be in oinspect at the global level but this is the only
     # place where it was invoked like that. That and oinspect itself.
@@ -488,6 +489,12 @@ class IPCompleter(Completer):
         _greedy_changed
             Note: Depends on `splitter` and :mod:`readline` being defined.
 
+        Attributes
+        ----------
+        again?
+        matches : list
+            List where completion matches will be stored
+
         """
         self.magic_escape = ESC_MAGIC
         self.splitter = CompletionSplitter()
@@ -499,15 +506,13 @@ class IPCompleter(Completer):
                 stacklevel=2,
             )
 
-        Completer.__init__(
-            self,
+        super().__init__(
             namespace=namespace,
             global_namespace=global_namespace,
             config=config,
             **kwargs,
         )
 
-        # List where completion matches will be stored
         self.matches = []
         self.shell = shell
         # Regexp to split filenames with spaces in them
@@ -547,20 +552,20 @@ class IPCompleter(Completer):
             return [self.dict_key_matches]
 
         return [self.file_matches, self.magic_matches, self.dict_key_matches]
-        # if self.use_jedi:
-        #     return [
-        #         self.file_matches,
-        #         self.magic_matches,
-        #         self.dict_key_matches,
-        #     ]
-        # else:
-        #     return [
-        #         self.python_matches,
-        #         self.file_matches,
-        #         self.magic_matches,
-        #         self.python_func_kw_matches,
-        #         self.dict_key_matches,
-        #     ]
+        if self.use_jedi:
+            return [
+                self.file_matches,
+                self.magic_matches,
+                self.dict_key_matches,
+            ]
+        else:
+            return [
+                self.python_matches,
+                self.file_matches,
+                self.magic_matches,
+                self.python_func_kw_matches,
+                self.dict_key_matches,
+            ]
 
     def all_completions(self, text) -> List[str]:
         """Wrapper around the completions method for the benefit of emacs.
@@ -586,7 +591,7 @@ class IPCompleter(Completer):
         return [f.replace("\\", "/") for f in self.glob("%s*" % text)]
 
     def file_matches(self, text):
-        """Match filenames, expanding ~USER type strings.
+        """Match filenames, expanding ``~USER`` type strings.
 
         Most of the seemingly convoluted logic in this completer is an
         attempt to handle filenames with spaces in them.  And yet it's not
@@ -676,8 +681,8 @@ class IPCompleter(Completer):
 
         Completion logic:
 
-        - user gives %%: only do cell magics
-        - user gives %: do both line and cell magics
+        - user gives :kbd:`%%` : only do cell magics
+        - user gives :kbd:`%` : do both line and cell magics
         - no prefix: do both
 
         In other words, line magics are skipped if the user gives %% explicitly.
@@ -1258,6 +1263,7 @@ class IPCompleter(Completer):
         Returns
         -------
         object
+
         """
         if not self.custom_completers:
             return
@@ -1489,34 +1495,29 @@ class IPCompleter(Completer):
 
         Parameters
         ----------
-          text : string, optional
+        text : string, optional
             Text to perform the completion on.  If not given, the line buffer
             is split using the instance's CompletionSplitter object.
-
-          line_buffer : string, optional
+        line_buffer : string, optional
             If not given, the completer attempts to obtain the current line
             buffer via readline.  This keyword allows clients which are
             requesting for text completions in non-readline contexts to inform
             the completer of the entire text.
-
-          cursor_pos : int, optional
+        cursor_pos : int, optional
             Index of the cursor in the full line buffer.  Should be provided by
             remote frontends where kernel has no access to frontend state.
 
         Returns
         -------
         text : str
-          Text that was actually used in the completion.
-
+            Text that was actually used in the completion.
         matches : list
-          A list of completion matches.
+            A list of completion matches.
 
-
-        .. note::
-
-            This API is likely to be deprecated and replaced by
-            `IPCompleter.completions` in the future.
-
+        Note
+        ----
+        This API is likely to be deprecated and replaced by
+        `IPCompleter.completions` in the future.
 
         """
         warnings.warn(
@@ -1677,16 +1678,6 @@ class IPCompleter(Completer):
         return text, _matches, origins, completions
 
     def fwd_unicode_match(self, text: str) -> Tuple[str, list]:
-        """
-
-        Parameters
-        ----------
-        text :
-
-        Returns
-        -------
-
-        """
         if self._names is None:
             self._names = []
             for c in range(0, 0x10FFFF + 1):

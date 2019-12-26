@@ -378,9 +378,6 @@ def r3o2():
 """
 
     def setUp(self):
-        """
-
-        """
         ip.run_cell(self.DEFINITIONS)
 
     def test_no_recursion(self):
@@ -439,42 +436,15 @@ def r3o2():
 # module testing (minimal)
 def test_handlers():
     def spam(c, d_e):
-        """
-
-        Parameters
-        ----------
-        c :
-        d_e :
-        """
         (d, e) = d_e
         x = c + d
         y = c * d
         foo(x, y)
 
     def foo(a, b, bar=1):
-        """
-
-        Parameters
-        ----------
-        a :
-        b :
-        bar :
-        """
         eggs(a, b + bar)
 
     def eggs(f, g, z=None):
-        """
-
-        Parameters
-        ----------
-        f :
-        g :
-        z :
-
-        Returns
-        -------
-
-        """
         if z is None:
             z = globals()
         h = f + g
@@ -536,11 +506,3 @@ class TokenizeFailureTest(unittest.TestCase):
         with tt.AssertNotPrints(message):
             ip.run_cell(cell)
         self.assertIn(message, stream.getvalue())
-
-
-if __name__ == "__main__":
-    # Does unittest call this? I'm getting ip not defined errors running
-    # unittest in this dir. and like we're repeatedly subclass their TestCase
-    # so we should probably support it
-    ip = setup_module()
-    unittest.main()

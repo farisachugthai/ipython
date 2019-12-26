@@ -39,12 +39,12 @@ def provisionalcompleter(action="ignore"):
     """Context manager for unstable API features.
 
     This context manager has to be used in any place where unstable completer
-    behavior and API may be called.
+    behavior and API may be called.::
 
-    >>> with provisionalcompleter():
-    ...     completer.do_experimetal_things() # works
+        with provisionalcompleter():
+            completer.do_experimetal_things() # works
 
-    >>> completer.do_experimental_things() # raises.
+        completer.do_experimental_things() # raises.
 
     .. note:: Unstable
 

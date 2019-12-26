@@ -1,9 +1,5 @@
 """Tools for coloring text in ANSI terminals.
 
-Featured Below:
-
-Default Dark scheme by Chris Kempson (http://chriskempson.com)
-
 """
 
 # *****************************************************************************
@@ -15,6 +11,9 @@ Default Dark scheme by Chris Kempson (http://chriskempson.com)
 import copy
 import os
 
+import pygments
+
+from IPython.core.error import UsageError
 from IPython.utils.ipstruct import Struct
 
 color_templates = (
@@ -205,6 +204,8 @@ j        """
         else:
             self.scheme_names = ["linux", "lightbg", "nocolor", "iforgetrn"]
 
+        self.old_scheme = None
+
     def copy(self):
         """Return full copy of object"""
         return ColorSchemeTable(self.values(), self.active_scheme_name)
@@ -238,31 +239,7 @@ j        """
 
         case sensitive now ignored.
         """
-        raise NotImplementedError("fuck it")
-        # try:
-        # scheme_idx = self.valid_schemes.index(scheme_test)
-        # Seriously why the fuck does this use THIS many different variables
-        # scheme
-        # scheme_list
-        # scheme_test
-        # scheme_names
-        # valid_schemes
-        # active_scheme_name,
-        # active_colors
-        # Colors
-        # self.values
-        # valid_schemes
-        # active
-        # scheme_idx
-
-        # IT ALL REPRESENTS ONE OBJECT.
-        # THIS ISN'T THE HARD PART
-        # except ValueError:
-        #     raise ValueError('Unrecognized color scheme: ' + scheme +
-        #                      '\nValid schemes: ' + str(self.scheme_names).replace("'', ", ''))
-        # else:
-        #     active = self.scheme_names[scheme_idx]
-        #     self.active_scheme_name = active
-        #     self.active_colors = self[active].colors
-        #     # Now allow using '' as an index for the current active scheme
-        #     self[''] = self[active]
+        if scheme not in self.scheme_list:
+            raise UsageError
+        self.active_scheme_name = scheme
+        self.active_colors = self.scheme_list[scheme].colordict

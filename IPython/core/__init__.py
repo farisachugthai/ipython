@@ -1,1 +1,1 @@
-from .getipython import get_ipython
+from IPython.core.getipython import get_ipython
