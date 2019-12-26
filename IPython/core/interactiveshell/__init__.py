@@ -18,6 +18,7 @@ import ast
 import atexit
 import builtins as builtin_mod
 import codecs
+import cgitb
 import functools
 import inspect
 import os
@@ -1877,19 +1878,6 @@ class InteractiveShell(SingletonConfigurable):
         The call to `AutoFormattedTB` is different than its init
         signature. From :file:`ultratb.py`:
 
-            def __init__(self,
-                        mode='Plain',
-                        color_scheme='Linux',
-                        call_pdb=False,
-                        ostream=None,
-                        tb_offset=0,
-                        long_header=False,
-                        include_vars=False,
-                        check_cache=None,
-                        debugger_cls=None,
-                        parent=None,
-                        config=None):
-
         """
         from ..ultratb.list_tb import SyntaxTB
         from ..ultratb.formatted_tb import AutoFormattedTB
@@ -1898,15 +1886,16 @@ class InteractiveShell(SingletonConfigurable):
             color_scheme="LightBG", parent=self, config=self.config
         )
 
-        self.InteractiveTB = AutoFormattedTB(
-            mode="Plain",
-            color_scheme="Linux",
-            tb_offset=1,
-            check_cache=check_linecache_ipython,
-            debugger_cls=self.debugger_cls,
-            parent=self,
-            config=self.config,
-        )
+        sys.displayhook = cgitb.enable(format='text')
+        # self.InteractiveTB = AutoFormattedTB(
+        #     mode="Plain",
+        #     color_scheme="Linux",
+        #     tb_offset=1,
+        #     check_cache=check_linecache_ipython,
+        #     debugger_cls=self.debugger_cls,
+        #     parent=self,
+        #     config=self.config,
+        # )
 
         # The instance will store a pointer to the system-wide exception hook,
         # so that runtime code (such as magics) can access it.  This is because
@@ -1917,7 +1906,7 @@ class InteractiveShell(SingletonConfigurable):
         self.set_custom_exc(*custom_exceptions)
 
         # Set the exception mode
-        self.InteractiveTB.set_mode(mode=self.xmode)
+        # self.InteractiveTB.set_mode(mode=self.xmode)
 
     # Okay so let's not write docstrings like this. The explanation for
     # what the exc_tuple and handler mean to the set_custom_exc function should not

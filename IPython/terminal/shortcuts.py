@@ -29,19 +29,8 @@ from prompt_toolkit.filters import (
 )
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
 from prompt_toolkit.key_binding.bindings.completion import (
     display_completions_like_readline,
-)
-from prompt_toolkit.key_binding.bindings.cpr import load_cpr_bindings
-from prompt_toolkit.key_binding.bindings.emacs import (
-    load_emacs_bindings,
-    load_emacs_search_bindings,
-)
-from prompt_toolkit.key_binding.bindings.mouse import load_mouse_bindings
-from prompt_toolkit.key_binding.bindings.vi import (
-    load_vi_bindings,
-    load_vi_search_bindings,
 )
 from prompt_toolkit.key_binding.key_bindings import (
     ConditionalKeyBindings,
@@ -132,6 +121,7 @@ def create_ipython_shortcuts(shell):
             & cursor_in_leading_ws
         ),
     )(indent_buffer)
+
     kb.add("c-o", filter=(has_focus(DEFAULT_BUFFER) & emacs_insert_mode))(
         newline_autoindent_outer(shell.input_transformer_manager)
     )
@@ -152,13 +142,6 @@ def create_ipython_shortcuts(shell):
     if sys.platform == "win32":
         kb.add("c-v", filter=(has_focus(DEFAULT_BUFFER) & ~vi_mode))(win_paste)
 
-    # don't do this one of these keys steals <C-d>
-    # kb = merge_key_bindings([
-    #     load_cpr_bindings(),
-    #     load_basic_bindings(),
-    #     load_mouse_bindings(),
-    #     kb,
-    # ])
     return kb
 
 
@@ -205,7 +188,7 @@ def newline_or_execute_outer(shell):
 
         # if all we have after the cursor is whitespace: reformat current text
         # before cursor
-        after_cursor = d.text[d.cursor_position :]
+        after_cursor = d.text[d.cursor_position:]
         if not after_cursor.strip():
             reformat_text_before_cursor(b, d, shell)
 

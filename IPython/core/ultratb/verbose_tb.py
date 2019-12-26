@@ -21,6 +21,8 @@ from ._verbose_tb import UltraDbg
 
 INDENT_SIZE = 8
 
+_FRAME_RECURSION_LIMIT = 500
+
 
 def fix_frame_records_filenames(records):
     """Try to fix the filenames in each record from inspect.getinnerframes().

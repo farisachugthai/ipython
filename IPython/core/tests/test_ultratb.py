@@ -540,3 +540,11 @@ class TokenizeFailureTest(unittest.TestCase):
         with tt.AssertNotPrints(message):
             ip.run_cell(cell)
         self.assertIn(message, stream.getvalue())
+
+
+if __name__ == "__main__":
+    # Does unittest call this? I'm getting ip not defined errors running
+    # unittest in this dir. and like we're repeatedly subclass their TestCase
+    # so we should probably support it
+    ip = setup_module()
+    unittest.main()

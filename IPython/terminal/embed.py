@@ -1,8 +1,12 @@
-"""An embedded IPython shell."""
+"""An embedded IPython shell.
+
+
+"""
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+import cgitb
 import sys
 import warnings
 
@@ -47,7 +51,9 @@ class EmbeddedMagics(Magics):
         "-y", "--yes", action="store_true", help="Do not ask confirmation"
     )
     def kill_embedded(self, parameter_s=""):
-        """%kill_embedded : deactivate for good the current embedded IPython
+        """Deactivate for good the current embedded IPython.
+
+        .. magic:: %kill_embedded
 
         This function (after asking for confirmation) sets an internal flag so
         that an embedded IPython will never activate again for the given call
@@ -56,8 +62,9 @@ class EmbeddedMagics(Magics):
         you may then kill it and the program will then continue to run without
         the interactive shell interfering again.
 
-
-        Kill Instance Option:
+        Options
+        -------
+        .. option:: --instance
 
             If for some reasons you need to kill the location where the instance
             is created and not called, for example if you create a single
@@ -75,7 +82,6 @@ class EmbeddedMagics(Magics):
         args = magic_arguments.parse_argstring(self.kill_embedded, parameter_s)
         print(args)
         if args.instance:
-            # let no ask
             if not args.yes:
                 kill = ask_yes_no(
                     "Are you sure you want to kill this embedded instance? [y/N] ", "n"
@@ -122,29 +128,26 @@ class EmbeddedMagics(Magics):
 
 
 class InteractiveShellEmbed(TerminalInteractiveShell):
-    """
-
-    """
-
     dummy_mode = Bool(False)
     exit_msg = Unicode("")
     embedded = CBool(True)
     should_raise = CBool(False)
     # Like the base class display_banner is not configurable, but here it
     # is True by default.
-    display_banner = CBool(True)
+    # Now it's false fuck that.
+    display_banner = CBool(False)
     exit_msg = Unicode()
 
     # When embedding, by default we don't change the terminal title
-    term_title = Bool(False, help="Automatically set the terminal title").tag(
-        config=True
-    )
+    term_title = Bool(
+        False, help="Automatically set the terminal title in the embedded instance."
+    ).tag(config=True)
 
     _inactive_locations = set()
 
     @property
     def embedded_active(self):
-        """
+        """Checks the set of inactive_locations. Which is oddly a class attribute.
 
         Returns
         -------
@@ -182,18 +185,16 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
 
         # don't use the ipython crash handler so that user exceptions aren't
         # trapped
-        sys.excepthook = core.ultratb.formatted_tb.FormattedTB(
-            color_scheme=self.colors, mode=self.xmode, call_pdb=self.pdb
-        )
+        # sys.excepthook = core.ultratb.formatted_tb.FormattedTB(
+        #     color_scheme=self.colors, mode=self.xmode, call_pdb=self.pdb
+        # )
+        sys.excepthook = cgitb.Hook(format="text")
 
     def init_sys_modules(self):
         """Explicitly overwrite :mod:`IPython.core.interactiveshell` to do nothing."""
         pass
 
     def init_magics(self):
-        """
-
-        """
         super().init_magics()
         self.register_magics(EmbeddedMagics)
 
@@ -210,18 +211,21 @@ class InteractiveShellEmbed(TerminalInteractiveShell):
     ):
         """Activate the interactive interpreter.
 
-        __call__(self,header='',local_ns=None,module=None,dummy=None) -> Start
-        the interpreter shell with the given local and global namespaces, and
-        optionally print a header string at startup.
+        Start the interpreter shell with the given local and global namespaces,
+        and optionally print a header string at startup.
 
-        The shell can be globally activated/deactivated using the
-        dummy_mode attribute. This allows you to turn off a shell used
-        for debugging globally.
+        Parameters
+        -----------
+        dummy : bool, optional
+            The shell can be globally activated/deactivated using the
+            dummy_mode attribute. This allows you to turn off a shell used
+            for debugging globally.
 
-        However, *each* time you call the shell you can override the current
-        state of dummy_mode with the optional keyword parameter 'dummy'. For
-        example, if you set dummy mode on with IPShell.dummy_mode = True, you
-        can still have a specific call work by making it as IPShell(dummy=False).
+            However, *each* time you call the shell you can override the current
+            state of dummy_mode with the optional keyword parameter 'dummy'. For
+            example, if you set dummy mode on with IPShell.dummy_mode = True, you
+            can still have a specific call work by making it as IPShell(dummy=False).
+
         """
         # we are called, set the underlying interactiveshell not to exit.
         self.keep_running = True

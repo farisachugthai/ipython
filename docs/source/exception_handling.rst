@@ -19,7 +19,7 @@ ColorTB class is a solution to that problem.  It colors the different parts of a
 traceback in a manner similar to what you would expect from a syntax-highlighting
 text editor.
 
-Installation instructions for ColorTB::
+Installation instructions for `ColorTB`::
 
     import sys,ultratb
     sys.excepthook = ultratb.ColorTB()
@@ -54,7 +54,7 @@ Give it a shot--you'll love it or you'll hate it.
   potentially leak sensitive information like access keys, or unencrypted
   password.
 
-Installation instructions for VerboseTB::
+Installation instructions for `VerboseTB`::
 
     import sys,ultratb
     sys.excepthook = ultratb.VerboseTB()
@@ -65,8 +65,10 @@ library module 'traceback.py' and Ka-Ping Yee's 'cgitb.py'.
 Color schemes
 -------------
 
-The colors are defined in the class TBTools through the use of the
-ColorSchemeTable class. Currently the following exist:
+The colors are defined in the class `TBTools` through the use of the
+:class:`~IPython.utils.coloransi.ColorSchemeTable` class.
+
+Currently the following exist:
 
   - NoColor: allows all of this module to be used in any terminal (the color
     escapes are just dummy blank strings).
@@ -108,7 +110,7 @@ Even though it seems like a large part of why the module exists,
 is there any way to factor out all color considerations?
 
 This is quite a difficult module to work with, so limiting the
-responsibliity of the classes to returning formatted tracebacks should
+responsibility of the classes to returning formatted tracebacks should
 still be plenty of work.
 
 Nov 21, 2019:
@@ -125,7 +127,7 @@ TODO: We'll need to start breaking up the method `structured_traceback`,
 a method that'll be particularly difficult to get into smaller pieces as it's
 overidden in every subclass that exists in this module.
 
-A good start is implementing 3 methods in every TBTool.:
+A good start is implementing 3 methods in every TBTool.::
 
     def get_etype(self, etype):
         # A closure inside of structured_traceback because we need it's state
@@ -133,7 +135,7 @@ A good start is implementing 3 methods in every TBTool.:
             self.etype = sys.exc_info[0]
             return self.etype
 
-You can set the return value to etype so that it's locally bound and bound to
+You can set the return value to 'etype' so that it's locally bound and bound to
 the instance.
 
 So that'll hopefully protect us for how insanely inconsistent the
@@ -152,12 +154,4 @@ Inheritance diagram:
 .. inheritance-diagram:: IPython.core.ultratb
    :parts: 3
 
-"""
 
-# *****************************************************************************
-# Copyright (C) 2001 Nathaniel Gray <n8gray@caltech.edu>
-# Copyright (C) 2001-2004 Fernando Perez <fperez@colorado.edu>
-#
-# Distributed under the terms of the BSD License.  The full license is in
-# the file COPYING, distributed as part of this software.
-# *****************************************************************************

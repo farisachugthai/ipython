@@ -1,5 +1,4 @@
 """IPython terminal interface using prompt_toolkit"""
-
 import asyncio
 import os
 import sys

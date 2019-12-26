@@ -18,8 +18,8 @@ class FormattedTB(VerboseTB, ListTB):
     occurs with python programs that themselves execute other python code,
     like Python shells).
 
-        Notes
-        -----
+    Notes
+    -----
     Outside of the diamond inheritance we have going on, this is also the class
     where we introduce the xmode parameter to the shell.
     Like these classes couldn't have more going on if they tried.
@@ -55,7 +55,7 @@ class FormattedTB(VerboseTB, ListTB):
         else:
             self.color_scheme_table = exception_colors()
 
-        VerboseTB.__init__(
+        super().__init__(
             self,
             color_scheme=color_scheme,
             call_pdb=call_pdb,
