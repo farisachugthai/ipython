@@ -3,11 +3,13 @@ Test for async helpers.
 
 Should only trigger on python 3.5+ or will have syntax errors.
 """
-from IPython.core.async_helpers import _should_be_async
 from itertools import chain, repeat
-import nose.tools as nt
 from textwrap import dedent, indent
 from unittest import TestCase
+
+import nose.tools as nt
+
+from IPython.core.async_helpers import _should_be_async
 from IPython.testing.decorators import skip_without
 
 

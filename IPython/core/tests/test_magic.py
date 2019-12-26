@@ -20,7 +20,7 @@ import warnings
 from importlib import invalidate_caches
 from io import StringIO
 from textwrap import dedent
-from unittest import mock, TestCase
+from unittest import TestCase, mock
 
 import nose.tools as nt
 from nose.tools.nontrivial import nottest
@@ -28,18 +28,12 @@ from nose.tools.nontrivial import nottest
 from IPython.core import magic
 from IPython.core.error import UsageError
 from IPython.core.getipython import get_ipython
-from IPython.core.magic import (
-    cell_magic,
-    line_magic,
-    Magics,
-    magics_class,
-    register_cell_magic,
-    register_line_magic,
-)
-
+from IPython.core.magic import (Magics, cell_magic, line_magic, magics_class,
+                                register_cell_magic, register_line_magic)
 # Renamed to avoid std lib collision
 from IPython.core.magics import code, execution, ipy_logging, osm, script
-from IPython.testing import decorators as dec, tools as tt
+from IPython.testing import decorators as dec
+from IPython.testing import tools as tt
 from IPython.utils.capture import capture_output
 from IPython.utils.process import find_cmd
 from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory

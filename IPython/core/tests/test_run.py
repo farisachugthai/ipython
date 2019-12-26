@@ -16,23 +16,23 @@ as otherwise it may influence later tests.
 
 import functools
 import os
-from os.path import join as pjoin
 import random
 import string
 import sys
 import textwrap
 import unittest
+from os.path import join as pjoin
 from unittest.mock import patch
 
 import nose.tools as nt
 from nose import SkipTest
 
+from IPython.core import debugger
+from IPython.core.getipython import get_ipython
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
 from IPython.utils.capture import capture_output
 from IPython.utils.tempdir import TemporaryDirectory
-from IPython.core import debugger
-from IPython.core.getipython import get_ipython
 
 
 def setup_module():

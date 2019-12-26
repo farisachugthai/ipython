@@ -2242,7 +2242,7 @@ class InteractiveShell(SingletonConfigurable):
         # full stacktrace.
         elist = traceback.extract_tb(last_traceback) if running_compiled_code else []
 
-        stb = traceback.format_exception(etype, value, elist)
+        stb = traceback.format_exc(limit=3)
 
         self._showtraceback(etype=etype, evalue=value, stb=stb)
 

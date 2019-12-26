@@ -230,7 +230,7 @@ def ask_yes_no(prompt, default=None, interrupt=None):
     return answers[ans]
 
 
-def temp_pyfile(src, ext=".py"):
+def temp_pyfile(src=None, ext=".py"):
     """Make a temporary python file, return filename and filehandle.
 
     Parameters
@@ -247,8 +247,9 @@ def temp_pyfile(src, ext=".py"):
         It is the caller's responsibility to close the open file and unlink it.
 
     """
-    fname = tempfile.mkstemp(ext)[1]
+    fname = tempfile.mkdtemp(ext)
     with open(fname, "w") as f:
-        f.write(src)
+        if src:
+            f.write(src)
         f.flush()
     return fname

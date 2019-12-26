@@ -1,6 +1,7 @@
 import sys
-from IPython.testing.tools import AssertPrints, AssertNotPrints
+
 from IPython.core.displayhook import CapturingDisplayHook
+from IPython.testing.tools import AssertNotPrints, AssertPrints
 from IPython.utils.capture import CapturedIO
 
 

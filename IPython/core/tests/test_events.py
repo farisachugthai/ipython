@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import Mock
+
 import nose.tools as nt
 
+import IPython.testing.tools as tt
 from IPython.core import events
 from IPython.core.getipython import get_ipython
-import IPython.testing.tools as tt
 
 
 @events._define_event

@@ -16,9 +16,10 @@ from os.path import join
 
 import nose.tools as nt
 
-from IPython.core.completerlib import magic_run_completer, module_completion, try_import
-from IPython.utils.tempdir import TemporaryDirectory
+from IPython.core.completerlib import (magic_run_completer, module_completion,
+                                       try_import)
 from IPython.testing.decorators import onlyif_unicode_paths
+from IPython.utils.tempdir import TemporaryDirectory
 
 
 class MockEvent(object):

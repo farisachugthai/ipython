@@ -1,26 +1,22 @@
 # encoding: utf-8
 """Tests for IPython.core.ultratb
 """
-from IPython.testing.decorators import skipif
 import codecs
 import io
 import logging
-import sys
 import os.path
-from textwrap import dedent
+import sys
 import traceback
 import unittest
+from textwrap import dedent
 from unittest import mock
 
-from IPython.core.ultratb.formatted_tb import ColorTB
-from IPython.core.ultratb.verbose_tb import (
-    VerboseTB,
-    _FRAME_RECURSION_LIMIT,
-    find_recursion,
-)
 from IPython.core.getipython import get_ipython
+from IPython.core.ultratb.formatted_tb import ColorTB
+from IPython.core.ultratb.verbose_tb import (_FRAME_RECURSION_LIMIT, VerboseTB,
+                                             find_recursion)
 from IPython.testing import tools as tt
-from IPython.testing.decorators import onlyif_unicode_paths
+from IPython.testing.decorators import onlyif_unicode_paths, skipif
 from IPython.utils.syspathcontext import prepended_to_syspath
 from IPython.utils.tempdir import TemporaryDirectory
 

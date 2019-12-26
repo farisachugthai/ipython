@@ -4,6 +4,7 @@
 import os.path
 
 import nose.tools as nt
+
 from IPython.utils.tempdir import TemporaryDirectory
 
 

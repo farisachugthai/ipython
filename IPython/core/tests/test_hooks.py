@@ -6,6 +6,7 @@
 # -----------------------------------------------------------------------------
 
 import nose.tools as nt
+
 from IPython.core.error import TryNext
 from IPython.core.hooks import CommandChainDispatcher
 

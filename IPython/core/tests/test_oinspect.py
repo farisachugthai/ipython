@@ -3,18 +3,18 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from unittest import TestCase
-from inspect import signature, Signature, Parameter
 import os
 import re
-
-from decorator import decorator
-from IPython.core import oinspect
-from IPython.core.getipython import get_ipython
-from IPython.testing.tools import AssertPrints, AssertNotPrints
-from IPython.utils.path import compress_user
+from inspect import Parameter, Signature, signature
+from unittest import TestCase
 
 import nose.tools as nt
+from decorator import decorator
+
+from IPython.core import oinspect
+from IPython.core.getipython import get_ipython
+from IPython.testing.tools import AssertNotPrints, AssertPrints
+from IPython.utils.path import compress_user
 
 # -----------------------------------------------------------------------------
 # Globals and constants

@@ -131,10 +131,15 @@ def list_profiles_in(path):
     profiles = []
 
     # for python 3.6+ rewrite to: with os.scandir(path) as dirlist:
-    files = os.scandir(path)
+    files = os.scandir(os.path.expanduser(path))
     for f in files:
         if f.is_dir() and f.name.startswith("profile_"):
             profiles.append(f.name.split("_", 1)[-1])
+
+    # Keeps prepending an empty spot up front
+    if len(profiles) > 0:
+        if profiles[0] == '':
+            profiles = profiles[1:]
     return profiles
 
 
@@ -354,12 +359,13 @@ class ProfileCreate(BaseIPythonApplication):
             self.log.warning(
                 """Couldn't import {}, config file will be excluded
                           The cause of the ImportError was {}""".format(
-                    e, e.__traceback__
-                )
-            )
+                    e))
+            return
         except Exception:
             self.log.error("Unexpected error importing %s", name, exc_info=True)
-        return app
+            return
+        else:
+            return app
 
     def init_config_files(self):
         """Calls super().init_config_files so maybe a good candidate for a classmethod decorator?"""
@@ -378,7 +384,7 @@ class ProfileCreate(BaseIPythonApplication):
             from ipyparallel.apps.ipclusterapp import IPClusterStart
 
             apps.extend(
-                [IPControllerApp, IPEngineApp, IPClusterStart,]
+                [IPControllerApp, IPEngineApp, IPClusterStart, ]
             )
         for App in apps:
             app = App()

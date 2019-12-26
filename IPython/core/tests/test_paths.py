@@ -1,4 +1,5 @@
 import errno
+import logging
 import os
 import shutil
 import sys
@@ -7,11 +8,14 @@ import warnings
 from unittest.mock import patch
 
 import nose.tools as nt
-from testpath import modified_env, assert_isdir, assert_isfile
+from testpath import assert_isdir, assert_isfile, modified_env
 
 from IPython import paths
 from IPython.testing.decorators import skip_win32
 from IPython.utils.tempdir import TemporaryDirectory
+
+logging.basicConfig()
+
 
 TMP_TEST_DIR = os.path.realpath(tempfile.mkdtemp())
 HOME_TEST_DIR = os.path.join(TMP_TEST_DIR, "home_test_dir")
@@ -25,22 +29,25 @@ def setup_module():
 
             - Adds dummy home dir tree
     """
-    # Do not mask exceptions here.  In particular, catching WindowsError is a
-    # problem because that exception is only defined on Windows...
-    os.makedirs(IP_TEST_DIR)
-    os.makedirs(os.path.join(XDG_TEST_DIR, "ipython"))
-    os.makedirs(os.path.join(XDG_CACHE_DIR, "ipython"))
+    try:
+        os.makedirs(IP_TEST_DIR)
+        os.makedirs(os.path.join(XDG_TEST_DIR, "ipython"))
+        os.makedirs(os.path.join(XDG_CACHE_DIR, "ipython"))
+    except OSError as e:
+        logging.exception(e)
 
 
 def teardown_module():
     """Teardown testenvironment for the module:
 
-            - Remove dummy home dir tree
+    - Remove dummy home dir tree
     """
-    # Note: we remove the parent test dir, which is the root of all test
-    # subdirs we may have created.  Use shutil instead of os.removedirs, so
-    # that non-empty directories are all recursively removed.
-    shutil.rmtree(TMP_TEST_DIR)
+    try:
+        shutil.rmtree(TMP_TEST_DIR)
+    except PermissionError:
+        logging.exception('PermissionError')
+    except OSError:
+        logging.exception('OSError')
 
 
 def patch_get_home_dir(dirpath):
@@ -87,7 +94,7 @@ def test_get_ipython_dir_3():
     tmphome = TemporaryDirectory()
     try:
         with patch_get_home_dir(tmphome.name), patch("os.name", "posix"), modified_env(
-            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR,}
+            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR, }
         ), warnings.catch_warnings(record=True) as w:
             ipdir = paths.get_ipython_dir()
 
@@ -109,7 +116,7 @@ def test_get_ipython_dir_4():
                 raise
 
         with modified_env(
-            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR,}
+            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR, }
         ), warnings.catch_warnings(record=True) as w:
             ipdir = paths.get_ipython_dir()
 
@@ -129,7 +136,7 @@ def test_get_ipython_dir_5():
                 raise
 
         with modified_env(
-            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR,}
+            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR, }
         ):
             ipdir = paths.get_ipython_dir()
 
@@ -145,7 +152,7 @@ def test_get_ipython_dir_6():
     with patch_get_home_dir(HOME_TEST_DIR), patch.object(
         paths, "get_xdg_dir", return_value=xdg
     ), patch("os.name", "posix"), modified_env(
-        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": None,}
+        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": None, }
     ), warnings.catch_warnings(
         record=True
     ) as w:
@@ -171,7 +178,7 @@ def test_get_ipython_dir_8():
     with patch.object(paths, "_writable_dir", lambda path: bool(path)), patch.object(
         paths, "get_xdg_dir", return_value=None
     ), modified_env(
-        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "HOME": "/",}
+        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "HOME": "/", }
     ):
         nt.assert_equal(paths.get_ipython_dir(), "/.ipython")
 

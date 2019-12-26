@@ -13,14 +13,10 @@ import nose.tools as nt
 from nose.tools import assert_in, assert_not_in
 from traitlets.config.loader import Config
 
-from IPython.core.getipython import get_ipython
 from IPython.core import completer
-from IPython.core._completer import (
-    Completion,
-    _deduplicate_completions,
-    match_dict_keys,
-    provisionalcompleter,
-)
+from IPython.core._completer import (Completion, _deduplicate_completions,
+                                     match_dict_keys, provisionalcompleter)
+from IPython.core.getipython import get_ipython
 from IPython.external import decorators
 from IPython.testing import decorators as dec
 from IPython.utils.generics import complete_object

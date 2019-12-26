@@ -268,3 +268,9 @@ class ProfileDirError(Exception):
 class DemoError(Exception):
 
     pass
+
+
+class DerivedInterrupt(KeyboardInterrupt):
+    """interactiveshell.tests.test_interactiveshell"""
+    pass
+

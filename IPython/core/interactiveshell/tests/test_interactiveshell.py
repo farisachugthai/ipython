@@ -14,6 +14,7 @@ import os
 import pprint
 import signal
 import shutil
+from shutil import which as find_cmd
 import sys
 import tempfile
 import unittest
@@ -25,7 +26,7 @@ import nose.tools as nt
 
 from IPython.core.interactiveshell.execution import ExecutionResult
 from IPython.core.getipython import get_ipython
-from IPython.core.error import InputRejected
+from IPython.core.error import InputRejected, DerivedInterrupt
 
 # This import is never used?
 # from IPython.core.inputtransformer import InputTransformer
@@ -36,24 +37,28 @@ from IPython.testing.decorators import (
     onlyif_cmds_exist,
 )
 from IPython.testing import tools as tt
-from IPython.utils.process import find_cmd
+# from IPython.utils.process import find_cmd
+
+try:
+    from trio._core._multierror import MultiError   # noqa F0401
+except:
+    pass
 
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
 # This is used by every single test, no point repeating it ad nauseam
 
-ip = get_ipython()
+
+def setup_module():
+    global ip
+    ip = get_ipython()
+    return ip
 
 
 # -----------------------------------------------------------------------------
 # Tests
 # -----------------------------------------------------------------------------
-
-
-class DerivedInterrupt(KeyboardInterrupt):
-    pass
-
 
 class InteractiveShellTestCase(unittest.TestCase):
     def test_naked_string_cells(self):
@@ -76,7 +81,7 @@ class InteractiveShellTestCase(unittest.TestCase):
     def test_run_cell_multiline(self):
         """Multi-block, multi-line cells must execute correctly.
         """
-        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1",])
+        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1", ])
         res = ip.run_cell(src)
         self.assertEqual(ip.user_ns["x"], 2)
         self.assertEqual(ip.user_ns["y"], 3)
@@ -595,9 +600,6 @@ class InteractiveShellTestCase(unittest.TestCase):
 class TestSafeExecfileNonAsciiPath(unittest.TestCase):
     @onlyif_unicode_paths
     def setUp(self):
-        """
-
-        """
         self.BASETESTDIR = tempfile.mkdtemp()
         self.TESTDIR = join(self.BASETESTDIR, "åäö")
         os.mkdir(self.TESTDIR)

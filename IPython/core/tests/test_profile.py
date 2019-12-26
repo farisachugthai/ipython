@@ -20,22 +20,26 @@ Authors
 # Imports
 # -----------------------------------------------------------------------------
 
+import logging
 import os
 import shutil
 import sys
 import tempfile
-
+from subprocess import getoutput
 from unittest import TestCase
 
 import nose.tools as nt
 
-from IPython.core.profileapp import list_profiles_in, list_bundled_profiles
+from IPython.core.profileapp import list_bundled_profiles, list_profiles_in
 from IPython.core.profiledir import ProfileDir
-
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
-from IPython.utils.process import getoutput
 from IPython.utils.tempdir import TemporaryDirectory
+
+logging.basicConfig()
+
+
+# from IPython.utils.process import getoutput
 
 # -----------------------------------------------------------------------------
 # Globals
@@ -50,36 +54,36 @@ IP_TEST_DIR = os.path.join(HOME_TEST_DIR, ".ipython")
 
 
 def setup_module():
-    """Setup test environment for the module:
+    """Setup test environment for the module.
 
-            - Adds dummy home dir tree
+    Adds dummy home dir tree.
     """
     # Do not mask exceptions here.  In particular, catching WindowsError is a
     # problem because that exception is only defined on Windows...
-    os.makedirs(IP_TEST_DIR)
+    # Now it's lumped in with OSError
+    try:
+        os.makedirs(IP_TEST_DIR)
+    except OSError:
+        raise
 
 
 def teardown_module():
-    """Teardown test environment for the module:
+    """Teardown test environment for the module.
 
-            - Remove dummy home dir tree
+    - Remove dummy home dir tree
     """
-    # Note: we remove the parent test dir, which is the root of all test
-    # subdirs we may have created.  Use shutil instead of os.removedirs, so
-    # that non-empty directories are all recursively removed.
-    shutil.rmtree(TMP_TEST_DIR)
+    try:
+        shutil.rmtree(TMP_TEST_DIR)
+    except PermissionError:
+        logging.exception('PermissionError')
+    except OSError:
+        logging.exception('OSError')
 
 
 # -----------------------------------------------------------------------------
 # Test functions
 # -----------------------------------------------------------------------------
 def win32_without_pywin32():
-    """
-
-    Returns
-    -------
-
-    """
     if sys.platform == "win32":
         try:
             import pywin32
@@ -90,21 +94,19 @@ def win32_without_pywin32():
 
 class ProfileStartupTest(TestCase):
     def setUp(self):
-        """
-
-        """
-        # create profile dir
         self.pd = ProfileDir.create_profile_dir_by_name(IP_TEST_DIR, "test")
         self.options = ["--ipython-dir", IP_TEST_DIR, "--profile", "test"]
         self.fname = os.path.join(TMP_TEST_DIR, "test.py")
 
     def tearDown(self):
-        """
-
-        """
         # We must remove this profile right away so its presence doesn't
         # confuse other tests.
-        shutil.rmtree(self.pd.location)
+        try:
+            shutil.rmtree(self.pd.location)
+        except PermissionError:
+            pass
+        except OSError:
+            pass
 
     def init(self, startup_file, startup, test):
         """

@@ -4,19 +4,17 @@
 import json
 import os
 import warnings
-
 from unittest import mock
 
 import nose.tools as nt
 
+import IPython.testing.decorators as dec
+from IPython import paths as ipath
 from IPython.core import display
 from IPython.core.getipython import get_ipython
+from IPython.testing.tools import AssertNotPrints
 from IPython.utils.capture import capture_output
 from IPython.utils.tempdir import NamedFileInTemporaryDirectory
-from IPython import paths as ipath
-from IPython.testing.tools import AssertNotPrints
-
-import IPython.testing.decorators as dec
 
 
 def test_image_size():

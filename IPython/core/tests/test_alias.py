@@ -1,6 +1,6 @@
-from IPython.utils.capture import capture_output
-
 import nose.tools as nt
+
+from IPython.utils.capture import capture_output
 
 
 def setup_module():
