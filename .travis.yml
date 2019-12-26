@@ -1,4 +1,5 @@
 ---
+
 # Config file for automatic testing at travis-ci.org
 # http://travis-ci.org/#!/ipython/ipython
 language: python # this works for Linux but is an error on macOS or Windows
@@ -39,11 +40,12 @@ install:
     fi
 
 script:
-  - iptest --coverage xml
+  - pytest
   - |
-    if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      pip install -U -r docs/requirements.txt
+    if  [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sphinx-build -c docs/source -W --keep-going docs/source docs/build
+    else
+      iptest --coverage xml
     fi
 
 after_success:
@@ -56,16 +58,22 @@ matrix:
       dist: "bionic" # because now we get py3.6 and py3.7 for free
       before_install:
         - python setup.py build
+        - pip install --upgrade pip -e . -r requirements_dev.txt
+        - pip install -U -r docs/requirements.txt
     - python: "3.8-dev"
       dist: "bionic"
       name: "Python 3.8-dev on Bionic Linux"
       before_install:
         - python setup.py build
+        - pip install --upgrade pip -e . -r requirements_dev.txt
+        - pip install -U -r docs/requirements.txt
     - python: "3.6"
       dist: "bionic"
       name: "Python 3.6 on Bionic Linux"
       before_install:
         - python setup.py build
+        - pip install --upgrade pip -e . -r requirements_dev.txt
+        - pip install -U -r docs/requirements.txt
     - python: "nightly"
       dist: "bionic"
     - os: osx
@@ -94,7 +102,7 @@ matrix:
       before_install:
         - choco install python --version 3.8.0
         - python setup.py build
-        - python -m pip install --upgrade pip -e . -r requirements.txt
+        - python -m pip install --upgrade pip -e . -r requirements_dev.txt
   allow_failures:
     - python: nightly
 
