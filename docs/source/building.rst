@@ -11,11 +11,42 @@ Building IPython
 Documentation
 =============
 
+.. stole this from jupyter. thanks guys!
+
+To build the documentation you'll need `Sphinx <http://www.sphinx-doc.org/>`_,
+`pandoc <http://pandoc.org/>`_ and a few other packages.
+
+To install (and activate) a `conda environment`_ named ``notebook_docs``
+containing all the necessary packages (except pandoc), use::
+
+    conda env create -f docs/environment.yml
+    conda activate notebook_docs  # Linux and OS X
+    activate notebook_docs         # Windows
+
+.. _conda environment:
+    https://conda.io/docs/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file
+
+If you want to install the necessary packages with ``pip``, use the following instead::
+
+    pip install -r docs/doc-requirements.txt
+
+Once you have installed the required packages, you can build the docs with::
+
+    cd docs
+    make html
+
+After that, the generated HTML files will be available at
+``build/html/index.html``. You may view the docs in your browser.
+
+You can automatically check if all hyperlinks are still valid::
+
+    make linkcheck
+
+Windows users can find ``make.bat`` in the ``docs`` folder.
 I suppose this should go in the core dev dir but for the time being I'm going
 to try and keep everything at the top level.
 
-
-.. in case you're wondering this was in a file at ipythondir/docs/README.
+.. In case you're wondering, this section below was in a file at ipythondir/docs/README.
    But I was like 'Why not include it?'
 
 
@@ -35,7 +66,7 @@ In additions to :ref:`devinstall`,
 the following tools are needed to build the documentation:
 
  - sphinx
- - sphinx_rtd_theme
+ - ``sphinx_rtd_theme``
  - docrepr
 
 In a conda environment, or a Python 3 ``venv``, you should be able to run::
@@ -114,6 +145,23 @@ The IPython project currently uses ``nose`` for it's unit testing.
 A :file:`../../IPython/conftest.py` file exists for usage with pytest;
 however, this integration is still being actively worked on.
 
+Quickstart
+-----------
+Install dependencies::
+
+    pip install -e '.[test]'
+
+To run the Python tests, use::
+
+    pytest
+
+If you want coverage statistics as well, you can run::
+
+    py.test --cov notebook -v --pyargs notebook
+
+
+Other
+------
 I don't know where to note this because it looks like these docs are devoid
 of any mention of the test suite.
 
@@ -122,8 +170,6 @@ well advertised.
 
 .. code-block:: rst
 
-   File:        /usr/lib/python3.8/site-packages/nose/sphinx/pluginopts.py
-   Docstring:
    Adds a sphinx directive that can be used to automatically document a plugin.
 
    this::
