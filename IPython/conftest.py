@@ -9,16 +9,16 @@
 import pytest
 
 import IPython
+from IPython.testing.tools import default_config
+from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
 # adding this here not because we need them yet but they're good reminders.
-# from _pytest.nose import (
-#     pytest_runtest_setup,
-#     teardown_nose,
-#     is_potential_nosetest,
-#     call_optional,
-# )
-
-# noqa
+from _pytest.nose import (
+    #     pytest_runtest_setup,
+    #     teardown_nose,
+    is_potential_nosetest,
+    #     call_optional,
+)
 
 
 def get_test_shell():
@@ -47,11 +47,11 @@ def start_test_shell():
     No cheating before the test starts!
     """
     # Create custom argv and namespaces for our IPython to be test-friendly
-    config = IPython.testing.tools.default_config()
+    config = default_config()
     config.TerminalInteractiveShell.simple_prompt = True
 
     # Create and initialize our test-friendly IPython instance.
-    shell = IPython.terminal.interactiveshell.TerminalInteractiveShell.instance(
+    shell = TerminalInteractiveShell.instance(
         config=config,
     )
 

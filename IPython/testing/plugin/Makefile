@@ -1,19 +1,10 @@
 # Set this prefix to where you want to install the plugin
-<<<<<<< Updated upstream
 PREFIX=~/.local
-||||||| merged common ancestors
-PREFIX=/usr/local
-=======
-PREFIX=/data/data/com.termux/usr/local
->>>>>>> Stashed changes
 
 NOSE0=nosetests -vs --with-doctest --doctest-tests --detailed-errors
-# NOSE=nosetests -vvs --with-ipdoctest --doctest-tests --doctest-extension=txt \
+NOSE=nosetests -vvs --with-ipdoctest --doctest-tests --doctest-extension=txt \
 --detailed-errors
 
-# Apparently the --with-ipdoctest parameter doesn't exist to nose
-# NOSE=nosetests -vvs --with-ipdoctest --doctest-tests --doctest-extension=txt \
-	#
 SRC=ipdoctest.py setup.py ../decorators.py
 
 # Default target for clean 'make'
