@@ -33,6 +33,14 @@ _unspecified = object()
 
 @magics_class
 class HistoryMagics(Magics):
+    """Implement history related magics."""
+
+    def _format_lineno(self, session, line):
+        """Helper function to format line numbers properly."""
+        if session in (0, self.shell.history_manager.session_number):
+            return str(line)
+        return "%s/%s" % (session, line)
+
     @magic_arguments()
     @argument(
         "-n",
@@ -144,31 +152,24 @@ class HistoryMagics(Magics):
             From the first line of 8 sessions ago, to the fifth line of 6
             sessions ago.
 
-        Multiple ranges can be entered, separated by spaces
+        Multiple ranges can be entered, separated by spaces.
 
-        The same syntax is used by %macro, %save, %edit, %rerun
+        The same syntax is used by `%macro`, `%save`, `%edit`, `%rerun`.
 
         Examples
         --------
         ::
 
-          In [6]: %history -n 4-6
-          4:a = 12
-          5:print a**2
-          6:%history -n 4-6
+            In [6]: %history -n 4-6
+            4:a = 12
+            5:print a**2
+            6:%history -n 4-6
 
         """
-
         args = parse_argstring(self.history, parameter_s)
 
         # For brevity
         history_manager = self.shell.history_manager
-
-        def _format_lineno(session, line):
-            """Helper function to format line numbers properly."""
-            if session in (0, history_manager.session_number):
-                return str(line)
-            return "%s/%s" % (session, line)
 
         # Check if output to specific file was requested.
         outfname = args.filename
@@ -235,7 +236,7 @@ class HistoryMagics(Magics):
             line_sep = "\n" if multiline else " "
             if print_nums:
                 print(
-                    "%s:%s" % (_format_lineno(session, lineno).rjust(width), line_sep),
+                    "%s:%s" % (self._format_lineno(session, lineno).rjust(width), line_sep),
                     file=outfile,
                     end="",
                 )
@@ -315,12 +316,16 @@ class HistoryMagics(Magics):
         By default, you can specify ranges of input history to be repeated
         (as with %history). With no arguments, it will repeat the last line.
 
-        Options:
+        Options
+        -------
+        .. option:: -l <n>
 
-          -l <n> : Repeat the last n lines of input, not including the
-          current command.
+            Repeat the last n lines of input, not including the current command.
 
-          -g foo : Repeat the most recent line which contains foo
+        .. option:: -g arg
+
+            Repeat the most recent line which contains arg.
+
         """
         opts, args = self.parse_options(parameter_s, "l:g:", mode="string")
         if "l" in opts:  # Last n lines

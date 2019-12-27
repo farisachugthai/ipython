@@ -420,7 +420,8 @@ class InteractiveShell(SingletonConfigurable):
         True, help="Show rewritten input, e.g. for autocall."
     ).tag(config=True)
 
-    quiet = Bool(False).tag(config=True)
+    quiet = Bool(False, help="A configurable that literally isn't used one time in this file.").tag(
+        config=True)
 
     history_length = Integer(10000, help="Total length of command history").tag(
         config=True
@@ -505,7 +506,7 @@ class InteractiveShell(SingletonConfigurable):
     # Tracks any GUI loop loaded for pylab
     pylab_gui_select = None
 
-    last_execution_succeeded = Bool(True, help="Did last executed command succeeded")
+    last_execution_succeeded = Bool(True, help="Did the last executed command succeed?")
 
     last_execution_result = Instance(
         "IPython.core.interactiveshell.ExecutionResult",
@@ -519,7 +520,7 @@ class InteractiveShell(SingletonConfigurable):
         profile_dir=None,
         user_module=None,
         user_ns=None,
-        custom_exceptions=((), None),
+        custom_exceptions=None,
         **kwargs,
     ):
         """This is where traits with a ``config_key`` argument are updated.
@@ -1903,7 +1904,8 @@ class InteractiveShell(SingletonConfigurable):
         self.sys_excepthook = sys.excepthook
 
         # and add any custom exception handlers the user may have specified
-        self.set_custom_exc(*custom_exceptions)
+        if custom_exceptions is not None:
+            self.set_custom_exc(*custom_exceptions)
 
         # Set the exception mode
         # self.InteractiveTB.set_mode(mode=self.xmode)
@@ -2173,7 +2175,7 @@ class InteractiveShell(SingletonConfigurable):
             # line, there may be SyntaxError cases with imported code.
             self.showsyntaxerror(filename, running_compiled_code)
         elif etype is UsageError:
-            self.show_usage_error(value)
+            raise UsageError
         else:
             stb.extend(traceback.format_exception_only(etype, value))
             if exception_only:
@@ -2228,8 +2230,11 @@ class InteractiveShell(SingletonConfigurable):
             running_compile_code=True), a longer stack trace will be displayed.
 
         """
-        # etype, value, last_traceback = self._get_exc_info()
         etype, value, last_traceback = sys.exc_info()
+
+        if etype == value == last_traceback == 0:
+            # I doubt we get incorrectly called often but let's check
+            return
 
         if filename and issubclass(etype, SyntaxError):
             try:

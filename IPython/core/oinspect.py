@@ -4,6 +4,16 @@ Uses syntax highlighting for presenting the various information elements.
 
 Similar in spirit to the inspect module, but all calls take a name argument to
 reference the name under which an object is being read.
+
+.. data:: info_fields
+
+    See the messaging spec for the definition of all these fields.  This list
+    effectively defines the order of display.
+
+.. note::
+    Almost 100% of the unit tests depend on the presence of a
+    :meth:`Inspector.info` method.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -22,7 +32,7 @@ import types
 from inspect import getabsfile as find_file, getdoc, getsource, signature
 from itertools import zip_longest
 from textwrap import dedent, indent
-from typing import Union
+from typing import Union, Any, Callable
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -39,16 +49,6 @@ from IPython.utils.wildcard import typestr2type, list_namespace
 
 
 def pylight(code):
-    """
-
-    Parameters
-    ----------
-    code :
-
-    Returns
-    -------
-
-    """
     return highlight(code, IPyLexer(), HtmlFormatter(noclasses=True))
 
 
@@ -142,13 +142,13 @@ def get_encoding(obj):
 
 
 def _get_encoding(obj=None):
-    """I'm sorry I might just do something dumb like return sys.getfile
+    """I'm sorry I might just do something dumb like return sys.getfile.
     """
     return sys.getfilesystemencoding()
 
 
 def is_simple_callable(obj):
-    """True if obj is a function ()"""
+    """True if obj is a function."""
     return (
         inspect.isfunction(obj)
         or inspect.ismethod(obj)
@@ -260,6 +260,8 @@ class Inspector(Configurable):
 
     """
 
+    default_style = Unicode("LightBG", help = ("Highlighting scheme used for highlighting source code.")).tag(config=True)
+
     def __init__(
         self,
         color_table=InspectColors,
@@ -271,14 +273,13 @@ class Inspector(Configurable):
         *args,
         **kwargs,
     ):
-        super().__init__(*args, **kwargs)
-        # All Colorable does is
-        default_style = Unicode("LightBG").tag(config=True)
-        # So let's just add that ourselves
         self.color_table = color_table
         # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         # self.format = self.parser.format
         self.str_detail_level = str_detail_level
+        self.parent = parent
+        self.config = config
+        super().__init__(*args, **kwargs)
 
     def _getdef(self, obj, oname="") -> Union[str, None]:
         """Return the call signature for any callable object.
@@ -497,16 +498,6 @@ class Inspector(Configurable):
                 return dict(defaults, **formatted)
 
     def format_mime(self, bundle):
-        """
-
-        Parameters
-        ----------
-        bundle :
-
-        Returns
-        -------
-
-        """
         text_plain = bundle["text/plain"]
 
         text = ""
@@ -526,7 +517,6 @@ class Inspector(Configurable):
 
         Parameters
         ----------
-
         obj: any
             Object to inspect and return info from
         oname: str (default: ''):
@@ -536,6 +526,7 @@ class Inspector(Configurable):
             already computed information
         detail_level: integer
             Granularity of detail level, if set to 1, give more information.
+
         """
 
         info = self._info(obj, oname=oname, info=info, detail_level=detail_level)
@@ -564,16 +555,6 @@ class Inspector(Configurable):
                 )
 
         def code_formatter(text):
-            """
-
-            Parameters
-            ----------
-            text :
-
-            Returns
-            -------
-
-            """
             return {"text/plain": self.format(text), "text/html": pylight(text)}
 
         if info["isalias"]:
@@ -638,8 +619,8 @@ class Inspector(Configurable):
     ):
         """Show detailed information about an object.
 
-        Optional arguments:
-
+        Parameters
+        ----------
         - oname: name of the variable pointing to the object.
 
         - formatter: callable (optional)
@@ -670,25 +651,30 @@ class Inspector(Configurable):
     def _info(self, obj, oname="", info=None, detail_level=0) -> dict:
         """Compute a dict with detailed information about an object.
 
-        Jesus Christ this method is like 200 lines long! Needs to be refactored badly.
+        Jesus Christ this method is +200 lines long! Needs to be refactored
+        badly.
 
         Parameters
         ----------
-        obj: any
+        obj : any
             An object to find information about
-        oname: str (default: ''):
+        oname : str
+            (default: ''):
             Name of the variable pointing to `obj`.
-        info: (default: None)
-            A struct (dict like with attr access) with some information fields
-            which may have been precomputed already.
-        detail_level: int (default:0)
+        info :
+            (default: None)
+            A :class:`~IPython.utils.text.Struct` (dict like with attr access)
+            with some information fields which may have been precomputed
+            already.
+        detail_level: int
+            (default: 0)
             If set to 1, more information is given.
 
         Returns
-        =======
-
-        An object info dict with known fields from `info_fields`. Keys are
-        strings, values are string or None.
+        -------
+        object_info : dict[str] = str or None
+            Dict with known fields from `info_fields`.
+            Keys are strings, values are string or None.
 
         """
         if info is None:

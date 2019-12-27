@@ -13,12 +13,14 @@ from unittest import mock
 
 from IPython.core.getipython import get_ipython
 from IPython.core.ultratb.formatted_tb import ColorTB
-from IPython.core.ultratb.verbose_tb import (_FRAME_RECURSION_LIMIT, VerboseTB,
-                                             find_recursion)
+from IPython.core.ultratb.verbose_tb import VerboseTB, find_recursion
 from IPython.testing import tools as tt
 from IPython.testing.decorators import onlyif_unicode_paths, skipif
 from IPython.utils.syspathcontext import prepended_to_syspath
 from IPython.utils.tempdir import TemporaryDirectory
+
+
+_FRAME_RECURSION_LIMIT = 500
 
 file_1 = """1
 2

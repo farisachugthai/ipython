@@ -50,3 +50,4 @@ venv*/
 .patch
 .*pytest**[a-z]*
 Test Results - pytest_for_IPython.xml
+IPython/nosetests.xml

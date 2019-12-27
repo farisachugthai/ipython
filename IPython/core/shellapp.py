@@ -8,9 +8,26 @@ launch InteractiveShell instances, load extensions, etc.
    into their own file because there's genuinely in the vicinity of 100
    globals just floating around a handful of files
 
+.. data:: gui_keys
+
+    :mod:`IPython.terminal.pt_inputhooks`.
+
+.. data:: backend_keys
+
+    Also refer to :mod:`IPython.core.pylabtools`.
+
+.. data:: shell_flags
+
+.. data:: shell_aliases
+
+
 """
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
+from IPython.utils.contexts import preserve_keys
+from IPython.core import pylabtools
+from IPython.core.application import SYSTEM_CONFIG_DIRS
+from IPython.terminal import pt_inputhooks
 import abc
 import glob
 import os
@@ -28,10 +45,9 @@ from traitlets import (
     CaselessStrEnum,
     observe,
 )
-from IPython.terminal import pt_inputhooks
-from IPython.core.application import SYSTEM_CONFIG_DIRS
-from IPython.core import pylabtools
-from IPython.utils.contexts import preserve_keys
+
+if sys.version_info < (3, 7):
+    from IPython.core.error import ModuleNotFoundError
 
 # -----------------------------------------------------------------------------
 # Aliases and Flags
@@ -277,16 +293,6 @@ class InteractiveShellApp(Configurable):
         if self.pylab:
 
             def enable(key):
-                """
-
-                Parameters
-                ----------
-                key :
-
-                Returns
-                -------
-
-                """
                 return shell.enable_pylab(key, import_all=self.pylab_import_all)
 
             key = self.pylab
@@ -302,7 +308,7 @@ class InteractiveShellApp(Configurable):
 
         try:
             r = enable
-        except ImportError:
+        except (ImportError, ModuleNotFoundError):
             self.log.warning(
                 "Eventloop or matplotlib integration failed. Is matplotlib installed?"
             )
@@ -337,12 +343,12 @@ class InteractiveShellApp(Configurable):
         Refactored so that try statements only have 1 statement in them.
         Makes shit a LOT easier to debug.
         """
-        self.log.debug("Loading IPython extensions...")
         extensions = self.default_extensions + self.extensions
+        self.log.info("Loading IPython extensions...{}".format(extensions))
         if self.extra_extension:
             extensions.append(self.extra_extension)
         for ext in extensions:
-            self.log.info("Loading IPython extension: %s" % ext)
+            self.log.debug("Loading IPython extension: %s" % ext)
             try:
                 self.shell.extension_manager.load_extension(ext)
             except BaseException:
