@@ -2,6 +2,7 @@
 
 TMK this is made configurable in the .ipapp module.
 """
+import abc
 import sys
 
 from prompt_toolkit.formatted_text import PygmentsTokens, fragment_list_width
@@ -20,13 +21,23 @@ class Prompts:
     def __init__(self, shell=None):
         self.shell = shell or get_ipython()
 
+    @property
+    def _is_vi_mode(self):
+        if getattr(self.shell.pt_app, "editing_mode", None):
+            if self.shell.pt_app.editing_mode == 'VI':
+                return True
+
+    def better_vi_mode(self, prefix=None, suffix=None):
+        """Because it was bothering me the other way that this is setup.
+
+        Add prefix and suffix so the user can configure their prompt with
+        strings I don't know why that got deprecated.
+
+        """
+        if self._is_vi_mode:
+            return prefix + "[" + self.shell.pt_app.editing_mode + "]" + suffix
+
     def vi_mode(self):
-        """
-
-        Returns
-        -------
-
-        """
         if (
             getattr(self.shell.pt_app, "editing_mode", None) == "VI"
             and self.shell.prompt_includes_vi_mode
@@ -35,12 +46,6 @@ class Prompts:
         return ""
 
     def in_prompt_tokens(self):
-        """
-
-        Returns
-        -------
-
-        """
         return [
             (Token.Prompt, self.vi_mode()),
             (Token.Prompt, "In ["),
@@ -52,16 +57,6 @@ class Prompts:
         return fragment_list_width(self.in_prompt_tokens())
 
     def continuation_prompt_tokens(self, width=None):
-        """
-
-        Parameters
-        ----------
-        width :
-
-        Returns
-        -------
-
-        """
         if width is None:
             width = self._width()
         return [
@@ -96,45 +91,17 @@ class Prompts:
 
 class ClassicPrompts(Prompts):
     def in_prompt_tokens(self):
-        """
-
-        Returns
-        -------
-
-        """
         return [
             (Token.Prompt, ">>> "),
         ]
 
     def continuation_prompt_tokens(self, width=None):
-        """
-
-        Parameters
-        ----------
-        width :
-
-        Returns
-        -------
-
-        """
         return [(Token.Prompt, "... ")]
 
     def rewrite_prompt_tokens(self):
-        """
-
-        Returns
-        -------
-
-        """
         return []
 
     def out_prompt_tokens(self):
-        """
-
-        Returns
-        -------
-
-        """
         return []
 
 
@@ -142,9 +109,6 @@ class RichPromptDisplayHook(DisplayHook):
     """Subclass of base display hook using coloured prompt"""
 
     def write_output_prompt(self):
-        """
-
-        """
         sys.stdout.write(self.shell.separate_out)
         # If we're not displaying a prompt, it effectively ends with a newline,
         # because the output will be left-aligned.
@@ -184,3 +148,30 @@ class RichPromptDisplayHook(DisplayHook):
                     return
 
         super().write_format_data(format_dict, md_dict)
+
+
+class PromptABC(abc.ABC):
+    """For no other reason than the simple fact that I constantly lose track."""
+
+    @abc.abstractmethod
+    def in_prompt_tokens(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def out_prompt_tokens(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def rewrite_prompt_tokens(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def continuation_prompt_tokens(self, width=None):
+        raise NotImplementedError
+
+    @abc.abstractproperty
+    def vi_mode(self):
+        """Seriously why isn't it a property. But uh idk if we need to make
+        this part of the 'required API' per-se.
+        """
+        pass

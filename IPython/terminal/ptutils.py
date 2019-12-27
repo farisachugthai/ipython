@@ -16,8 +16,6 @@ from prompt_toolkit.completion import (
     CompleteEvent,
     Completer,
     Completion,
-    FuzzyWordCompleter,
-    NestedCompleter,
     PathCompleter,
     WordCompleter,
 )

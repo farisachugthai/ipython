@@ -31,7 +31,7 @@ from IPython.core.formatters import PlainTextFormatter
 from IPython.core.history import HistoryManager
 from IPython.core.magics import LoggingMagics, ScriptMagics
 from IPython.core.shellapp import InteractiveShellApp, shell_aliases, shell_flags
-from IPython.extensions.storemagic import StoreMagics
+# from IPython.extensions.storemagic import StoreMagics
 from IPython.paths import get_ipython_dir
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
@@ -218,7 +218,7 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
             IPCompleter,
             ScriptMagics,
             LoggingMagics,
-            StoreMagics,
+            # StoreMagics,
         ]
 
     deprecated_subcommands = dict(
