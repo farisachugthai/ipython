@@ -35,6 +35,7 @@ from pathlib import Path
 # Code
 # -----------------------------------------------------------------------------
 
+logging.basicConfig()
 fs_encoding = sys.getfilesystemencoding()
 
 
@@ -122,8 +123,10 @@ def get_py_filename(name, force_win32=None):
 
     """
     path_name = Path(name).expanduser()
+    # Don't forget to check for cases where we get passed a Path.
+    name = str(name)
     if path_name.is_file():
-        return str(name)
+        return name
     if path_name.stem != ".py":
         name = Path(name + ".py")
         get_py_filename(name)
@@ -233,7 +236,6 @@ def target_outdated(target, deps):
     true, otherwise return false.
 
     """
-    logging.basicConfig()
     try:
         target_time = os.path.getmtime(target)
     except OSError:
@@ -325,14 +327,23 @@ def ensure_dir_exists(path, mode=0o755):
     If it doesn't exist, try to create it and protect against a race condition
     if another process is doing the same.
 
-    The default permissions are 755, which differ from os.makedirs default of 777.
+    If it already exists, then move along.
+
+    Raises
+    ------
+    PermissionError
+    OSError
 
     """
-    if not os.path.exists(path):
+    pathlib_path = Path(path)
+    if not pathlib_path.exists():
         try:
-            os.makedirs(path, mode=mode)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
+            pathlib_path.mkdir(path, mode=mode)
+        except FileExistsError:
+            pass
+        except PermissionError:
+            raise
+        except OSError:
+            raise
     elif not os.path.isdir(path):
         raise OSError("%r exists but is not a directory" % path)

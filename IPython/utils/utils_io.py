@@ -256,4 +256,4 @@ def temp_pyfile(src=None, ext=".py"):
         if src:
             f.write(src)
         f.flush()
-    return fname
+    return fname.name

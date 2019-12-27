@@ -1,7 +1,4 @@
-# encoding: utf-8
-"""
-Tests for platutils.py
-"""
+"""Tests for platutils.py,"""
 
 # -----------------------------------------------------------------------------
 #  Copyright (C) 2008-2011  The IPython Development Team
@@ -33,7 +30,7 @@ from IPython.testing import decorators as dec
 from IPython.testing.decorators import has_pywin32
 from IPython.testing import tools as tt
 
-python = os.path.basename(sys.executable)
+py_basename = os.path.basename(sys.executable)
 
 # -----------------------------------------------------------------------------
 # Tests
@@ -54,15 +51,6 @@ def test_find_cmd_pythonw():
     """Try to find pythonw on Windows."""
     path = find_cmd("pythonw")
     assert path.lower().endswith("pythonw.exe"), path
-
-
-@dec.onlyif(
-    lambda: sys.platform != "win32" or has_pywin32(),
-    "This test runs on posix or in win32 with win32api installed",
-)
-def test_find_cmd_fail():
-    """Make sure that FindCmdError is raised if we can't find the cmd."""
-    nt.assert_raises(FindCmdError, find_cmd, "asdfasdf")
 
 
 @dec.skip_win32
@@ -109,15 +97,15 @@ class SubProcessTestCase(tt.TempFileMixin):
         self.mktmp("\n".join(lines))
 
     def test_system(self):
-        status = system('%s "%s"' % (python, self.fname))
+        status = system('%s "%s"' % (py_basename, self.fname))
         self.assertEqual(status, 0)
 
     def test_system_quotes(self):
-        status = system('%s -c "import sys"' % python)
+        status = system('%s -c "import sys"' % py_basename)
         self.assertEqual(status, 0)
 
     def test_getoutput(self):
-        out = getoutput('%s "%s"' % (python, self.fname))
+        out = getoutput('%s "%s"' % (py_basename, self.fname))
         # we can't rely on the order the line buffered streams are flushed
         try:
             self.assertEqual(out, b"on stderron stdout")
@@ -125,30 +113,29 @@ class SubProcessTestCase(tt.TempFileMixin):
             self.assertEqual(out, b"on stdouton stderr")
 
     def test_getoutput_quoted(self):
-        out = getoutput('%s -c "print (1)"' % python)
-        self.assertEqual(out.strip(), b"1")
+        out = getoutput('%s -c "print (1)"' % py_basename)
+        self.assertEqual(out.strip(), "1")
 
     # Invalid quoting on windows
     @dec.skip_win32
     def test_getoutput_quoted2(self):
-        """Uh I'm sorry if this isn't kosher but I'm changing the assert equals to bytes."""
-        out = getoutput("%s -c 'print (1)'" % python)
-        self.assertEqual(out.strip(), b"1")
-        out = getoutput("%s -c 'print (\"1\")'" % python)
-        self.assertEqual(out.strip(), b"1")
+        out = getoutput("%s -c 'print (1)'" % py_basename)
+        self.assertEqual(out.strip(), "1")
+        out = getoutput("%s -c 'print (\"1\")'" % py_basename)
+        self.assertEqual(out.strip(), "1")
 
     def test_getoutput_error(self):
-        out, err = getoutputerror('%s "%s"' % (python, self.fname))
+        out, err = getoutputerror('%s "%s"' % (py_basename, self.fname))
         self.assertEqual(out, b"on stdout")
         self.assertEqual(err, b"on stderr")
 
     def test_get_output_error_code(self):
-        quiet_exit = '%s -c "import sys; sys.exit(1)"' % python
+        quiet_exit = '%s -c "import sys; sys.exit(1)"' % py_basename
         out, err, code = get_output_error_code(quiet_exit)
         self.assertEqual(out, b"")
         self.assertEqual(err, b"")
         self.assertEqual(code, 1)
-        out, err, code = get_output_error_code('%s "%s"' % (python, self.fname))
+        out, err, code = get_output_error_code('%s "%s"' % (py_basename, self.fname))
         self.assertEqual(out, b"on stdout")
         self.assertEqual(err, b"on stderr")
         self.assertEqual(code, 0)

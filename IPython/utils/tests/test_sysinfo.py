@@ -6,7 +6,7 @@
 
 import json
 
-# import nose.tools as nt
+import nose.tools as nt
 
 from IPython.utils import sysinfo
 
@@ -14,3 +14,4 @@ from IPython.utils import sysinfo
 def test_json_getsysinfo():
     """Test that it is easily jsonable and don't return bytes somewhere."""
     json.dumps(sysinfo.get_sys_info())
+    # Like how did you not check anything

@@ -21,13 +21,18 @@ from subprocess import PIPE, Popen
 from unittest.mock import patch
 from warnings import warn
 
+from traitlets.config.loader import Config
+
 from IPython.utils._process_common import get_output_error_code
 from IPython.utils.text import list_strings
 from IPython.utils.utils_io import Tee, temp_pyfile
-from traitlets.config.loader import Config
 
 from . import decorators as dec
 from . import skipdoctest
+
+if sys.version_info < (3, 7):
+    from IPython.core.error import ModuleNotFoundError
+
 
 testing_logger = logging.getLogger(name=__name__)
 
@@ -35,11 +40,12 @@ try:
     # These tools are used by parts of the runtime, so we make the nose
     # dependency optional at this point.  Nose is a hard dependency to run the
     # test suite, but NOT to use ipython itself.
-    import nose.tools as nt
-
-    has_nose = True
-except ImportError:
+    import nose
+except (ImportError, ModuleNotFoundError):
     has_nose = False
+else:
+    import nose.tools as nt
+    has_nose = True
 
 # The docstring for full_path doctests differently on win32 (different path
 # separator) so just skip the doctest there.  The example remains informative.
@@ -65,11 +71,13 @@ def full_path(startPath, files):
 
     Examples
     --------
-    >>> full_path('/foo/bar.py',['a.txt','b.txt'])
-    ['/foo/a.txt', '/foo/b.txt']
+    ::
 
-    >>> full_path('/foo',['a.txt','b.txt'])
-    ['/a.txt', '/b.txt']
+        >>> full_path('/foo/bar.py',['a.txt','b.txt'])
+        ['/foo/a.txt', '/foo/b.txt']
+
+        >>> full_path('/foo',['a.txt','b.txt'])
+        ['/a.txt', '/b.txt']
 
     If a single file is given, the output is still a list::
 
@@ -82,6 +90,7 @@ def full_path(startPath, files):
     return [os.path.join(base, f) for f in files]
 
 
+@nose.tools.nottest
 def parse_test_output(txt):
     """Parse the output of a test run and return errors, failures.
 
@@ -161,7 +170,7 @@ def default_config():
 
 
 def get_ipython_cmd(as_string=False):
-    """ Return appropriate IPython command line name.
+    """Return appropriate IPython command line name.
 
     By default, this will return a `list` that can be used with
     `subprocess.Popen`, for example, but passing `as_string=True`
@@ -179,20 +188,20 @@ def get_ipython_cmd(as_string=False):
 
     """
     ipython_cmd = [sys.executable, "-m", "IPython"]
-
     if as_string:
         ipython_cmd = " ".join(ipython_cmd)
-
     return ipython_cmd
 
 
-def ipexec(fname, options=None, commands=()):
+def ipexec(fname, options=None, commands=None):
     """Utility to call 'ipython filename'.
 
     Starts IPython with a minimal and safe configuration to make startup as fast
     as possible.
 
     Note that this starts IPython in a subprocess!
+
+    .. versionchanged:: commands is now None don't use a mutable arg for a func.
 
     Parameters
     ----------
@@ -211,6 +220,8 @@ def ipexec(fname, options=None, commands=()):
     """
     if options is None:
         options = []
+    if commands is None:
+        commands = ()
 
     cmdargs = default_argv() + options
 
@@ -242,13 +253,13 @@ def ipexec_validate(fname,
                     expected_out,
                     expected_err="",
                     options=None,
-                    commands=()):
+                    commands=None):
     """Utility to call 'ipython filename' and validate output/error.
 
     This function raises an AssertionError if the validation fails.
 
-    Note
-    ----
+    Notes
+    ------
     If there are any errors, we must check those before stdout, as they may be
     more informative than simply having an empty stdout.
 
@@ -256,7 +267,9 @@ def ipexec_validate(fname,
 
     Parameters
     ----------
-    commands :
+    commands : set, optional
+        Even though the call signature shows `None`, `ipexec` casts this to
+        a `set` if left as the default `None`.
     fname : str
         Name of the file to be executed (should have .py or .ipy extension).
     expected_out : str
@@ -266,13 +279,12 @@ def ipexec_validate(fname,
     options : optional, list
         Extra command-line flags to be passed to IPython.
 
-    Returns
+    Raises
     -------
-    None
+    :exc:`ValueError`
 
     """
     out, err = ipexec(fname, options, commands)
-    # Why are these lines here you could just do a logging.debug call?
     testing_logger.debug("OUT: ", out)
     testing_logger.debug("ERR: ", err)
     if err:
@@ -297,10 +309,29 @@ class TempFileMixin(unittest.TestCase):
     Meant as a mixin class for test cases.
 
     Should be deprecated IMO. Pytest fixtures could very easily replace this.
+    Ugh it's gonna be HARD to deprecate though because it's used EVERYWHERE.
+
+    Attributes
+    ----------
+    fname : tempfile.NamedTemporaryFile.name
+        Changed it to std lib.
+    tmps : list of str
+        Not always present. Only created when tempfiles have been created.
+        Is a list of all tempfiles used currently.
+
     """
 
     def mktmp(self, src, ext=".py"):
-        """Make a valid python temp file."""
+        """Make a valid python temp file.
+
+        Parameters
+        ----------
+        src : str
+            filename
+        ext : str, optional
+            file extension. Defaults to .py.
+
+        """
         fname = temp_pyfile(src, ext)
         if not hasattr(self, "tmps"):
             self.tmps = []
@@ -316,16 +347,23 @@ class TempFileMixin(unittest.TestCase):
             for fname in self.tmps:
                 try:
                     os.unlink(fname)
-                except BaseException:
+                except PermissionError:
+                    pass
+                except OSError:
                     # On Windows, even though we close the file, we still can't
                     # delete it.  I have no clue why
-                    pass
+                    # That isn't a very good reason to catch it on every platform wouldn't you
+                    # agree? Regardless let's keep catching it but at least let someone know.
+                    testing_logger.error('Error while deleting tmpdirs.')
 
     def __enter__(self):
         return self
 
-    def __exit__(self, *kwargs):
-        """This used to take 3 params but we never used them."""
+    def __exit__(self, *args):
+        """This used to take 3 params but we never used them.
+
+        So now let's take ``*args`` and just not do anything with it.
+        """
         self.tearDown()
 
 

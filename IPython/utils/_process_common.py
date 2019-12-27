@@ -18,12 +18,14 @@ that.
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 
-import os
-import shlex
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
+
+import os
+import shlex
 import subprocess
+from subprocess import getoutput   # noqa F401 replaces the old getoutput func here
 import sys
 
 # -----------------------------------------------------------------------------
@@ -132,25 +134,6 @@ def process_handler(cmd, callback, stderr=subprocess.PIPE):
                 pass
 
     return out
-
-
-def getoutput(cmd):
-    """Run a command and return its stdout/stderr as a string.
-
-    Parameters
-    ----------
-    cmd : str or list
-        A command to be executed in the system shell.
-
-    Returns
-    -------
-    output : str
-        A string containing the combination of stdout and stderr from the
-        subprocess, in whatever order the subprocess originally wrote to its
-        file descriptors (so the order of the information in this string is the
-        correct order as would be seen if running the command in a terminal).
-    """
-    return process_handler(cmd, lambda p: p.communicate()[0], subprocess.STDOUT) or ""
 
 
 def getoutputerror(cmd):
