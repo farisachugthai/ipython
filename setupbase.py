@@ -13,19 +13,18 @@ Distributed under the terms of the Modified BSD License.
 
 
 """
-from glob import glob
 import functools
-import re
 import os
+import re
 import subprocess
 import sys
-
 from distutils import log
+from distutils.cmd import Command
 from distutils.command.build_py import build_py
 from distutils.command.build_scripts import build_scripts
 from distutils.command.install import install
 from distutils.command.install_scripts import install_scripts
-from distutils.cmd import Command
+from glob import glob
 
 # -------------------------------------------------------------------------------
 # Useful globals and utility functions

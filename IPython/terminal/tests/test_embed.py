@@ -14,10 +14,12 @@
 import os
 import subprocess
 import sys
+
 import nose.tools as nt
-from IPython.utils.tempdir import NamedFileInTemporaryDirectory
-from IPython.testing.decorators import skip_win32
+
 from IPython.testing import IPYTHON_TESTING_TIMEOUT_SCALE
+from IPython.testing.decorators import skip_win32
+from IPython.utils.tempdir import NamedFileInTemporaryDirectory
 
 # -----------------------------------------------------------------------------
 # Tests

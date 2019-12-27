@@ -6,8 +6,8 @@ was the result of a failed merge I missed.
 Then I noticed it was in master too...
 """
 import functools
-import sys
 import signal
+import sys
 import time
 from timeit import default_timer as clock
 

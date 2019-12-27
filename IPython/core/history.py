@@ -5,6 +5,25 @@ import atexit
 import datetime
 import os
 import re
+import threading
+from warnings import warn
+
+from decorator import decorator
+from traitlets import (
+    Any,
+    Bool,
+    Dict,
+    Instance,
+    Integer,
+    List,
+    TraitError,
+    Unicode,
+    default,
+    observe,
+)
+from traitlets.config.configurable import LoggingConfigurable
+
+from IPython.paths import locate_profile
 
 try:
     import sqlite3
@@ -13,25 +32,7 @@ except ImportError:
         from pysqlite2 import dbapi2 as sqlite3
     except ImportError:
         sqlite3 = None
-import threading
-from warnings import warn
 
-from traitlets.config.configurable import LoggingConfigurable
-
-from decorator import decorator
-from IPython.paths import locate_profile
-from traitlets import (
-    Any,
-    Bool,
-    Dict,
-    Instance,
-    Integer,
-    List,
-    Unicode,
-    TraitError,
-    default,
-    observe,
-)
 
 # -----------------------------------------------------------------------------
 # Classes and functions

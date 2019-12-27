@@ -26,18 +26,20 @@ Authors:
 #  The full license is in the file COPYING.txt, distributed with this software.
 # -----------------------------------------------------------------------------
 
+
 # -----------------------------------------------------------------------------
-# Imports
-# -----------------------------------------------------------------------------
-from logging import error
 import os
 import re
 import sys
 
-from traitlets.config.configurable import Configurable
-from traitlets import List, Instance
+# Imports
+# -----------------------------------------------------------------------------
+from logging import error
 
-from IPython.core.error import UsageError, AliasError, InvalidAliasError
+from traitlets import Instance, List
+from traitlets.config.configurable import Configurable
+
+from IPython.core.error import AliasError, InvalidAliasError, UsageError
 
 # -----------------------------------------------------------------------------
 # Utilities

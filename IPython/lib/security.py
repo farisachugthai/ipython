@@ -1,14 +1,17 @@
 """
 Password generation for the IPython notebook.
 """
+
+
 # -----------------------------------------------------------------------------
 # Imports
-# -----------------------------------------------------------------------------
-# Stdlib
-from codecs import encode
 import getpass
 import hashlib
 import random
+
+# -----------------------------------------------------------------------------
+# Stdlib
+from codecs import encode
 
 # Our own
 from IPython.core.error import UsageError

@@ -75,9 +75,9 @@ def teardown_module():
     try:
         shutil.rmtree(TMP_TEST_DIR)
     except PermissionError:
-        logging.exception('PermissionError')
+        logging.exception("PermissionError")
     except OSError:
-        logging.exception('OSError')
+        logging.exception("OSError")
 
 
 # -----------------------------------------------------------------------------

@@ -13,8 +13,9 @@
 # -----------------------------------------------------------------------------
 
 from IPython.core.magic import Magics, magics_class
+
 from .auto import AutoMagics
-from .basic import BasicMagics, AsyncMagics
+from .basic import AsyncMagics, BasicMagics
 from .code import CodeMagics, MacroToEdit
 from .config import ConfigMagics
 from .display import DisplayMagics

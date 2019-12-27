@@ -15,6 +15,8 @@ else:
     banner = "*** Nested interpreter ***"
     exit_msg = "*** Back in main IPython ***"
 
+from IPython import embed
+
 # First import the embed function
 from IPython.terminal.embed import InteractiveShellEmbed
 
@@ -26,7 +28,6 @@ ipshell = InteractiveShellEmbed(banner1=banner, exit_msg=exit_msg)
 # This code will load an embeddable IPython shell always with no changes for
 # nested embededings.
 
-from IPython import embed
 
 # Now embed() will open IPython anywhere in the code.
 

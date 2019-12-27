@@ -3,12 +3,12 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from logging import error
 import os
 import sys
+from logging import error
 
 from IPython.core.error import TryNext, UsageError
-from IPython.core.magic import Magics, magics_class, line_magic
+from IPython.core.magic import Magics, line_magic, magics_class
 from IPython.lib.clipboard import ClipboardEmpty
 from IPython.utils.text import SList, strip_email_quotes
 

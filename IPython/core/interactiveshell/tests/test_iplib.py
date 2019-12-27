@@ -5,9 +5,10 @@ import textwrap
 
 import nose.tools as nt
 
+from IPython import get_ipython
+
 # from nose.tools.nontrivial import nottest
 
-from IPython import get_ipython
 
 ip = get_ipython()
 

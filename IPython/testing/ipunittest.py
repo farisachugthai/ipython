@@ -34,6 +34,7 @@ Authors
 # -----------------------------------------------------------------------------
 
 import cgitb
+
 # Stdlib
 import faulthandler
 import re
@@ -184,4 +185,4 @@ ip2py = IPython2PythonConverter()
 
 # faulthandler.enable()
 tracemalloc.start()
-cgitb.enable(format='text')
+cgitb.enable(format="text")

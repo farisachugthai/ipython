@@ -31,10 +31,10 @@ use of the system.
 # Code begins
 import sys
 import threading
+from logging import debug, error
 
 from IPython.core.getipython import get_ipython
 from IPython.core.ultratb.formatted_tb import AutoFormattedTB
-from logging import error, debug
 
 
 class BackgroundJobManager:

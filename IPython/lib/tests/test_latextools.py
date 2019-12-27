@@ -1,10 +1,11 @@
 # encoding: utf-8
 """Tests for IPython.utils.path.py"""
 
+from subprocess import CalledProcessError
+
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 from unittest.mock import patch
-from subprocess import CalledProcessError
 
 import nose.tools as nt
 

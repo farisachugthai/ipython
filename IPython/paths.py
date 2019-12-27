@@ -6,17 +6,13 @@ are pending deprecation.
 Don't know how I didn't think of this. Don't let anything in utils.path
 import from here. Circular imports.
 """
-from importlib import import_module
 import os
-from pathlib import Path
 import shutil
+from importlib import import_module
+from pathlib import Path
 from warnings import warn
 
-from IPython.utils.path import (
-    get_xdg_dir,
-    get_xdg_cache_dir,
-    ensure_dir_exists,
-)
+from IPython.utils.path import ensure_dir_exists, get_xdg_cache_dir, get_xdg_dir
 
 
 def _writable_dir(path):

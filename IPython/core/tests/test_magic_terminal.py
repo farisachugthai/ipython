@@ -70,7 +70,7 @@ def test_cpaste():
             ">>> runf()",
             "   >>> runf()",
         ],
-        "fail": ["1 + runf()", "++ runf()", ],
+        "fail": ["1 + runf()", "++ runf()",],
     }
 
     ip.user_ns["runf"] = runf

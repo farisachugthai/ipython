@@ -11,10 +11,11 @@
 # Imports
 # -----------------------------------------------------------------------------
 
-# Our own packages
-from IPython.core.display import display, Javascript, Latex, SVG, HTML, Markdown
-from IPython.core.magic import Magics, magics_class, cell_magic
 from IPython.core import magic_arguments
+
+# Our own packages
+from IPython.core.display import HTML, SVG, Javascript, Latex, Markdown, display
+from IPython.core.magic import Magics, cell_magic, magics_class
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes

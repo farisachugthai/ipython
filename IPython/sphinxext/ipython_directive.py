@@ -202,23 +202,19 @@ import errno
 import logging
 import os
 import pathlib
-import shutil
 import re
-import sys
-import ast
 import shutil
+import sys
 import tempfile
 import warnings
-from typing import Any, AnyStr, Dict
 from io import StringIO
+from typing import Any, AnyStr, Dict
 
 from docutils.parsers.rst import Directive, directives
 from sphinx import highlighting
-from sphinx.util.logging import getLogger
-from docutils.parsers.rst import Directive
-from sphinx.util.docutils import SphinxDirective
 from sphinx.application import Sphinx
-from sphinx import highlighting
+from sphinx.util.docutils import SphinxDirective
+from sphinx.util.logging import getLogger
 from traitlets.config import Config
 
 from IPython.core.interactiveshell import InteractiveShell

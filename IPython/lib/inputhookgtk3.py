@@ -16,7 +16,8 @@ Authors: Thomi Richards
 # -----------------------------------------------------------------------------
 
 import sys
-from gi.repository import Gtk, GLib
+
+from gi.repository import GLib, Gtk
 
 # -----------------------------------------------------------------------------
 # Code

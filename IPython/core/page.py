@@ -11,19 +11,19 @@ In addition, the :func:`display_page` function utilizes IPython's display API.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from io import UnsupportedOperation
-import os
-from os import system
 import io
+import os
 import re
-from shutil import get_terminal_size
+import subprocess
 import sys
 import tempfile
-import subprocess
+from io import UnsupportedOperation
+from os import system
+from shutil import get_terminal_size
 
-from IPython.core.getipython import get_ipython
 from IPython.core.display import display
 from IPython.core.error import TryNext
+from IPython.core.getipython import get_ipython
 from IPython.utils.data import chop
 
 esc_re = re.compile(r"(\x1b[^m]+m)")

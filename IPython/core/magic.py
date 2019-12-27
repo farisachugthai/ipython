@@ -48,7 +48,7 @@ import inspect
 import os
 import re
 import sys
-from getopt import getopt, GetoptError
+from getopt import GetoptError, getopt
 from logging import error
 from textwrap import dedent
 

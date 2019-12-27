@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 
 # from IPython.external.qt_for_kernel import QtCore, QtGui
 from IPython.external.qt_for_kernel import get_options

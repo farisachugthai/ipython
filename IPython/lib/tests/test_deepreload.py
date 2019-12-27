@@ -8,9 +8,9 @@ import os
 
 import nose.tools as nt
 
+from IPython.lib.deepreload import reload as dreload
 from IPython.utils.syspathcontext import prepended_to_syspath
 from IPython.utils.tempdir import TemporaryDirectory
-from IPython.lib.deepreload import reload as dreload
 
 
 def test_deepreload():

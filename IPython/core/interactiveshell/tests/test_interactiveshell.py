@@ -6,41 +6,42 @@ module should grow as many single-method tests as possible to trap many of the
 recurring bugs we seem to encounter with high-level interaction.
 
 """
+import ast
+
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 import asyncio
-import ast
 import os
 import pprint
-import signal
 import shutil
-from shutil import which as find_cmd
+import signal
 import sys
 import tempfile
 import unittest
-from unittest import mock
-
 from os.path import join
+from shutil import which as find_cmd
+from unittest import mock
 
 import nose.tools as nt
 
-from IPython.core.interactiveshell.execution import ExecutionResult
+from IPython.core.error import DerivedInterrupt, InputRejected
 from IPython.core.getipython import get_ipython
-from IPython.core.error import InputRejected, DerivedInterrupt
+from IPython.core.interactiveshell.execution import ExecutionResult
+from IPython.testing import tools as tt
 
 # This import is never used?
 # from IPython.core.inputtransformer import InputTransformer
 from IPython.testing.decorators import (
-    skipif,
-    skip_win32,
-    onlyif_unicode_paths,
     onlyif_cmds_exist,
+    onlyif_unicode_paths,
+    skip_win32,
+    skipif,
 )
-from IPython.testing import tools as tt
+
 # from IPython.utils.process import find_cmd
 
 try:
-    from trio._core._multierror import MultiError   # noqa F0401
+    from trio._core._multierror import MultiError  # noqa F0401
 except:
     pass
 
@@ -59,6 +60,7 @@ def setup_module():
 # -----------------------------------------------------------------------------
 # Tests
 # -----------------------------------------------------------------------------
+
 
 class InteractiveShellTestCase(unittest.TestCase):
     def test_naked_string_cells(self):
@@ -81,7 +83,7 @@ class InteractiveShellTestCase(unittest.TestCase):
     def test_run_cell_multiline(self):
         """Multi-block, multi-line cells must execute correctly.
         """
-        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1", ])
+        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1",])
         res = ip.run_cell(src)
         self.assertEqual(ip.user_ns["x"], 2)
         self.assertEqual(ip.user_ns["y"], 3)

@@ -7,16 +7,16 @@ import os
 import re
 import string
 import sys
+import unicodedata
 import warnings
 from contextlib import contextmanager
 from importlib import import_module
 from typing import Iterable, Iterator, List, Tuple
 
-import unicodedata
 from traitlets import Bool
 
-from IPython.core.latex_symbols import reverse_latex_symbol
 from IPython.core.error import ProvisionalCompleterWarning
+from IPython.core.latex_symbols import reverse_latex_symbol
 
 if sys.platform == "win32":
     PROTECTABLES = " "

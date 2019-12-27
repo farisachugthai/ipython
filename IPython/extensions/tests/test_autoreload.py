@@ -13,21 +13,20 @@
 # -----------------------------------------------------------------------------
 
 import os
+import random
+import shutil
 import sys
 import tempfile
 import textwrap
-import shutil
-import random
 import time
 from io import StringIO
-
-import nose.tools as nt
-import IPython.testing.tools as tt
-
 from unittest import TestCase
 
-from IPython.extensions.autoreload import AutoreloadMagics
+import nose.tools as nt
+
+import IPython.testing.tools as tt
 from IPython.core.events import EventManager, pre_run_cell
+from IPython.extensions.autoreload import AutoreloadMagics
 
 # -----------------------------------------------------------------------------
 # Test fixture

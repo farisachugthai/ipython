@@ -1,22 +1,23 @@
 """Magic functions for running cells in various scripts."""
 
+import atexit
+import errno
+import os
+import signal
+import sys
+import time
+
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 from codecs import decode
-import errno
-import os
-import sys
-import signal
-import time
-from subprocess import Popen, PIPE, CalledProcessError
-import atexit
+from subprocess import PIPE, CalledProcessError, Popen
+
+from traitlets import Dict, List, default
 
 from IPython.core import magic_arguments
-from IPython.core.magic import Magics, magics_class, line_magic, cell_magic
+from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 from IPython.lib.backgroundjobs import BackgroundJobManager
 from IPython.utils.process import arg_split
-from traitlets import List, Dict, default
-
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes

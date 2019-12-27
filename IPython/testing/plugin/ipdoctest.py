@@ -26,6 +26,7 @@ import logging
 import os
 import re
 import sys
+
 # We are overriding the default doctest runner, so we need to import a few
 # things from doctest directly
 from doctest import REPORTING_FLAGS, DocTestRunner, _unittest_reportflags

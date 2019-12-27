@@ -102,7 +102,10 @@ class TestController:
         stdout = c.writefd if capture_output else None
         stderr = subprocess.STDOUT if capture_output else None
         self.process = subprocess.Popen(
-            self.cmd, stdout=stdout, stderr=stderr, env=self.env,
+            self.cmd,
+            stdout=stdout,
+            stderr=stderr,
+            env=self.env,
             universal_newlines=True,
         )
 
@@ -587,6 +590,7 @@ def default_options():
     options.extra_args = []
     return options
 
+
 def main():
     """Moved this out of the function and now it's harmless :D.
 
@@ -612,7 +616,7 @@ def main():
         extra_args = []
     else:
         to_parse = sys.argv[1:ix]
-        extra_args = sys.argv[ix + 1:]
+        extra_args = sys.argv[ix + 1 :]
 
     options = argparser.parse_args(to_parse)
     options.extra_args = extra_args

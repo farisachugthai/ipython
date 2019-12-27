@@ -20,9 +20,10 @@ import os
 import sys
 import textwrap
 
-from IPython.core.error import UsageError
-from IPython.core.magic import Magics, magics_class, line_magic
 from traitlets import Bool
+
+from IPython.core.error import UsageError
+from IPython.core.magic import Magics, line_magic, magics_class
 
 
 def restore_aliases(ip, alias=None):

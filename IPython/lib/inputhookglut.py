@@ -30,12 +30,13 @@ GLUT Inputhook support functions
 # Imports
 # -----------------------------------------------------------------------------
 import os
+import signal
 import sys
 import time
-import signal
+from timeit import default_timer as clock
+
 import OpenGL.GLUT as glut
 import OpenGL.platform as platform
-from timeit import default_timer as clock
 
 # -----------------------------------------------------------------------------
 # Callback functions

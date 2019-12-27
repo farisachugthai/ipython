@@ -29,23 +29,25 @@ import linecache
 import os
 import sys
 import types
-from inspect import getabsfile as find_file, getdoc, getsource, signature
+from inspect import getabsfile as find_file
+from inspect import getdoc, getsource, signature
 from itertools import zip_longest
 from textwrap import dedent, indent
-from typing import Union, Any, Callable
+from typing import Any, Callable, Union
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 
 # IPython's own
 from traitlets.config import Configurable, Unicode
+
 from IPython.core import page
 from IPython.lib.lexers import IPyLexer
-from IPython.utils import openpy, PyColorize
+from IPython.utils import PyColorize, openpy
 from IPython.utils.coloransi import TermColors
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
-from IPython.utils.wildcard import typestr2type, list_namespace
+from IPython.utils.wildcard import list_namespace, typestr2type
 
 
 def pylight(code):
@@ -260,7 +262,9 @@ class Inspector(Configurable):
 
     """
 
-    default_style = Unicode("LightBG", help = ("Highlighting scheme used for highlighting source code.")).tag(config=True)
+    default_style = Unicode(
+        "LightBG", help=("Highlighting scheme used for highlighting source code.")
+    ).tag(config=True)
 
     def __init__(
         self,

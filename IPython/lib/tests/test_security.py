@@ -1,7 +1,8 @@
 # coding: utf-8
+import nose.tools as nt
+
 from IPython.lib import passwd
 from IPython.lib.security import passwd_check, salt_len
-import nose.tools as nt
 
 
 def test_passwd_structure():

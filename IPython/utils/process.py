@@ -3,14 +3,17 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from ._process_common import getoutputerror, get_output_error_code, process_handler
 import os
 import shutil
-from shutil import which as find_cmd  # noqa F401  replaces find_cmd
 import sys
 from os import system  # noqa F401  replaces system
-from subprocess import CalledProcessError as FindCmdError  # noqa F401  replaces FindCmdError
+from shutil import which as find_cmd  # noqa F401  replaces find_cmd
+from subprocess import (
+    CalledProcessError as FindCmdError,
+)  # noqa F401  replaces FindCmdError
 from subprocess import getoutput  # noqa F401  replaces getoutput
+
+from ._process_common import get_output_error_code, getoutputerror, process_handler
 
 if sys.platform == "win32":
     from ._process_win32 import arg_split, check_pid

@@ -22,10 +22,10 @@ import io
 # How does this not import logging?
 import logging
 import os
-from pathlib import Path
 import time
+from pathlib import Path
 
-from traitlets.config import Configurable, Bool
+from traitlets.config import Bool, Configurable
 
 
 class BracketFormatter(logging.Formatter):

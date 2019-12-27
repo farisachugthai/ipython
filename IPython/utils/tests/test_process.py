@@ -11,24 +11,23 @@
 # Imports
 # -----------------------------------------------------------------------------
 
+import os
+import sys
+from os import system
 from shutil import which as find_cmd
 from subprocess import CalledProcessError as FindCmdError
-import sys
-import os
-from os import system
 
 import nose.tools as nt
 
-from IPython.utils.process import arg_split
+from IPython.testing import decorators as dec
+from IPython.testing import tools as tt
+from IPython.testing.decorators import has_pywin32
 from IPython.utils._process_common import (
+    get_output_error_code,
     getoutput,
     getoutputerror,
-    get_output_error_code,
 )
-
-from IPython.testing import decorators as dec
-from IPython.testing.decorators import has_pywin32
-from IPython.testing import tools as tt
+from IPython.utils.process import arg_split
 
 py_basename = os.path.basename(sys.executable)
 

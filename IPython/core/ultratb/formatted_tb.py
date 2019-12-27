@@ -2,8 +2,9 @@ import sys
 import traceback
 
 from IPython.core.excolors import exception_colors
-from .verbose_tb import VerboseTB
+
 from .list_tb import ListTB
+from .verbose_tb import VerboseTB
 
 
 class FormattedTB(VerboseTB, ListTB):

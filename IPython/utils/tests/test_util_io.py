@@ -5,10 +5,10 @@
 # Distributed under the terms of the Modified BSD License.
 
 import sys
-from io import StringIO
 
 # from subprocess import Popen, PIPE
 import unittest
+from io import StringIO
 
 import nose.tools as nt
 

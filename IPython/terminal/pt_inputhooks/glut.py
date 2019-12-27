@@ -23,9 +23,9 @@ via IPython options system.
 
 """
 
+import signal
 import sys
 import time
-import signal
 from timeit import default_timer as clock
 
 glut_fps = 60

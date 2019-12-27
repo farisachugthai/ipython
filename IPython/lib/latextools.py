@@ -4,19 +4,19 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from base64 import encodebytes
-from io import BytesIO, open
 import os
 import shutil
 import subprocess
 import tempfile
 import textwrap
+from base64 import encodebytes
+from io import BytesIO, open
 
-from traitlets import List, Bool, Unicode
+from traitlets import Bool, List, Unicode
 from traitlets.config import get_config
 from traitlets.config.configurable import SingletonConfigurable
 
-from IPython.utils.process import find_cmd, FindCmdError
+from IPython.utils.process import FindCmdError, find_cmd
 
 
 class LaTeXTool(SingletonConfigurable):

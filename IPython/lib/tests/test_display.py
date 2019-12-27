@@ -9,29 +9,34 @@
 # The full license is in the file COPYING.txt, distributed with this software.
 # -----------------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------
-# Imports
-# -----------------------------------------------------------------------------
-from tempfile import NamedTemporaryFile, mkdtemp
-from os.path import split, join as pjoin, dirname
+
 import pathlib
-from unittest import TestCase, mock
 import struct
 import wave
 from io import BytesIO
 
+# -----------------------------------------------------------------------------
+from os.path import dirname
+from os.path import join as pjoin
+from os.path import split
+
+# Imports
+# -----------------------------------------------------------------------------
+from tempfile import NamedTemporaryFile, mkdtemp
+from unittest import TestCase, mock
+
 # Third-party imports
 import nose.tools as nt
+
+# Our own imports
+from IPython.lib import display
+from IPython.testing.decorators import skipif_not_numpy
 
 try:
     import numpy
 except ImportError:
     numpy = None
 
-# Our own imports
-from IPython.lib import display
-
-from IPython.testing.decorators import skipif_not_numpy
 
 # -----------------------------------------------------------------------------
 # Classes and functions

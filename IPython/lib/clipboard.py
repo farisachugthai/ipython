@@ -11,7 +11,7 @@ this too.
 import codecs
 import subprocess
 
-from IPython.core.error import TryNext, ClipboardEmpty
+from IPython.core.error import ClipboardEmpty, TryNext
 
 
 def win32_clipboard_get():

@@ -33,10 +33,11 @@ import os.path
 import sys
 from importlib import import_module, reload
 
-from traitlets.config.configurable import Configurable
-from IPython.utils.path import ensure_dir_exists, compress_user
-from IPython.utils.decorators import undoc
 from traitlets import Instance
+from traitlets.config.configurable import Configurable
+
+from IPython.utils.decorators import undoc
+from IPython.utils.path import compress_user, ensure_dir_exists
 
 # -----------------------------------------------------------------------------
 # Main class

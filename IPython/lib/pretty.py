@@ -77,7 +77,6 @@ Inheritance diagram:
 :license: BSD License.
 """
 
-from contextlib import contextmanager
 import datetime
 import os
 import platform
@@ -85,10 +84,10 @@ import re
 import sys
 import types
 from collections import deque
+from contextlib import contextmanager
 from inspect import signature
 from io import StringIO
 from warnings import warn
-
 
 __all__ = [
     "pretty",

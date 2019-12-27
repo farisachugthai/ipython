@@ -12,14 +12,15 @@ This file is meant to be used by process.py
 
 import ctypes
 import msvcrt
+
 # stdlib
 import os
 import sys
 import threading
+
 # Win32 API types needed for the API calls
 from ctypes import POINTER
-from ctypes.wintypes import (BOOL, DWORD, HANDLE, HLOCAL, LPCWSTR, LPVOID,
-                             ULONG, WORD)
+from ctypes.wintypes import BOOL, DWORD, HANDLE, HLOCAL, LPCWSTR, LPVOID, ULONG, WORD
 
 LPDWORD = POINTER(DWORD)
 LPHANDLE = POINTER(HANDLE)

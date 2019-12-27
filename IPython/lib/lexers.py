@@ -15,33 +15,24 @@ Defines a variety of Pygments lexers for highlighting IPython code.
 # Standard library
 import re
 
+from pygments.lexer import (
+    DelegatingLexer,
+    Lexer,
+    RegexLexer,
+    bygroups,
+    do_insertions,
+    using,
+)
+
 # Third party
 from pygments.lexers import TexLexer
 from pygments.lexers.html import HtmlLexer
 from pygments.lexers.javascript import JavascriptLexer
 from pygments.lexers.perl import PerlLexer
-from pygments.lexers.python import PythonLexer, Python3Lexer
+from pygments.lexers.python import Python3Lexer, PythonLexer
 from pygments.lexers.ruby import RubyLexer
 from pygments.lexers.shell import BashLexer
-
-from pygments.lexer import (
-    Lexer,
-    DelegatingLexer,
-    RegexLexer,
-    do_insertions,
-    bygroups,
-    using,
-)
-from pygments.token import (
-    Generic,
-    Keyword,
-    Literal,
-    Name,
-    Operator,
-    Other,
-    Text,
-    Error,
-)
+from pygments.token import Error, Generic, Keyword, Literal, Name, Operator, Other, Text
 from pygments.util import get_bool_opt
 
 # Local

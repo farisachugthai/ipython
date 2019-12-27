@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """reST directive for syntax-highlighting IPython interactive sessions."""
 from sphinx import highlighting
+
 import IPython
 from IPython.lib import lexers
 

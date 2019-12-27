@@ -31,15 +31,16 @@ from threading import Event, Lock, Thread
 from warnings import warn
 
 import nose.plugins.builtin
-from IPython.core.release import version_info
-from IPython.external.decorators import KnownFailure, knownfailureif
-from IPython.testing.plugin.ipdoctest import IPythonDoctest
 from nose import SkipTest
 from nose.core import TestProgram
 from nose.plugins import Plugin
 from nose.plugins.manager import DefaultPluginManager
 from nose.plugins.xunit import Xunit
 from nose.util import safe_str
+
+from IPython.core.release import version_info
+from IPython.external.decorators import KnownFailure, knownfailureif
+from IPython.testing.plugin.ipdoctest import IPythonDoctest
 
 logging.basicConfig()
 
@@ -565,7 +566,7 @@ def run_iptest():
     if section.name.startswith(("core", "IPython.core", "IPython.utils")):
         plugins.append(IPythonDoctest())
         argv.extend(
-            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt", ]
+            ["--with-ipdoctest", "--ipdoctest-tests", "--ipdoctest-extension=txt",]
         )
     # Use working directory set by parent process (see iptestcontroller)
     if "IPTEST_WORKING_DIR" in os.environ:

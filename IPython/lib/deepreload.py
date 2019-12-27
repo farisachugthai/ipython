@@ -48,15 +48,14 @@ re-implementation of hierarchical module import.
 #  the file COPYING, distributed as part of this software.
 # *****************************************************************************
 import builtins as builtin_mod
-from contextlib import contextmanager
 
 # Yeah i'm still working out how to replace all uses of that
 import imp
 import sys
-
+import types
+from contextlib import contextmanager
 from types import ModuleType
 from warnings import warn
-import types
 
 original_import = builtin_mod.__import__
 

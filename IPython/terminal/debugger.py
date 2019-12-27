@@ -10,33 +10,30 @@ import asyncio
 import signal
 import sys
 
-from pygments.token import Token
-from prompt_toolkit.enums import DEFAULT_BUFFER
+from prompt_toolkit import __version__ as ptk_version
+from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
 from prompt_toolkit.filters import (
     Condition,
+    emacs_insert_mode,
     has_focus,
     has_selection,
     vi_insert_mode,
-    emacs_insert_mode,
 )
+from prompt_toolkit.formatted_text import PygmentsTokens
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.bindings.completion import (
-    display_completions_like_readline,
-)
 
 # Nov 27, 2019: Just added this
 from prompt_toolkit.key_binding.bindings.basic import load_basic_bindings
-
+from prompt_toolkit.key_binding.bindings.completion import (
+    display_completions_like_readline,
+)
 from prompt_toolkit.shortcuts.prompt import PromptSession
-from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.formatted_text import PygmentsTokens
+from pygments.token import Token
 
-from IPython.core.debugger import CorePdb as Pdb
 from IPython.core.completer import IPCompleter
+from IPython.core.debugger import CorePdb as Pdb
 from IPython.terminal.ptutils import IPythonPTCompleter
-from IPython.terminal.shortcuts import suspend_to_bg, cursor_in_leading_ws
-
-from prompt_toolkit import __version__ as ptk_version
+from IPython.terminal.shortcuts import cursor_in_leading_ws, suspend_to_bg
 
 PTK3 = ptk_version.startswith("3.")
 

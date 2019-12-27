@@ -10,9 +10,14 @@ import argparse
 
 from nose.tools import assert_equal
 
-from IPython.core.magic_arguments import (argument, argument_group, kwds,
-                                          magic_arguments, parse_argstring,
-                                          real_name)
+from IPython.core.magic_arguments import (
+    argument,
+    argument_group,
+    kwds,
+    magic_arguments,
+    parse_argstring,
+    real_name,
+)
 
 
 @magic_arguments()

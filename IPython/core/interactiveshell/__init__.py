@@ -17,12 +17,11 @@ import abc
 import ast
 import atexit
 import builtins as builtin_mod
-import codecs
 import cgitb
+import codecs
 import functools
 import inspect
 import os
-from os import system
 import re
 import runpy
 import subprocess
@@ -34,6 +33,7 @@ import warnings
 from ast import AST, Await, Expr, Return
 from importlib import import_module
 from logging import error
+from os import system
 from pathlib import Path
 from typing import List as ListType
 from typing import Tuple
@@ -78,9 +78,7 @@ from IPython.core.payload import PayloadManager
 from IPython.core.prefilter import PrefilterManager
 from IPython.core.profiledir import ProfileDir
 from IPython.core.usage import default_banner
-
 from IPython.paths import get_ipython_dir
-
 from IPython.utils import PyColorize, openpy
 from IPython.utils.ipstruct import Struct
 from IPython.utils.path import ensure_dir_exists, get_py_filename
@@ -90,14 +88,14 @@ from IPython.utils.syspathcontext import prepended_to_syspath
 from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
 from IPython.utils.utils_io import ask_yes_no
 
+from .ast_async import _ast_asyncify
 from .execution import (
-    removed_co_newlocals,
-    softspace,
     DummyMod,
     ExecutionInfo,
     ExecutionResult,
+    removed_co_newlocals,
+    softspace,
 )
-from .ast_async import _ast_asyncify
 from .separate_unicode import SeparateUnicode
 
 try:
@@ -420,8 +418,9 @@ class InteractiveShell(SingletonConfigurable):
         True, help="Show rewritten input, e.g. for autocall."
     ).tag(config=True)
 
-    quiet = Bool(False, help="A configurable that literally isn't used one time in this file.").tag(
-        config=True)
+    quiet = Bool(
+        False, help="A configurable that literally isn't used one time in this file."
+    ).tag(config=True)
 
     history_length = Integer(10000, help="Total length of command history").tag(
         config=True
@@ -1887,7 +1886,7 @@ class InteractiveShell(SingletonConfigurable):
             color_scheme="LightBG", parent=self, config=self.config
         )
 
-        sys.displayhook = cgitb.enable(format='text')
+        sys.displayhook = cgitb.enable(format="text")
         # self.InteractiveTB = AutoFormattedTB(
         #     mode="Plain",
         #     color_scheme="Linux",

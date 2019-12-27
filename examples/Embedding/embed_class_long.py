@@ -17,9 +17,10 @@ The code in this file is deliberately extra-verbose, meant for learning."""
 # Try running this code both at the command line and from inside IPython (with
 # %run example-embed.py)
 
-from IPython.terminal.embed import InteractiveShellEmbed
-from IPython import get_ipython
 from traitlets.config.loader import Config
+
+from IPython import get_ipython
+from IPython.terminal.embed import InteractiveShellEmbed
 from IPython.terminal.prompts import Prompts, Token
 
 

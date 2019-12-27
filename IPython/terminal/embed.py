@@ -12,15 +12,13 @@ import warnings
 
 from traitlets import Bool, CBool, Unicode
 
-from IPython.core import ultratb, compilerop
-from IPython.core import magic_arguments
+from IPython.core import compilerop, magic_arguments, ultratb
 from IPython.core.error import KillEmbedded
-from IPython.core.magic import Magics, magics_class, line_magic
-from IPython.core.interactiveshell import InteractiveShell
-from IPython.core.interactiveshell import DummyMod
+from IPython.core.interactiveshell import DummyMod, InteractiveShell
+from IPython.core.magic import Magics, line_magic, magics_class
+from IPython.core.ultratb.formatted_tb import FormattedTB
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 from IPython.utils.utils_io import ask_yes_no
-from IPython.core.ultratb.formatted_tb import FormattedTB
 
 # kept for backward compatibility as IPython 6 was released with
 # the typo. See https://github.com/ipython/ipython/pull/10706

@@ -13,8 +13,9 @@
 
 import os
 import sys
-from IPython.testing.decorators import skip_win32
+
 from IPython.testing import IPYTHON_TESTING_TIMEOUT_SCALE
+from IPython.testing.decorators import skip_win32
 
 # -----------------------------------------------------------------------------
 # Tests

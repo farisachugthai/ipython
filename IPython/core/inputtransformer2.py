@@ -10,11 +10,11 @@ deprecated in 7.0.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from codeop import compile_command
 import re
 import tokenize
-from typing import List, Tuple, Union
 import warnings
+from codeop import compile_command
+from typing import List, Tuple, Union
 
 _indent_re = re.compile(r"^[ \t]+")
 

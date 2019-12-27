@@ -8,13 +8,13 @@ This defines a callable class that IPython uses for `sys.displayhook`.
 # Distributed under the terms of the Modified BSD License.
 
 import builtins as builtin_mod
-import sys
 import io
+import sys
 import tokenize
 from warnings import warn
 
+from traitlets import Float, Instance
 from traitlets.config.configurable import Configurable
-from traitlets import Instance, Float
 
 # TODO: Move the various attributes (cache_size, [others now moved]). Some
 # of these are also attributes of InteractiveShell. They should be on ONE object

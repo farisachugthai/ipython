@@ -1,13 +1,13 @@
 import gc
-import weakref
-import types
-import traceback
-import sys
 import os
-
-from IPython.core.magic import Magics, magics_class, line_magic
-from importlib.util import source_from_cache
+import sys
+import traceback
+import types
+import weakref
 from importlib import import_module, reload
+from importlib.util import source_from_cache
+
+from IPython.core.magic import Magics, line_magic, magics_class
 
 skip_doctest = True
 

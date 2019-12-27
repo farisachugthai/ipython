@@ -4,12 +4,12 @@ TMK this is made configurable in the .ipapp module.
 """
 import sys
 
-from pygments.token import Token
-from prompt_toolkit.formatted_text import fragment_list_width, PygmentsTokens
+from prompt_toolkit.formatted_text import PygmentsTokens, fragment_list_width
 from prompt_toolkit.shortcuts import print_formatted_text
+from pygments.token import Token
 
-from IPython.core.getipython import get_ipython
 from IPython.core.displayhook import DisplayHook
+from IPython.core.getipython import get_ipython
 
 
 class Prompts:

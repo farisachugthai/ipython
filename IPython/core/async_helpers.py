@@ -11,8 +11,8 @@ Python semantics.
 """
 
 import ast
-import sys
 import inspect
+import sys
 from textwrap import dedent, indent
 
 

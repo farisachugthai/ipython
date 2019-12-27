@@ -22,29 +22,23 @@ launch InteractiveShell instances, load extensions, etc.
 
 
 """
-# Copyright (c) IPython Development Team.
-# Distributed under the terms of the Modified BSD License.
-from IPython.utils.contexts import preserve_keys
-from IPython.core import pylabtools
-from IPython.core.application import SYSTEM_CONFIG_DIRS
-from IPython.terminal import pt_inputhooks
 import abc
 import glob
 import os
 import sys
 
+from traitlets import Bool, CaselessStrEnum, Instance, List, Unicode, observe
 from traitlets.config.application import boolean_flag
 from traitlets.config.configurable import Configurable
 from traitlets.config.loader import Config, filefind
 
-from traitlets import (
-    Unicode,
-    Instance,
-    List,
-    Bool,
-    CaselessStrEnum,
-    observe,
-)
+from IPython.core import pylabtools
+from IPython.core.application import SYSTEM_CONFIG_DIRS
+from IPython.terminal import pt_inputhooks
+
+# Copyright (c) IPython Development Team.
+# Distributed under the terms of the Modified BSD License.
+from IPython.utils.contexts import preserve_keys
 
 if sys.version_info < (3, 7):
     from IPython.core.error import ModuleNotFoundError

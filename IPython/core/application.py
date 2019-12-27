@@ -32,33 +32,32 @@ and use here.
 # Distributed under the terms of the Modified BSD License.
 
 import atexit
-from copy import deepcopy
 import glob
 import logging
 import os
 import shutil
 import sys
+from copy import deepcopy
 
+from traitlets import (
+    Bool,
+    Instance,
+    List,
+    Set,
+    Type,
+    Undefined,
+    Unicode,
+    default,
+    observe,
+)
 from traitlets.config import Configurable
 from traitlets.config.application import Application, catch_config_error
 from traitlets.config.loader import ConfigFileNotFound, PyFileConfigLoader
 
-from IPython.core import release, crashhandler
+from IPython.core import crashhandler, release
 from IPython.core.profiledir import ProfileDir, ProfileDirError
 from IPython.paths import get_ipython_dir, get_ipython_package_dir
 from IPython.utils.path import ensure_dir_exists
-
-from traitlets import (
-    List,
-    Unicode,
-    Type,
-    Bool,
-    Set,
-    Instance,
-    Undefined,
-    default,
-    observe,
-)
 
 if os.name == "nt":
     programdata = os.environ.get("PROGRAMDATA", None)

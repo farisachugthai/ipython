@@ -27,7 +27,6 @@ import threading
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.external.qt_for_kernel import QtCore, QtGui
 
-
 # -----------------------------------------------------------------------------
 # Utilities
 # -----------------------------------------------------------------------------

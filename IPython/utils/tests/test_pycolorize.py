@@ -17,12 +17,13 @@ Authors
 # Imports
 # -----------------------------------------------------------------------------
 
+import io
+
 # third party
 import nose.tools as nt
 
 # our own
 from IPython.utils.PyColorize import Parser
-import io
 
 # -----------------------------------------------------------------------------
 # Test functions

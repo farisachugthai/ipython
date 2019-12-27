@@ -10,7 +10,6 @@ In [6]: %run gui-pyglet.py
 
 import pyglet
 
-
 window = pyglet.window.Window()
 label = pyglet.text.Label(
     "Hello, world",

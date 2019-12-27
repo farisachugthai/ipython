@@ -1,8 +1,10 @@
-import types
-import sys
 import builtins
+import sys
+import types
 
 import pytest
+
+from IPython.testing import tools
 
 # adding this here not because we need them yet but they're good reminders.
 # from _pytest.nose import (
@@ -11,8 +13,6 @@ import pytest
 #     is_potential_nosetest,
 #     call_optional,
 # )
-
-from IPython.testing import tools
 
 
 # @pytest.fixture

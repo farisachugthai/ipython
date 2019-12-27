@@ -34,14 +34,15 @@ Authors
 
 # Stdlib imports
 import __future__
-from ast import PyCF_ONLY_AST
+
 import codeop
-from codeop import _maybe_compile
 import functools
 import hashlib
 import linecache
 import operator
 import time
+from ast import PyCF_ONLY_AST
+from codeop import _maybe_compile
 from contextlib import contextmanager
 
 # -----------------------------------------------------------------------------

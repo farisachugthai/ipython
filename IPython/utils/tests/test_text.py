@@ -12,12 +12,12 @@
 # Imports
 # -----------------------------------------------------------------------------
 
-import os
 import math
+import os
 import random
+from pathlib import Path
 
 import nose.tools as nt
-from pathlib import Path
 
 from IPython.utils import text
 

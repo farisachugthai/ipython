@@ -128,6 +128,7 @@ import os
 import re
 import sys
 import time
+import unicodedata
 import warnings
 from types import SimpleNamespace
 from typing import Iterable, Iterator, List, Tuple
@@ -135,7 +136,6 @@ from typing import Iterable, Iterator, List, Tuple
 import jedi  # This is a dependency now so we don't need a try/except
 import jedi.api.classes
 import jedi.api.helpers
-import unicodedata
 from traitlets import Bool, Enum, Int, observe
 from traitlets.config.configurable import Configurable
 
@@ -143,22 +143,22 @@ import __main__
 
 # Just saying, after all this our file is still 1700 lines.
 from IPython.core._completer import (
+    DELIMS,
+    GREEDY_DELIMS,
+    MATCHES_LIMIT,
+    Completion,
+    CompletionSplitter,
     _deprecation_readline_sentinel,
     _FakeJediCompletion,
     _make_signature,
     _safe_isinstance,
     back_latex_name_matches,
     back_unicode_name_matches,
-    Completion,
     completions_sorting_key,
-    CompletionSplitter,
     cursor_to_position,
-    DELIMS,
     get__all__entries,
-    GREEDY_DELIMS,
     has_open_quotes,
     match_dict_keys,
-    MATCHES_LIMIT,
     position_to_cursor,
     protect_filename,
     provisionalcompleter,
@@ -166,7 +166,7 @@ from IPython.core._completer import (
 from IPython.core.error import ProvisionalCompleterWarning, TryNext
 from IPython.core.inputtransformer2 import ESC_MAGIC
 from IPython.core.latex_symbols import latex_symbols
-from IPython.utils import generics, PyColorize
+from IPython.utils import PyColorize, generics
 from IPython.utils.dir2 import dir2, get_real_method
 from IPython.utils.process import arg_split
 

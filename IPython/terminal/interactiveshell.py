@@ -5,32 +5,9 @@ import sys
 import warnings
 from warnings import warn
 
-from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
-from IPython.utils import utils_io
-from IPython.utils.py3compat import input
-from IPython.utils.terminal import (
-    toggle_set_term_title,
-    set_term_title,
-    restore_term_title,
-)
-from IPython.utils.process import abbrev_cwd
-from traitlets import (
-    Bool,
-    Unicode,
-    Dict,
-    Integer,
-    observe,
-    Instance,
-    Type,
-    default,
-    Enum,
-    Union,
-    Any,
-    validate,
-)
-
+from prompt_toolkit import __version__ as ptk_version
 from prompt_toolkit.enums import DEFAULT_BUFFER, EditingMode
-from prompt_toolkit.filters import HasFocus, Condition, IsDone
+from prompt_toolkit.filters import Condition, HasFocus, IsDone
 from prompt_toolkit.formatted_text import PygmentsTokens
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.layout.processors import (
@@ -39,24 +16,45 @@ from prompt_toolkit.layout.processors import (
 )
 from prompt_toolkit.output import ColorDepth
 from prompt_toolkit.patch_stdout import patch_stdout
-from prompt_toolkit.shortcuts import PromptSession, CompleteStyle, print_formatted_text
+from prompt_toolkit.shortcuts import CompleteStyle, PromptSession, print_formatted_text
 from prompt_toolkit.styles import DynamicStyle, merge_styles
 from prompt_toolkit.styles.pygments import (
     style_from_pygments_cls,
     style_from_pygments_dict,
 )
-from prompt_toolkit import __version__ as ptk_version
-
-from pygments.styles import get_style_by_name
 from pygments.style import Style
+from pygments.styles import get_style_by_name
 from pygments.token import Token
+from traitlets import (
+    Any,
+    Bool,
+    Dict,
+    Enum,
+    Instance,
+    Integer,
+    Type,
+    Unicode,
+    Union,
+    default,
+    observe,
+    validate,
+)
 
-from IPython.terminal.debugger import TerminalPdb, Pdb
+from IPython.core.interactiveshell import InteractiveShell, InteractiveShellABC
+from IPython.terminal.debugger import Pdb, TerminalPdb
 from IPython.terminal.magics import TerminalMagics
+from IPython.terminal.prompts import ClassicPrompts, Prompts, RichPromptDisplayHook
 from IPython.terminal.pt_inputhooks import get_inputhook_name_and_func
-from IPython.terminal.prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
 from IPython.terminal.ptutils import IPythonPTCompleter, IPythonPTLexer
 from IPython.terminal.shortcuts import create_ipython_shortcuts
+from IPython.utils import utils_io
+from IPython.utils.process import abbrev_cwd
+from IPython.utils.py3compat import input
+from IPython.utils.terminal import (
+    restore_term_title,
+    set_term_title,
+    toggle_set_term_title,
+)
 
 DISPLAY_BANNER_DEPRECATED = object()
 PTK3 = ptk_version.startswith("3.")

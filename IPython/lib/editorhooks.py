@@ -21,8 +21,8 @@ import shlex
 import subprocess
 import sys
 
-from IPython.core.getipython import get_ipython
 from IPython.core.error import TryNext
+from IPython.core.getipython import get_ipython
 from IPython.utils import py3compat
 
 

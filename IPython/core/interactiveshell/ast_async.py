@@ -1,7 +1,7 @@
-from ast import AST, Await, Expr, Return
 import ast
 import sys
 import types
+from ast import AST, Await, Expr, Return
 
 # -----------------------------------------------------------------------------
 # Await Helpers
@@ -59,4 +59,3 @@ def _ast_asyncify(cell: str, wrapper_name: str) -> ast.Module:
         try_block.body[-1] = Return(lastexpr.value)
     ast.fix_missing_locations(tree)
     return tree
-

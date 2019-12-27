@@ -18,26 +18,24 @@ These are all loaded by default by IPython.
 # -----------------------------------------------------------------------------
 
 import glob
-from importlib import import_module
-
-from importlib.machinery import all_suffixes
 import inspect
 import os
-from os.path import expanduser as expand_user
 import re
 import sys
+from importlib import import_module
+from importlib.machinery import all_suffixes
+from os.path import expanduser as expand_user
 from time import time
+from typing import List
 from zipimport import zipimporter
 
 # Our own imports
 from IPython.core.error import TryNext
-from IPython.utils._process_common import arg_split
-from IPython.utils.path import compress_user
 
 # FIXME: this should be pulled in with the right call via the component system
 from IPython.core.getipython import get_ipython
-
-from typing import List
+from IPython.utils._process_common import arg_split
+from IPython.utils.path import compress_user
 
 # -----------------------------------------------------------------------------
 # Globals and constants

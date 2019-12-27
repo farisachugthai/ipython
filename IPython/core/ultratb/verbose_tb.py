@@ -3,8 +3,8 @@ import functools
 import inspect
 import keyword
 import linecache
-import pydoc
 import os
+import pydoc
 import sys
 import time
 import tokenize
@@ -14,10 +14,12 @@ from logging import debug, error, info
 from shutil import get_terminal_size
 
 from IPython.core import get_ipython
-from IPython.utils import path as util_path, PyColorize
+from IPython.utils import PyColorize
+from IPython.utils import path as util_path
 from IPython.utils.data import uniq_stable
-from .tb_tools import TBTools
+
 from ._verbose_tb import UltraDbg
+from .tb_tools import TBTools
 
 INDENT_SIZE = 8
 

@@ -19,7 +19,7 @@ from io import open as io_open
 
 # Our own packages
 from IPython.core.error import StdinNotImplementedError
-from IPython.core.magic import Magics, magics_class, line_magic
+from IPython.core.magic import Magics, line_magic, magics_class
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils import utils_io
@@ -236,7 +236,8 @@ class HistoryMagics(Magics):
             line_sep = "\n" if multiline else " "
             if print_nums:
                 print(
-                    "%s:%s" % (self._format_lineno(session, lineno).rjust(width), line_sep),
+                    "%s:%s"
+                    % (self._format_lineno(session, lineno).rjust(width), line_sep),
                     file=outfile,
                     end="",
                 )

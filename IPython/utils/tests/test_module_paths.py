@@ -16,14 +16,12 @@ import os
 import shutil
 import sys
 import tempfile
-
-from os.path import join, abspath, split
-
-from IPython.testing.tools import make_tempfile
-
-import IPython.utils.module_paths as mp
+from os.path import abspath, join, split
 
 import nose.tools as nt
+
+import IPython.utils.module_paths as mp
+from IPython.testing.tools import make_tempfile
 
 env = os.environ
 TEST_FILE_PATH = split(abspath(__file__))[0]

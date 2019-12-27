@@ -12,13 +12,15 @@
 # Imports
 # -----------------------------------------------------------------------------
 
+from warnings import warn
+
 # Our own packages
 from traitlets.config.application import Application
+
 from IPython.core import magic_arguments
-from IPython.core.magic import Magics, magics_class, line_magic
-from IPython.testing.skipdoctest import skip_doctest
-from warnings import warn
+from IPython.core.magic import Magics, line_magic, magics_class
 from IPython.core.pylabtools import backends
+from IPython.testing.skipdoctest import skip_doctest
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes

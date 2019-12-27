@@ -6,12 +6,12 @@
 import sys
 import unittest
 
+import nose.tools as nt
+
 from IPython.core.getipython import get_ipython
+from IPython.terminal.ptutils import _adjust_completion_text_based_on_context, _elide
 from IPython.testing import tools as tt
 from IPython.utils.capture import capture_output
-
-from IPython.terminal.ptutils import _elide, _adjust_completion_text_based_on_context
-import nose.tools as nt
 
 
 class TestElide(unittest.TestCase):

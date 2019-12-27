@@ -272,5 +272,5 @@ class DemoError(Exception):
 
 class DerivedInterrupt(KeyboardInterrupt):
     """interactiveshell.tests.test_interactiveshell"""
-    pass
 
+    pass

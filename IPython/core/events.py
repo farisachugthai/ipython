@@ -31,9 +31,9 @@ In one of our functions, we call one of their functions. That's why the
 dependency is here.
 
 """
-from IPython.core.getipython import get_ipython
-
 from backcall import callback_prototype
+
+from IPython.core.getipython import get_ipython
 
 # event_name -> prototype mapping
 available_events = {}

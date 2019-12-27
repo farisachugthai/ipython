@@ -20,7 +20,7 @@ import sys
 # Our own packages
 from IPython.core import page
 from IPython.core.error import StdinNotImplementedError, UsageError
-from IPython.core.magic import Magics, magics_class, line_magic
+from IPython.core.magic import Magics, line_magic, magics_class
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.encoding import DEFAULT_ENCODING
 from IPython.utils.openpy import read_py_file

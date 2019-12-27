@@ -18,24 +18,24 @@ import warnings
 from io import StringIO
 
 from decorator import decorator
-
-from traitlets.config.configurable import Configurable
-from .getipython import get_ipython
-from ..utils.sentinel import Sentinel
-from ..utils.dir2 import get_real_method
-from ..lib import pretty
 from traitlets import (
     Bool,
-    Dict,
-    Integer,
-    Unicode,
     CUnicode,
-    ObjectName,
-    List,
+    Dict,
     ForwardDeclaredInstance,
+    Integer,
+    List,
+    ObjectName,
+    Unicode,
     default,
     observe,
 )
+from traitlets.config.configurable import Configurable
+
+from ..lib import pretty
+from ..utils.dir2 import get_real_method
+from ..utils.sentinel import Sentinel
+from .getipython import get_ipython
 
 
 class DisplayFormatter(Configurable):

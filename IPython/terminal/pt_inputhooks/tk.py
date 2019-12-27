@@ -38,9 +38,9 @@ in readline. ``prompt-toolkit`` doesn't understand that input hook, but this
 will fix it for Tk.)
 """
 import time
+import tkinter
 
 import _tkinter
-import tkinter
 
 
 def inputhook(inputhook_context):

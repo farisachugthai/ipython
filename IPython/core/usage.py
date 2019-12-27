@@ -10,6 +10,7 @@
 # -----------------------------------------------------------------------------
 
 import sys
+
 from IPython.core import release
 
 cl_usage = """\

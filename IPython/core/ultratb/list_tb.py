@@ -2,8 +2,9 @@ import linecache
 import sys
 import traceback
 
-from IPython.utils.coloransi import ColorSchemeTable
 from IPython.core.error import OperationalError
+from IPython.utils.coloransi import ColorSchemeTable
+
 from .tb_tools import TBTools
 
 

@@ -1,8 +1,9 @@
 """This is an example that shows how to create new prompts for IPython
 """
 
-from IPython.terminal.prompts import Prompts, Token
 import os
+
+from IPython.terminal.prompts import Prompts, Token
 
 
 class MyPrompt(Prompts):

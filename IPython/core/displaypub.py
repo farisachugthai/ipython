@@ -17,8 +17,8 @@ spec.
 
 import sys
 
-from traitlets.config.configurable import Configurable
 from traitlets import List
+from traitlets.config.configurable import Configurable
 
 # This used to be defined here - it is imported for backwards compatibility
 from .display import publish_display_data

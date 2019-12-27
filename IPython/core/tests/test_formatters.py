@@ -7,16 +7,20 @@ import nose.tools as nt
 from traitlets.config import Config
 
 from IPython import get_ipython
-from IPython.core.formatters import (DisplayFormatter, HTMLFormatter,
-                                     JSONFormatter, PDFFormatter,
-                                     PlainTextFormatter, _mod_name_key)
+from IPython.core.formatters import (
+    DisplayFormatter,
+    HTMLFormatter,
+    JSONFormatter,
+    PDFFormatter,
+    PlainTextFormatter,
+    _mod_name_key,
+)
 from IPython.utils.capture import capture_output
 
 try:
     import numpy
 except BaseException:
     numpy = None
-
 
 
 class A(object):

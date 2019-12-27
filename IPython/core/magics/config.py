@@ -14,11 +14,11 @@
 
 # Stdlib
 import re
+from logging import error
 
 # Our own packages
 from IPython.core.error import UsageError
-from IPython.core.magic import Magics, magics_class, line_magic
-from logging import error
+from IPython.core.magic import Magics, line_magic, magics_class
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes

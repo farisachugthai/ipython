@@ -38,15 +38,18 @@ Authors:
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 
+
+import os
+
 # -----------------------------------------------------------------------------
+from importlib import import_module
+
 # Imports
 # -----------------------------------------------------------------------------
 from textwrap import dedent
-from importlib import import_module
-import os
 
+from traitlets import Bool, Dict, Unicode, observe
 from traitlets.config.application import Application
-from traitlets import Unicode, Bool, Dict, observe
 
 from IPython.core.application import BaseIPythonApplication, base_flags
 from IPython.core.profiledir import ProfileDir
@@ -138,7 +141,7 @@ def list_profiles_in(path):
 
     # Keeps prepending an empty spot up front
     if len(profiles) > 0:
-        if profiles[0] == '':
+        if profiles[0] == "":
             profiles = profiles[1:]
     return profiles
 
@@ -359,7 +362,9 @@ class ProfileCreate(BaseIPythonApplication):
             self.log.warning(
                 """Couldn't import {}, config file will be excluded
                           The cause of the ImportError was {}""".format(
-                    e))
+                    e
+                )
+            )
             return
         except Exception:
             self.log.error("Unexpected error importing %s", name, exc_info=True)
@@ -384,7 +389,7 @@ class ProfileCreate(BaseIPythonApplication):
             from ipyparallel.apps.ipclusterapp import IPClusterStart
 
             apps.extend(
-                [IPControllerApp, IPEngineApp, IPClusterStart, ]
+                [IPControllerApp, IPEngineApp, IPClusterStart,]
             )
         for App in apps:
             app = App()

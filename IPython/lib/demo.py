@@ -185,8 +185,8 @@ import sys
 
 import pygments
 
-from IPython.core.getipython import get_ipython
 from IPython.core.error import DemoError
+from IPython.core.getipython import get_ipython
 from IPython.utils.text import marquee
 
 __all__ = ["Demo", "IPythonDemo", "LineDemo", "IPythonLineDemo", "DemoError"]

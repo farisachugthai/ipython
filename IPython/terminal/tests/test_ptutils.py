@@ -10,8 +10,6 @@ import shutil
 import tempfile
 from contextlib import contextmanager
 
-from six import text_type
-
 from prompt_toolkit.completion import (
     CompleteEvent,
     FuzzyWordCompleter,
@@ -20,6 +18,7 @@ from prompt_toolkit.completion import (
     WordCompleter,
 )
 from prompt_toolkit.document import Document
+from six import text_type
 
 
 @contextmanager

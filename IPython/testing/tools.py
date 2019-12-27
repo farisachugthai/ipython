@@ -45,6 +45,7 @@ except (ImportError, ModuleNotFoundError):
     has_nose = False
 else:
     import nose.tools as nt
+
     has_nose = True
 
 # The docstring for full_path doctests differently on win32 (different path
@@ -124,8 +125,7 @@ def parse_test_output(txt):
         nfail = int(fail_m.group(1))
         return nerr, nfail
 
-    both_m = re.search(r"^FAILED [(]errors=(\d+), failures=(\d+)[)]", txt,
-                       re.MULTILINE)
+    both_m = re.search(r"^FAILED [(]errors=(\d+), failures=(\d+)[)]", txt, re.MULTILINE)
     if both_m:
         nerr = int(both_m.group(1))
         nfail = int(both_m.group(2))
@@ -160,7 +160,7 @@ def default_config():
     """
     config = Config()
     config.TerminalInteractiveShell.colors = "NoColor"
-    config.TerminalTerminalInteractiveShell.term_title = (False, )
+    config.TerminalTerminalInteractiveShell.term_title = (False,)
     config.TerminalInteractiveShell.autocall = 0
     f = tempfile.NamedTemporaryFile(suffix=u"test_hist.sqlite", delete=False)
     config.HistoryManager.hist_file = f.name
@@ -233,12 +233,14 @@ def ipexec(fname, options=None, commands=None):
     full_fname = os.path.join(test_dir, fname)
     full_cmd = ipython_cmd + cmdargs + [full_fname]
 
-    p = Popen(full_cmd,
-              stdout=PIPE,
-              stderr=PIPE,
-              stdin=PIPE,
-              universal_newlines=True,
-              env=os.environ.copy())
+    p = Popen(
+        full_cmd,
+        stdout=PIPE,
+        stderr=PIPE,
+        stdin=PIPE,
+        universal_newlines=True,
+        env=os.environ.copy(),
+    )
 
     out, err = p.communicate(input=("\n".join(commands)) or None)
 
@@ -249,11 +251,7 @@ def ipexec(fname, options=None, commands=None):
     return out, err
 
 
-def ipexec_validate(fname,
-                    expected_out,
-                    expected_err="",
-                    options=None,
-                    commands=None):
+def ipexec_validate(fname, expected_out, expected_err="", options=None, commands=None):
     """Utility to call 'ipython filename' and validate output/error.
 
     This function raises an AssertionError if the validation fails.
@@ -294,8 +292,7 @@ def ipexec_validate(fname,
                 "\n".join(expected_err.strip().splitlines()),
             )
         else:
-            raise ValueError("Running file %r produced error: %r" %
-                             (fname, err))
+            raise ValueError("Running file %r produced error: %r" % (fname, err))
     # If no errors or output on stderr was expected, match stdout
     nt.assert_equal(
         "\n".join(out.strip().splitlines()),
@@ -354,7 +351,7 @@ class TempFileMixin(unittest.TestCase):
                     # delete it.  I have no clue why
                     # That isn't a very good reason to catch it on every platform wouldn't you
                     # agree? Regardless let's keep catching it but at least let someone know.
-                    testing_logger.error('Error while deleting tmpdirs.')
+                    testing_logger.error("Error while deleting tmpdirs.")
 
     def __enter__(self):
         return self
@@ -367,13 +364,9 @@ class TempFileMixin(unittest.TestCase):
         self.tearDown()
 
 
-pair_fail_msg = ("Testing {0}\n\n"
-                 "In:\n"
-                 "  {1!r}\n"
-                 "Expected:\n"
-                 "  {2!r}\n"
-                 "Got:\n"
-                 "  {3!r}\n")
+pair_fail_msg = (
+    "Testing {0}\n\n" "In:\n" "  {1!r}\n" "Expected:\n" "  {2!r}\n" "Got:\n" "  {3!r}\n"
+)
 
 
 def check_pairs(func, pairs):
@@ -444,10 +437,10 @@ class AssertPrints:
             for s in self.s:
                 if isinstance(s, _re_type):
                     assert s.search(printed), notprinted_msg.format(
-                        s.pattern, self.channel, printed)
+                        s.pattern, self.channel, printed
+                    )
                 else:
-                    assert s in printed, notprinted_msg.format(
-                        s, self.channel, printed)
+                    assert s in printed, notprinted_msg.format(s, self.channel, printed)
             return False
         finally:
             self.tee.close()
@@ -478,10 +471,12 @@ class AssertNotPrints(AssertPrints):
             for s in self.s:
                 if isinstance(s, _re_type):
                     assert not s.search(printed), printed_msg.format(
-                        s.pattern, self.channel, printed)
+                        s.pattern, self.channel, printed
+                    )
                 else:
                     assert s not in printed, printed_msg.format(
-                        s, self.channel, printed)
+                        s, self.channel, printed
+                    )
             return False
         finally:
             self.tee.close()

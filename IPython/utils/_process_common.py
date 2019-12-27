@@ -25,8 +25,8 @@ that.
 import os
 import shlex
 import subprocess
-from subprocess import getoutput   # noqa F401 replaces the old getoutput func here
 import sys
+from subprocess import getoutput  # noqa F401 replaces the old getoutput func here
 
 # -----------------------------------------------------------------------------
 # Function definitions

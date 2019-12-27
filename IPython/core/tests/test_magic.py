@@ -28,8 +28,15 @@ from nose.tools.nontrivial import nottest
 from IPython.core import magic
 from IPython.core.error import UsageError
 from IPython.core.getipython import get_ipython
-from IPython.core.magic import (Magics, cell_magic, line_magic, magics_class,
-                                register_cell_magic, register_line_magic)
+from IPython.core.magic import (
+    Magics,
+    cell_magic,
+    line_magic,
+    magics_class,
+    register_cell_magic,
+    register_line_magic,
+)
+
 # Renamed to avoid std lib collision
 from IPython.core.magics import code, execution, ipy_logging, osm, script
 from IPython.testing import decorators as dec

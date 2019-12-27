@@ -14,6 +14,7 @@ In [7]: gl.glClearColor(1,1,1,1)
 
 """
 import sys
+
 import OpenGL.GL as gl
 import OpenGL.GLUT as glut
 

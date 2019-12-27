@@ -14,26 +14,26 @@ import os
 import sys
 import warnings
 
-from traitlets.config.loader import Config
+from traitlets import Bool, List, Type, default, observe
 from traitlets.config.application import boolean_flag, catch_config_error
-from IPython.core import release
-from IPython.core import usage
+from traitlets.config.loader import Config
+
+from IPython.core import release, usage
+from IPython.core.application import (
+    BaseIPythonApplication,
+    ProfileDir,
+    base_aliases,
+    base_flags,
+)
 from IPython.core.completer import IPCompleter
 from IPython.core.crashhandler import CrashHandler
 from IPython.core.formatters import PlainTextFormatter
 from IPython.core.history import HistoryManager
-from IPython.core.application import (
-    ProfileDir,
-    BaseIPythonApplication,
-    base_flags,
-    base_aliases,
-)
-from IPython.core.magics import ScriptMagics, LoggingMagics
-from IPython.core.shellapp import InteractiveShellApp, shell_flags, shell_aliases
+from IPython.core.magics import LoggingMagics, ScriptMagics
+from IPython.core.shellapp import InteractiveShellApp, shell_aliases, shell_flags
 from IPython.extensions.storemagic import StoreMagics
-from IPython.terminal.interactiveshell import TerminalInteractiveShell
 from IPython.paths import get_ipython_dir
-from traitlets import Bool, List, default, observe, Type
+from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
 # -----------------------------------------------------------------------------
 # Globals, utilities and helpers

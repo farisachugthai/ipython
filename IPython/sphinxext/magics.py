@@ -4,8 +4,7 @@ Why don't we distribute this it's awesome!
 """
 import logging
 import re
-from typing import Dict, Any, AnyStr
-
+from typing import Any, AnyStr, Dict
 
 # Third party
 from sphinx import addnodes

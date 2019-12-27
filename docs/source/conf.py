@@ -18,25 +18,27 @@ serve to show the default value.
 import copy
 import logging
 import os
-from pathlib import Path
 import re
 import runpy
 import shutil
 import sys
+from pathlib import Path
+
+import sphinx
+from pygments.lexers.python import NumPyLexer
+from sphinx import addnodes  # noqa
+from sphinx.application import Sphinx
+from sphinx.util.docfields import GroupedField
+from sphinx.util.logging import getLogger
+
+from IPython.core.release import __version__, version_info
+from IPython.lib.lexers import IPyLexer, IPython3Lexer, IPythonTracebackLexer
+from IPython.sphinxext import ipython_directive  # noqa F401
 
 # I love having to do this one
 if False:
     from typing import Dict, Any
 
-from pygments.lexers.python import NumPyLexer
-import sphinx
-from sphinx.util.docfields import GroupedField
-from sphinx.util.logging import getLogger
-from sphinx.application import Sphinx
-
-from IPython.sphinxext import ipython_directive  # noqa F401
-from IPython.lib.lexers import IPyLexer, IPythonTracebackLexer, IPython3Lexer
-from IPython.core.release import __version__, version_info
 
 try:
     from IPython.sphinxext import (
@@ -428,7 +430,6 @@ extlinks = {
 # Extension Interface
 # -----------------------
 
-from sphinx import addnodes  # noqa
 
 event_sig_re = re.compile(r"([a-zA-Z-]+)\s*\((.*)\)")
 

@@ -8,6 +8,7 @@ import sys
 
 # Third party
 import nose.tools as nt
+
 # Our own
 from IPython.testing import decorators as dec
 

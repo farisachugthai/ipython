@@ -7,11 +7,11 @@ be better than the tempfile version?
 
 Also I guess it'd be worth checking out how nose handles teardowns.
 """
-import tempfile
 import os
+import tempfile
 
-from traitlets.config.loader import Config
 import nose.tools as nt
+from traitlets.config.loader import Config
 
 from IPython.core.getipython import get_ipython
 

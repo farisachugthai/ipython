@@ -6,7 +6,7 @@
 # the file COPYING, distributed as part of this software.
 # *****************************************************************************
 
-from .tb_tools import TBTools
+from .formatted_tb import ColorTB, FormattedTB
 from .list_tb import ListTB, SyntaxTB
+from .tb_tools import TBTools
 from .verbose_tb import VerboseTB
-from .formatted_tb import FormattedTB, ColorTB

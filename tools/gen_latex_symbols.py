@@ -9,9 +9,10 @@
 #
 # The original mapping of latex symbols to unicode comes from the `latex_symbols.jl` files from Julia.
 
-import requests
 import os
 import sys
+
+import requests
 
 # Import the Julia LaTeX symbols
 print("Importing latex_symbols.js from Julia...")

@@ -12,24 +12,23 @@ import re
 import sys
 from pprint import pformat
 
-from IPython.core import magic_arguments
-from IPython.core import oinspect
-from IPython.core import page
-from IPython.core.alias import AliasError, Alias
+from traitlets import Bool
+
+from IPython.core import magic_arguments, oinspect, page
+from IPython.core.alias import Alias, AliasError
 from IPython.core.error import UsageError
 from IPython.core.magic import (
     Magics,
-    compress_dhist,
-    magics_class,
-    line_magic,
     cell_magic,
+    compress_dhist,
     line_cell_magic,
+    line_magic,
+    magics_class,
 )
 from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.openpy import source_to_unicode
 from IPython.utils.process import abbrev_cwd
 from IPython.utils.terminal import set_term_title
-from traitlets import Bool
 
 
 @magics_class

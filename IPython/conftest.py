@@ -8,6 +8,8 @@
 
 import pytest
 
+import IPython
+
 # adding this here not because we need them yet but they're good reminders.
 # from _pytest.nose import (
 #     pytest_runtest_setup,
@@ -17,8 +19,6 @@ import pytest
 # )
 
 # noqa
-
-import IPython
 
 
 def get_test_shell():

@@ -23,10 +23,9 @@ import sys
 import traceback
 from pprint import pformat
 
-from IPython.core.ultratb.verbose_tb import VerboseTB
-from IPython.core.release import author_email
-
 from IPython.core.release import __version__ as version
+from IPython.core.release import author_email
+from IPython.core.ultratb.verbose_tb import VerboseTB
 
 # -----------------------------------------------------------------------------
 # Code

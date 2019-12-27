@@ -8,26 +8,22 @@
 # Distributed under the terms of the Modified BSD License.
 
 import reprlib
-import warnings
 import signal
 import sys
+import warnings
 from typing import Callable
-
-from IPython.core.getipython import get_ipython
-from IPython.utils.text import SList
 
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import DEFAULT_BUFFER, SEARCH_BUFFER
 from prompt_toolkit.filters import (
-    has_focus,
-    has_selection,
     Condition,
-    vi_insert_mode,
     emacs_insert_mode,
     has_completions,
+    has_focus,
+    has_selection,
+    vi_insert_mode,
     vi_mode,
 )
-from prompt_toolkit.keys import Keys
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.completion import (
     display_completions_like_readline,
@@ -36,6 +32,10 @@ from prompt_toolkit.key_binding.key_bindings import (
     ConditionalKeyBindings,
     merge_key_bindings,
 )
+from prompt_toolkit.keys import Keys
+
+from IPython.core.getipython import get_ipython
+from IPython.utils.text import SList
 
 
 @Condition
@@ -188,7 +188,7 @@ def newline_or_execute_outer(shell):
 
         # if all we have after the cursor is whitespace: reformat current text
         # before cursor
-        after_cursor = d.text[d.cursor_position:]
+        after_cursor = d.text[d.cursor_position :]
         if not after_cursor.strip():
             reformat_text_before_cursor(b, d, shell)
 

@@ -13,7 +13,7 @@ import re
 import shlex
 import sys
 
-from IPython.core.magic import Magics, magics_class, line_magic
+from IPython.core.magic import Magics, line_magic, magics_class
 
 
 def _is_conda_environment():

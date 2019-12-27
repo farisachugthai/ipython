@@ -4,8 +4,9 @@
 # Distributed under the terms of the Modified BSD License.
 
 from unittest import TestCase
-from pygments.token import Token
+
 from pygments.lexers.shell import BashLexer
+from pygments.token import Token
 
 from .. import lexers
 

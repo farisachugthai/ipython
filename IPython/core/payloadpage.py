@@ -5,6 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 import warnings
+
 from IPython.core.getipython import get_ipython
 
 

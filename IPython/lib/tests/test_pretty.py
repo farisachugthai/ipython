@@ -4,18 +4,17 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from collections import Counter, defaultdict, deque, OrderedDict
 import os
-import types
 import string
+import types
 import unittest
+from collections import Counter, OrderedDict, defaultdict, deque
+from io import StringIO
 
 import nose.tools as nt
 
 from IPython.lib import pretty
 from IPython.testing.decorators import skip_without
-
-from io import StringIO
 
 
 class MyList(object):

@@ -28,7 +28,6 @@ And now it does on Windows as well.
 import os
 import runpy
 import sys
-
 from distutils.command.install_data import install_data
 from distutils.util import change_root, convert_path
 

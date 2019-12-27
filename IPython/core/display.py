@@ -1,15 +1,17 @@
 # coding=utf-8
 """Top-level display functions for displaying object in different formats."""
+
 # Vim: set et:
-# Copyright (c) IPython Development Team.
-# Distributed under the terms of the Modified BSD License.
-from binascii import b2a_hex, b2a_base64, hexlify
 import json
 import mimetypes
 import os
 import struct
 import sys
 import warnings
+
+# Copyright (c) IPython Development Team.
+# Distributed under the terms of the Modified BSD License.
+from binascii import b2a_base64, b2a_hex, hexlify
 from copy import deepcopy
 from os.path import splitext
 from pathlib import Path, PurePath

@@ -3,9 +3,8 @@
 # Distributed under the terms of the Modified BSD License.
 import builtins as builtin_mod
 
-from traitlets.config.configurable import Configurable
-
 from traitlets import Instance
+from traitlets.config.configurable import Configurable
 
 
 class __BuiltinUndefined:

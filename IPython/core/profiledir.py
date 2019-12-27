@@ -18,12 +18,12 @@ import errno
 import os
 import shutil
 
-from traitlets import Unicode, Bool, observe
+from traitlets import Bool, Unicode, observe
 from traitlets.config.configurable import LoggingConfigurable
 
 from IPython.core.error import ProfileDirError
 from IPython.paths import get_ipython_package_dir
-from IPython.utils.path import expand_path, ensure_dir_exists
+from IPython.utils.path import ensure_dir_exists, expand_path
 
 
 class ProfileDir(LoggingConfigurable):

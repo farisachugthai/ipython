@@ -8,41 +8,35 @@ Everything in this module is a private API, not to be used outside IPython.
 import keyword
 import os
 import re
-
 import unicodedata
-from wcwidth import wcwidth
 
-from traitlets.config.application import TraitError
-from IPython.core.getipython import get_ipython
-
-# So how does __all__ work is a relevant question I have now...
-# We import things from IPython.core.completer that aren't in all. Or is this
-# code never executed? Or it fails silently?
-from IPython.core._completer import (
-    provisionalcompleter,
-    cursor_to_position,
-    _deduplicate_completions,
-)
-
-from IPython.lib.lexers import IPyLexer
-
-
+# import pygments.lexers as pygments_lexers
+import pygments
 from prompt_toolkit.completion import (
     CompleteEvent,
+    Completer,
+    Completion,
     FuzzyWordCompleter,
     NestedCompleter,
     PathCompleter,
     WordCompleter,
 )
 from prompt_toolkit.document import Document
-
-from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.lexers import Lexer
-from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.lexers import Lexer, PygmentsLexer
 from prompt_toolkit.patch_stdout import patch_stdout
+from traitlets.config.application import TraitError
+from wcwidth import wcwidth
 
-# import pygments.lexers as pygments_lexers
-import pygments
+# So how does __all__ work is a relevant question I have now...
+# We import things from IPython.core.completer that aren't in all. Or is this
+# code never executed? Or it fails silently?
+from IPython.core._completer import (
+    _deduplicate_completions,
+    cursor_to_position,
+    provisionalcompleter,
+)
+from IPython.core.getipython import get_ipython
+from IPython.lib.lexers import IPyLexer
 
 # just saying some of these could be real cool
 # from pygments.lexers.other import SqliteConsoleLexer

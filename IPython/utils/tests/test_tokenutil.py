@@ -4,7 +4,7 @@
 
 import nose.tools as nt
 
-from IPython.utils.tokenutil import token_at_cursor, line_at_cursor
+from IPython.utils.tokenutil import line_at_cursor, token_at_cursor
 
 
 def expect_token(expected, cell, cursor_pos):

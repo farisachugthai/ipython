@@ -12,10 +12,11 @@
 # Imports
 # -----------------------------------------------------------------------------
 
-# Our own packages
-from IPython.core.magic import Bunch, Magics, magics_class, line_magic
-from IPython.testing.skipdoctest import skip_doctest
 from logging import error
+
+# Our own packages
+from IPython.core.magic import Bunch, Magics, line_magic, magics_class
+from IPython.testing.skipdoctest import skip_doctest
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes

@@ -10,21 +10,16 @@ transforms are used to implement additional syntax such as !ls and `%magic`.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from keyword import iskeyword
 import re
+from keyword import iskeyword
+
+from traitlets import Bool, CRegExp, Instance, Integer, List, Unicode
+from traitlets.config.configurable import Configurable
 
 from .autocall import IPyAutocall
-from traitlets.config.configurable import Configurable
-from .inputtransformer2 import (
-    ESC_MAGIC,
-    ESC_QUOTE,
-    ESC_QUOTE2,
-    ESC_PAREN,
-)
+from .inputtransformer2 import ESC_MAGIC, ESC_PAREN, ESC_QUOTE, ESC_QUOTE2
 from .macro import Macro
 from .splitinput import LineInfo
-
-from traitlets import List, Integer, Unicode, Bool, Instance, CRegExp
 
 # -----------------------------------------------------------------------------
 # Global utilities, errors and constants

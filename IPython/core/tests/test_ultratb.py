@@ -19,7 +19,6 @@ from IPython.testing.decorators import onlyif_unicode_paths, skipif
 from IPython.utils.syspathcontext import prepended_to_syspath
 from IPython.utils.tempdir import TemporaryDirectory
 
-
 _FRAME_RECURSION_LIMIT = 500
 
 file_1 = """1

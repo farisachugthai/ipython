@@ -72,7 +72,6 @@ from IPython.core.error import (
 from IPython.core.getipython import get_ipython
 from IPython.terminal.prompts import Prompts
 
-
 RGX_EXTRA_INDENT = re.compile(r"(?<=\n)\s+")
 
 

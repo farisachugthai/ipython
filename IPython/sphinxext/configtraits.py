@@ -11,7 +11,7 @@
 """
 # from sphinx.locale import l_
 # from sphinx.util.docfields import Field
-from typing import Dict, Any
+from typing import Any, Dict
 
 from sphinx.application import Sphinx
 

@@ -21,8 +21,8 @@ Authors:
 
 import sys
 
-from traitlets.config.configurable import Configurable
 from traitlets import Any
+from traitlets.config.configurable import Configurable
 
 # -----------------------------------------------------------------------------
 # Classes and functions

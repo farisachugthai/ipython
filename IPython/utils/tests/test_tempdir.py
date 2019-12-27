@@ -7,8 +7,10 @@
 
 import os
 
-from IPython.utils.tempdir import NamedFileInTemporaryDirectory
-from IPython.utils.tempdir import TemporaryWorkingDirectory
+from IPython.utils.tempdir import (
+    NamedFileInTemporaryDirectory,
+    TemporaryWorkingDirectory,
+)
 
 
 def test_named_file_in_temporary_directory():

@@ -6,7 +6,7 @@ To be invoked as the `ipython history` subcommand.
 import os
 import sqlite3
 
-from traitlets import Bool, Int, Dict
+from traitlets import Bool, Dict, Int
 from traitlets.config.application import Application
 
 from IPython.core.application import BaseIPythonApplication

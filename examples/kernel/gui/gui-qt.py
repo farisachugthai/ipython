@@ -10,7 +10,7 @@ In [6]: %run gui-qt.py
 Ref: Modified from http://zetcode.com/tutorials/pyqt4/firstprograms/
 """
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtCore, QtGui
 
 
 class SimpleWindow(QtGui.QWidget):

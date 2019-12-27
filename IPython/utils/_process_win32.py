@@ -20,6 +20,7 @@ Then define ``__all__`?
 # -----------------------------------------------------------------------------
 
 import ctypes
+
 # stdlib
 import os
 import subprocess
@@ -36,8 +37,6 @@ try:
 except ImportError:
     LPCWSTR = None
     HLOCAL = None
-
-
 
 
 class AvoidUNCPath:
