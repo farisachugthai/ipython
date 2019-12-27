@@ -57,14 +57,14 @@ matrix:
   include:
     - python: "3.7"
       name: "Python 3.7.0 on Bionic Linux"
-      dist: "bionic" # because now we get py3.6 and py3.7 for free
+      dist: "bionic" # because now we get py3.6 and py3.7 for free. they added 3.8.0!
       before_install:
         - python setup.py build
         - pip install --upgrade pip -e . -r requirements_dev.txt
         - pip install -U -r docs/requirements.txt
-    - python: "3.8-dev"
+    - python: "3.8"
       dist: "bionic"
-      name: "Python 3.8-dev on Bionic Linux"
+      name: "Python 3.8 on Bionic Linux"
       before_install:
         - python setup.py build
         - pip install --upgrade pip -e . -r requirements_dev.txt
@@ -76,8 +76,6 @@ matrix:
         - python setup.py build
         - pip install --upgrade pip -e . -r requirements_dev.txt
         - pip install -U -r docs/requirements.txt
-    - python: "nightly"
-      dist: "bionic"
     - os: osx
       language: shell # 'language: python' is an error on Travis CI macOS
       python: 3.6
@@ -105,8 +103,8 @@ matrix:
         - choco install python --version 3.8.0
         - python setup.py build
         - python -m pip install --upgrade pip -e . -r requirements_dev.txt
-  allow_failures:
-    - python: nightly
+  # allow_failures:
+  #   - python: nightly
 
 before_deploy:
   - rm -rf dist/
