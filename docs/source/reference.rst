@@ -7,8 +7,6 @@ IPython Reference
 .. module:: reference
     :synopsis: Reference materials for IPython.
 
-.. highlight:: ipython
-
 .. _command_line_options:
 
 Command-line usage
@@ -60,7 +58,7 @@ have a single-word alias to toggle them. IPython lets a user configure all of
 it's objects from the command-line by passing the full class name and a
 corresponding value.
 
-As an example, type ``ipython --help-all`` to see this full list.::
+As an example, type ``ipython --help-all`` to see this full list.:
 
    $ ipython --help-all
 
@@ -74,11 +72,9 @@ As an example, type ``ipython --help-all`` to see this full list.::
 
    <...SNIP...>
 
-
 Indicates that the following::
 
    $ ipython --matplotlib qt
-
 
 is equivalent to::
 
@@ -201,11 +197,6 @@ Running a file with the above code can lead to the following session::
   In [2]: exit()
   42
 
-.. note::
-
-  At present, embedding IPython cannot be done from inside IPython.
-  Run the code samples below outside IPython.
-
 This feature allows you to easily have a fully functional python
 environment for doing object introspection anywhere in your code with a
 simple function call. In some cases a simple print statement is enough,
@@ -253,14 +244,14 @@ functionality is provided in the examples directory as
 :file:`../../examples/Embedding/embed_class_long.py`_.
 It should be fairly self-explanatory:
 
- .. literalinclude:: ../../examples/Embedding/embed_class_long.py
-     :language: python
+.. literalinclude:: ../../examples/Embedding/embed_class_long.py
+   :language: python
 
 Once you understand how the system functions, you can use the following
 code fragments in your programs which are ready for cut and paste:
 
- .. literalinclude:: ../../examples/Embedding/embed_class_short.py
-     :language: python
+.. literalinclude:: ../../examples/Embedding/embed_class_short.py
+   :language: python
 
 
 Using the Python debugger (pdb)
@@ -443,7 +434,9 @@ And pasting from IPython sessions works equally well::
 
 
 In addition, interactive sessions can be copy-pasted and placed into
-documentation as per the Sphinx extension. See more :ref:`ipython-directive`.
+documentation as per the Sphinx extension.
+
+See more at the documentation for the :ref:`ipython-sphinx-directive`.
 
 
 .. _gui_support:
@@ -534,9 +527,15 @@ So if ``QT_API=pyside`` PySide will be used, and if ``QT_API=pyqt`` then PyQt4
 will be used *with the v2 API* for ``QString`` and ``QVariant``, so ETS codes
 like ``MayaVi`` will also work with IPython.
 
+Matplotlib on Startup
+~~~~~~~~~~~~~~~~~~~~~~
+.. which header have we been using for h3?
+
+.. option:: --matplotlib
+
 If you launch IPython in :option:`matplotlib` mode with
 ``ipython --matplotlib=qt``, then IPython will ask matplotlib which Qt library
-to use via the 'backend.qt4' rcParam.
+to use via the 'backend.qt4' :data:`matplotlib.rcparam.rcParam`.
 
 Note that this only occurs if the environment variable :envvar:`QT_API`
 is *not set*). If matplotlib is version 1.0.1 or older, then IPython will

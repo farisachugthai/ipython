@@ -8,10 +8,10 @@ line :command:`ipython` program.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-
 import logging
 import os
 import sys
+from textwrap import dedent
 import warnings
 
 from traitlets import Bool, List, Type, default, observe
@@ -31,7 +31,7 @@ from IPython.core.formatters import PlainTextFormatter
 from IPython.core.history import HistoryManager
 from IPython.core.magics import LoggingMagics, ScriptMagics
 from IPython.core.shellapp import InteractiveShellApp, shell_aliases, shell_flags
-# from IPython.extensions.storemagic import StoreMagics
+from IPython.extensions.storemagic import StoreMagics
 from IPython.paths import get_ipython_dir
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
@@ -199,10 +199,18 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     aliases = aliases
     classes = List()
 
+    # just nabbed way more help for this from docs/source/version6.rst
     interactive_shell_class = Type(
         klass=object,  # use default_value otherwise which only allow subclasses.
         default_value=TerminalInteractiveShell,
-        help="Class to use to instantiate the TerminalInteractiveShell object. Useful for custom Frontends",
+        help=dedent("""
+        Class to use to instantiate the TerminalInteractiveShell object.
+        Useful for custom Frontends.
+        This should allow a user to use custom interfaces, like reviving the former readline
+        interface which is now a separate package not actively maintained by the core
+        team. See the project to bring back the readline interface: `rlipython
+        <https://github.com/ipython/rlipython>`_.
+        """),
     ).tag(config=True)
 
     @default("classes")

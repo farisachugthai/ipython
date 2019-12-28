@@ -32,6 +32,7 @@ development work they do here in a user friendly format.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Changelog
 
    version7
    github-stats-7
@@ -63,9 +64,9 @@ development work they do here in a user friendly format.
    documents included nowhere when building docs for stable
    We place it at the end as it will still be reachable via prev/next links.
 
-.. only:: ipystable
+.. .. only:: ipystable
 
-   .. toctree::
-      :hidden:
+..    .. toctree::
+..       :hidden:
 
-      development
+..       development

@@ -62,7 +62,8 @@ Let's start by showing how a profile is used:
 This tells the :command:`ipython` command line program to get its configuration
 from the "sympy" profile. The file names for various profiles do not change. The
 only difference is that profiles are named in a special way. In the case above,
-the "sympy" profile means looking for :file:`ipython_config.py` in :file:`<IPYTHONDIR>/profile_sympy`.
+the "sympy" profile means looking for :file:`ipython_config.py` in
+:file:`<IPYTHONDIR>/profile_sympy`.
 
 The general pattern is this: simply create a new profile with:
 
@@ -74,11 +75,6 @@ which adds a directory called ``profile_<name>`` to your IPython directory. Then
 you can load this profile by adding ``--profile=<name>`` to your command line
 options. Profiles are supported by all IPython applications.
 
-IPython ships with some sample profiles in :file:`IPython/config/profile`. If
-you create profiles with the name of one of our shipped profiles, these config
-files will be copied over instead of starting with the automatically generated
-config files.
-
 IPython extends the config loader for Python files so that you can inherit
 config from another profile. To do this, use a line like this in your Python
 config file:
@@ -88,12 +84,15 @@ config file:
     load_subconfig('ipython_config.py', profile='default')
 
 
+Uh so I don't know if this is true anymore but even if it was where can we
+import that function from?
+
 Profile Initialization
 ----------------------
 
 As a result, the ``ipython_dir`` and ``profile_dir`` attributes of the
-|ip| object that drives the application are initialized first
-with :meth:`init_profile_dir`.
+|ip| object that drive the application are initialized first with the methods
+:meth:`init_ipython_dir` and :meth:`init_profile_dir`.
 
 
 :class:`IPython.core.profiledir.ProfileDir`

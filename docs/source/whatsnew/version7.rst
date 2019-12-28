@@ -63,9 +63,9 @@ logic that should decrease the resource usage of IPython when using the
 _default_ configuration but could potentially introduce a regression of
 functionalities if you are using a custom prompt.
 
-We know assume if you haven't changed the default keybindings that the prompt
+We now assume if you haven't changed the default keybindings that the prompt
 **will not change** during the duration of your input – which is for example
-not true when using vi insert mode that switches between `[ins]` and `[nor]`
+not true when using vi insert mode that switches between ``[ins]`` and ``[nor]``
 for the current mode.
 
 If you are experiencing any issue let us know.
@@ -364,7 +364,7 @@ IPython 7.3.0
 .. _whatsnew720:
 
 IPython 7.3.0 bring several bug fixes and small improvements that you will
-described bellow. 
+described bellow.
 
 The biggest change to this release is the implementation of the ``%conda`` and
 ``%pip`` magics, that will attempt to install packages in the **current
@@ -374,7 +374,7 @@ into remote environment. Installing using pip/conda from the command line is
 still the prefer method.
 
 The ``%pip`` magic was already present, but was only printing a warning; now it
-will actually forward commands to pip. 
+will actually forward commands to pip.
 
 Misc bug fixes and improvements:
 
@@ -448,7 +448,7 @@ unwillingly relying on a bug in CPython.
 
 New Core Dev:
 
- - We welcome Jonathan Slenders to the commiters. Jonathan has done a fantastic
+ - We welcome Jonathan Slenders to the committers. Jonathan has done a fantastic
    work on prompt_toolkit, and we'd like to recognise his impact by giving him
    commit rights. :ghissue:`11397`
 
@@ -459,7 +459,7 @@ Notable Changes
 Notable New Features:
 
  - Restore functionality and documentation of the **sphinx directive**, which
-   is now stricter (fail on error by daefault), has new configuration options,
+   is now stricter (fail on error by default), has new configuration options,
    has a brand new documentation page :ref:`ipython_directive` (which needs
    some cleanup). It is also now *tested* so we hope to have less regressions.
    :ghpull:`11402`
@@ -532,17 +532,17 @@ Added and removed character characters:
 
 Some sequences have seen their prefix removed:
 
- - 6 characters ``\text...<tab>`` should now be inputed with ``\...<tab>`` directly,
- - 45 characters ``\Elz...<tab>`` should now be inputed with ``\...<tab>`` directly,
- - 65 characters ``\B...<tab>`` should now be inputed with ``\...<tab>`` directly,
- - 450 characters ``\m...<tab>`` should now be inputed with ``\...<tab>`` directly,
+ - 6 characters ``\text...<tab>`` should now be inputted with ``\...<tab>`` directly,
+ - 45 characters ``\Elz...<tab>`` should now be inputted with ``\...<tab>`` directly,
+ - 65 characters ``\B...<tab>`` should now be inputted with ``\...<tab>`` directly,
+ - 450 characters ``\m...<tab>`` should now be inputted with ``\...<tab>`` directly,
 
 Some sequences have seen their prefix shortened:
 
- - 5 characters ``\mitBbb...<tab>`` should now be inputed with ``\bbi...<tab>`` directly,
- - 52 characters ``\mit...<tab>`` should now be inputed with ``\i...<tab>`` directly,
- - 216 characters ``\mbfit...<tab>`` should now be inputed with ``\bi...<tab>`` directly,
- - 222 characters ``\mbf...<tab>`` should now be inputed with ``\b...<tab>`` directly,
+ - 5 characters ``\mitBbb...<tab>`` should now be inputted with ``\bbi...<tab>`` directly,
+ - 52 characters ``\mit...<tab>`` should now be inputted with ``\i...<tab>`` directly,
+ - 216 characters ``\mbfit...<tab>`` should now be inputted with ``\bi...<tab>`` directly,
+ - 222 characters ``\mbf...<tab>`` should now be inputted with ``\b...<tab>`` directly,
 
 A couple of characters had their sequence simplified:
 
@@ -597,10 +597,10 @@ Make sure you have pip > 9.0 before upgrading. You should be able to update by r
       pip install ipython --upgrade --pre
 
 
-Or, if you have conda installed: 
+Or, if you have conda installed:
 
 .. code::
-   
+
    conda install ipython
 
 
@@ -611,8 +611,8 @@ Prompt Toolkit 2.0
 IPython 7.0+ now uses ``prompt_toolkit 2.0``. If you still need to use an earlier
 ``prompt_toolkit`` version, you may need to pin IPython to ``<7.0``.
 
-Autowait: Asynchronous REPL
----------------------------
+Autoawait: Asynchronous REPL
+----------------------------
 
 Staring with IPython 7.0 on Python 3.6+, IPython can automatically ``await``
 top level code. You should not need to access an event loop or runner
@@ -718,7 +718,7 @@ Autoreload Improvement
 
 The magic :magic:`%autoreload 2 <autoreload>` now captures new methods added to
 classes. Earlier, only methods existing as of the initial import were being
-tracked and updated.  
+tracked and updated.
 
 This new feature helps dual environment development - Jupyter+IDE - where the
 code gradually moves from notebook cells to package files as it gets
@@ -781,10 +781,10 @@ in future versions:
   - ``IPython.utils.io.raw_print_err``
   - ``IPython.utils.io.raw_print``
 
-  
+
 Backwards incompatible changes
 ------------------------------
 
 * The API for transforming input before it is parsed as Python code has been
   completely redesigned: any custom input transformations will need to be
-  rewritten. See :doc:`/config/inputtransforms` for details of the new API.
+  rewritten. See :doc:`config/inputtransforms` for details of the new API.

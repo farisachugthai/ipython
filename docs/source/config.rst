@@ -7,16 +7,13 @@ Configuration and customization
 .. module:: configuration
    :synopsis: Configure the shell and introduce profiles.
 
-.. highlight:: ipython
-
-
 .. _setting_config:
 
 Setting configurable options
 ============================
 
 Many of IPython's classes have configurable attributes (see
-:doc:`../api/index` for the list). These can be
+:doc:`api/index` for the list). These can be
 configured in several ways.
 
 Python config files
@@ -42,6 +39,9 @@ You can then configure class attributes like this::
 Be careful with spelling --- incorrect names will be silently ignored, with
 no error.
 
+Working with Traitlets
+----------------------
+
 To add to a collection which may have already been defined elsewhere,
 you can use methods like those found on:
 
@@ -55,11 +55,10 @@ you can use methods like those found on:
    - add
    - update (which works both for dicts and sets)
 
-.. todo:: So I just formatted that but we should also check if that's still true.
+These methods will be called on a :class:`~traitlets.config.LazyConfigValue`
+instance.
 
-::
-
-    c.InteractiveShellApp.extensions.append('Cython')
+.. so wait what is this talking about?
 
 .. versionadded:: 2.0
    list, dict and set methods for config values
@@ -124,8 +123,11 @@ To see all of these abbreviated options, run::
 Options specified at the command line, in either format, override
 options set in a configuration file.
 
+
 The config magic
 ================
+
+.. magic:: config
 
 You can also modify config from inside IPython, using a magic command::
 
@@ -142,8 +144,8 @@ will automatically know how to only display valid configuration options.
 
 For example::
 
-   >>> In [36]: %config TerminalInteractiveShell
-   >>> In [37]: %config TerminalInteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
+   In [36]: %config TerminalInteractiveShell
+   In [37]: %config TerminalInteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
 
 At present, this only affects the current session - changes you make to
 config are not saved anywhere. Also, some options are only read when
@@ -194,7 +196,7 @@ The IPython directory
 =====================
 
 IPython stores its files --- config, command history and extensions --- in
-the directory :file:`~/.ipython/` by default.
+the directory :file:`~/.ipython` by default.
 
 .. envvar:: IPYTHONDIR
 

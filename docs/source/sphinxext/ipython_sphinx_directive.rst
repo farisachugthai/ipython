@@ -4,7 +4,7 @@
 IPython Sphinx Directive
 ========================
 
-.. module:: IPython.sphinxext.ipython_directive
+.. module:: ipython_directive
    :synopsis: An enhanced extension for Sphinx and rst use.
 
 .. |rst| replace:: reStructured text

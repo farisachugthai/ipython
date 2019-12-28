@@ -10,7 +10,7 @@ IPython 6.5.0
 Miscellaneous bug fixes and compatibility with Python 3.7.
 
 * Autocompletion fix for modules with out ``__init__.py`` :ghpull:`11227`
-* update the ``%pastebin`` magic to use ``dpaste.com`` instead og GitHub Gist
+* update the ``%pastebin`` magic to use ``dpaste.com`` instead of GitHub Gist
   which now requires authentication :ghpull:`11182`
 * Fix crash with multiprocessing :ghpull:`11185`
 
@@ -211,17 +211,19 @@ The completer Completion API has seen an overhaul, and the new completer has
 plenty of improvements both from the end users of terminal IPython and for
 consumers of the API.
 
-This new API is capable of pulling completions from :any:`jedi`, thus allowing
-type inference on non-executed code. If :any:`jedi` is installed, completions like
-the following are now possible without code evaluation:
+This new API is capable of pulling completions from `jedi`, thus allowing
+type inference on non-executed code. If `jedi` is installed, completions like
+the following are now possible without code evaluation::
 
     >>> data = ['Number of users', 123_456]
     ... data[0].<tab>
 
 That is to say, IPython is now capable of inferring that `data[0]` is a string,
-and will suggest completions like `.capitalize`. The completion power of IPython
-will increase with new Jedi releases, and a number of bug-fixes and more completions
-are already available on the development version of :any:`jedi` if you are curious.
+and will suggest completions like ``.capitalize``.
+
+The completion power of IPython will increase with new Jedi releases, and a
+number of bug-fixes and more completions are already available on the
+development version of `jedi` if you are curious.
 
 With the help of prompt toolkit, types of completions can be shown in the
 completer interface:

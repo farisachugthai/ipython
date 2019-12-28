@@ -2,13 +2,24 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 import atexit
+import codecs
 import os
 import sys
+from pathlib import Path
 import tempfile
 import warnings
 from warnings import warn
 
 from IPython.utils.capture import capture_output  # noqa
+
+if os.environ.get('TMP', None):
+    tempfile.tempdir = os.environ.get('TMP')
+elif os.environ.get('TEMP', None):
+    tempfile.tempdir = os.environ.get('TEMP')
+elif os.environ.get('TMPDIR', None):
+    tempfile.tempdir = os.environ.get('TMPDIR')
+else:
+    tempfile.tempdir = Path.home()
 
 
 class IOStream:
@@ -252,8 +263,8 @@ def temp_pyfile(src=None, ext=".py"):
 
     """
     fname = tempfile.NamedTemporaryFile(suffix=ext)
-    with open(fname.name, "w") as f:
+    with codecs.open(fname.name, "wb") as f:
         if src:
             f.write(src)
         f.flush()
-    return fname.name
+        return f

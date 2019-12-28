@@ -59,13 +59,10 @@ def get_home_dir(require_writable=False):
         Path to your home dir
 
     """
-    if not require_writable:
-        return Path.home().__fspath__()
+    if not _writable_dir(Path.home().__fspath__()) and require_writable:
+        raise PermissionError()
     else:
-        if not _writable_dir(Path.home().__fspath__()):
-            raise
-        else:
-            return Path.home().__fspath__()
+        return Path.home().__fspath__()
 
 
 def compress_user(path):
@@ -166,34 +163,7 @@ def get_xdg_cache_dir():
 
 
 def expand_path(s):
-    r"""Expand $VARS and ~names in a string, like a shell.
-
-    Largely useful for Win32. On Unix this simply runs expanduser(expandvars(s)).
-
-    Notes
-    -----
-    This is a pretty subtle hack. When expand user is given a UNC path
-    on Windows (\\server\share$\%username%), os.path.expandvars, removes
-    the $ to get (\\server\share\%username%). I think it considered $
-    alone an empty var. But, we need the $ to remains there (it indicates
-    a hidden share).
-
-    Examples
-    --------
-    .. ipython::
-
-       In [2]: os.environ['FOO']='test'
-
-       In [3]: expand_path('variable FOO is $FOO')
-       Out[3]: 'variable FOO is test'
-
-    """
-    if os.name == "nt":
-        s = s.replace("$\\", "IPYTHON_TEMP")
-    s = os.path.expandvars(os.path.expanduser(s))
-    if os.name == "nt":
-        s = s.replace("IPYTHON_TEMP", "$\\")
-    return s
+    return Path(s).expanduser().__fspath__()
 
 
 def unescape_glob(s):

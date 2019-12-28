@@ -5,6 +5,7 @@
     Stop calling inject directly.
 
 """
+import os
 import tempfile
 from pathlib import Path
 
@@ -24,7 +25,14 @@ from _pytest.nose import (
 
 
 # So we can ensure we don't have permission errors running the tests
-tempfile.tempdir = Path.home()
+if os.environ.get('TMP', None):
+    tempfile.tempdir = os.environ.get('TMP')
+elif os.environ.get('TEMP', None):
+    tempfile.tempdir = os.environ.get('TEMP')
+elif os.environ.get('TMPDIR', None):
+    tempfile.tempdir = os.environ.get('TMPDIR')
+else:
+    tempfile.tempdir = Path.home()
 
 
 def get_test_shell():
