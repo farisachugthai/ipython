@@ -1,16 +1,14 @@
 """Magic functions for running cells in various scripts."""
 
 import atexit
+from codecs import decode
 import errno
 import os
 import signal
 import sys
-import time
-
-# Copyright (c) IPython Development Team.
-# Distributed under the terms of the Modified BSD License.
-from codecs import decode
 from subprocess import PIPE, CalledProcessError, Popen
+import time
+from textwrap import dedent
 
 from traitlets import Dict, List, default
 
@@ -18,6 +16,9 @@ from IPython.core import magic_arguments
 from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 from IPython.lib.backgroundjobs import BackgroundJobManager
 from IPython.utils.process import arg_split
+
+# Copyright (c) IPython Development Team.
+# Distributed under the terms of the Modified BSD License.
 
 # -----------------------------------------------------------------------------
 # Magic implementation classes
@@ -74,27 +75,31 @@ def script_args(f):
 
 @magics_class
 class ScriptMagics(Magics):
-    """Magics for talking to scripts
+    """Magics for talking to scripts.
 
     This defines a base `%%script` cell magic for running a cell
     with a program in a subprocess, and registers a few top-level
     magics that call %%script with common interpreters.
+
+    It's really surprising to me that this shares 0% of the code with
+    ./execution.py
     """
 
     script_magics = List(
-        help="""Extra script cell magics to define
+        help=dedent(
+            """Extra script cell magics to define.
 
         This generates simple wrappers of `%%script foo` as `%%foo`.
 
         If you want to add script magics that aren't on your path,
-        specify them in script_paths
+        specify them in script_paths.
         """,
+        )
     ).tag(config=True)
 
     @default("script_magics")
     def _script_magics_default(self):
-        """default to a common list of programs"""
-
+        """Default to a common list of programs."""
         defaults = [
             "sh",
             "bash",
@@ -106,22 +111,22 @@ class ScriptMagics(Magics):
             "pypy",
         ]
         if os.name == "nt":
-            defaults.extend(
-                ["cmd",]
-            )
-
+            defaults.extend(["cmd"])
         return defaults
 
     script_paths = Dict(
-        help="""Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
+        help=dedent(
+            """Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
 
         Only necessary for items in script_magics where the default path will not
         find the right interpreter.
         """
+        )
     ).tag(config=True)
 
-    def __init__(self, shell=None):
-        super(ScriptMagics, self).__init__(shell=shell)
+    def __init__(self, shell=None, **kwargs):
+        """Dec 28, 2019: Just added kwargs dict to signature."""
+        super(ScriptMagics, self).__init__(shell=shell, **kwargs)
         self._generate_script_magics()
         self.job_manager = BackgroundJobManager()
         self.bg_processes = []

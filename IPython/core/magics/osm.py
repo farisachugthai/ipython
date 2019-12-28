@@ -6,7 +6,6 @@ builtin.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 import codecs
-import io
 import os
 import re
 import sys
@@ -15,8 +14,8 @@ from pprint import pformat
 from traitlets import Bool
 
 from IPython.core import magic_arguments, oinspect, page
-from IPython.core.alias import Alias, AliasError
-from IPython.core.error import UsageError
+from IPython.core.alias import Alias
+from IPython.core.error import UsageError, AliasError, InvalidAliasError
 from IPython.core.magic import (
     Magics,
     cell_magic,
@@ -25,9 +24,7 @@ from IPython.core.magic import (
     line_magic,
     magics_class,
 )
-from IPython.testing.skipdoctest import skip_doctest
 from IPython.utils.openpy import source_to_unicode
-from IPython.utils.process import abbrev_cwd
 from IPython.utils.terminal import set_term_title
 
 
@@ -58,34 +55,24 @@ class OSMagics(Magics):
         # call up the chain
         super().__init__(shell=shell, **kwargs)
 
-    @skip_doctest
     def _isexec_POSIX(self, file):
-        """
-            Test for executable on a POSIX system
-        """
+        """Test for executable on a POSIX system."""
         if os.access(file.path, os.X_OK):
             # will fail on maxOS if access is not X_OK
             return file.is_file()
         return False
 
-    @skip_doctest
     def _isexec_WIN(self, file):
-        """
-            Test for executable file on non POSIX system
-        """
+        """Test for executable file on non POSIX system."""
         return file.is_file() and self.execre.match(file.name) is not None
 
-    @skip_doctest
     def isexec(self, file):
-        """
-            Test for executable file on non POSIX system
-        """
+        """Test for executable file on non POSIX system."""
         if self.is_posix:
             return self._isexec_POSIX(file)
         else:
             return self._isexec_WIN(file)
 
-    @skip_doctest
     @line_magic
     def alias(self, parameter_s=""):
         """Define an alias for a system command.
@@ -206,7 +193,6 @@ class OSMagics(Magics):
         This function also resets the root module cache of module completer,
         used on slow filesystems.
         """
-        from IPython.core.alias import InvalidAliasError
 
         # for the benefit of module completer in ipy_completers.py
         del self.shell.db["rootmodules_cache"]
@@ -278,7 +264,6 @@ class OSMagics(Magics):
         finally:
             os.chdir(savedir)
 
-    @skip_doctest
     @line_magic
     def pwd(self, parameter_s=""):
         """Return the current working directory path.
@@ -296,8 +281,10 @@ class OSMagics(Magics):
             raise UsageError(
                 "CWD no longer exists - please use %cd to change directory."
             )
+        except OSError:
+            # tmk there are literally 0 situations where it raises FileNotFoundError
+            raise UsageError("CWD no longer exists.")
 
-    @skip_doctest
     @line_magic
     def cd(self, parameter_s=""):
         """Change the current working directory.
@@ -337,6 +324,7 @@ class OSMagics(Magics):
 
           In [10]: cd parent/child
           /home/tsuser/parent/child
+
         """
 
         try:
@@ -410,7 +398,7 @@ class OSMagics(Magics):
                 os.chdir(os.path.expanduser(ps))
                 if hasattr(self.shell, "term_title") and self.shell.term_title:
                     set_term_title(
-                        self.shell.term_title_format.format(cwd=abbrev_cwd())
+                        self.shell.term_title_format.format(cwd=os.getcwd())
                     )
             except OSError:
                 print(sys.exc_info()[1])
@@ -438,13 +426,14 @@ class OSMagics(Magics):
     def env(self, parameter_s=""):
         """Get, set, or list environment variables.
 
-        Usage:\\
+        Usage:
 
           %env: lists all environment variables/values
           %env var: get value for var
           %env var val: set value for var
           %env var=val: set value for var
           %env var=$val: set value for var, using python expansion if possible
+
         """
         if parameter_s.strip():
             split = "=" if "=" in parameter_s else " "
@@ -468,14 +457,18 @@ class OSMagics(Magics):
 
     @line_magic
     def set_env(self, parameter_s):
-        """Set environment variables.  Assumptions are that either "val" is a
+        """Set environment variables.
+
+        Assumptions are that either "val" is a
         name in the user namespace, or val is something that evaluates to a
         string.
 
-        Usage:\\
+        Usage:
+
           %set_env var val: set value for var
           %set_env var=val: set value for var
           %set_env var=$val: set value for var, using python expansion if possible
+
         """
         split = "=" if "=" in parameter_s else " "
         bits = parameter_s.split(split, 1)
@@ -532,12 +525,16 @@ class OSMagics(Magics):
     def dhist(self, parameter_s=""):
         """Print your history of visited directories.
 
-        .. tip:: Note that most of time, you should view directory history by entering `%cd` :kbd:`-` :kbd:`TAB`.
+        .. tip::
+            Note that most of time, you should view directory history by
+            entering `%cd` :kbd:`-` :kbd:`TAB`.
+
         Notes
         -----
         This history is automatically maintained by the `%cd` magic, and
-        is always available as the global list variable _dh. You can use %cd -<n>
-        to go to directory number <n>.
+        is always available as the global list variable _dh.
+        You can use %cd -<n> to go to directory number <n>.
+
         Examples
         --------
             %dhist       -> print full history\\
@@ -566,7 +563,6 @@ class OSMagics(Magics):
         for i in range(ini, fin):
             print("%d: %s" % (i, dh[i]))
 
-    @skip_doctest
     @line_magic
     def sc(self, parameter_s=""):
         """Shell capture - run shell command and capture output (DEPRECATED use !).
@@ -722,7 +718,8 @@ class OSMagics(Magics):
           .s (or .spstr): value as whitespace-separated string.
 
         This is very useful when trying to use such lists as arguments to
-        system commands."""
+        system commands.
+        """
 
         if cell is None:
             # line magic
@@ -757,8 +754,8 @@ class OSMagics(Magics):
         there is such a bookmark defined.
 
         Your bookmarks persist through IPython sessions, but they are
-        associated with each profile."""
-
+        associated with each profile.
+        """
         opts, args = self.parse_options(parameter_s, "drl", mode="list")
         if len(args) > 2:
             raise UsageError("%bookmark: too many arguments")

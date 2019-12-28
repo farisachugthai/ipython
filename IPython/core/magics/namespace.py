@@ -57,7 +57,7 @@ class NamespaceMagics(Magics):
             between ? and ??.
             detail_level: 0 -> obj? , 1 -> obj??
         """
-        self.log.debug('pinfo par: <%s>' % parameter_s)  # dbg
+        self.log.debug("pinfo par: <%s>" % parameter_s)  # dbg
         detail_level = 0
         # We need to detect if we got called as 'pinfo pinfo foo', which can
         # happen if the user types 'pinfo foo?' at the cmd line.

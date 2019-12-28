@@ -12,6 +12,9 @@
 # Imports
 # -----------------------------------------------------------------------------
 
+# flake8: noqa
+# because of all the F401 violations
+
 from IPython.core.magic import Magics, magics_class
 
 from .auto import AutoMagics

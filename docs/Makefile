@@ -61,7 +61,7 @@ apidoc:
 	@echo "Generating API docs"
 	$(SPHINXAPIDOC) -d 1 -Mef --tocfile index -o source/api/generated -t source/_templates ../IPython "IPython/**tests**"
 	-rm -f source/api/generated/*test*
-	-rm -f source/api/generated/IPython.rst
+	-rm -f source/api/generated/IPython.rst source/api/generated/index.rst
 
 
 # In case you couldn't remember, `:r!pydoc sphinx.cmd.build` can be useful here

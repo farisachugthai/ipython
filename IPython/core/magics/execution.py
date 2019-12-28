@@ -72,20 +72,24 @@ else:
 
 
 class TimeitResult:
-    """
-    Object returned by the timeit magic with info about the run.
-
-    Contains the following attributes :
-
-    loops: (int) number of loops done per measurement
-    repeat: (int) number of times the measurement has been repeated
-    best: (float) best execution time / number
-    all_runs: (list of float) execution time of each run (in s)
-    compile_time: (float) time of statement compilation (s)
-
-    """
+    """Provides info from the `%timeit` magic about the run."""
 
     def __init__(self, loops, repeat, best, worst, all_runs, compile_time, precision):
+        """
+        Parameters
+        ----------
+
+        loops: (int)
+            number of loops done per measurement
+        repeat: (int)
+            number of times the measurement has been repeated
+        best: (float)
+            best execution time / number
+        all_runs: (list of float)
+            execution time of each run (in s)
+        compile_time: (float)
+            time of statement compilation (s)
+        """
         self.loops = loops
         self.repeat = repeat
         self.best = best
@@ -97,45 +101,34 @@ class TimeitResult:
 
     @property
     def average(self):
-        """
-
-        Returns
-        -------
-
-        """
         return math.fsum(self.timings) / len(self.timings)
 
     @property
     def stdev(self):
-        """
-
-        Returns
-        -------
-
-        """
         mean = self.average
         return (
             math.fsum([(x - mean) ** 2 for x in self.timings]) / len(self.timings)
         ) ** 0.5
 
-    def __str__(self):
-        """TODO: This dunder should probably be a full method."""
-        pm = "+-"
-        if hasattr(sys.stdout, "encoding") and sys.stdout.encoding:
+    def print(self):
+        if hasattr(sys.stdout, "encoding"):
             "\xb1".encode(sys.stdout.encoding)
             pm = "\xb1"
         return (
-            "{mean} {pm} {std} per loop (mean {pm} std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} "
+            "{mean} +- {std} per loop (mean +- std. dev. of {runs} run{run_plural}, {loops} loop{loop_plural} "
             "each)".format(
-                pm=pm,
+                mean=_format_time(self.average, self._precision),
+                std=_format_time(self.stdev, self._precision),
                 runs=self.repeat,
                 loops=self.loops,
                 loop_plural="" if self.loops == 1 else "s",
                 run_plural="" if self.repeat == 1 else "s",
-                mean=_format_time(self.average, self._precision),
-                std=_format_time(self.stdev, self._precision),
             )
         )
+
+    def __str__(self):
+        """TODO: This dunder should probably be a full method."""
+        self.print()
 
     def _repr_pretty_(self, p, cycle):
         unic = self.__str__()
@@ -569,16 +562,13 @@ python-profiler package from non-free."""
         else:
             self.shell.showtraceback()
 
-    @skip_doctest
     @line_magic
     def run(self, parameter_s="", runner=None, file_finder=get_py_filename):
         """Run the named file inside IPython as a program.
 
-        Usage::
-
-          %run [-n -i -e -G]
-               [( -t [-N<N>] | -d [-b<N>] | -p [profile options] )]
-               ( -m mod | file ) [args]
+        .. program:: %run [-n -i -e -G]
+                     [( -t [-N<N>] | -d [-b<N>] | -p [profile options] )]
+                     ( -m mod | file ) [args]
 
         Parameters after the filename are passed as command-line arguments to
         the program (put in sys.argv). Then, control returns to IPython's
@@ -610,25 +600,29 @@ python-profiler package from non-free."""
 
         Options:
 
-        -n
+        .. option:: -n
+
           __name__ is NOT set to '__main__', but to the running file's name
           without extension (as python does under import).  This allows running
           scripts and reloading the definitions in them without calling code
           protected by an ``if __name__ == "__main__"`` clause.
 
-        -i
+        .. option:: -i
+
           run the file in IPython's namespace instead of an empty one. This
           is useful if you are experimenting with code written in a text editor
           which depends on variables defined interactively.
 
-        -e
+        .. option:: -e
+
           ignore sys.exit() calls or SystemExit exceptions in the script
           being run.  This is particularly useful if IPython is being used to
           run unittests, which always exit with a sys.exit() call.  In such
           cases you are interested in the output of the test results, not in
           seeing a traceback of the unittest module.
 
-        -t
+        .. option:: -t
+
           print timing information at the end of the run.  IPython will give
           you an estimated CPU time consumption for your script, which under
           Unix uses the resource module to avoid the wraparound problems of
@@ -655,7 +649,8 @@ python-profiler package from non-free."""
               User  :   0.910862 s,  0.1821724 s.
               System:        0.0 s,        0.0 s.
 
-        -d
+        .. option:: -d
+
           run your program under the control of pdb, the Python debugger.
           This allows you to execute your program step by step, watch variables,
           etc.  Internally, what IPython does is similar to calling::
@@ -684,7 +679,8 @@ python-profiler package from non-free."""
           can easily see pdb's full documentation with "import pdb;pdb.help()"
           at a prompt.
 
-        -p
+        .. option:: -p
+
           run program under the control of the Python profiler module (which
           prints a detailed report of execution times, function calls, etc).
 
@@ -702,7 +698,8 @@ python-profiler package from non-free."""
         if the filename ends with .ipy[nb], the file is run as ipython script,
         just as if the commands were written on IPython prompt.
 
-        -m
+        .. option:: -m
+
           specify module name to load instead of script path. Similar to
           the -m option for the python interpreter. Use this option last if you
           want to combine with other %run options. Unlike the python interpreter
@@ -713,8 +710,9 @@ python-profiler package from non-free."""
 
           will run the example module.
 
-        -G
-          disable shell-like glob expansion of arguments.
+        .. option:: -G
+
+            disable shell-like glob expansion of arguments.
 
         """
 
@@ -722,16 +720,7 @@ python-profiler package from non-free."""
         # Add '--' after '-m <module_name>' to ignore additional args passed to
         # a module.
         if "-m" in parameter_s and "--" not in parameter_s:
-            argv = shlex.split(parameter_s, posix=(os.name == "posix"))
-            for idx, arg in enumerate(argv):
-                if arg and arg.startswith("-") and arg != "-":
-                    if arg == "-m":
-                        argv.insert(idx + 2, "--")
-                        break
-                else:
-                    # Positional arg, break
-                    break
-            parameter_s = " ".join(shlex.quote(arg) for arg in argv)
+            self._handle_module_run_parameters(parameter_s)
 
         # get arguments and set sys.argv for program to be run.
         opts, arg_lst = self.parse_options(
@@ -924,6 +913,20 @@ python-profiler package from non-free."""
                 del sys.modules[main_mod_name]
 
         return stats
+
+    @staticmethod
+    def _handle_module_run_parameters(passed_args):
+        argv = shlex.split(passed_args, posix=(os.name == "posix"))
+        for idx, arg in enumerate(argv):
+            if arg and arg.startswith("-") and arg != "-":
+                if arg == "-m":
+                    argv.insert(idx + 2, "--")
+                    break
+            else:
+                # Positional arg, break
+                break
+        passed_args = " ".join(shlex.quote(arg) for arg in argv)
+        return passed_args
 
     def _run_with_debugger(
         self, code, code_ns, filename=None, bp_line=None, bp_file=None
