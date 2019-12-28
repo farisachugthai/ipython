@@ -24,21 +24,29 @@ launch InteractiveShell instances, load extensions, etc.
 """
 import abc
 import glob
+import logging
 import os
 import sys
 
+from IPython.core import pylabtools
+from IPython.core.application import SYSTEM_CONFIG_DIRS
+from IPython.core.getipython import get_ipython
+from IPython.terminal import pt_inputhooks
+from IPython.utils.contexts import preserve_keys
 from traitlets import Bool, CaselessStrEnum, Instance, List, Unicode, observe
+from traitlets.config import get_config
 from traitlets.config.application import boolean_flag
 from traitlets.config.configurable import Configurable
 from traitlets.config.loader import Config, filefind
 
-from IPython.core import pylabtools
-from IPython.core.application import SYSTEM_CONFIG_DIRS
-from IPython.terminal import pt_inputhooks
+handler = logging.StreamHandler()
+formatter = logging.Formatter(fmt='%(relativeCreated)d %(message)s')
+handler.setFormatter(formatter)
+handler.setLevel(logging.INFO)
+
 
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
-from IPython.utils.contexts import preserve_keys
 
 if sys.version_info < (3, 7):
     from IPython.core.error import ModuleNotFoundError
@@ -186,9 +194,8 @@ class InteractiveShellApp(Configurable):
         be hidden from tools like %who?""",
     ).tag(config=True)
 
-    exec_files = List(
-        Unicode(), allow_none=True, help="""List of files to run at IPython startup."""
-    ).tag(config=True)
+    exec_files = List([], allow_none=True, help="""List of files to run at IPython startup."""
+                      ).tag(config=True)
 
     exec_PYTHONSTARTUP = Bool(
         True,
@@ -199,7 +206,6 @@ class InteractiveShellApp(Configurable):
     file_to_run = Unicode("", help="""A file to be run""", allow_none=True).tag(
         config=True
     )
-
     exec_lines = List(
         Unicode(), allow_none=True, help="""lines of code to run at IPython startup."""
     ).tag(config=True)
@@ -279,7 +285,8 @@ class InteractiveShellApp(Configurable):
         sys.path.insert(idx, "")
 
     def init_shell(self):
-        raise NotImplementedError("Override in subclasses")
+        # raise NotImplementedError("Override in subclasses")
+        self.shell = get_ipython()
 
     def init_gui_pylab(self):
         """Enable GUI event loop integration, taking pylab into account."""
@@ -396,6 +403,7 @@ class InteractiveShellApp(Configurable):
         should *not* be excluded from `%whos`.
 
         """
+        self.log.addHandler(handler)
         self._run_startup_files()
         self._run_exec_lines()
         self._run_exec_files()
@@ -619,6 +627,9 @@ class InteractiveShellApp(Configurable):
                 self.shell.safe_run_module(self.module_to_run, self.shell.user_ns)
             finally:
                 sys.argv = save_argv
+
+    def __repr__(self):
+        return '{!r}'.format(self.__class__.__name__)
 
 
 class InteractiveShellAppABC(abc.ABCMeta):

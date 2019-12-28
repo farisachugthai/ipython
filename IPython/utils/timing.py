@@ -22,6 +22,11 @@ Utilities for timing code execution.
 # -----------------------------------------------------------------------------
 
 import time
+import cProfile
+import pstats
+import pprint
+from pstats import func_std_string, f8
+
 
 # -----------------------------------------------------------------------------
 # Code
@@ -130,3 +135,43 @@ def timing(func, *args, **kw):
     seconds. This is just the first value in timings_out()."""
 
     return timings_out(1, func, *args, **kw)[0]
+
+
+class Profiler:
+
+    def __init__(self):
+        pass
+
+    def run(self, profiled):
+        pr = cProfile.Profile()
+        pr.enable()
+        eval(profiled)
+        pr.create_stats()
+        ps = pstats.Stats(pr).sort_stats('tottime', 'cumtime')
+
+    def get_profile_dict(ps):
+        profile_dict = {}
+        width, list = ps.get_print_list([])
+        if list:
+            for func in list:
+                cc, nc, tt, ct, callers = ps.stats[func]
+                ncalls = str(nc) if nc == cc else (str(nc) + '/' + str(cc))
+                tottime = float(f8(tt))
+                percall_tottime = -1 if nc == 0 else float(f8(tt / nc))
+                cumtime = float(f8(ct))
+                percall_cumtime = -1 if cc == 0 else float(f8(ct / cc))
+                func_name = func_std_string(func)
+                profile_dict[func_name] = {
+                    "ncalls": ncalls,
+                    "tottime": tottime,  # time spent in this function alone
+                    "percall_tottime": percall_tottime,
+                    "cumtime": cumtime,  # time spent in the function plus all functions that this function called,
+                    "percall_cumtime": percall_cumtime
+                }
+        profile_dict["total_tt"] = float(f8(ps.total_tt))
+        return profile_dict
+
+    def call(self, ps):
+        """Switch to a dunder when you've tried it a few more times."""
+        pp = pprint.PrettyPrinter(depth=6)
+        pp.pprint(get_profile_dict(ps))

@@ -1,5 +1,4 @@
-"""
-Test for async helpers.
+"""Test for async helpers.
 
 Should only trigger on python 3.5+ or will have syntax errors.
 """
@@ -219,8 +218,7 @@ class AsyncTest(TestCase):
                     def f():
                         pass
                     return
-                    """
-            ),
+                    """),
         )
 
         for test_name, test_case in tl_err_test_cases:
@@ -240,78 +238,27 @@ class AsyncTest(TestCase):
         # detection isn't *too* aggressive, and works inside a function
         func_contexts = []
 
-        func_contexts.append(
-            (
-                "func",
-                False,
-                dedent(
-                    """
-        def f():"""
-                ),
-            )
-        )
+        func_contexts.append(('func', False, dedent("""
+        def f():""")))
 
-        func_contexts.append(
-            (
-                "method",
-                False,
-                dedent(
-                    """
+        func_contexts.append(('method', False, dedent("""
         class MyClass:
             def __init__(self):
-        """
-                ),
-            )
-        )
+        """)))
 
-        func_contexts.append(
-            (
-                "async-func",
-                True,
-                dedent(
-                    """
-        async def f():"""
-                ),
-            )
-        )
+        func_contexts.append(("async-func", True, dedent("""
+        async def f():"""),))
 
-        func_contexts.append(
-            (
-                "async-method",
-                True,
-                dedent(
-                    """
+        func_contexts.append(('async-method', True, dedent("""
         class MyClass:
-            async def f(self):"""
-                ),
-            )
-        )
+            async def f(self):""")))
 
-        func_contexts.append(
-            (
-                "closure",
-                False,
-                dedent(
-                    """
+        func_contexts.append(('closure', False, dedent("""
         def f():
             def g():
-        """
-                ),
-            )
-        )
+        """)))
 
         def nest_case(context, case):
-            """
-
-            Parameters
-            ----------
-            context :
-            case :
-
-            Returns
-            -------
-
-            """
             # Detect indentation
             lines = context.strip().splitlines()
             prefix_len = 0
@@ -367,47 +314,40 @@ class AsyncTest(TestCase):
                 nonlocal x
                 x = 10000
                 yield x
-            """
-            )
-            iprc(
-                """
+            """)
+            iprc("""
             def f():
                 def g():
                     nonlocal x
                     x = 10000
                     yield x
-            """
-            )
+            """)
 
         # works if outer scope is a function scope and var exists
-        iprc(
-            """
+        iprc("""
         def f():
             x = 20
             def g():
                 nonlocal x
                 x = 10000
                 yield x
-        """
-        )
+        """)
 
     def test_execute(self):
-        iprc(
-            """
+        iprc("""
         import asyncio
         await asyncio.sleep(0.001)
         """
-        )
+             )
 
     def test_autoawait(self):
         iprc("%autoawait False")
         iprc("%autoawait True")
-        iprc(
-            """
+        iprc("""
         from asyncio import sleep
         await sleep(0.1)
         """
-        )
+             )
 
     @skip_without("curio")
     def test_autoawait_curio(self):
@@ -420,24 +360,20 @@ class AsyncTest(TestCase):
     @skip_without("trio")
     def test_autoawait_trio_wrong_sleep(self):
         iprc("%autoawait trio")
-        res = iprc_nr(
-            """
+        res = iprc_nr("""
         import asyncio
         await asyncio.sleep(0)
-        """
-        )
+        """)
         with nt.assert_raises(TypeError):
             res.raise_error()
 
     @skip_without("trio")
     def test_autoawait_asyncio_wrong_sleep(self):
         iprc("%autoawait asyncio")
-        res = iprc_nr(
-            """
+        res = iprc_nr("""
         import trio
         await trio.sleep(0)
-        """
-        )
+        """)
         with nt.assert_raises(RuntimeError):
             res.raise_error()
 

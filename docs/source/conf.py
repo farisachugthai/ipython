@@ -486,6 +486,8 @@ def setup(app: "Sphinx") -> None:
     app.add_lexer("ipython", IPyLexer)
     app.add_lexer("ipython3", IPython3Lexer)
     app.add_lexer("numpy", NumPyLexer)
+    app.add_lexer('markdown', MarkdownLexer)
+    app.add_lexer('rst', RstLexer)
 
     fdesc = GroupedField(
         "param", label="Parameters", names=["param"], can_collapse=True

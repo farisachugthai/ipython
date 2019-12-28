@@ -5,6 +5,8 @@
     Stop calling inject directly.
 
 """
+import tempfile
+from pathlib import Path
 
 import pytest
 
@@ -19,6 +21,10 @@ from _pytest.nose import (
     is_potential_nosetest,
     #     call_optional,
 )
+
+
+# So we can ensure we don't have permission errors running the tests
+tempfile.tempdir = Path.home()
 
 
 def get_test_shell():

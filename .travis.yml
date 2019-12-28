@@ -14,30 +14,19 @@ cache:
 
 install:
   - |
-    if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then
-    # this command works on linux but not on mac because of permission issues.
-
-        if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
-            # ubuntu
-            pip3 install --upgrade pip -r requirements_dev.txt -e .
-        else
-            # OSX
-            wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
-            bash miniconda.sh -b -p $HOME/miniconda
-            export PATH="$HOME/miniconda/bin:$PATH"
-            conda config --set always_yes yes --set changeps1 no
-            conda update -q conda
-            conda config --add channels conda-forge
-            # Useful for debugging any issues with conda
-            conda info -a
-            conda create -q -n test-environment python=$CONDA_PY ipython pytest matplotlib setuptools wheel nose coverage codecov pyqt sphinx testpath flake8 flake8-rst nbformat
-            source activate test-environment
-        fi
-
-    else
-        # windows
-        python -m pip install -U pip -r requirements_dev.txt -e .
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+        bash miniconda.sh -b -p $HOME/miniconda
+        export PATH="$HOME/miniconda/bin:$PATH"
+        conda config --set always_yes yes --set changeps1 no
+        conda update -q conda
+        conda config --add channels conda-forge
+        # Useful for debugging any issues with conda
+        conda info -a
+        conda create -q -n test-environment python=$CONDA_PY ipython pytest matplotlib setuptools wheel nose coverage codecov pyqt sphinx testpath flake8 flake8-rst nbformat
+        source activate test-environment
     fi
+
 
 script:
   - pytest
