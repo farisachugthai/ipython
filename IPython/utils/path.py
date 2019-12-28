@@ -209,18 +209,10 @@ def unescape_glob(s):
 
 def shellglob(args):
     """Do glob expansion for each element in `args` and return a flattened list.
-
-    Unmatched glob pattern will remain as-is in the returned list.
-
-    Pretty sure that this only exists to aide glob.glob in handling Windows
-    paths.
     """
     expanded = []
-    # Do not unescape backslash in Windows as it is interpreted as
-    # path separator:
-    unescape = unescape_glob if sys.platform != "win32" else lambda x: x
     for a in args:
-        expanded.extend(glob.glob(a) or [unescape(a)])
+        expanded.extend(Path(a).glob('*'))
     return expanded
 
 
@@ -338,12 +330,12 @@ def ensure_dir_exists(path, mode=0o755):
     pathlib_path = Path(path)
     if not pathlib_path.exists():
         try:
-            pathlib_path.mkdir(path, mode=mode)
+            pathlib_path.mkdir(path, mode)
         except FileExistsError:
             pass
         except PermissionError:
             raise
         except OSError:
             raise
-    elif not os.path.isdir(path):
-        raise OSError("%r exists but is not a directory" % path)
+    elif not pathlib_path.is_dir():
+        raise FileExistsError('File already exists: %s', path)

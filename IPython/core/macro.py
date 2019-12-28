@@ -1,7 +1,10 @@
 """Support for interactive macros in IPython"""
 import re
+import sys
 
 from IPython.utils.encoding import DEFAULT_ENCODING
+
+coding_declaration = sys.getfilesystemencoding()
 
 
 class Macro:
@@ -11,9 +14,7 @@ class Macro:
     input when called.
     """
 
-    coding_declaration = re.compile(r"#\s*coding[:=]\s*([-\w.]+)")
-
-    def __init__(self, code, enc=None, lines=None):
+    def __init__(self, code, lines=None):
         """Store the macro value, as a single string which can be executed.
 
         Oct 24, 2019: Just added enc and lines to the call signature so
@@ -21,15 +22,8 @@ class Macro:
         """
         if lines is None:
             lines = []
-        for line in code.splitlines():
-            coding_match = coding_declaration.match(line)
-            if coding_match:
-                enc = coding_match.group(1)
-            else:
-                lines.append(line)
-        code = "\n".join(lines)
         if isinstance(code, bytes):
-            code = code.decode(enc or DEFAULT_ENCODING)
+            code = code.decode(coding_declaration)
         self.value = code + "\n"
 
     def __str__(self):
@@ -62,4 +56,5 @@ class Macro:
             return Macro(self.value + other.value)
         elif isinstance(other, str):
             return Macro(self.value + other)
-        raise TypeError
+        else:
+            raise TypeError

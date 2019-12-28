@@ -7,6 +7,7 @@ import os
 import re
 from inspect import Parameter, Signature, signature
 from unittest import TestCase
+from typing import Optional
 
 import nose.tools as nt
 from decorator import decorator
@@ -22,13 +23,10 @@ from IPython.utils.path import compress_user
 
 
 def setup_module():
-    """
-
-    """
     global ip
-    ip = get_ipython()
     global inspector
-    inspector = oinspect.Inspector()
+    ip = get_ipython()
+    inspector = oinspect.Inspector(scheme='Linux', config=ip.config)
 
 
 # -----------------------------------------------------------------------------
@@ -39,7 +37,7 @@ def setup_module():
 # defined, if any code is inserted above, the following line will need to be
 # updated.  Do NOT insert any whitespace between the next line and the function
 # definition below.
-THIS_LINE_NUMBER = 41  # Put here the actual number of this line
+THIS_LINE_NUMBER = 39  # Put here the actual number of this line
 
 
 class Test(TestCase):
@@ -523,7 +521,6 @@ def test_render_signature_short():
 
 
 def test_render_signature_long():
-    from typing import Optional
 
     def long_function(
         a_really_long_parameter: int,
@@ -561,3 +558,12 @@ long_function(
 """,
         ],
     )
+
+if __name__ == "__main__":
+    setup_module()
+    try:
+        from _pytest import unittest
+    except:
+        import unittest
+
+    unittest.main()

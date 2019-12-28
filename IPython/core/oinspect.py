@@ -30,10 +30,11 @@ import os
 import sys
 import types
 from inspect import getabsfile as find_file
-from inspect import getdoc, getsource, signature
+from inspect import getargspec, getdoc, getsource, signature
 from itertools import zip_longest
 from textwrap import dedent, indent
 from typing import Any, Callable, Union
+import warnings
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
@@ -48,6 +49,7 @@ from IPython.utils.coloransi import TermColors
 from IPython.utils.dir2 import safe_hasattr
 from IPython.utils.path import compress_user
 from IPython.utils.wildcard import list_namespace, typestr2type
+from traitlets.config.loader import Config
 
 
 def pylight(code):
@@ -393,12 +395,12 @@ class Inspector(Configurable):
         if inspect.isclass(obj) and hasattr(obj, "__init__"):
             init_ds = getdoc(obj.__init__)
             if init_ds is not None:
-                lines.append(head("Init docstring:"))
+                lines.append("Init docstring:")
                 lines.append(indent(init_ds))
         elif hasattr(obj, "__call__"):
             call_ds = getdoc(obj.__call__)
             if call_ds:
-                lines.append(head("Call docstring:"))
+                lines.append("Call docstring:")
                 lines.append(indent(call_ds))
 
         if not lines:
@@ -651,6 +653,17 @@ class Inspector(Configurable):
         if not enable_html_pager:
             del info["text/html"]
         page.page(info)
+
+    def info(self, obj, oname='', formatter=None, info=None, detail_level=0):
+        """Compute a dict with detailed information about an object.
+
+        This method is absolutely not deprecated. It's the only method we test for!
+        """
+        if formatter is not None:
+            warnings.warn('The `formatter` keyword argument to `Inspector.info`'
+                        'is deprecated as of IPython 5.0 and will have no effects.',
+                        DeprecationWarning, stacklevel=2)
+        return self._info(obj, oname=oname, info=info, detail_level=detail_level)
 
     def _info(self, obj, oname="", info=None, detail_level=0) -> dict:
         """Compute a dict with detailed information about an object.

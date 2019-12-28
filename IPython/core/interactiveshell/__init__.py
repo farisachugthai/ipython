@@ -501,6 +501,7 @@ class InteractiveShell(SingletonConfigurable):
 
     # Private interface
     _post_execute = Dict()
+    InteractiveTB = None
 
     # Tracks any GUI loop loaded for pylab
     pylab_gui_select = None
