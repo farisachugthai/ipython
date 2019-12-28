@@ -1773,30 +1773,34 @@ class InteractiveShell(SingletonConfigurable):
         """Generic interface to the inspector system.
 
         This function is meant to be called by pdef, pdoc & friends.
+
+        Yeah the magics in `IPython.core.magics.namespace` all call this
+        method, and in some cases that's their exclusive functionality.
+
         """
         info = self._object_find(oname, namespaces)
         docformat = sphinxify if self.sphinxify_docstring else None
-        if info.found:
-            pmethod = getattr(self.inspector, meth)
-            # TODO: only apply format_screen to the plain/text repr of the mime
-            # bundle.
-            formatter = format_screen if info.ismagic else docformat
-            if meth == "pdoc":
-                pmethod(info.obj, oname, formatter)
-            elif meth == "pinfo":
-                pmethod(
-                    info.obj,
-                    oname,
-                    formatter,
-                    info,
-                    enable_html_pager=self.enable_html_pager,
-                    **kw,
-                )
-            else:
-                pmethod(info.obj, oname)
-        else:
+        if not info.found:
             print("Object `%s` not found." % oname)
             return "not found"  # so callers can take other action
+
+        pmethod = getattr(self.inspector, meth)
+        # TODO: only apply format_screen to the plain/text repr of the mime
+        # bundle. uh we might wanna implement that on the inspector side
+        # since that already has a format_mime method.
+        formatter = format_screen if info.ismagic else docformat
+        if meth == "pdoc":
+            pmethod(info.obj, oname, formatter)
+        elif meth == "pinfo":
+            pmethod(
+                info.obj,
+                oname,
+                info,
+                enable_html_pager=self.enable_html_pager,
+                **kw,
+            )
+        else:
+            pmethod(info.obj, oname)
 
     def object_inspect(self, oname, detail_level=0):
         """Get object info about 'oname'.

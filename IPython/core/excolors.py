@@ -13,28 +13,35 @@ from IPython.utils.coloransi import ColorScheme, ColorSchemeTable, TermColors
 
 
 def exception_colors():
-    """Return a color table with fields for exception reporting.
+    """Colorize exceptions printed to stdout.
 
-    The table is an instance of ColorSchemeTable with schemes added for
-    'Neutral', 'Linux', 'LightBG' and 'NoColor' and fields for exception handling filled
-    in.
+    Returns
+    -------
+    ex_colors : :class:`IPython.utils.coloransi.ColorSchemeTable`
+        Dict with fields for exception reporting.
+        Colorschemes are added for 'Neutral', 'Linux', 'LightBG' and 'NoColor'
+        and fields for exception handling are filled in.
 
-    Examples:
+    Examples
+    --------
+    ::
 
-    >>> ec = exception_colors()
-    >>> ec.active_scheme_name
-    ''
-    >>> print(ec.active_colors)
-    None
+        >>> ec = exception_colors()
+        >>> ec.active_scheme_name
+        ''
+        >>> print(ec.active_colors)
+        None
 
-    Now we activate a color scheme:
-    >>> ec.set_active_scheme('NoColor')
-    >>> ec.active_scheme_name
-    'NoColor'
-    >>> sorted(ec.active_colors.keys())
-    ['Normal', 'caret', 'em', 'excName', 'filename', 'filenameEm', 'line',
-    'lineno', 'linenoEm', 'name', 'nameEm', 'normalEm', 'topline', 'vName',
-    'val', 'valEm']
+    Now we activate a color scheme::
+
+        >>> ec.set_active_scheme('NoColor')
+        >>> ec.active_scheme_name
+        'NoColor'
+        >>> sorted(ec.active_colors.keys())
+        ['Normal', 'caret', 'em', 'excName', 'filename', 'filenameEm', 'line',
+        'lineno', 'linenoEm', 'name', 'nameEm', 'normalEm', 'topline', 'vName',
+        'val', 'valEm']
+
     """
     ex_colors = ColorSchemeTable()
 

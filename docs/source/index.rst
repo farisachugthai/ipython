@@ -45,7 +45,7 @@ features:
   performing many tasks related to IPython or the operating system.
 
 * A rich configuration system with easy switching between different setups
-  (simpler than changing :envvar:`$PYTHONSTARTUP` environment variables
+  (simpler than changing :envvar:`PYTHONSTARTUP` environment variables
   every time).
 
 * Session logging and reloading.
@@ -220,6 +220,8 @@ What's New In IPython and About Us
 
 .. toctree::
    :titlesonly:
+   :hidden:
+   :maxdepth: 1
    :caption: About us
 
    whatsnew/index

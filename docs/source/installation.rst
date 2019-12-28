@@ -7,7 +7,7 @@ Installation
 .. module:: installation
    :synopsis: Root of installation instructions
 
-.. highlight:: bash
+.. highlight:: ipython
 
 This section will guide you through :ref:`installing IPython itself <install>`,
 and installing :ref:`kernels for Jupyter <kernel_install>` if you wish to
@@ -158,7 +158,9 @@ again, but this is infrequent.
 Troubleshooting
 ===============
 
-.. admonition:: This troubleshooting guide is old.
+.. admonition::
+
+   This troubleshooting guide is old.
 
 If you are encountering an error message you are likely trying to install or
 use IPython from source. You need to checkout the remote 5.x branch. If you are
@@ -308,10 +310,10 @@ The ``--name`` value is used by Jupyter internally. These commands will overwrit
 any existing kernel with the same name. ``--display-name`` is what you see in
 the notebook menus.
 
-Using virtualenv or conda envs, you can make your IPython kernel in one env
-available to Jupyter in a different env.
+Using virtualenv or inside a conda env, you can make your IPython kernel in
+one env available to Jupyter in a different env.
 
-To do so, run ipykernel install from the kernel's env, with --prefix pointing
+To do so, run ``ipykernel install`` from the kernel's env, with --prefix pointing
 to the Jupyter env:
 
 .. sourcecode:: bash

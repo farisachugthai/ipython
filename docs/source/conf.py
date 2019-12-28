@@ -190,11 +190,11 @@ version = __version__
 today_fmt = "%B %d, %Y"
 
 # List of documents that shouldn't be included in the build.
-unused_docs = ["api/generated/IPython", "api/generated/IPython.core"]
+# unused_docs = ["api/generated/IPython", "api/generated/IPython.core"]
 
 # Exclude these glob-style patterns when looking for source files. They are
 # relative to the source/ directory.
-exclude_patterns = ["**test**", "*/autosummary/*.rst"]
+# exclude_patterns = ["**test**", "*/autosummary/*.rst"]
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 # add_function_parentheses = True

@@ -127,7 +127,7 @@ Embedding IPython
 
 You can start a regular IPython session with
 
-.. sourcecode:: python
+.. sourcecode:: ipython
 
     import IPython
     IPython.start_ipython(argv=[])
@@ -142,60 +142,66 @@ code. This allows you to evaluate dynamically the state of your code, operate
 with your variables, analyze them, etc. For example, if you run the following
 code snippet::
 
-  import IPython
+   import IPython
 
-  a = 42
-  IPython.embed()
+   a = 42
+   IPython.embed()
 
 and within the IPython shell, you reassign 'a' to '23' to do further testing of
 some sort, you can then exit::
 
-  >>> IPython.embed()
-  Python 3.6.2 (default, Jul 17 2017, 16:44:45)
-  Type 'copyright', 'credits' or 'license' for more information
-  IPython 6.2.0.dev -- An enhanced Interactive Python. Type '?' for help.
+   >>> IPython.embed()
+   Python 3.6.2 (default, Jul 17 2017, 16:44:45)
+   Type 'copyright', 'credits' or 'license' for more information
+   IPython 6.2.0.dev -- An enhanced Interactive Python. Type '?' for help.
 
-  In [1]: a = 23
+   In [1]: a = 23
 
-  In [2]: exit()
+   In [2]: exit()
 
 Once you exit and print 'a', the value '23' will be shown::
 
-  In: print(a)
-  23
+   In: print(a)
+   23
 
 It's important to note that the code run in the embedded IPython shell will
 *not* change the state of your code and variables, **unless** the shell is
 contained within the global namespace. In the above example, 'a' is changed
 because this is true.
 
-To further exemplify this, consider the following example::
+To further exemplify this, consider the following example.
 
-  import IPython
-  def do():
-      a = 42
-      print(a)
-      IPython.embed()
-      print(a)
+.. ipython::
+   :verbatim:
+
+   import IPython
+   def do():
+       a = 42
+       print(a)
+       IPython.embed()
+       print(a)
 
 Now if one calls the function and complete the state changes as we did above, the
 value '42' will be printed. Again, this is because it's not in the global
-namespace::
+namespace.
 
-  do()
+.. ipython::
+   :verbatim:
+
+   do()
 
 Running a file with the above code can lead to the following session::
 
-  >>> do()
-  42
-  Python 3.6.2 (default, Jul 17 2017, 16:44:45)
-  Type 'copyright', 'credits' or 'license' for more information
-  IPython 6.2.0.dev -- An enhanced Interactive Python. Type '?' for help.
+   >>> do()
+   42
+   Python 3.6.2 (default, Jul 17 2017, 16:44:45)
+   Type 'copyright', 'credits' or 'license' for more information
+   IPython 6.2.0.dev -- An enhanced Interactive Python. Type '?' for help.
 
-  In [1]: a = 23
+   In [1]: a = 23
 
-  In [2]: exit()
-  42
+   In [2]: exit()
+   42
 
 This feature allows you to easily have a fully functional python
 environment for doing object introspection anywhere in your code with a
@@ -213,14 +219,16 @@ the interactive part (perhaps to stop again later, as many times as
 needed).
 
 The following code snippet is the bare minimum you need to include in
-your Python programs for this to work (detailed examples follow later)::
+your Python programs for this to work (detailed examples follow later).
 
-    from IPython import embed
+.. ipython::
+   :verbatim:
 
-    embed() # this call anywhere in your program will start IPython
+   from IPython import embed
+   embed() # this call anywhere in your program will start IPython
 
 You can also embed an IPython *kernel*, for use with qtconsole, etc. via
-``IPython.embed_kernel()``. This should work the same way, but you can
+:func:`IPython.embed_kernel`. This should work the same way, but you can
 connect an external frontend (``ipython qtconsole`` or ``ipython console``),
 rather than interacting with it in the terminal.
 
@@ -241,7 +249,7 @@ module for more details on the use of this system.
 
 The following sample file illustrating how to use the embedding
 functionality is provided in the examples directory as
-:file:`../../examples/Embedding/embed_class_long.py`_.
+:file:`../../examples/Embedding/embed_class_long.py`.
 It should be fairly self-explanatory:
 
 .. literalinclude:: ../../examples/Embedding/embed_class_long.py

@@ -654,15 +654,13 @@ class Inspector(Configurable):
             del info["text/html"]
         page.page(info)
 
-    def info(self, obj, oname='', formatter=None, info=None, detail_level=0):
+    def info(self, obj, oname='', info=None, detail_level=0):
         """Compute a dict with detailed information about an object.
 
         This method is absolutely not deprecated. It's the only method we test for!
+
+        In addition, the InteractiveShell.object_inspect method calls it.
         """
-        if formatter is not None:
-            warnings.warn('The `formatter` keyword argument to `Inspector.info`'
-                        'is deprecated as of IPython 5.0 and will have no effects.',
-                        DeprecationWarning, stacklevel=2)
         return self._info(obj, oname=oname, info=info, detail_level=detail_level)
 
     def _info(self, obj, oname="", info=None, detail_level=0) -> dict:

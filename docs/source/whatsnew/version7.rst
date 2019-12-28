@@ -576,12 +576,17 @@ is on Jan 1st 2020.
 
 We were able to backport bug fixes to the 5.x branch thanks to our backport bot which
 backported more than `70 Pull-Requests
-<https://github.com/ipython/ipython/pulls?page=3&q=is%3Apr+sort%3Aupdated-desc+author%3Aapp%2Fmeeseeksdev++5.x&utf8=%E2%9C%93>`_, but there are still many PRs that required manual work. This is an area of the project where you can easily contribute by looking for `PRs that still need manual backport <https://github.com/ipython/ipython/issues?q=label%3A%22Still+Needs+Manual+Backport%22+is%3Aclosed+sort%3Aupdated-desc>`_
+<https://github.com/ipython/ipython/pulls?page=3&q=is%3Apr+sort%3Aupdated-desc+author%3Aapp%2Fmeeseeksdev++5.x&utf8=%E2%9C%93>`_,
+but there are still many PRs that required manual work.
+
+This is an area of the project where you can easily contribute by looking for
+`PRs that still need manual backport
+<https://github.com/ipython/ipython/issues?q=label%3A%22Still+Needs+Manual+Backport%22+is%3Aclosed+sort%3Aupdated-desc>`_.
 
 The IPython 6.x branch will likely not see any further release unless critical
 bugs are found.
 
-Make sure you have pip > 9.0 before upgrading. You should be able to update by running:
+Make sure you have pip > 9.0 before upgrading.
 
 .. code::
 
@@ -592,18 +597,16 @@ Make sure you have pip > 9.0 before upgrading. You should be able to update by r
   If you are trying to install or update an ``alpha``, ``beta``, or ``rc``
   version, use pip ``--pre`` flag.
 
-  .. code::
+.. code:: bash
 
-      pip install ipython --upgrade --pre
+   pip install ipython --upgrade --pre
 
 
 Or, if you have conda installed:
 
-.. code::
+.. code-block:: bash
 
    conda install ipython
-
-
 
 Prompt Toolkit 2.0
 ------------------
@@ -787,4 +790,4 @@ Backwards incompatible changes
 
 * The API for transforming input before it is parsed as Python code has been
   completely redesigned: any custom input transformations will need to be
-  rewritten. See :doc:`config/inputtransforms` for details of the new API.
+  rewritten. See :doc:`../config/inputtransforms` for details of the new API.

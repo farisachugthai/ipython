@@ -21,8 +21,6 @@ import sys
 from IPython.core import page
 from IPython.core.error import StdinNotImplementedError, UsageError
 from IPython.core.magic import Magics, line_magic, magics_class
-from IPython.testing.skipdoctest import skip_doctest
-from IPython.utils.encoding import DEFAULT_ENCODING
 from IPython.utils.openpy import read_py_file
 from IPython.utils.path import get_py_filename
 
@@ -36,22 +34,30 @@ class NamespaceMagics(Magics):
     """Magics to manage various aspects of the user's namespace.
 
     These include listing variables, introspecting into them, etc.
+
+    I also think that a BUNCH of this functionality is letter for letter
+    duplicated in oinspect. How much can we trim?
     """
 
     @line_magic
     def pinfo(self, parameter_s="", namespaces=None):
         """Provide detailed information about an object.
 
-        `%pinfo` *object* is just a synonym for
-        object :kbd:`?` or :kbd:`?` object.
+        Running '`%pinfo` object' is just a synonym for object? or ?object.
 
         Parameters
         ----------
         namespaces :
         parameter_s :
+
+        Attributes
+        ----------
+        detail_level : bool
+            I can never find official docs on this. So note its the difference
+            between ? and ??.
+            detail_level: 0 -> obj? , 1 -> obj??
         """
-        # print 'pinfo par: <%s>' % parameter_s  # dbg
-        # detail_level: 0 -> obj? , 1 -> obj??
+        self.log.debug('pinfo par: <%s>' % parameter_s)  # dbg
         detail_level = 0
         # We need to detect if we got called as 'pinfo pinfo foo', which can
         # happen if the user types 'pinfo foo?' at the cmd line.
@@ -76,7 +82,6 @@ class NamespaceMagics(Magics):
         """
         self.shell._inspect("pinfo", parameter_s, detail_level=1, namespaces=namespaces)
 
-    @skip_doctest
     @line_magic
     def pdef(self, parameter_s="", namespaces=None):
         """Print the call signature for any callable object.
@@ -266,7 +271,6 @@ class NamespaceMagics(Magics):
         except BaseException:
             shell.showtraceback()
 
-    @skip_doctest
     @line_magic
     def who_ls(self, parameter_s=""):
         """Return a sorted list of all interactive variables.
@@ -310,7 +314,6 @@ class NamespaceMagics(Magics):
         out.sort()
         return out
 
-    @skip_doctest
     @line_magic
     def who(self, parameter_s=""):
         """Print all interactive variables, with some minimal formatting.
@@ -373,7 +376,6 @@ class NamespaceMagics(Magics):
                 print()
         print()
 
-    @skip_doctest
     @line_magic
     def whos(self, parameter_s=""):
         """Like `%who`, but gives some extra information about each variable.
@@ -508,7 +510,8 @@ class NamespaceMagics(Magics):
                 try:
                     vstr = str(var)
                 except UnicodeEncodeError:
-                    vstr = var.encode(DEFAULT_ENCODING, "backslashreplace")
+                    # I think backslashreplace is a platform specific parameter
+                    vstr = var.encode(sys.getfilesystemencoding(), "backslashreplace")
                 except BaseException:
                     vstr = "<object with id %d (str() failed)>" % id(var)
                 vstr = vstr.replace("\n", "\\n")
