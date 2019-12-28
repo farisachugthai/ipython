@@ -25,6 +25,7 @@ import sys
 from pathlib import Path
 
 import sphinx
+from pygments.lexers.markup import MarkdownLexer, RstLexer
 from pygments.lexers.python import NumPyLexer
 from sphinx import addnodes  # noqa
 from sphinx.application import Sphinx

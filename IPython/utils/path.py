@@ -84,7 +84,7 @@ def compress_user(path):
     """
     home = os.path.expanduser("~")
     if path.startswith(home):
-        path = "~" + path[len(home) :]
+        path = "~" + path[len(home):]
     return path
 
 
@@ -330,12 +330,12 @@ def ensure_dir_exists(path, mode=0o755):
     pathlib_path = Path(path)
     if not pathlib_path.exists():
         try:
-            pathlib_path.mkdir(path, mode)
+            pathlib_path.mkdir(mode)
         except FileExistsError:
             pass
         except PermissionError:
-            raise
+            logging.warning('PermissionError')
         except OSError:
-            raise
+            logging.warning('PermissionError')
     elif not pathlib_path.is_dir():
         raise FileExistsError('File already exists: %s', path)
