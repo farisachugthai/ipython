@@ -241,7 +241,7 @@ def ask_yes_no(prompt, default=None, interrupt=None):
     return answers[ans]
 
 
-def temp_pyfile(src=None, ext=".py"):
+def temp_pyfile(src, ext=".py"):
     """Make a temporary python file, return filename and filehandle.
 
     Parameters
@@ -262,9 +262,8 @@ def temp_pyfile(src=None, ext=".py"):
     Don't change to tempfile.mkdtemp because that returns a directory.
 
     """
-    fname = tempfile.NamedTemporaryFile(suffix=ext)
-    with codecs.open(fname.name, "wb") as f:
-        if src:
-            f.write(src)
+    fname = tempfile.mkstemp(ext)[1]
+    with open(fname, 'w') as f:
+        f.write(src)
         f.flush()
-        return f
+    return fname

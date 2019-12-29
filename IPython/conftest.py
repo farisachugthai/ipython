@@ -31,8 +31,8 @@ elif os.environ.get('TEMP', None):
     tempfile.tempdir = os.environ.get('TEMP')
 elif os.environ.get('TMPDIR', None):
     tempfile.tempdir = os.environ.get('TMPDIR')
-else:
-    tempfile.tempdir = Path.home()
+elif os.environ.get('XDG_CACHE_HOME', None):
+    tempfile.tempdir = os.environ.get('XDG_CACHE_HOME')
 
 
 def get_test_shell():

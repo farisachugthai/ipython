@@ -87,8 +87,12 @@ import shlex
 import subprocess
 import sys
 
-from IPython.core.error import TryNext
+from IPython.core.error import ClipboardEmpty, TryNext
 from IPython.utils.ipstruct import Struct
+
+# here's 2 surprising not imports
+# from IPython.lib.clipboard import *
+# from prompt_toolkit.clipboard.pyperclip import Pyperclip
 
 # List here all the default hooks.  For now it's just the editor functions
 # but over time we'll move here all the public API for user-accessible things.
@@ -182,6 +186,8 @@ class CommandChainDispatcher(Struct):
         .. todo:: Maybe we need to do a sort using something in mod:`operator`.
 
         """
+        if args is None and kw is None:
+            return
         last_exc = TryNext()
         for prio, cmd in self.chain:
             # print "prio",prio,"cmd",cmd #dbg
@@ -207,9 +213,11 @@ class CommandChainDispatcher(Struct):
         """
         return iter(self.chain)
 
-    def __call__(self, *args, **kwargs):
-        """Goddamn I am really struggling with this one."""
-        super().update(*args, **kwargs)
+    def __add__(self, func, priority=0):
+        return self.add(func, priority)
+
+    def __call__(self, args=None, kw=None):
+        return self.call(args, kw)
 
 
 def shutdown_hook(self):
@@ -226,7 +234,7 @@ def late_startup_hook(self, *args, **kwargs):
     return
 
 
-def show_in_pager(self, *, data=None, start=None, screen_lines=None):
+def show_in_pager(self, *, data=None, start=None, screen_lines=None, **kwargs):
     """Run a string through the pager.
 
     Idk what these parameters are though.
@@ -274,15 +282,24 @@ def clipboard_get(self):
     if sys.platform == "win32":
         from IPython.lib.clipboard import win32_clipboard_get
 
-        chain = [win32_clipboard_get]
+        try:
+            chain = [win32_clipboard_get]
+        except:
+            raise ClipboardEmpty
     elif sys.platform == "darwin":
         from IPython.lib.clipboard import osx_clipboard_get
 
-        chain = [osx_clipboard_get]
+        try:
+            chain = [osx_clipboard_get]
+        except:
+            raise ClipboardEmpty
     else:
         from IPython.lib.clipboard import tkinter_clipboard_get
 
-        chain = [tkinter_clipboard_get]
+        try:
+            chain = [tkinter_clipboard_get]
+        except:
+            raise ClipboardEmpty
 
     dispatcher = CommandChainDispatcher()
     for func in chain:

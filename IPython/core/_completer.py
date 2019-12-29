@@ -17,6 +17,7 @@ from traitlets import Bool
 
 from IPython.core.error import ProvisionalCompleterWarning
 from IPython.core.latex_symbols import reverse_latex_symbol
+from IPython.utils.path import compress_user
 
 if sys.platform == "win32":
     PROTECTABLES = " "
@@ -153,15 +154,7 @@ def expand_user(path: str) -> Tuple[str, bool, str]:
         else:
             tilde_val = newpath
 
-    return newpath, tilde_expand, tilde_val
-
-
-def compress_user(path: str, tilde_expand: bool, tilde_val: str) -> str:
-    """Does the opposite of expand_user, with its outputs."""
-    if tilde_expand:
-        return path.replace(tilde_val, "~")
-    else:
-        return path
+    return (newpath, tilde_expand, tilde_val)
 
 
 def completions_sorting_key(word):

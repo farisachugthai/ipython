@@ -397,9 +397,7 @@ class OSMagics(Magics):
             try:
                 os.chdir(os.path.expanduser(ps))
                 if hasattr(self.shell, "term_title") and self.shell.term_title:
-                    set_term_title(
-                        self.shell.term_title_format.format(cwd=os.getcwd())
-                    )
+                    set_term_title(self.shell.term_title_format.format(cwd=os.getcwd()))
             except OSError:
                 print(sys.exc_info()[1])
             else:

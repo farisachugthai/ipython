@@ -185,15 +185,9 @@ __all__ = ["Completer", "IPCompleter"]
 
 
 class Completer(Configurable):
-    """
-
-    """
-
-    # jedi is a hard dependency
     use_jedi = Bool(
-        default_value=True,
-        help="Experimental: Use Jedi to generate autocompletions. "
-        "Default to True if jedi is installed.",
+        default_value=False,
+        help="Experimental: Use Jedi to generate autocompletions. " "Default to False.",
     ).tag(config=True)
 
     jedi_compute_type_timeout = Int(
@@ -894,7 +888,7 @@ class IPCompleter(Completer):
                     else:
                         # true if txt is _not_ a _ name, false otherwise:
                         no__name = (
-                            lambda txt: re.match(r"[.]_.*?", txt[txt.rindex(".") :])
+                            lambda txt: re.match(r"[.]_.*?", txt[txt.rindex("."):])
                             is None
                         )
                     matches = filter(no__name, matches)
@@ -1185,11 +1179,11 @@ class IPCompleter(Completer):
         # this is *not* appropriate if the opening quote or bracket is outside
         # the text given to this method
         suf = ""
-        continuation = self.line_buffer[len(self.text_until_cursor) :]
+        continuation = self.line_buffer[len(self.text_until_cursor):]
         if key_start > text_start and closing_quote:
             # quotes were opened inside text, maybe close them
             if continuation.startswith(closing_quote):
-                continuation = continuation[len(closing_quote) :]
+                continuation = continuation[len(closing_quote):]
             else:
                 suf += closing_quote
         if bracket_idx > text_start:
@@ -1217,7 +1211,7 @@ class IPCompleter(Completer):
         """
         slashpos = text.rfind("\\")
         if slashpos > -1:
-            s = text[slashpos + 1 :]
+            s = text[slashpos + 1:]
             try:
                 unic = unicodedata.lookup(s)
                 # allow combining chars
@@ -1689,7 +1683,7 @@ class IPCompleter(Completer):
         slashpos = text.rfind("\\")
         # if text starts with slash
         if slashpos > -1:
-            s = text[slashpos + 1 :]
+            s = text[slashpos + 1:]
             candidates = [x for x in self._names if x.startswith(s)]
             if candidates:
                 return s, candidates

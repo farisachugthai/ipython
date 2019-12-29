@@ -24,13 +24,13 @@ import re
 import sys
 from importlib import import_module
 from importlib.machinery import all_suffixes
-from os.path import expanduser as expand_user
 from time import time
 from typing import List
 from zipimport import zipimporter
 
 # Our own imports
 from IPython.core.error import TryNext
+from ._completer import expand_user, compress_user
 
 # FIXME: this should be pulled in with the right call via the component system
 from IPython.core.getipython import get_ipython
@@ -93,7 +93,7 @@ def module_list(path=None):
         # recurse more than one level into subdirectories.
         files = []
         for root, dirs, nondirs in os.walk(path, followlinks=True):
-            subdir = root[len(path) + 1 :]
+            subdir = root[len(path) + 1:]
             if subdir:
                 files.extend(pjoin(subdir, f) for f in nondirs)
                 dirs[:] = []  # Do not recurse into additional subdirectories.

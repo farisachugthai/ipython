@@ -30,6 +30,7 @@ import shutil
 import sys
 from os import system
 from pathlib import Path
+import typing
 
 # -----------------------------------------------------------------------------
 # Code
@@ -65,24 +66,12 @@ def get_home_dir(require_writable=False):
         return Path.home().__fspath__()
 
 
-def compress_user(path):
-    """Reverse of :func:`os.path.expanduser`.
-
-    Parameters
-    ----------
-    path : str (path-like)
-        Path to perform a tilde "compression" on.
-
-    Returns
-    -------
-    str (path-like)
-        Path with a tilde added.
-
-    """
-    home = os.path.expanduser("~")
-    if path.startswith(home):
-        path = "~" + path[len(home):]
-    return path
+def compress_user(path: str, tilde_expand: bool, tilde_val: str) -> str:
+    """Does the opposite of expand_user, with its outputs."""
+    if tilde_expand:
+        return path.replace(tilde_val, "~")
+    else:
+        return path
 
 
 def get_py_filename(name, force_win32=None):

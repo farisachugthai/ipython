@@ -40,7 +40,7 @@ from traitlets.config.configurable import Configurable
 from traitlets.config.loader import Config, filefind
 
 handler = logging.StreamHandler()
-formatter = logging.Formatter(fmt='%(relativeCreated)d %(message)s')
+formatter = logging.Formatter(fmt="%(relativeCreated)d %(message)s")
 handler.setFormatter(formatter)
 handler.setLevel(logging.INFO)
 
@@ -194,8 +194,9 @@ class InteractiveShellApp(Configurable):
         be hidden from tools like %who?""",
     ).tag(config=True)
 
-    exec_files = List([], allow_none=True, help="""List of files to run at IPython startup."""
-                      ).tag(config=True)
+    exec_files = List(
+        [], allow_none=True, help="""List of files to run at IPython startup."""
+    ).tag(config=True)
 
     exec_PYTHONSTARTUP = Bool(
         True,
@@ -291,6 +292,7 @@ class InteractiveShellApp(Configurable):
     def init_gui_pylab(self):
         """Enable GUI event loop integration, taking pylab into account."""
         enable = False
+        shell = self.shell
         if self.pylab:
 
             def enable(key):
@@ -629,7 +631,7 @@ class InteractiveShellApp(Configurable):
                 sys.argv = save_argv
 
     def __repr__(self):
-        return '{!r}'.format(self.__class__.__name__)
+        return "{!r}".format(self.__class__.__name__)
 
 
 class InteractiveShellAppABC(abc.ABCMeta):

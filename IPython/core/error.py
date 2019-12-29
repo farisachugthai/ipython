@@ -237,7 +237,11 @@ class ShimWarning(Warning):
 class ClipboardEmpty(ValueError):
     """lib.clipboard"""
 
-    pass
+    def __call__(self, msg=None):
+        if msg is None:
+            pass
+        else:
+            print(msg)
 
 
 class ProfileDirError(Exception):
@@ -246,7 +250,7 @@ class ProfileDirError(Exception):
     def __init__(self, bad_profile=None, *args, **kwargs):
         """Location of the profile that raised the error and a message to pass along to Exception."""
         self.bad_profile = bad_profile
-        Exception.__init__(self, *args, **kwargs)
+        super().__init__(self, *args, **kwargs)
 
     def __call__(self, msg=None):
         """Idk if it was a good idea to do it this way but we don't see our own errors."""

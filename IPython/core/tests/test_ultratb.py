@@ -67,8 +67,8 @@ def recursionlimit(frames):
             -------
 
             """
-            _orig_rec_limit = _FRAME_RECURSION_LIMIT
             _FRAME_RECURSION_LIMIT = 50
+            _orig_rec_limit = _FRAME_RECURSION_LIMIT
 
             rl = sys.getrecursionlimit()
             sys.setrecursionlimit(frames)

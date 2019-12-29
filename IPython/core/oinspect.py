@@ -654,7 +654,7 @@ class Inspector(Configurable):
             del info["text/html"]
         page.page(info)
 
-    def info(self, obj, oname='', info=None, detail_level=0):
+    def info(self, obj, oname="", info=None, detail_level=0):
         """Compute a dict with detailed information about an object.
 
         This method is absolutely not deprecated. It's the only method we test for!

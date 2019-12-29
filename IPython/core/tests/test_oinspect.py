@@ -26,7 +26,7 @@ def setup_module():
     global ip
     global inspector
     ip = get_ipython()
-    inspector = oinspect.Inspector(scheme='Linux', config=ip.config)
+    inspector = oinspect.Inspector(scheme="Linux", config=ip.config)
 
 
 # -----------------------------------------------------------------------------
@@ -521,7 +521,6 @@ def test_render_signature_short():
 
 
 def test_render_signature_long():
-
     def long_function(
         a_really_long_parameter: int,
         and_another_long_one: bool = False,
@@ -558,6 +557,7 @@ long_function(
 """,
         ],
     )
+
 
 if __name__ == "__main__":
     setup_module()

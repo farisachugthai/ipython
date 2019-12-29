@@ -83,7 +83,16 @@ def test_cpaste():
 
 
 class PasteTestCase(TestCase):
-    """Multiple tests for clipboard pasting"""
+    """Multiple tests for clipboard pasting.
+
+    Wait we change the clipboard hook on the fly to a lambda that passes
+    the text through?
+
+    Shouldn't we then check that the default clipboard we provide works
+    as well?
+    Otherwise this isn't useful.
+
+    """
 
     def paste(self, txt, flags="-q"):
         """Paste input text, by default in quiet mode"""

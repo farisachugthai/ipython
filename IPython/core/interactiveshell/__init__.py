@@ -21,6 +21,7 @@ import cgitb
 import codecs
 import functools
 import inspect
+from io import RawIOBase
 import os
 import re
 import runpy
@@ -619,9 +620,6 @@ class InteractiveShell(SingletonConfigurable):
         """Return the currently running IPython instance."""
         return self
 
-    def __repr__(self):
-        return repr(self.get_ipython())
-
     # -------------------------------------------------------------------------
     # Trait changed handlers
     # -------------------------------------------------------------------------
@@ -828,9 +826,9 @@ class InteractiveShell(SingletonConfigurable):
         io.std* are deprecated, but don't show our own deprecation warnings
         during initialization of the deprecated API.
 
-        Dude those classes don't even exist anymore wth.
         """
-        pass
+        self.io.stdout = io.RawIOBase(sys.stdout)
+        self.io.stderr = io.RawIOBase(sys.stderr)
 
     def init_prompts(self):
         """Set system prompts, so that scripts can decide if they're interactive."""
@@ -1793,11 +1791,7 @@ class InteractiveShell(SingletonConfigurable):
             pmethod(info.obj, oname, formatter)
         elif meth == "pinfo":
             pmethod(
-                info.obj,
-                oname,
-                info,
-                enable_html_pager=self.enable_html_pager,
-                **kw,
+                info.obj, oname, info, enable_html_pager=self.enable_html_pager, **kw,
             )
         else:
             pmethod(info.obj, oname)
@@ -4036,9 +4030,6 @@ class InteractiveShell(SingletonConfigurable):
         default :
         interrupt :
 
-        Returns
-        -------
-
         """
         if self.quiet:
             return True
@@ -4048,7 +4039,12 @@ class InteractiveShell(SingletonConfigurable):
     def show_usage():
         """Show a usage message using :func:IPython.core.page.page`.
 
-        Prints off :func:`IPython.core.usage.interactive_usage`.
+        Prints off :data:`IPython.core.usage.interactive_usage`.
+
+        .. note::
+            That that link doesn't point to a function. usage doesn't
+            have any functions it's just ~400 lines of str.
+
         """
         page.page(usage.interactive_usage)
 
@@ -4220,40 +4216,49 @@ class InteractiveShell(SingletonConfigurable):
         """
         self.history_manager.end_session()
 
+        if self.tempfiles is not None and self.tempdirs is not None:
+            self.cleanup_tmpdirs()
+
+        # Clear all user namespaces to release all references cleanly.
+        self.reset(new_session=False)
+
+        # Run user hooks
+        # todo: uncomment later. raising errs
+        # self.hooks.shutdown_hook()
+
+    def cleanup(self):
+        self.restore_sys_module_state()
+
+    def switch_doctest_mode(self, mode):
+        pass
+
+    def cleanup_tmpdirs(self):
         # Cleanup all tempfiles and folders left around
         for tfile in self.tempfiles:
             try:
                 os.unlink(tfile)
             except OSError:
                 pass
+            except PermissionError:
+                print("PermissionError at exit.")
 
         for tdir in self.tempdirs:
             try:
                 os.rmdir(tdir)
             except OSError:
                 pass
+            except PermissionError:
+                print("PermissionError at exit.")
 
-        # Clear all user namespaces to release all references cleanly.
-        self.reset(new_session=False)
+    def write_err(self, data):
+        """Write a string to the default error output.
 
-        # Run user hooks
-        self.hooks.shutdown_hook()
-
-    def cleanup(self):
+        Was deprecated but we use it in too many tests.
         """
+        self.io.stdout.write(data)
 
-        """
-        self.restore_sys_module_state()
-
-    def switch_doctest_mode(self, mode):
-        """Overridden in terminal subclass to change prompts.
-
-        Parameters
-        ----------
-        mode :
-        """
-        pass
-
+    def write(self, data):
+        self.io.stderr.write(data)
 
 class InteractiveShellABC(metaclass=abc.ABCMeta):
     """An abstract base class for InteractiveShell."""

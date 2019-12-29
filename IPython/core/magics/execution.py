@@ -21,6 +21,7 @@ import timeit
 from io import StringIO
 from logging import error
 from pdb import Restart
+from textwrap import dedent
 from warnings import warn
 
 from IPython.core import magic_arguments, page
@@ -127,12 +128,10 @@ class TimeitResult:
         )
 
     def __str__(self):
-        """TODO: This dunder should probably be a full method."""
         self.print()
 
-    def _repr_pretty_(self, p, cycle):
-        unic = self.__str__()
-        p.text("<TimeitResult : " + unic + ">")
+    def _repr_pretty_(self, p, cycle=None):
+        p.text(u"<TimeitResult : >")
 
 
 class TimeitTemplateFiller(ast.NodeTransformer):
@@ -213,10 +212,12 @@ class ExecutionMagics(Magics):
         kwargs :
         """
         error(
-            """\
+            dedent(
+                """
 The profile module could not be found. It has been removed from the standard
 python packages because of its non-free license. To use profiling, install the
 python-profiler package from non-free."""
+            )
         )
 
     @skip_doctest
@@ -1141,7 +1142,9 @@ python-profiler package from non-free."""
         of the shell, compared with timeit.py, which uses a single setup
         statement to import function or create variables. Generally, the bias
         does not matter as long as results from timeit.py are not mixed with
-        those from %timeit."""
+        those from %timeit.
+
+        """
 
         opts, stmt = self.parse_options(line, "n:r:tcp:qo", posix=False, strict=False)
         if stmt == "" and cell is None:
@@ -1166,12 +1169,11 @@ python-profiler package from non-free."""
         transform = self.shell.transform_cell
 
         if cell is None:
-            # called as line magic
-            ast_setup = self.shell.compile.ast_parse("pass")
-            ast_stmt = self.shell.compile.ast_parse(transform(stmt))
+            ast_setup = ast.parse("pass")
+            ast_stmt = ast.parse(transform(stmt))
         else:
-            ast_setup = self.shell.compile.ast_parse(transform(stmt))
-            ast_stmt = self.shell.compile.ast_parse(transform(cell))
+            ast_setup = ast.parse(transform(stmt))
+            ast_stmt = ast.parse(transform(cell))
 
         ast_setup = self.shell.transform_ast(ast_setup)
         ast_stmt = self.shell.transform_ast(ast_stmt)
@@ -1342,7 +1344,7 @@ python-profiler package from non-free."""
         tp_min = 0.1
 
         t0 = clock()
-        expr_ast = self.shell.compile.ast_parse(expr)
+        expr_ast = ast.parse(expr)
         tp = clock() - t0
 
         # Apply AST transformations
@@ -1367,7 +1369,7 @@ python-profiler package from non-free."""
                 expr_val = ast.Expression(expr_val.value)
 
         t0 = clock()
-        code = self.shell.compile(expr_ast, source, mode)
+        code = compile(expr_ast, source, mode)
         tc = clock() - t0
 
         # skew measurement as little as possible

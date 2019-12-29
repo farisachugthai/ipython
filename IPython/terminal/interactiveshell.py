@@ -361,6 +361,8 @@ class TerminalInteractiveShell(InteractiveShell):
             history=history,
             completer=IPythonPTCompleter(shell=self),
             enable_history_search=self.enable_history_search,
+            # opposite of enable_history_search. or at least we can try
+            complete_while_typing=not self.enable_history_search,
             style=self.style,
             include_default_pygments_style=False,
             mouse_support=self.mouse_support,

@@ -20,6 +20,7 @@ import warnings
 from importlib import invalidate_caches
 from io import StringIO
 from textwrap import dedent
+from tempfile import TemporaryDirectory
 from unittest import TestCase, mock
 
 import nose.tools as nt
@@ -42,8 +43,10 @@ from IPython.core.magics import code, execution, ipy_logging, osm, script
 from IPython.testing import decorators as dec
 from IPython.testing import tools as tt
 from IPython.utils.capture import capture_output
-from IPython.utils.process import find_cmd
-from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
+
+# from IPython.utils.process import find_cmd
+from shutil import which as find_cmd
+from IPython.utils.tempdir import TemporaryWorkingDirectory
 
 
 def setup_module():
