@@ -1,0 +1,84 @@
+package:
+    name: ipython
+    version: 7.11.0
+source:
+    path: C:\Users\faris\src\ipython
+build:
+    entry_points:
+        - ipython = IPython:start_ipython
+        - ipython3 = IPython:start_ipython
+        - iptest = IPython.testing.iptestcontroller:main
+        - iptest3 = IPython.testing.iptestcontroller:main
+    number: '243'
+requirements:
+    host:
+        - ca-certificates 2019.11.28 hecc5488_0
+        - vs2015_runtime 15.5.2 3
+        - vc 14.1 h21ff451_3
+        - openssl 1.1.1d hfa6e2cd_0
+        - sqlite 3.30.1 hfa6e2cd_0
+        - python 3.7.6 h5b45d93_1
+        - certifi 2019.11.28 py37_0
+        - wincertstore 0.2 py37_1003
+        - setuptools 42.0.2 py37_0
+        - wheel 0.33.6 py37_0
+        - pip 19.3.1 py37_0
+    run:
+        - backcall
+        - jedi >=0.10
+        - decorator
+        - traitlets >=4.2
+        - prompt_toolkit >=2.0.0,<3
+        - colorama
+        - python >=3.7,<3.8.0a0
+        - pygments
+        - pickleshare
+test:
+    commands:
+        - ipython -h
+        - ipython3 -h
+    imports:
+        - IPython
+    requires:
+        - sphinx
+        - requests
+        - ipykernel
+        - pytest
+        - matplotlib
+        - trio
+        - nose >=0.10.1
+        - coverage
+        - testpath
+        - pygments
+        - nbformat
+app:
+    entry: ipython
+about:
+    description: 'IPython provides a rich architecture for interactive computing with
+
+        a powerful interactive shell, a kernel for Jupyter, high performance
+
+        tools for parallel computing, and more.
+
+        '
+    dev_url: https://github.com/ipython/ipython
+    doc_url: https://ipython.readthedocs.io/
+    home: https://ipython.org/
+    license: BSD-3-Clause
+    license_family: BSD
+    license_file: LICENSE
+    summary: 'IPython: Productive Interactive Computing'
+extra:
+    copy_test_source_files: true
+    final: true
+    recipe-maintainers:
+        - Carreau
+        - jakirkham
+        - fperez
+        - ellisonbg
+        - minrk
+        - ocefpaf
+        - pelson
+        - takluyver
+        - bollwyvl
+        - blink1073
