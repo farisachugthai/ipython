@@ -122,6 +122,13 @@ def black_reformat_handler(text_before_cursor):
 
 
 class TerminalInteractiveShell(InteractiveShell):
+    _inputhook = None
+    pt_app = None
+    debugger_history = None
+    active_eventloop = None
+    _prompts_before = None
+    rl_next_input = None
+
     mime_renderers = Dict().tag(config=True)
 
     space_for_menu = Integer(
@@ -129,9 +136,6 @@ class TerminalInteractiveShell(InteractiveShell):
         help="Number of line at the bottom of the screen "
         "to reserve for the completion menu",
     ).tag(config=True)
-
-    pt_app = None
-    debugger_history = None
 
     simple_prompt = Bool(
         _use_simple_prompt,
@@ -244,17 +248,12 @@ class TerminalInteractiveShell(InteractiveShell):
     def _prompts_default(self):
         return self.prompts_class(self)
 
-    #    @observe('prompts')
-    #    def _(self, change):
-    #        self._update_layout()
-
     @default("displayhook_class")
     def _displayhook_class_default(self):
         return RichPromptDisplayHook
 
-    term_title = Bool(True, help="Automatically set the terminal title").tag(
-        config=True
-    )
+    term_title = Bool(True, help="Automatically set the terminal title"
+                      ).tag(config=True)
 
     term_title_format = Unicode(
         "IPython: {cwd}",
@@ -272,9 +271,9 @@ class TerminalInteractiveShell(InteractiveShell):
         default_value="multicolumn",
     ).tag(config=True)
 
-    highlight_matching_brackets = Bool(True, help="Highlight matching brackets.",).tag(
-        config=True
-    )
+    highlight_matching_brackets = Bool(True, help=(
+        "Highlight matching brackets.")
+    ).tag(config=True)
 
     extra_open_editor_shortcuts = Bool(
         False,
@@ -309,6 +308,14 @@ class TerminalInteractiveShell(InteractiveShell):
     def restore_term_title(self):
         if self.term_title:
             restore_term_title()
+
+    def __init__(self, *args, **kwargs):
+        super(TerminalInteractiveShell, self).__init__(*args, **kwargs)
+        self.init_prompt_toolkit_cli()
+        self.init_term_title()
+        self.keep_running = True
+
+        self.debugger_history = InMemoryHistory()
 
     def init_display_formatter(self):
         super(TerminalInteractiveShell, self).init_display_formatter()
@@ -577,18 +584,8 @@ class TerminalInteractiveShell(InteractiveShell):
             for cmd in ("clear", "more", "less", "man"):
                 self.alias_manager.soft_define_alias(cmd, cmd)
 
-    def __init__(self, *args, **kwargs):
-        super(TerminalInteractiveShell, self).__init__(*args, **kwargs)
-        self.init_prompt_toolkit_cli()
-        self.init_term_title()
-        self.keep_running = True
-
-        self.debugger_history = InMemoryHistory()
-
     def ask_exit(self):
         self.keep_running = False
-
-    rl_next_input = None
 
     def interact(self, display_banner=DISPLAY_BANNER_DEPRECATED):
 
@@ -640,13 +637,9 @@ class TerminalInteractiveShell(InteractiveShell):
 
                 self.restore_term_title()
 
-    _inputhook = None
-
     def inputhook(self, context):
         if self._inputhook is not None:
             self._inputhook(context)
-
-    active_eventloop = None
 
     def enable_gui(self, gui=None):
         if gui and (gui != "inline"):
@@ -694,8 +687,6 @@ class TerminalInteractiveShell(InteractiveShell):
             prompt = "".join(s for t, s in tokens)
             print(prompt, cmd, sep="")
 
-    _prompts_before = None
-
     def switch_doctest_mode(self, mode):
         """Switch prompts to classic for %doctest_mode"""
         if mode:
@@ -704,9 +695,6 @@ class TerminalInteractiveShell(InteractiveShell):
         elif self._prompts_before:
             self.prompts = self._prompts_before
             self._prompts_before = None
-
-
-#        self._update_layout()
 
 
 InteractiveShellABC.register(TerminalInteractiveShell)

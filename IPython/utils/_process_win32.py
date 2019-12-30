@@ -27,6 +27,7 @@ import subprocess
 import sys
 from ctypes import POINTER, c_int
 from subprocess import STDOUT
+from subprocess import getoutput  # noqa F401 replaces the old getoutput func here
 
 # our own imports
 from ._process_common import arg_split as py_arg_split
@@ -112,9 +113,7 @@ def _find_cmd(cmd):
 
 def _system_body(p):
     """Callback for _system."""
-    from .encoding import DEFAULT_ENCODING
-
-    enc = DEFAULT_ENCODING
+    enc = sys.getfilesystemencoding()
     for line in read_no_interrupt(p.stdout).splitlines():
         line = line.decode(enc, "replace")
         print(line, file=sys.stdout)
@@ -124,61 +123,6 @@ def _system_body(p):
 
     # Wait to finish for returncode
     return p.wait()
-
-
-def system(cmd):
-    """Win32 version of os.system() that works with network shares.
-
-    Note that this implementation returns None, as meant for use in IPython.
-
-    Parameters
-    ----------
-    cmd : str or list
-      A command to be executed in the system shell.
-
-    Returns
-    -------
-    None : we explicitly do NOT return the subprocess status code, as this
-    utility is meant to be used extensively in IPython, where any return value
-    would trigger :func:`sys.displayhook` calls.
-    """
-    # The controller provides interactivity with both
-    # stdin and stdout
-    # import _process_win32_controller
-    # _process_win32_controller.system(cmd)
-
-    with AvoidUNCPath() as path:
-        if path is not None:
-            cmd = '"pushd %s &&"%s' % (path, cmd)
-        return process_handler(cmd, _system_body)
-
-
-def getoutput(cmd):
-    """Return output (stdout or stderr) of executing cmd in a shell.
-
-    Dude don't tell me the stdlib wasn't inspired by IPython, they phrase the
-    first sentence the same way.
-
-    Like getstatusoutput(), except the exit status is ignored and the return
-    value is a string containing the command's output.  Example:
-
-    >>> import subprocess
-    >>> subprocess.getoutput('ls /bin/ls')
-    '/bin/ls'
-
-    Accepts the same arguments as os.system().
-
-    Parameters
-    ----------
-    cmd : str or list
-      A command to be executed in the system shell.
-
-    Returns
-    -------
-    stdout : str
-
-    """
-    return subprocess.getoutput(cmd)
 
 
 try:

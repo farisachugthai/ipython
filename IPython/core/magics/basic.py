@@ -242,7 +242,7 @@ class BasicMagics(Magics):
                 for fname, fndoc in sorted(docs["line"].items())
             ]
             + [
-                format_string % (magic_escapes["cell"], fname, indent(dedent(fndoc)))
+                format_string % (magic_escapes["cell"], fname, dedent(fndoc))
                 for fname, fndoc in sorted(docs["cell"].items())
             ]
         )

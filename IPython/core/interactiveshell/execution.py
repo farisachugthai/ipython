@@ -23,7 +23,7 @@ def get_cells(fname):
     -----
     Depends on nbformat
     """
-    if getattr(fname, 'read', None):
+    if getattr(fname, "read", None):
         yield fname.read()
     if fname.endswith(".ipynb"):
         from nbformat import read

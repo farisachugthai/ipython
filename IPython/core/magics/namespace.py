@@ -39,6 +39,9 @@ class NamespaceMagics(Magics):
     duplicated in oinspect. How much can we trim?
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     @line_magic
     def pinfo(self, parameter_s="", namespaces=None):
         """Provide detailed information about an object.
@@ -57,7 +60,8 @@ class NamespaceMagics(Magics):
             between ? and ??.
             detail_level: 0 -> obj? , 1 -> obj??
         """
-        self.log.debug("pinfo par: <%s>" % parameter_s)  # dbg
+        # This should have a logging method per traitlets.
+        # self.log.debug("pinfo par: <%s>" % parameter_s)  # dbg
         detail_level = 0
         # We need to detect if we got called as 'pinfo pinfo foo', which can
         # happen if the user types 'pinfo foo?' at the cmd line.

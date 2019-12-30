@@ -213,7 +213,7 @@ class CachingCompiler(codeop.Compile):
         except (SyntaxError, ValueError, OverflowError):
             raise
         except UsageError:
-            sys.stderr.write('UsageError')
+            sys.stderr.write("UsageError")
             return
 
     def ast_parse(self, source, filename="<unknown>", symbol="exec"):

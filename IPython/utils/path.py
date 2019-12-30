@@ -110,7 +110,7 @@ def get_py_filename(name, force_win32=None):
     """
     path_name = Path(name).expanduser()
     # Don't forget to check for cases where we get passed a Path.
-    name = str(name)
+    name = os.path.expandvars(os.path.expanduser(str(name)))
     if path_name.is_file():
         return name
     if path_name.stem != ".py":
@@ -171,7 +171,7 @@ def shellglob(args):
     """
     expanded = []
     for a in args:
-        expanded.extend(Path(a).glob('*'))
+        expanded.extend(Path(a).glob("*"))
     return expanded
 
 
@@ -293,8 +293,8 @@ def ensure_dir_exists(path, mode=0o755):
         except FileExistsError:
             pass
         except PermissionError:
-            logging.warning('PermissionError')
+            logging.warning("PermissionError")
         except OSError:
-            logging.warning('PermissionError')
+            logging.warning("PermissionError")
     elif not pathlib_path.is_dir():
-        raise FileExistsError('File already exists: %s', path)
+        raise FileExistsError("File already exists: %s", path)

@@ -12,12 +12,12 @@ from warnings import warn
 
 from IPython.utils.capture import capture_output  # noqa
 
-if os.environ.get('TMP', None):
-    tempfile.tempdir = os.environ.get('TMP')
-elif os.environ.get('TEMP', None):
-    tempfile.tempdir = os.environ.get('TEMP')
-elif os.environ.get('TMPDIR', None):
-    tempfile.tempdir = os.environ.get('TMPDIR')
+if os.environ.get("TMP", None):
+    tempfile.tempdir = os.environ.get("TMP")
+elif os.environ.get("TEMP", None):
+    tempfile.tempdir = os.environ.get("TEMP")
+elif os.environ.get("TMPDIR", None):
+    tempfile.tempdir = os.environ.get("TMPDIR")
 else:
     tempfile.tempdir = Path.home()
 
@@ -263,7 +263,7 @@ def temp_pyfile(src, ext=".py"):
 
     """
     fname = tempfile.mkstemp(ext)[1]
-    with open(fname, 'w') as f:
+    with open(fname, "w") as f:
         f.write(src)
         f.flush()
     return fname

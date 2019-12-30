@@ -25,14 +25,14 @@ from _pytest.nose import (
 
 
 # So we can ensure we don't have permission errors running the tests
-if os.environ.get('TMP', None):
-    tempfile.tempdir = os.environ.get('TMP')
-elif os.environ.get('TEMP', None):
-    tempfile.tempdir = os.environ.get('TEMP')
-elif os.environ.get('TMPDIR', None):
-    tempfile.tempdir = os.environ.get('TMPDIR')
-elif os.environ.get('XDG_CACHE_HOME', None):
-    tempfile.tempdir = os.environ.get('XDG_CACHE_HOME')
+if os.environ.get("TMP", None):
+    tempfile.tempdir = os.environ.get("TMP")
+elif os.environ.get("TEMP", None):
+    tempfile.tempdir = os.environ.get("TEMP")
+elif os.environ.get("TMPDIR", None):
+    tempfile.tempdir = os.environ.get("TMPDIR")
+elif os.environ.get("XDG_CACHE_HOME", None):
+    tempfile.tempdir = os.environ.get("XDG_CACHE_HOME")
 
 
 def get_test_shell():
@@ -65,9 +65,7 @@ def start_test_shell():
     config.TerminalInteractiveShell.simple_prompt = True
 
     # Create and initialize our test-friendly IPython instance.
-    shell = TerminalInteractiveShell.instance(
-        config=config,
-    )
+    shell = TerminalInteractiveShell.instance(config=config,)
 
     def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
         """Override paging, so we don't require user interaction during the tests.

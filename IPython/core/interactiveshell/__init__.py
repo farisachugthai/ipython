@@ -98,7 +98,7 @@ from .execution import (
     ExecutionResult,
     removed_co_newlocals,
     softspace,
-    get_cells
+    get_cells,
 )
 from .separate_unicode import SeparateUnicode
 
@@ -604,7 +604,7 @@ class InteractiveShell(SingletonConfigurable):
         return self
 
     def __repr__(self):
-        return '<{!r}:>'.format(self.__class__.__name__)
+        return "<{!r}:>".format(self.__class__.__name__)
 
     # -------------------------------------------------------------------------
     # Trait changed handlers
@@ -664,8 +664,7 @@ class InteractiveShell(SingletonConfigurable):
             )
 
         self.log.debug(
-            "core.interactiveshell:init_profile_dir: ProfileDir: %s",
-            self.profile_dir,
+            "core.interactiveshell:init_profile_dir: ProfileDir: %s", self.profile_dir,
         )
 
     def init_instance_attrs(self):
@@ -1930,15 +1929,15 @@ class InteractiveShell(SingletonConfigurable):
             raise TypeError(msg)
         # it's a list
         # for line in stb:
-            # Literally why wth is this
-            # check every element
-            # if not isinstance(line, str):
-            #     raise TypeError(msg)
+        # Literally why wth is this
+        # check every element
+        # if not isinstance(line, str):
+        #     raise TypeError(msg)
         return stb
 
     def set_custom_exc(self, exc_tuple=None, handler=None):
         if handler is None:
-            wrapped_handler = dummy_handler
+            wrapped_handler = self.dummy_handler
         else:
             wrapped_handler = self.wrapped
         self.CustomTB = types.MethodType(wrapped_handler, self)
@@ -2912,7 +2911,7 @@ class InteractiveShell(SingletonConfigurable):
                         # if not exit_ignore:
                         self.showtraceback(exception_only=True)
                 except BaseException as e:
-                    if getattr(e, '__cause__', None):
+                    if getattr(e, "__cause__", None):
                         print("Exception cause: {}".format(e.__cause__))
                     # tb offset is 2 because we wrap execfile
                     self.showtraceback(tb_offset=2)
@@ -3088,6 +3087,10 @@ class InteractiveShell(SingletonConfigurable):
 
         .. versionadded: 7.0
 
+        .. versionchanged:: 7.11.0
+
+            'silent' parameter now ignored because the 'quiet' attr exists.
+
         Parameters
         ----------
         raw_cell : str
@@ -3118,23 +3121,13 @@ class InteractiveShell(SingletonConfigurable):
             self.last_execution_result = result
             return result
 
-        if silent:
+        if self.quiet:
             store_history = False
 
         if store_history:
             result.execution_count = self.execution_count
 
         def error_before_exec(value):
-            """
-
-            Parameters
-            ----------
-            value :
-
-            Returns
-            -------
-
-            """
             if store_history:
                 self.execution_count += 1
             result.error_before_exec = value
@@ -3174,6 +3167,7 @@ class InteractiveShell(SingletonConfigurable):
         # Our own compiler remembers the __future__ environment. If we want to
         # run code with a separate __future__ environment, use the default
         # compiler
+        # wth cachingcompiler is our compiler and that was true before i changed a line
         compiler = self.compile if shell_futures else CachingCompiler()
 
         _run_async = False
@@ -3206,10 +3200,10 @@ class InteractiveShell(SingletonConfigurable):
                             code_ast = compiler.ast_parse(cell, filename=cell_name)
                     else:
                         code_ast = compiler.ast_parse(cell, filename=cell_name)
-                except self.custom_exceptions as e:
-                    etype, value, tb = sys.exc_info()
-                    self.CustomTB(etype, value, tb)
-                    return error_before_exec(e)
+                # except self.custom_exceptions as e:
+                #     etype, value, tb = sys.exc_info()
+                #     self.CustomTB(etype, value, tb)
+                #     return error_before_exec(e)
                 except IndentationError as e:
                     self.showindentationerror()
                     return error_before_exec(e)
@@ -3939,8 +3933,13 @@ class InteractiveShell(SingletonConfigurable):
         try:  # User namespace
             codeobj = eval(target, self.user_ns)
         except Exception:
-            raise ValueError(("'%s' was not found in history, as a file, url, "
-                              "nor in the user namespace.") % target)
+            raise ValueError(
+                (
+                    "'%s' was not found in history, as a file, url, "
+                    "nor in the user namespace."
+                )
+                % target
+            )
 
         if isinstance(codeobj, str):
             return codeobj

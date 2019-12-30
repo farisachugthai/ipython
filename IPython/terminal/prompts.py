@@ -24,7 +24,7 @@ class Prompts:
     @property
     def _is_vi_mode(self):
         if getattr(self.shell.pt_app, "editing_mode", None):
-            if self.shell.pt_app.editing_mode == 'VI':
+            if self.shell.pt_app.editing_mode == "VI":
                 return True
 
     def better_vi_mode(self, prefix=None, suffix=None):

@@ -250,13 +250,16 @@ def page(data, start=0, screen_lines=0, pager_cmd=None):
     """
     # Some routines may auto-compute start offsets incorrectly and pass a
     # negative value.  Offset to 0 for robustness.
-    start = max(0, start)
+    # start = max(0, start)
 
     # first, try the hook
     ip = get_ipython()
     if ip:
         try:
-            ip.hooks.show_in_pager(data, start=start, screen_lines=screen_lines)
+            ip.hooks.show_in_pager(
+                data,
+                # start=start,
+                screen_lines=screen_lines)
             return
         except TryNext:
             pass

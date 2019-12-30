@@ -135,4 +135,3 @@ def timing(func, *args, **kw):
     seconds. This is just the first value in timings_out()."""
 
     return timings_out(1, func, *args, **kw)[0]
-

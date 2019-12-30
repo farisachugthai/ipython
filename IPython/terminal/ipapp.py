@@ -203,14 +203,16 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
     interactive_shell_class = Type(
         klass=object,  # use default_value otherwise which only allow subclasses.
         default_value=TerminalInteractiveShell,
-        help=dedent("""
+        help=dedent(
+            """
         Class to use to instantiate the TerminalInteractiveShell object.
         Useful for custom Frontends.
         This should allow a user to use custom interfaces, like reviving the former readline
         interface which is now a separate package not actively maintained by the core
         team. See the project to bring back the readline interface: `rlipython
         <https://github.com/ipython/rlipython>`_.
-        """),
+        """
+        ),
     ).tag(config=True)
 
     @default("classes")

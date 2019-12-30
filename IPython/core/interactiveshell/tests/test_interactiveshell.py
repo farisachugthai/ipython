@@ -83,7 +83,7 @@ class InteractiveShellTestCase(unittest.TestCase):
     def test_run_cell_multiline(self):
         """Multi-block, multi-line cells must execute correctly.
         """
-        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1",])
+        src = "\n".join(["x=1", "y=2", "if 1:", "    x += 1", "    y += 1", ])
         res = ip.run_cell(src)
         self.assertEqual(ip.user_ns["x"], 2)
         self.assertEqual(ip.user_ns["y"], 3)
@@ -558,6 +558,7 @@ class InteractiveShellTestCase(unittest.TestCase):
         self.assertEqual(mod.__name__, name)
 
     def test_get_exception_only(self):
+        # Tests raising Exceptions. Changed the last assertEqual to the correct location of the test.
         try:
             raise KeyboardInterrupt
         except KeyboardInterrupt:
@@ -567,9 +568,11 @@ class InteractiveShellTestCase(unittest.TestCase):
         try:
             raise DerivedInterrupt("foo")
         except KeyboardInterrupt:
+            pass
+        else:
             msg = ip.get_exception_only()
         self.assertEqual(
-            msg, "IPython.core.tests.test_interactiveshell.DerivedInterrupt: foo\n"
+            msg, "IPython.core.error.DerivedInterrupt: foo\n"
         )
 
     def test_inspect_text(self):
@@ -1066,7 +1069,7 @@ def test__IPYTHON__():
     __IPYTHON__
 
 
-class DummyRepr(object):
+class DummyRepr:
     def __repr__(self):
         return "DummyRepr"
 

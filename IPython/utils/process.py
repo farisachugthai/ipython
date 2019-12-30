@@ -13,13 +13,12 @@ from subprocess import (
 )  # noqa F401  replaces FindCmdError
 from subprocess import getoutput  # noqa F401  replaces getoutput
 
-from ._process_common import get_output_error_code, getoutputerror, process_handler
+from ._process_common import get_output_error_code, getoutputerror, process_handler, arg_split
 
 if sys.platform == "win32":
-    from ._process_win32 import arg_split, check_pid
+    from ._process_win32 import check_pid
 else:
     from ._process_posix import check_pid
-    from ._process_common import arg_split
 
 
 def abbrev_cwd():
