@@ -18,6 +18,7 @@ import ast
 import atexit
 import builtins as builtin_mod
 import cgitb
+import code
 import codecs
 import functools
 import inspect
@@ -45,6 +46,7 @@ from traitlets import (
     Any,
     Bool,
     CaselessStrEnum,
+    CUnicode,
     Dict,
     Enum,
     Instance,
@@ -114,17 +116,6 @@ else:
     from ast import Module as OriginalModule
 
     def Module(nodelist, type_ignores):
-        """
-
-        Parameters
-        ----------
-        nodelist :
-        type_ignores :
-
-        Returns
-        -------
-
-        """
         return OriginalModule(nodelist)
 
 
@@ -144,6 +135,10 @@ dedent_re = re.compile(r"^\s+raise|^\s+return|^\s+pass")
 
 if hasattr("async_helpers", "curio_runner"):
     from IPython.core.async_helpers import _curio_runner, _trio_runner, _should_be_async
+
+# we never check for trio though!
+elif hasattr("async_helpers", "trio_runner"):
+    from IPython.core.async_helpers import _curio_runner, _trio_runner, _should_be_async
 else:
     _curio_runner = _trio_runner = None
 
@@ -156,34 +151,6 @@ class InteractiveShell(SingletonConfigurable):
 
     Thankfully the :mod:`IPython.sphinxext.configtraits` picks up all
     :class:`traitlets.config.Configurable` attributes. Otherwise....
-
-    I'm going to use this to leave myself room to leave notes.
-
-    First off. Exception handling.
-
-    - init_traceback_handlers(self, custom_exceptions=None) : member
-
-    - set_custom_exc(self, exc_tuple, handler) : member
-
-    - excepthook(self, etype, value, tb) : member
-
-    - _get_exc_info(self, exc_tuple=None) : member
-
-    - show_usage_error(exc) : member
-
-    - get_exception_only(self, exc_tuple=None) : member
-
-    - showtraceback( self, filename=None, tb_offset=None, exception_only=False, running_compiled_code=False, ) : member
-
-    - _showtraceback(self, etype=None, evalue=None, stb=None) : member
-
-    - showsyntaxerror(self, filename=None, running_compiled_code=False) : member
-
-    - showindentationerror(self) : member
-
-    This class has no less than 10 methods for handling exceptions. It
-    calls classes and functions from at least 3 different files. It's
-    really confusing and most immediately needs the most help.
 
     """
 
@@ -253,6 +220,9 @@ class InteractiveShell(SingletonConfigurable):
         if not callable(proposal.value):
             raise ValueError("loop_runner must be callable")
         return proposal.value
+
+    # I think that this entire block of code is equivalent to this right?
+    # loop_runner = CUnicode('_asyncio_runner', klass="IPython.core.async_helpers.Asyncio_Runner", help=("Select the loop runner that will be used to execute top-level asynchronous code")).tag(config=True)
 
     automagic = Bool(
         True,
@@ -364,12 +334,6 @@ class InteractiveShell(SingletonConfigurable):
 
     @property
     def input_transformers_cleanup(self):
-        """
-
-        Returns
-        -------
-
-        """
         return self.input_transformer_manager.cleanup_transforms
 
     input_transformers_post = List(
@@ -493,7 +457,10 @@ class InteractiveShell(SingletonConfigurable):
                 self.ipython_dir, "default"
             )
 
-        .. todo:: This really should have a setter associated with it then.
+        .. todo::
+            This really should have a setter associated with it then.
+            Nah not really because all we're doing here is making information from a class we
+            dispatch to more readily available.
 
         """
         if self.profile_dir is not None:
@@ -502,6 +469,7 @@ class InteractiveShell(SingletonConfigurable):
 
     # Private interface
     _post_execute = Dict()
+    # Deleted the initilization for this  but leave around a reference for a little
     InteractiveTB = None
 
     # Tracks any GUI loop loaded for pylab
@@ -541,10 +509,17 @@ class InteractiveShell(SingletonConfigurable):
         ----------
         todo
 
+        Attributes
+        ----------
+        interpreter : :class:`code.InteractiveInterpreter`.
+            Dec 29, 2019: Adding in an interpreter for the free showsyntaxerror,
+            :meth:`showtraceback`, and :meth:`write` methods.
+
         """
         super().__init__(**kwargs)
 
-        # TODO:
+        self.interpreter = code.InteractiveInterpreter(locals())
+
         self.input_splitter = None
         if "PromptManager" in self.config:
             warn(
@@ -620,9 +595,13 @@ class InteractiveShell(SingletonConfigurable):
         """Return the currently running IPython instance."""
         return self
 
+    def __repr__(self):
+        return '<{}>'.format(self.__class__.__name__)
+
     # -------------------------------------------------------------------------
     # Trait changed handlers
     # -------------------------------------------------------------------------
+
     @observe("ipython_dir")
     def _ipython_dir_changed(self, change):
         ensure_dir_exists(change["new"])
@@ -630,7 +609,8 @@ class InteractiveShell(SingletonConfigurable):
     def set_autoindent(self, value=None):
         """Set the autoindent flag.
 
-        If called with no arguments, it acts as a toggle.
+        If called with no arguments, it behaves similarly
+        to other traitlets flags.
         """
         if value is None:
             self.autoindent = not self.autoindent
@@ -652,10 +632,10 @@ class InteractiveShell(SingletonConfigurable):
         -------
 
         """
-        self.log.debug(
-            "core.interactiveshell:init_ipython_dir: IPythonDir: %s", self.profile_dir
-        )
         self.ipython_dir = get_ipython_dir() or ipython_dir
+        self.log.debug(
+            "core.interactiveshell:init_ipython_dir: IPythonDir: %s", self.ipython_dir
+        )
 
     def init_profile_dir(self, profile_dir=None):
         """
@@ -670,18 +650,15 @@ class InteractiveShell(SingletonConfigurable):
         """
         if profile_dir is not None:
             self.profile_dir = profile_dir
-            self.log.debug(
-                "core.interactiveshell:init_profile_dir: ProfileDir: %s",
-                self.profile_dir,
-            )
         else:
             self.profile_dir = ProfileDir.create_profile_dir_by_name(
                 self.ipython_dir, "default", config=self.config
             )
-            self.log.debug(
-                "core.interactiveshell:init_profile_dir: ProfileDir: %s",
-                self.profile_dir,
-            )
+
+        self.log.debug(
+            "core.interactiveshell:init_profile_dir: ProfileDir: %s",
+            self.profile_dir,
+        )
 
     def init_instance_attrs(self):
         """Well this is sweet.
@@ -718,7 +695,7 @@ class InteractiveShell(SingletonConfigurable):
         self._post_execute = {}
 
     def init_environment(self):
-        """Any changes we need to make to the user's environment."""
+        """Any changes we need to make to the user's environment. todo: what subclass overrides this?"""
         pass
 
     def init_encoding(self):
@@ -1159,6 +1136,7 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
     # Things related to IPython's various namespaces
     # -------------------------------------------------------------------------
+
     default_user_namespaces = True
 
     def init_create_namespaces(self, user_module=None, user_ns=None):
@@ -1908,136 +1886,77 @@ class InteractiveShell(SingletonConfigurable):
         # Set the exception mode
         # self.InteractiveTB.set_mode(mode=self.xmode)
 
-    # Okay so let's not write docstrings like this. The explanation for
-    # what the exc_tuple and handler mean to the set_custom_exc function should not
-    # be:
-    # Set a handler if self.run_code() raises an error.
-
-    # Does it matter what kind of errors? User defined or system? Warnings don't
-    # count do they? Well I guess it depends on what kind of handlers? How they
-    # handle the Exception *which I'm guessing it divied up between
-    # * Be noisy and annoy the user
-    # * Do nothing which is pointless
-    # * Crash the program which NO
-    # * Allow the user to step through and figure out what happened. But that's
-    #   a debugger.
-    # Like I can surmise that set_custom_exc takes a handler to handle an
-    # exception. That's borderline tautology.
-    # The only reason I'm writing all this is because for all the documentation
-    # and source code I've read, I genuinely don't know how to interface with
-    # this section of the code.
-    def set_custom_exc(self, exc_tuple, handler):
-        """Set a handler if self.run_code() raises an error.
-
-        Set a custom exception handler, which will be called if any of the
-        exceptions in 'exc_tuple' occur in the mainloop (specifically, in the
-        run_code() method).
+    def dummy_handler(self, etype, value, tb):
+        """Introducing the only function in the file to use self.quiet.
 
         Parameters
         ----------
-        exc_tuple : tuple
-            A *tuple* of exception classes, for which to call the defined
-            handler.  It is very important that you use a tuple, and NOT A
-            LIST here, because of the way Python's except statement works.  If
-            you only want to trap a single exception, use a singleton tuple::
-
-                exc_tuple == (MyCustomException,)
-
-        handler : callable
-            handler must have the following signature::
-
-                def my_handler(self, etype, value, tb, tb_offset=None):
-                    ...
-                    return structured_traceback
-
-            Your handler must return a structured traceback (a list of strings),
-            or None.
-
-            This will be made into an instance method (via types.MethodType)
-            of IPython itself, and it will be called if any of the exceptions
-            listed in the exc_tuple are caught. If the handler is None, an
-            internal basic one is used, which just prints basic info.
-
-            To protect IPython from crashes, if your handler ever raises an
-            exception or returns an invalid result, it will be immediately
-            disabled.
-
-        execution loop, you run a very good chance of nasty crashes.  This
-        facility should only be used if you really know what you are doing.
-
-        Raises
-        ------
-        :exc:`TypeError`
-            If 'exc_tuple' is not a `tuple`.
-
+        etype :
+        value :
+        tb :
         """
-
-        @functools.wraps
-        def dummy_handler(etype, value, tb):
-            """
-
-            Parameters
-            ----------
-            etype :
-            value :
-            tb :
-            """
+        if not self.quiet:
             print("*** Simple custom exception handler ***")
             print("Exception type :", etype)
             print("Exception value:", value)
             print("Traceback      :", tb)
 
-        def validate_stb(stb):
-            """Validate structured traceback return type.
+    @staticmethod
+    def validate_stb(stb):
+        """Validate structured traceback return type.
 
-            return type of CustomTB *should* be a list of strings, but allow
-            single strings or None, which are harmless.
+        Return type of CustomTB *should* be a list of strings,
+        but allow single strings or None, which are harmless.
 
-            This function will *always* return a list of strings,
-            and will raise a TypeError if stb is inappropriate.
-            """
+        Wait wait wait. How did you determine that it's harmless?
+        Don't just blindly check the types, check the interface and
+        make sure that the strs we got passed are what we actually
+        want to work with!
+        """
+        if stb is None:
+            return []
+        elif isinstance(stb, str):
+            return [stb]
+        elif not isinstance(stb, list):
             msg = "CustomTB must return list of strings, not %r" % stb
-            if stb is None:
-                return []
-            elif isinstance(stb, str):
-                return [stb]
-            elif not isinstance(stb, list):
-                raise TypeError(msg)
-            # it's a list
-            for line in stb:
-                # check every element
-                if not isinstance(line, str):
-                    raise TypeError(msg)
-            return stb
+            raise TypeError(msg)
+        # it's a list
+        # for line in stb:
+            # Literally why wth is this
+            # check every element
+            # if not isinstance(line, str):
+            #     raise TypeError(msg)
+        return stb
 
+    def set_custom_exc(self, exc_tuple=None, handler=None):
         if handler is None:
-            wrapped = dummy_handler
+            wrapped_handler = dummy_handler
         else:
-
-            def wrapped(self, etype, value, tb, tb_offset=None):
-                """wrap CustomTB handler, to protect IPython from user code
-
-                This makes it harder (but not impossible) for custom exception
-                handlers to crash IPython.
-                """
-                try:
-                    stb = handler(self, etype, value, tb, tb_offset=tb_offset)
-                    return validate_stb(stb)
-                except BaseException:
-                    # clear custom handler immediately
-                    self.set_custom_exc((), None)
-                    print("Custom TB Handler failed, unregistering", file=sys.stderr)
-                    # show the exception in handler first
-                    stb = self.InteractiveTB.structured_traceback(*sys.exc_info())
-                    print(self.InteractiveTB.stb2text(stb))
-                    print("The original exception:")
-                    stb = self.InteractiveTB.structured_traceback(
-                        (etype, value, tb), tb_offset=tb_offset
-                    )
-                return stb
-
-        self.CustomTB = types.MethodType(wrapped, self)
+            wrapped_handler = self.wrapped
+        self.CustomTB = types.MethodType(wrapped_handler, self)
         self.custom_exceptions = exc_tuple
+
+    def wrapped(self, etype, value, tb, tb_offset=None):
+        """Wrap CustomTB handler, to protect IPython from user code
+
+        This makes it harder (but not impossible) for custom exception
+        handlers to crash IPython.
+        """
+        try:
+            stb = handler(self, etype, value, tb, tb_offset=tb_offset)
+            return validate_stb(stb)
+        except BaseException:
+            # clear custom handler immediately
+            self.set_custom_exc((), None)
+            print("Custom TB Handler failed, unregistering", file=sys.stderr)
+            # show the exception in handler first
+            stb = self.InteractiveTB.structured_traceback(*sys.exc_info())
+            print(self.InteractiveTB.stb2text(stb))
+            print("The original exception:")
+            stb = self.InteractiveTB.structured_traceback(
+                (etype, value, tb), tb_offset=tb_offset
+            )
+        return stb
 
     def excepthook(self, etype, value, tb):
         """One more defense for GUI apps that call sys.excepthook.
@@ -2117,7 +2036,7 @@ class InteractiveShell(SingletonConfigurable):
         Yo I get that they don't need a full traceback but we have a UsageError
         exception ready to go like why in the world would you not use that.
         """
-        return UsageError(exc)
+        raise UsageError(exc)
 
     def get_exception_only(self, exc_tuple=None):
         """
@@ -2128,126 +2047,12 @@ class InteractiveShell(SingletonConfigurable):
         msg = traceback.format_exception_only(etype, value)
         return "".join(msg)
 
-    def showtraceback(
-        self,
-        filename=None,
-        tb_offset=None,
-        exception_only=False,
-        running_compiled_code=False,
-    ):
-        """Display the exception that just occurred.
+    def showtraceback(self, *args, **kwargs):
+        """Provide ``*args`` and **kwargs but throw them away."""
+        return self.interpreter.showtraceback()
 
-        If nothing is known about the exception, this is the method which
-        should be used throughout the code for presenting user tracebacks,
-        rather than directly invoking the InteractiveTB object.
-
-        A specific showsyntaxerror() also exists, but this method can take
-        care of calling it if needed, so unless you are explicitly catching a
-        SyntaxError exception, don't try to analyze the stack manually and
-        simply call this method.
-
-        Parameters
-        -----------
-        tb_offset :
-        filename :
-        running_compiled_code :
-            As used by :meth:`showsyntaxerror`.
-        exception_only : bool
-            Return traceback.format_exception or traceback.format_exception_only?
-
-        Notes
-        -----
-        Exception classes can customise their traceback - we
-        use this in IPython.parallel for exceptions occurring
-        in the engines. This should return a list of strings.
-
-        """
-        if hasattr(sys, "exc_info"):
-            etype, value, stb = sys.exc_info()
-        else:
-            print("No traceback available to show.", file=sys.stderr)
-            return
-
-        if issubclass(etype, SyntaxError):
-            # Though this won't be called by syntax errors in the input
-            # line, there may be SyntaxError cases with imported code.
-            self.showsyntaxerror(filename, running_compiled_code)
-        elif etype is UsageError:
-            raise UsageError
-        else:
-            stb.extend(traceback.format_exception_only(etype, value))
-            if exception_only:
-                stb.insert(
-                    0,
-                    [
-                        "An exception has occurred, use %tb to see "
-                        "the full traceback.\n"
-                    ],
-                )
-            else:
-                self._showtraceback(etype, value, stb)
-                if self.call_pdb:
-                    # drop into debugger
-                    self.debugger(force=True)
-
-        return
-
-    def _showtraceback(self, etype=None, evalue=None, stb=None):
-        """Actually show a traceback.
-
-        Subclasses may override this method to put the traceback on a different
-        place, like a side channel.
-
-        Parameters
-        ----------
-        etype, evalue, stb
-            3 parameters as returned by :func:`sys.exc_info`.
-            We don't use 2 of them though???? Ugh.
-            The third one is sys.last_traceback anyway!
-             So make them all optional.
-            If nothing is provided check sys.last_traceback.
-
-        """
-        if stb is None:
-            stb = sys.last_traceback
-        return "".join(stb)
-
-    def showsyntaxerror(self, filename=None, running_compiled_code=False):
-        """Display the syntax error that just occurred.
-
-        This doesn't display a stack trace because there isn't one.
-
-        Parameters
-        ----------
-        filename : str (path-like)
-            If a filename is given, it is stuffed in the exception instead
-            of what was there before (because Python's parser always uses
-            "<string>" when reading from a string).
-        running_compiled_code : bool
-            If the syntax error occurred when running a compiled code (i.e.
-            running_compile_code=True), a longer stack trace will be displayed.
-
-        """
-        etype, value, last_traceback = sys.exc_info()
-
-        if etype == value == last_traceback == 0:
-            # I doubt we get incorrectly called often but let's check
-            return
-
-        if filename and issubclass(etype, SyntaxError):
-            try:
-                value.filename = filename
-            except BaseException:
-                # Not the format we expect; leave it alone
-                pass
-
-        # If the error occurred when executing compiled code, we should provide
-        # full stacktrace.
-        elist = traceback.extract_tb(last_traceback) if running_compiled_code else []
-
-        stb = traceback.format_exc(limit=3)
-
-        self._showtraceback(etype=etype, evalue=value, stb=stb)
+    def showsyntaxerror(self, filename, **kwargs):
+        return self.interpreter.showsyntaxerror(filename)
 
     def showindentationerror(self):
         """Called by :meth:`_run_cell` when there's an :exc:`IndentationError`
@@ -2997,6 +2802,41 @@ class InteractiveShell(SingletonConfigurable):
     # Things related to the running of code
     # -------------------------------------------------------------------------
 
+    # Wow so I hadn't noticed it but this is FAR and away the longest section
+    # of this file. I had really gotten tunnel vision at exception handling but this
+    # alone is 700 lines of code. Huh.
+
+    # And I just factored out some code duplication so let's see if we can't
+    # trim this down a lot
+    @staticmethod
+    def _validate_execedfile(fname):
+        """Make sure we can open the file."""
+        try:
+            with open(fname):
+                pass
+        except OSError:
+            # Don't use warnings.warn for this
+            self.log.error("Error: Could not open file <%s> ." % str(fname))
+            return 127
+        except BaseException as e:
+            self.log.warning("Error: InteractiveShell safe_execfile: {}".format(e))
+
+    @staticmethod
+    def get_cells(fname):
+        """generator for sequence of code blocks to run"""
+        if fname.endswith(".ipynb"):
+            from nbformat import read
+
+            nb = read(fname, as_version=4)
+            if not nb.cells:
+                return
+            for cell in nb.cells:
+                if cell.cell_type == "code":
+                    yield cell.source
+        else:
+            with open(fname) as f:
+                yield f.read()
+
     def ex(self, cmd):
         """Execute a normal python statement in user namespace."""
         with self.builtin_trap:
@@ -3057,15 +2897,20 @@ class InteractiveShell(SingletonConfigurable):
         -----
         Find things also in current directory.  This is needed to mimic the
         behavior of running a script from the system command line, where
-        Python inserts the script's directory into sys.path
+        Python inserts the script's directory into ``sys.path``.
 
-        If the call was made with 0 or None exit status (sys.exit(0)
-        or sys.exit() ), don't bother showing a traceback, as both of
-        these are considered normal by the OS:
-        > python -c'import sys;sys.exit(0)'; echo $?
-        0
-        > python -c'import sys;sys.exit()'; echo $?
-        0
+        If the call was made and returns with 0 or None as the exit status,
+        I.E. ``sys.exit(0)`` or ``sys.exit()`` ,
+        don't bother showing a traceback, as both of these are considered
+        normal by the OS.
+
+        .. code-block:: bash
+
+            python -c'import sys;sys.exit(0)'; echo $?
+            0
+            python -c'import sys;sys.exit()'; echo $?
+            0
+
         For other exit status, we show the exception unless
         explicitly silenced, but only in short form.
 
@@ -3077,45 +2922,34 @@ class InteractiveShell(SingletonConfigurable):
         """
         if fname is None:
             return
-
         fname = os.path.abspath(os.path.expanduser(fname))
-
-        # Make sure we can open the file
-        try:
-            with open(fname):
-                pass
-        except OSError:
-            warn("Error: Could not open file <%s> ." % str(fname))
-            return 127
-        except BaseException as e:
-            warn("Error: InteractiveShell safe_execfile: {}".format(e.__traceback__))
-
+        self._validate_execedfile(fname)
         dname = os.path.dirname(fname)
 
         with prepended_to_syspath(dname), self.builtin_trap:
             # no this line gets called literally ~30 times
-            # logging.debug('self.builtin_trap is: {}'.format(self.builtin_trap))
+            # self.log.debug('self.builtin_trap is: {}'.format(self.builtin_trap))
             with open(fname, "rb") as f:
                 try:
-                    # glob, loc = (where + (None,))[:2]
-                    # exec(fname, glob, loc, self.compile if shell_futures else None)
-                    exec(compile(f, "<string>", "<exec>"), globals(), locals())
+                    glob, loc = (where + (None,))[:2]
+                    exec(f, glob, loc, self.compile if shell_futures else None)
+                    # can't we just do:
+                    # exec(compile(f, "<string>", "<exec>"), globals(), locals())
                 except SystemExit as status:
                     if status.code:
                         if raise_exceptions:
                             raise
+                    else:
                         print("SystemExit: {}".format(status))
                         # if not exit_ignore:
-                        # self.showtraceback(exception_only=True)
+                        self.showtraceback(exception_only=True)
                 except BaseException as e:
+                    if getattr(e, '__cause__', None):
+                        print("Exception cause: {}".format(e.__cause__))
+                    # tb offset is 2 because we wrap execfile
+                    self.showtraceback(tb_offset=2)
                     if raise_exceptions:
                         raise
-                    if e.__cause__ is not None:
-                        print("Exception cause: {}".format(e.__cause__))
-                    else:
-                        print(e)
-                    # tb offset is 2 because we wrap execfile
-                    # self.showtraceback(tb_offset=2)
 
     def safe_execfile_ipy(self, fname, shell_futures=False, raise_exceptions=False):
         """Like safe_execfile, but for .ipy or .ipynb files with IPython syntax.
@@ -3133,44 +2967,19 @@ class InteractiveShell(SingletonConfigurable):
         raise_exceptions : bool (False)
             If True raise exceptions everywhere.  Meant for testing.
 
-        Note
-        ----
+        Notes
+        -----
         This function really quietly depends on nbformat.
+        Also why doesn't this execute with self.builtin_trap like safe_execfile
+        does?
 
         """
         fname = os.path.abspath(os.path.expanduser(fname))
-
-        # Make sure we can open the file
-        try:
-            with open(fname):
-                pass
-        except BaseException:
-            warn("Could not open file <%s> for safe execution." % fname)
-            return
-
-        # Find things also in current directory.  This is needed to mimic the
-        # behavior of running a script from the system command line, where
-        # Python inserts the script's directory into sys.path
         dname = os.path.dirname(fname)
-
-        def get_cells():
-            """generator for sequence of code blocks to run"""
-            if fname.endswith(".ipynb"):
-                from nbformat import read
-
-                nb = read(fname, as_version=4)
-                if not nb.cells:
-                    return
-                for cell in nb.cells:
-                    if cell.cell_type == "code":
-                        yield cell.source
-            else:
-                with open(fname) as f:
-                    yield f.read()
 
         with prepended_to_syspath(dname):
             try:
-                for cell in get_cells():
+                for cell in self.get_cells(fname):
                     result = self.run_cell(
                         cell, silent=True, shell_futures=shell_futures
                     )
@@ -3179,10 +2988,10 @@ class InteractiveShell(SingletonConfigurable):
                     elif not result.success:
                         break
             except BaseException:
+                self.showtraceback()
+                self.log.warn("Unknown failure executing file: <%s>" % fname)
                 if raise_exceptions:
                     raise
-                self.showtraceback()
-                warn("Unknown failure executing file: <%s>" % fname)
 
     def safe_run_module(self, mod_name, where):
         """A safe version of runpy.run_module().
@@ -3208,7 +3017,7 @@ class InteractiveShell(SingletonConfigurable):
                 if status.code:
                     raise
         except BaseException:
-            # self.showtraceback()
+            self.showtraceback()
             warn("Unknown failure executing module: <%s>" % mod_name)
 
     def run_cell(self, raw_cell, store_history=False, silent=False, shell_futures=True):
@@ -3235,7 +3044,7 @@ class InteractiveShell(SingletonConfigurable):
 
         Returns
         -------
-        result : :class:`core.interactiveshell.execution.ExecutionResult`
+        result : :class:`IPython.core.interactiveshell.execution.ExecutionResult`
         """
         result = None
         try:
@@ -3275,7 +3084,7 @@ class InteractiveShell(SingletonConfigurable):
             info = ExecutionInfo(raw_cell, store_history, silent, shell_futures)
             result = ExecutionResult(info)
             result.error_in_exec = e
-            # self.showtraceback(running_compiled_code=True)
+            self.showtraceback(running_compiled_code=True)
             return result
         return
 
@@ -3389,7 +3198,7 @@ class InteractiveShell(SingletonConfigurable):
 
         # Display the exception if input processing failed.
         if preprocessing_exc_tuple is not None:
-            # self.showtraceback(preprocessing_exc_tuple)
+            self.showtraceback(preprocessing_exc_tuple)
             if store_history:
                 self.execution_count += 1
             return error_before_exec(preprocessing_exc_tuple[1])
@@ -3450,7 +3259,7 @@ class InteractiveShell(SingletonConfigurable):
                 try:
                     code_ast = self.transform_ast(code_ast)
                 except InputRejected as e:
-                    # self.showtraceback()
+                    self.showtraceback()
                     return error_before_exec(e)
 
                 # Give the displayhook a reference to our ExecutionResult so it
@@ -3732,7 +3541,7 @@ class InteractiveShell(SingletonConfigurable):
         except BaseException:
             if result:
                 result.error_before_exec = sys.exc_info()[1]
-            # self.showtraceback()
+            self.showtraceback()
             return True
 
         return False
@@ -3800,7 +3609,7 @@ class InteractiveShell(SingletonConfigurable):
         except SystemExit as e:
             if result is not None:
                 result.error_in_exec = e
-            # self.showtraceback(exception_only=True)
+            self.showtraceback(exception_only=True)
             warn("To exit: use 'exit', 'quit', or Ctrl-D.", stacklevel=1)
         except self.custom_exceptions:
             etype, value, tb = sys.exc_info()
@@ -3819,12 +3628,11 @@ class InteractiveShell(SingletonConfigurable):
         except BaseException:
             if result is not None:
                 result.error_in_exec = sys.exc_info()[1]
-            # self.showtraceback(running_compiled_code=True)
+            self.showtraceback(running_compiled_code=True)
         else:
             outflag = False
         return outflag
 
-    # previously was ~3000 lines down
     # duh it has to be after we define teh function
     # For backwards compatibility
     runcode = run_code
@@ -4255,10 +4063,12 @@ class InteractiveShell(SingletonConfigurable):
 
         Was deprecated but we use it in too many tests.
         """
-        self.io.stdout.write(data)
+        self.io.stderr.write(data)
 
     def write(self, data):
-        self.io.stderr.write(data)
+        """Delegate to code.InteractiveShell now."""
+        self.interpreter.write(data)
+
 
 class InteractiveShellABC(metaclass=abc.ABCMeta):
     """An abstract base class for InteractiveShell."""
