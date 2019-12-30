@@ -98,6 +98,7 @@ from .execution import (
     ExecutionResult,
     removed_co_newlocals,
     softspace,
+    get_cells
 )
 from .separate_unicode import SeparateUnicode
 
@@ -161,6 +162,7 @@ class InteractiveShell(SingletonConfigurable):
 
     _instance = None
     custom_exceptions = None
+    active_eventloop = None
 
     ast_transformers = List(
         [],
@@ -2827,22 +2829,6 @@ class InteractiveShell(SingletonConfigurable):
         except BaseException as e:
             self.log.warning("Error: InteractiveShell safe_execfile: {}".format(e))
 
-    @staticmethod
-    def get_cells(fname):
-        """generator for sequence of code blocks to run"""
-        if fname.endswith(".ipynb"):
-            from nbformat import read
-
-            nb = read(fname, as_version=4)
-            if not nb.cells:
-                return
-            for cell in nb.cells:
-                if cell.cell_type == "code":
-                    yield cell.source
-        else:
-            with open(fname) as f:
-                yield f.read()
-
     def ex(self, cmd):
         """Execute a normal python statement in user namespace."""
         with self.builtin_trap:
@@ -2985,7 +2971,7 @@ class InteractiveShell(SingletonConfigurable):
 
         with prepended_to_syspath(dname):
             try:
-                for cell in self.get_cells(fname):
+                for cell in get_cells(fname):
                     result = self.run_cell(
                         cell, silent=True, shell_futures=shell_futures
                     )
@@ -3487,16 +3473,6 @@ class InteractiveShell(SingletonConfigurable):
                 if sys.version_info > (3, 8):
 
                     def compare(code):
-                        """
-
-                        Parameters
-                        ----------
-                        code :
-
-                        Returns
-                        -------
-
-                        """
                         is_async = (
                             inspect.CO_COROUTINE & code.co_flags == inspect.CO_COROUTINE
                         )
@@ -3505,16 +3481,6 @@ class InteractiveShell(SingletonConfigurable):
                 else:
 
                     def compare(code):
-                        """
-
-                        Parameters
-                        ----------
-                        code :
-
-                        Returns
-                        -------
-
-                        """
                         return _async
 
                 # refactor that to just change the mod constructor.
@@ -3617,11 +3583,15 @@ class InteractiveShell(SingletonConfigurable):
                 result.error_in_exec = e
             self.showtraceback(exception_only=True)
             warn("To exit: use 'exit', 'quit', or Ctrl-D.", stacklevel=1)
-        except self.custom_exceptions:
-            etype, value, tb = sys.exc_info()
-            if result is not None:
-                result.error_in_exec = value
-            self.CustomTB(etype, value, tb)
+
+        # TODO: we need to validate this correctly so that all items in this
+        # list derive from BaseException. Which actually also means we need to
+        # iterate over the individual items as well.
+        # except self.custom_exceptions:
+        #     etype, value, tb = sys.exc_info()
+        #     if result is not None:
+        #         result.error_in_exec = value
+        #     self.CustomTB(etype, value, tb)
 
         # let's build like 2 more custom handlers right here guys
         except NameError as e:
@@ -3667,8 +3637,6 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
     # Things related to GUI support and pylab
     # -------------------------------------------------------------------------
-
-    active_eventloop = None
 
     def enable_matplotlib(self, gui=None):
         """Enable interactive matplotlib and inline figure support.
@@ -3995,13 +3963,8 @@ class InteractiveShell(SingletonConfigurable):
         try:  # User namespace
             codeobj = eval(target, self.user_ns)
         except Exception:
-            raise ValueError(
-                (
-                    "'%s' was not found in history, as a file, url, "
-                    "nor in the user namespace."
-                )
-                % target
-            )
+            raise ValueError(("'%s' was not found in history, as a file, url, "
+                              "nor in the user namespace.") % target)
 
         if isinstance(codeobj, str):
             return codeobj
@@ -4013,6 +3976,7 @@ class InteractiveShell(SingletonConfigurable):
     # -------------------------------------------------------------------------
     # Things related to IPython exiting
     # -------------------------------------------------------------------------
+
     def atexit_operations(self):
         """Execute at the time of exit.
 

@@ -3,6 +3,42 @@ import types
 from types import CodeType, FunctionType
 
 
+def get_cells(fname):
+    """Generator for sequence of code blocks to run.
+
+    .. versionchanged:: 7.11.0
+
+        Now also checks that we didn't get passed a file handle by accident.
+
+    Parameters
+    ----------
+    fname : str (os.Pathlike)
+        Path to filename.
+
+    Yields
+    ------
+    Lines of file
+
+    Notes
+    -----
+    Depends on nbformat
+    """
+    if getattr(fname, 'read', None):
+        yield fname.read()
+    if fname.endswith(".ipynb"):
+        from nbformat import read
+
+        nb = read(fname, as_version=4)
+        if not nb.cells:
+            return
+        for cell in nb.cells:
+            if cell.cell_type == "code":
+                yield cell.source
+    else:
+        with open(fname) as f:
+            yield f.read()
+
+
 def removed_co_newlocals(function: types.FunctionType) -> types.FunctionType:
     """Return a function that do not create a new local scope.
 
