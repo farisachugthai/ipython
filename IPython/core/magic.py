@@ -53,8 +53,8 @@ from logging import error
 from textwrap import dedent
 
 from decorator import decorator
-from traitlets import Bool, Dict, Instance, observe
-from traitlets.config.configurable import Configurable
+from traitlets.traitlets import Bool, Dict, Instance, observe
+from traitlets.config.configurable import LoggingConfigurable
 
 from IPython.core.error import UsageError
 from IPython.core.inputtransformer2 import ESC_MAGIC, ESC_MAGIC2
@@ -389,7 +389,7 @@ register_line_cell_magic = _function_magic_marker("line_cell")
 # -----------------------------------------------------------------------------
 
 
-class MagicsManager(Configurable):
+class MagicsManager(LoggingConfigurable):
     """Object that handles all magic-related functionality for IPython.
 
     I think I forgot that the MagicsManager only have one configurable
@@ -587,7 +587,7 @@ class MagicsManager(Configurable):
         return self.register(*magic_objects)
 
 
-class Magics(Configurable):
+class Magics(LoggingConfigurable):
     """Base class for implementing magic functions.
 
     Shell functions which can be reached as %function_name. All magic

@@ -787,9 +787,10 @@ class InteractiveShell(SingletonConfigurable):
 
         self.builtin_trap = BuiltinTrap(shell=self)
 
-    @observe("colors")
+    # @observe("colors")
+    # I don't think that the init_* methods usually have observe decorators on them right?
     def init_inspector(self, changes=None):
-        """I have genuinely no idea what this code is trying to do."""
+        """Added this to the list of 'configurables'."""
         # Object inspector
         self.inspector = oinspect.Inspector(
             color_table=PyColorize.ANSICodeColors,
@@ -798,6 +799,7 @@ class InteractiveShell(SingletonConfigurable):
             parent=self,
             config=self.config,
         )
+        self.configurables.append(self.inspector)
 
     def init_io(self):
         """Redirects io.IOStreams(sys.stdout) and sys.stderr.

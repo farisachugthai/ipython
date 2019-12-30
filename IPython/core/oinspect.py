@@ -38,9 +38,11 @@ import warnings
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
+from pygments.formatters.terminal256 import TerminalTrueColorFormatter
 
 # IPython's own
-from traitlets.config import Configurable, Unicode
+from traitlets.traitlets import Unicode, Bool, CInt, Dict
+from traitlets.config.configurable import LoggingConfigurable
 
 from IPython.core import page
 from IPython.lib.lexers import IPyLexer
@@ -249,8 +251,8 @@ def _mime_format(text, formatter=None):
             return dict(defaults, **formatted)
 
 
-class Inspector(Configurable):
-    """Whew.
+class Inspector(LoggingConfigurable):
+    """Now a Configurable!
 
     Parameters
     ----------
@@ -260,7 +262,6 @@ class Inspector(Configurable):
     Note
     ----
     The Xonsh guy made it stop inheriting from Colorable!!!
-    I'm gonna make it still inherit from Configurable though.
 
     """
 
@@ -268,23 +269,29 @@ class Inspector(Configurable):
         "LightBG", help=("Highlighting scheme used for highlighting source code.")
     ).tag(config=True)
 
-    def __init__(
-        self,
-        color_table=InspectColors,
-        # is this mutable ----^
-        scheme=None,
-        str_detail_level=0,
-        parent=None,
-        config=None,
-        *args,
-        **kwargs,
-    ):
-        self.color_table = color_table
+    true_color = Bool(
+        True, help=("Sorry for the duplicated code but this makes more sense here.")
+    ).tag(config=True)
+
+    detail_level = CInt(
+        0, help="Integer. Should really be a flag I guess. Toggles verbosity."
+    ).tag(config=True)
+
+    color_table = Dict(help="I assume the same thing as default_style"
+                       ).tag(config=True)
+
+    def __init__(self, parent=None, config=None, *args, **kwargs):
+        """
+        # TODO: need to figure out what we'd need to parse from self.config to determine if we're true
+        # color or not
         # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         # self.format = self.parser.format
-        self.str_detail_level = str_detail_level
+        """
         self.parent = parent
         self.config = config
+        self.parser = None
+        self.formatter = TerminalTrueColorFormatter()
+        self.format = self.formatter.format
         super().__init__(*args, **kwargs)
 
     def _getdef(self, obj, oname="") -> Union[str, None]:
@@ -299,18 +306,6 @@ class Inspector(Configurable):
         """
         hdef = _render_signature(signature(obj), oname)
         return hdef
-
-    def __head(self, h) -> str:
-        """Return a header string with proper colors.
-
-        Before deleting really ensure nobody calls this. I think I got most
-        calls to it.
-        """
-        return "%s%s%s" % (
-            self.color_table.active_colors.header,
-            h,
-            self.color_table.active_colors.normal,
-        )
 
     def set_active_scheme(self, scheme=None):
         if scheme is not None:
@@ -443,7 +438,7 @@ class Inspector(Configurable):
             # getsourcelines returns lineno with 1-offset and page() uses
             # 0-offset, so we must adjust.
             page.page(
-                self.format(openpy.read_py_file(ofile, skip_encoding_cookie=False)),
+                self.format(openpy.read_py_file(ofile, skip_encoding_cookie=False), sys.stdout),
                 lineno - 1,
             )
 
@@ -561,7 +556,7 @@ class Inspector(Configurable):
                 )
 
         def code_formatter(text):
-            return {"text/plain": self.format(text), "text/html": pylight(text)}
+            return {"text/plain": self.format(text, sys.stdout), "text/html": pylight(text)}
 
         if info["isalias"]:
             append_field(_mime, "Repr", "string_form")
@@ -739,18 +734,17 @@ class Inspector(Configurable):
             pass
 
         # String form, but snip if too long in ? form (full in ??)
-        if detail_level >= self.str_detail_level:
-            try:
-                ostr = str(obj)
-                str_head = "string_form"
-                if not detail_level and len(ostr) > string_max:
-                    ostr = ostr[:shalf] + " <...> " + ostr[-shalf:]
-                    ostr = ("\n" + " " * len(str_head.expandtabs())).join(
-                        q.strip() for q in ostr.split("\n")
-                    )
-                out[str_head] = ostr
-            except BaseException:
-                pass
+        try:
+            ostr = str(obj)
+            str_head = "string_form"
+            if not detail_level and len(ostr) > string_max:
+                ostr = ostr[:shalf] + " <...> " + ostr[-shalf:]
+                ostr = ("\n" + " " * len(str_head.expandtabs())).join(
+                    q.strip() for q in ostr.split("\n")
+                )
+            out[str_head] = ostr
+        except BaseException:
+            pass
 
         if ospace:
             out["namespace"] = ospace

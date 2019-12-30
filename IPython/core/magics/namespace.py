@@ -61,7 +61,8 @@ class NamespaceMagics(Magics):
             detail_level: 0 -> obj? , 1 -> obj??
         """
         # This should have a logging method per traitlets.
-        # self.log.debug("pinfo par: <%s>" % parameter_s)  # dbg
+        # Now magics inherits from LoggingConfigurable whoo!
+        self.log.debug("pinfo par: <%s>" % parameter_s)  # dbg
         detail_level = 0
         # We need to detect if we got called as 'pinfo pinfo foo', which can
         # happen if the user types 'pinfo foo?' at the cmd line.

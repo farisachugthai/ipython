@@ -404,7 +404,7 @@ Currently the magic system has the following functions:""",
                     "magics/basic: ColorSwitchErr.\nInspector\n{}".format(e)
                 )
         else:
-            logging.warning("magics/basic: Shell doesn't have color_info.")
+            self.log.warning("magics/basic: Shell doesn't have color_info.")
 
     @line_magic
     def xmode(self, parameter_s=""):
@@ -545,7 +545,7 @@ Currently the magic system has the following functions:""",
         except Exception as e:
             # print simple error message, rather than traceback if we can't
             # hook up the GUI
-            logging.error(str(e))
+            self.log.error(str(e))
 
     # @skip_doctest
     @line_magic

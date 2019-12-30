@@ -66,8 +66,8 @@ def get_home_dir(require_writable=False):
         return Path.home().__fspath__()
 
 
-def compress_user(path: str, tilde_expand: bool, tilde_val: str) -> str:
-    """Does the opposite of expand_user, with its outputs."""
+def compress_user(path: str, tilde_expand=None, tilde_val=None) -> str:
+    """Does the opposite of expand_user, with its outputs. Also ignore nonsense parameters."""
     if tilde_expand:
         return path.replace(tilde_val, "~")
     else:
