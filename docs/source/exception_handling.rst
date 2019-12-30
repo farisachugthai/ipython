@@ -260,3 +260,41 @@ Actually we kinda need to make a separate method for custom exceptions.
 
 So we need to validate that 'custom_exceptions' attribute that we assign to
 in 'set_custom_exc'.
+
+
+Excepthook
+-----------
+
+Be wary of what we change :data:`sys.excepthook` to.
+
+GUI frameworks like wxPython trap exceptions and call
+sys.excepthook themselves.  I guess this is a feature that
+enables them to keep running after exceptions that would
+otherwise kill their mainloop.
+
+This is a bother for IPython which expects to catch all of the
+program exceptions with ``try except`` statement.
+
+Normally, IPython sets `sys.excepthook` to a CrashHandler instance, so if
+any app directly invokes `sys.excepthook`, it will look to the user like
+IPython crashed.  In order to work around this, we can disable the
+CrashHandler and replace it with this excepthook instead, which prints a
+regular traceback using our InteractiveTB.  In this fashion, apps which
+call `sys.excepthook` will generate a regular-looking exception from
+IPython, and the CrashHandler will only be triggered by real IPython
+crashes.
+
+This hook should be used sparingly, only in places which are not likely
+to be true IPython errors.
+
+.. admonition:: Don't set this to self.showtraceback.
+
+   Can't do this because now :meth:`showtraceback` is
+   :func:`code.InteractiveInterpreter.showtraceback`
+   which calls `sys.excepthook`.
+
+As a result I just deleted.:
+
+   self.showtraceback((etype, value, tb), tb_offset=0)
+
+And replaced it with :func:`cgitb.text`.

@@ -1865,7 +1865,6 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         from ..ultratb.list_tb import SyntaxTB
-        from ..ultratb.formatted_tb import AutoFormattedTB
 
         self.SyntaxTB = SyntaxTB(
             color_scheme="LightBG", parent=self, config=self.config
@@ -1894,7 +1893,7 @@ class InteractiveShell(SingletonConfigurable):
         # Set the exception mode
         # self.InteractiveTB.set_mode(mode=self.xmode)
 
-    def dummy_handler(self, etype, value, tb):
+    def dummy_handler(self, *args, **kwargs):
         """Introducing the only function in the file to use self.quiet.
 
         Parameters
@@ -1903,6 +1902,7 @@ class InteractiveShell(SingletonConfigurable):
         value :
         tb :
         """
+        etype, value, tb = sys.exc_info()
         if not self.quiet:
             print("*** Simple custom exception handler ***")
             print("Exception type :", etype)
@@ -1958,37 +1958,9 @@ class InteractiveShell(SingletonConfigurable):
             self.set_custom_exc((), None)
             print("Custom TB Handler failed, unregistering", file=sys.stderr)
             # show the exception in handler first
-            stb = self.InteractiveTB.structured_traceback(*sys.exc_info())
-            print(self.InteractiveTB.stb2text(stb))
             print("The original exception:")
-            stb = self.InteractiveTB.structured_traceback(
-                (etype, value, tb), tb_offset=tb_offset
-            )
+            print(sys.exc_info())
         return stb
-
-    def excepthook(self, etype, value, tb):
-        """One more defense for GUI apps that call sys.excepthook.
-
-        GUI frameworks like wxPython trap exceptions and call
-        sys.excepthook themselves.  I guess this is a feature that
-        enables them to keep running after exceptions that would
-        otherwise kill their mainloop. This is a bother for IPython
-        which excepts to catch all of the program exceptions with a try:
-        except: statement.
-
-        Normally, IPython sets sys.excepthook to a CrashHandler instance, so if
-        any app directly invokes sys.excepthook, it will look to the user like
-        IPython crashed.  In order to work around this, we can disable the
-        CrashHandler and replace it with this excepthook instead, which prints a
-        regular traceback using our InteractiveTB.  In this fashion, apps which
-        call sys.excepthook will generate a regular-looking exception from
-        IPython, and the CrashHandler will only be triggered by real IPython
-        crashes.
-
-        This hook should be used sparingly, only in places which are not likely
-        to be true IPython errors.
-        """
-        self.showtraceback((etype, value, tb), tb_offset=0)
 
     def _get_exc_info(self, exc_tuple=None):
         """get exc_info from a given tuple, sys.exc_info() or sys.last_type etc.
@@ -2034,6 +2006,10 @@ class InteractiveShell(SingletonConfigurable):
         sys.last_traceback = tb
 
         return etype, value, tb
+
+    def excepthook(self, etype, value, tb, *args, **kwargs):
+        """One more defense for GUI apps that call sys.excepthook. """
+        cgitb.text(self._get_exc_info())
 
     @staticmethod
     def show_usage_error(exc):
