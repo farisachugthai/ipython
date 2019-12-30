@@ -247,3 +247,16 @@ The only reason I'm writing all this is because for all the documentation
 and source code I've read, I genuinely don't know how to interface with
 this section of the code.
 
+Actually we kinda need to make a separate method for custom exceptions.
+
+.. code-block:: ipythontb
+
+   Traceback (most recent call last):
+   File "/mnt/c/Users/faris/src/ipython/IPython/core/interactiveshell/__init__.py", line 3540, in run_ast_nodes
+      if await self.run_code(code, result, async_=asy):
+   File "/mnt/c/Users/faris/src/ipython/IPython/core/interactiveshell/__init__.py", line 3620, in run_code
+      except self.custom_exceptions:
+   TypeError: catching classes that do not inherit from BaseException is not allowed
+
+So we need to validate that 'custom_exceptions' attribute that we assign to
+in 'set_custom_exc'.

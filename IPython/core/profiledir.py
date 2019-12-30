@@ -59,8 +59,19 @@ class ProfileDir(LoggingConfigurable):
 
     _location_isset = Bool(False)  # flag for detecting multiply set location
 
+    def __init__(self, location=None, config=None, **kwargs):
+        """There was no init for this but there's 4 classmethods.
+
+        All of them return the same signature so why not formalize it?
+        I mean unless this starts breaking shit.
+
+        """
+        self.location = location
+        self.config = config
+        super().__init__(**kwargs)
+
     def __repr__(self):
-        return "{!r}".format(self.location)
+        return "<{!r}:> {!r}".format(self.__class__.__name__, self.location)
 
     @observe("location")
     def _location_changed(self, change):

@@ -22,7 +22,6 @@ import code
 import codecs
 import functools
 import inspect
-from io import RawIOBase
 import os
 import re
 import runpy
@@ -34,6 +33,7 @@ import types
 import warnings
 from ast import AST, Await, Expr, Return
 from importlib import import_module
+from io import RawIOBase
 from logging import error
 from os import system
 from pathlib import Path
@@ -65,7 +65,7 @@ from IPython.core.alias import Alias, AliasManager
 from IPython.core.async_helpers import _asyncify, _asyncio_runner, _pseudo_sync_runner
 from IPython.core.autocall import ExitAutocall
 from IPython.core.builtin_trap import BuiltinTrap
-from IPython.core.compilerop import CachingCompiler, check_linecache_ipython
+from IPython.core.compilerop import CachingCompiler
 from IPython.core.display import display
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.displayhook import DisplayHook
@@ -152,9 +152,15 @@ class InteractiveShell(SingletonConfigurable):
     Thankfully the :mod:`IPython.sphinxext.configtraits` picks up all
     :class:`traitlets.config.Configurable` attributes. Otherwise....
 
+    Attributes
+    ----------
+    'custom_exceptions'
+        Defined in `set_custom_exc`.
+        Needed by `run_cell` or run_code. One of them idk.
     """
 
     _instance = None
+    custom_exceptions = None
 
     ast_transformers = List(
         [],
@@ -596,7 +602,7 @@ class InteractiveShell(SingletonConfigurable):
         return self
 
     def __repr__(self):
-        return '<{}>'.format(self.__class__.__name__)
+        return '<{!r}:>'.format(self.__class__.__name__)
 
     # -------------------------------------------------------------------------
     # Trait changed handlers
