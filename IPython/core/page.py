@@ -11,9 +11,14 @@ In addition, the :func:`display_page` function utilizes IPython's display API.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+from IPython.utils.data import chop
+from IPython.core.getipython import get_ipython
+from IPython.core.error import TryNext
+from IPython.core.display import display
 import io
 import os
 import re
+from shutil import get_terminal_size as _detect_screen_size
 import subprocess
 import sys
 import tempfile
@@ -21,10 +26,8 @@ from io import UnsupportedOperation
 from os import system
 from shutil import get_terminal_size
 
-from IPython.core.display import display
-from IPython.core.error import TryNext
-from IPython.core.getipython import get_ipython
-from IPython.utils.data import chop
+_detect_screen_size = get_terminal_size
+
 
 esc_re = re.compile(r"(\x1b[^m]+m)")
 
@@ -69,63 +72,6 @@ def page_dumb(strng, start=0, screen_lines=25):
             if len(esc_list) > 0:
                 last_escape = esc_list[-1]
         print(last_escape + os.linesep.join(screens[-1]))
-
-
-def _detect_screen_size(screen_lines_def):
-    """Attempt to work out the number of lines on the screen.
-
-    This is called by page(). It can raise an error (e.g. when run in the
-    test suite), so it's separated out so it can easily be called in a try block.
-
-    .. admonition:: This function depends on termios and curses which may not
-                    be available on all platforms.
-
-    Notes
-    -----
-    There is a bug in curses, where *sometimes* it fails to properly
-    initialize, and then after the endwin() call is made, the
-    terminal is left in an unusable state.  Rather than trying to
-    check every time for this (by requesting and comparing termios
-    flags each time), we just save the initial terminal state and
-    unconditionally reset it every time.  It's cheaper than making
-    the checks.
-
-    .. tip:: shutil.get_terminal_size
-
-    """
-    TERM = os.environ.get("TERM", None)
-    if not ((TERM == "xterm" or TERM == "xterm-color") and sys.platform != "sunos5"):
-        # curses causes problems on many terminals other than xterm, and
-        # some termios calls lock up on Sun OS5.
-        return screen_lines_def
-
-    try:
-        import termios
-        import curses
-    except ImportError:
-        return screen_lines_def
-
-    try:
-        term_flags = termios.tcgetattr(sys.stdout)
-    except termios.error as err:
-        # can fail on Linux 2.6, pager_page will catch the TypeError
-        raise TypeError("termios error: {0}".format(err))
-
-    try:
-        scr = curses.initscr()
-    except AttributeError:
-        # Curses on Solaris may not be complete, so we can't use it there
-        return screen_lines_def
-
-    screen_lines_real, screen_cols = scr.getmaxyx()
-    curses.endwin()
-
-    # Restore terminal state in case endwin() didn't.
-    termios.tcsetattr(sys.stdout, termios.TCSANOW, term_flags)
-    # Now we have what we needed: the screen size in rows/columns
-    return screen_lines_real
-    # print '***Screen size:',screen_lines_real,'lines x',\
-    # screen_cols,'columns.' # dbg
 
 
 def pager_page(strng, start=0, screen_lines=0, pager_cmd=None):
@@ -259,7 +205,8 @@ def page(data, start=0, screen_lines=0, pager_cmd=None):
             ip.hooks.show_in_pager(
                 data,
                 # start=start,
-                screen_lines=screen_lines)
+                screen_lines=screen_lines,
+            )
             return
         except TryNext:
             pass
