@@ -26,6 +26,30 @@ a ton going on here.:
 Also worth noting they have a LevelFormatter that you might wanna import
 and use here.
 
+However we need to get rid of all the logic written for copying bundled
+IPython profiles....
+
+We haven't bundled profiles with the repo for like 5 years seriously is
+nobody maintaining this code anymore?::
+
+    # The directory that contains IPython's builtin profiles.
+    builtin_profile_dir = Unicode(
+        os.path.join(get_ipython_package_dir(), "config", "profile", "default")
+    )
+
+There's SO much logic based around that code that I don't wanna just go ahead
+and delete it right now but...I mean goddamn.
+
+Also I literally don't understand this.::
+
+    @observe("profile")
+    def _profile_changed(self, change):
+        self.builtin_profile_dir = os.path.join(
+            get_ipython_package_dir(), "config", "profile", change["new"]
+        )
+
+How does that work?
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -39,7 +63,7 @@ import shutil
 import sys
 from copy import deepcopy
 
-from traitlets import (
+from traitlets.traitlets import (
     Bool,
     Instance,
     List,
@@ -49,8 +73,9 @@ from traitlets import (
     Unicode,
     default,
     observe,
+    Dict,
 )
-from traitlets.config import Configurable
+from traitlets.config.configurable import LoggingConfigurable
 from traitlets.config.application import Application, catch_config_error
 from traitlets.config.loader import ConfigFileNotFound, PyFileConfigLoader
 
@@ -92,7 +117,7 @@ else:
 
 
 # aliases and flags
-class BaseAliases(Configurable):
+class BaseAliases(LoggingConfigurable):
     """Globals into a configurable.
 
     Eh you didn't really do it right though.
@@ -135,6 +160,11 @@ base_flags = dict(
 )
 
 
+def unset_crashhandler():
+    """From init_crashhandler but idk why it couldn't just be up here."""
+    sys.excepthook = sys.__excepthook__
+
+
 class ProfileAwareConfigLoader(PyFileConfigLoader):
     """A Python file config loader that is aware of IPython profiles."""
 
@@ -172,23 +202,24 @@ class BaseIPythonApplication(Application):
 
     .. todo:: What is this _in_init_profile_dir thing? They're doing down in init_profile_dir?
 
+    Attributes
+    ----------
+    python_config_loader_class : PyConfigLoader
+        enable `load_subconfig('cfg.py', profile='name')`
+    config_file_specified : Set
+        Track whether the config_file has changed, because some logic happens
+        only if we aren't using the default.
+
     """
 
-    name = "ipython"
-    description = Unicode("IPython: an enhanced interactive Python shell.")
+    name = Unicode(u"ipython")
+    description = Unicode(u"IPython: an enhanced interactive Python shell.")
     version = Unicode(release.version)
-
-    aliases = base_aliases
-    flags = base_flags
+    aliases = Dict(base_aliases)
+    flags = Dict(base_flags)
     classes = List([ProfileDir])
-
-    # enable `load_subconfig('cfg.py', profile='name')`
     python_config_loader_class = ProfileAwareConfigLoader
-
-    # Track whether the config_file has changed,
-    # because some logic happens only if we aren't using the default.
     config_file_specified = Set()
-
     config_file_name = Unicode()
 
     @default("config_file_name")
@@ -209,19 +240,16 @@ class BaseIPythonApplication(Application):
 
     @default("config_file_paths")
     def _config_file_paths_default(self):
-        """Wait the only thing here is this.
-
-        >>> return [os.getcwd()]
-
-        Shouldn't there be more things that get returned for config_file_paths?
-        """
         return [os.getcwd()]
 
     extra_config_file = Unicode(
-        help="""Path to an extra config file to load.
+        help=(
+            """Path to an extra config file to load.
 
-    If specified, load this config file in addition to any other IPython config.
-    """
+            If specified, load this config file in addition to any
+            other IPython config.
+            """
+        )
     ).tag(config=True)
 
     @observe("extra_config_file")
@@ -235,9 +263,7 @@ class BaseIPythonApplication(Application):
         self.config_file_specified.add(new)
         self.config_files.append(new)
 
-    profile = Unicode("default", help="""The IPython profile to use.""").tag(
-        config=True
-    )
+    profile = Unicode("default", help="The IPython profile to use.").tag(config=True)
 
     @observe("profile")
     def _profile_changed(self, change):
@@ -258,7 +284,7 @@ class BaseIPythonApplication(Application):
     def _ipython_dir_default(self):
         d = get_ipython_dir()
         self._ipython_dir_changed(
-            {"name": "ipython_dir", "old": d, "new": d,}
+            {"name": "ipython_dir", "old": d, "new": d, }
         )
         return d
 
@@ -275,10 +301,12 @@ class BaseIPythonApplication(Application):
         return self.profile_dir
 
     overwrite = Bool(
-        False, help="""Whether to overwrite existing config files when copying"""
+        False, help="Whether to overwrite existing config files when copying."
     ).tag(config=True)
+
+    # In what way isn't this true? It generates the profile dir all the time.
     auto_create = Bool(
-        False, help="""Whether to create profile dir if it doesn't exist"""
+        False, help="Whether to create profile dir if it doesn't exist."
     ).tag(config=True)
 
     config_files = List(Unicode())
@@ -350,12 +378,6 @@ class BaseIPythonApplication(Application):
         """Create a crash handler, typically setting sys.excepthook to it."""
         self.crash_handler = self.crash_handler_class(self)
         sys.excepthook = self.excepthook
-
-        def unset_crashhandler():
-            """
-
-            """
-            sys.excepthook = sys.__excepthook__
 
         atexit.register(unset_crashhandler)
 
@@ -552,20 +574,8 @@ class BaseIPythonApplication(Application):
             src = self.profile
 
             cfg = self.config_file_name
-            if path and os.path.exists(os.path.join(path, cfg)):
-                self.log.warning(
-                    "Staging %r from %s into %r [overwrite=%s]"
-                    % (cfg, src, self.profile_dir.location, self.overwrite)
-                )
-                self.profile_dir.copy_config_file(
-                    cfg, path=path, overwrite=self.overwrite
-                )
-            else:
-                self.stage_default_config_file()
+            self.stage_default_config_file()
         else:
-            # Still stage *bundled* config files, but not generated ones
-            # This is necessary for `ipython profile=sympy` to load the profile
-            # on the first go
             files = glob.glob(os.path.join(path, "*.py"))
             for fullpath in files:
                 cfg = os.path.basename(fullpath)
