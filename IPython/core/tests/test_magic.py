@@ -10,6 +10,10 @@ code duplication like wth.
 
 Got rid of it. Now all I can see are the walls of tempdir calls like jeez.
 
+Omfg. There were 47 instances of _ip.magic in this document.
+
+Just changed them all to _ip.run_line_magic. Jesus.
+
 """
 import codecs
 import os
@@ -104,7 +108,7 @@ def test_extract_symbols_raises_exception_with_non_python_code():
 def test_magic_not_found():
     # magic not found raises UsageError
     with nt.assert_raises(UsageError):
-        _ip.magic("doesntexist")
+        _ip.run_line_magic("doesntexist")
 
     # ensure result isn't success when a magic isn't found
     result = _ip.run_cell("%doesntexist")
@@ -136,21 +140,22 @@ def test_magic_error_status():
     assert isinstance(result.error_in_exec, ZeroDivisionError)
 
 
-def test_config():
-    """Test that config magic does not raise.
+# We deprecated it
+# def test_config():
+#     """Test that config magic does not raise.
 
-    Can happen if Configurable init is moved too early into
-    Magics.__init__ as then a Config object will be registered as a magic.
-    """
-    # should not raise.
-    _ip.magic("config")
+#     Can happen if Configurable init is moved too early into
+#     Magics.__init__ as then a Config object will be registered as a magic.
+#     """
+#     # should not raise.
+#     _ip.run_line_magic("config")
 
 
 def test_config_available_configs():
     """ test that config magic prints available configs in unique and
     sorted order. """
     with capture_output() as captured:
-        _ip.magic("config")
+        _ip.run_line_magic("config")
 
     stdout = captured.stdout
     config_classes = stdout.strip().split("\n")[1:]
@@ -160,7 +165,7 @@ def test_config_available_configs():
 def test_config_print_class():
     """ test that config with a classname prints the class's options. """
     with capture_output() as captured:
-        _ip.magic("config TerminalInteractiveShell")
+        _ip.run_line_magic("config TerminalInteractiveShell")
 
     stdout = captured.stdout
     if not re.match("TerminalInteractiveShell.* options", stdout.splitlines()[0]):
@@ -180,7 +185,7 @@ def test_rehashx():
     _ip.alias_manager.clear_aliases()
     del _ip.db["syscmdlist"]
 
-    _ip.magic("rehashx")
+    _ip.run_line_magic("rehashx")
     # Practically ALL ipython development systems will have more than 10
     # aliases
 
@@ -361,15 +366,15 @@ def test_macro_run():
         ip.run_cell("test")
 
 
-def test_magic_magic():
-    """Test %magic"""
-    with capture_output() as captured:
-        ip.magic("magic")
+# def test_magic_magic():
+#     """Test %magic"""
+#     with capture_output() as captured:
+#         ip.magic("magic")
 
-    stdout = captured.stdout
-    nt.assert_in("%magic", stdout)
-    nt.assert_in("IPython", stdout)
-    nt.assert_in("Available", stdout)
+#     stdout = captured.stdout
+#     nt.assert_in("%magic", stdout)
+#     nt.assert_in("IPython", stdout)
+#     nt.assert_in("Available", stdout)
 
 
 @dec.skipif_not_numpy
@@ -378,7 +383,7 @@ def test_numpy_reset_array_undec():
     _ip.ex("import numpy as np")
     _ip.ex("a = np.empty(2)")
     nt.assert_in("a", _ip.user_ns)
-    _ip.magic("reset -f array")
+    _ip.run_line_magic("reset -f array")
     nt.assert_not_in("a", _ip.user_ns)
 
 
@@ -388,7 +393,7 @@ def test_reset_out():
     # test '%reset -f out', make an Out prompt
     _ip.run_cell("parrot", store_history=True)
     nt.assert_true("dead" in [_ip.user_ns[x] for x in ("_", "__", "___")])
-    _ip.magic("reset -f out")
+    _ip.run_line_magic("reset -f out")
     nt.assert_false("dead" in [_ip.user_ns[x] for x in ("_", "__", "___")])
     nt.assert_equal(len(_ip.user_ns["Out"]), 0)
 
@@ -398,7 +403,7 @@ def test_reset_in():
     # test '%reset -f in'
     _ip.run_cell("parrot", store_history=True)
     nt.assert_true("parrot" in [_ip.user_ns[x] for x in ("_i", "_ii", "_iii")])
-    _ip.magic("%reset -f in")
+    _ip.run_line_magic("%reset -f in")
     nt.assert_false("parrot" in [_ip.user_ns[x] for x in ("_i", "_ii", "_iii")])
     nt.assert_equal(len(set(_ip.user_ns["In"])), 1)
 
@@ -406,10 +411,10 @@ def test_reset_in():
 def test_reset_dhist():
     """Test '%reset dhist' magic"""
     _ip.run_cell("tmp = [d for d in _dh]")  # copy before clearing
-    _ip.magic("cd " + os.path.dirname(nt.__file__))
-    _ip.magic("cd -")
+    _ip.run_line_magic("cd " + os.path.dirname(nt.__file__))
+    _ip.run_line_magic("cd -")
     nt.assert_true(len(_ip.user_ns["_dh"]) > 0)
-    _ip.magic("reset -f dhist")
+    _ip.run_line_magic("reset -f dhist")
     nt.assert_equal(len(_ip.user_ns["_dh"]), 0)
     _ip.run_cell("_dh = [d for d in tmp]")  # restore
 
@@ -532,8 +537,8 @@ def test_time_local_ns():
 
 def test_doctest_mode():
     """Toggle doctest_mode twice, it should be a no-op and run without error"""
-    _ip.magic("doctest_mode")
-    _ip.magic("doctest_mode")
+    _ip.run_line_magic("doctest_mode")
+    _ip.run_line_magic("doctest_mode")
 
 
 def test_parse_options():
@@ -552,13 +557,13 @@ def test_dirops():
     startdir = os.getcwd()
     ipdir = os.path.realpath(_ip.ipython_dir)
     try:
-        _ip.magic('cd "%s"' % ipdir)
+        _ip.run_line_magic('cd "%s"' % ipdir)
         nt.assert_equal(curpath(), ipdir)
-        _ip.magic("cd -")
+        _ip.run_line_magic("cd -")
         nt.assert_equal(curpath(), startdir)
-        _ip.magic('pushd "%s"' % ipdir)
+        _ip.run_line_magic('pushd "%s"' % ipdir)
         nt.assert_equal(curpath(), ipdir)
-        _ip.magic("popd")
+        _ip.run_line_magic("popd")
         nt.assert_equal(curpath(), startdir)
     finally:
         os.chdir(startdir)
@@ -585,7 +590,7 @@ def test_xmode():
     # Calling xmode three times should be a no-op
     xmode = _ip.InteractiveTB.mode
     for i in range(4):
-        _ip.magic("xmode")
+        _ip.run_line_magic("xmode")
     nt.assert_equal(_ip.InteractiveTB.mode, xmode)
 
 
@@ -603,7 +608,7 @@ def test_reset_hard():
     _ip.run_cell("a")
 
     nt.assert_equal(monitor, [])
-    _ip.magic("reset -f")
+    _ip.run_line_magic("reset -f")
     nt.assert_equal(monitor, [1])
 
 
@@ -619,14 +624,14 @@ class TestXdel(tt.TempFileMixin):
         )
         self.mktmp(src)
         # %run creates some hidden references...
-        _ip.magic("run %s" % self.fname)
+        _ip.run_line_magic("run %s" % self.fname)
         # ... as does the displayhook.
         _ip.run_cell("a")
 
         monitor = _ip.user_ns["A"].monitor
         nt.assert_equal(monitor, [])
 
-        _ip.magic("xdel a")
+        _ip.run_line_magic("xdel a")
 
         # Check that a's __del__ method has been called.
         nt.assert_equal(monitor, [1])
@@ -666,7 +671,7 @@ def test_whos():
             raise Exception()
 
     _ip.user_ns["a"] = A()
-    _ip.magic("whos")
+    _ip.run_line_magic("whos")
 
 
 def doctest_precision():
@@ -696,12 +701,12 @@ def test_psearch():
 def test_timeit_shlex():
     """test shlex issues with timeit (#1109)"""
     _ip.ex("def f(*a,**kw): pass")
-    _ip.magic('timeit -n1 "this is a bug".count(" ")')
-    _ip.magic('timeit -r1 -n1 f(" ", 1)')
-    _ip.magic('timeit -r1 -n1 f(" ", 1, " ", 2, " ")')
-    _ip.magic('timeit -r1 -n1 ("a " + "b")')
-    _ip.magic('timeit -r1 -n1 f("a " + "b")')
-    _ip.magic('timeit -r1 -n1 f("a " + "b ")')
+    _ip.run_line_magic('timeit -n1 "this is a bug".count(" ")')
+    _ip.run_line_magic('timeit -r1 -n1 f(" ", 1)')
+    _ip.run_line_magic('timeit -r1 -n1 f(" ", 1, " ", 2, " ")')
+    _ip.run_line_magic('timeit -r1 -n1 ("a " + "b")')
+    _ip.run_line_magic('timeit -r1 -n1 f("a " + "b")')
+    _ip.run_line_magic('timeit -r1 -n1 f("a " + "b ")')
 
 
 def test_timeit_special_syntax():
@@ -773,7 +778,7 @@ def test_prun_special_syntax():
 @dec.skipif(execution.profile is None)
 def test_prun_quotes():
     """Test that prun does not clobber string escapes (GH #1302)"""
-    _ip.magic(r"prun -q x = '\t'")
+    _ip.run_line_magic(r"prun -q x = '\t'")
     nt.assert_equal(_ip.user_ns["x"], "\t")
 
 
@@ -784,15 +789,15 @@ def test_extension():
         print(" ", p)
     print("CWD", os.getcwd())
 
-    nt.assert_raises(ImportError, _ip.magic, "load_ext daft_extension")
+    nt.assert_raises(ImportError, _ip.run_line_magic, "load_ext daft_extension")
     daft_path = os.path.join(os.path.dirname(__file__), "daft_extension")
     sys.path.insert(0, daft_path)
     try:
         _ip.user_ns.pop("arq", None)
         invalidate_caches()  # Clear import caches
-        _ip.magic("load_ext daft_extension")
+        _ip.run_line_magic("load_ext daft_extension")
         nt.assert_equal(_ip.user_ns["arq"], 185)
-        _ip.magic("unload_ext daft_extension")
+        _ip.run_line_magic("unload_ext daft_extension")
         assert "arq" not in _ip.user_ns
     finally:
         sys.path.remove(daft_path)
@@ -805,16 +810,16 @@ def test_notebook_export_json():
         _ip.history_manager.store_inputs(i, cmd)
     with TemporaryDirectory() as td:
         outfile = os.path.join(td, "nb.ipynb")
-        _ip.magic("notebook -e %s" % outfile)
+        _ip.run_line_magic("notebook -e %s" % outfile)
 
 
 class TestEnv(TestCase):
     def test_env(self):
-        env = _ip.magic("env")
+        env = _ip.run_line_magic("env")
         self.assertTrue(isinstance(env, dict))
 
     def test_env_secret(self):
-        env = _ip.magic("env")
+        env = _ip.run_line_magic("env")
         hidden = "<hidden>"
         with mock.patch.dict(
             os.environ,
@@ -825,35 +830,35 @@ class TestEnv(TestCase):
                 "VAR": "abc",
             },
         ):
-            env = _ip.magic("env")
+            env = _ip.run_line_magic("env")
         assert env["API_KEY"] == hidden
         assert env["SECRET_THING"] == hidden
         assert env["JUPYTER_TOKEN"] == hidden
         assert env["VAR"] == "abc"
 
     def test_env_get_set_simple(self):
-        env = _ip.magic("env var val1")
+        env = _ip.run_line_magic("env var val1")
         self.assertEqual(env, None)
         self.assertEqual(os.environ["var"], "val1")
-        self.assertEqual(_ip.magic("env var"), "val1")
-        env = _ip.magic("env var=val2")
+        self.assertEqual(_ip.run_line_magic("env var"), "val1")
+        env = _ip.run_line_magic("env var=val2")
         self.assertEqual(env, None)
         self.assertEqual(os.environ["var"], "val2")
 
     def test_env_get_set_complex(self):
-        env = _ip.magic("env var 'val1 '' 'val2")
+        env = _ip.run_line_magic("env var 'val1 '' 'val2")
         self.assertEqual(env, None)
         self.assertEqual(os.environ["var"], "'val1 '' 'val2")
-        self.assertEqual(_ip.magic("env var"), "'val1 '' 'val2")
-        env = _ip.magic('env var=val2 val3="val4')
+        self.assertEqual(_ip.run_line_magic("env var"), "'val1 '' 'val2")
+        env = _ip.run_line_magic('env var=val2 val3="val4')
         self.assertEqual(env, None)
         self.assertEqual(os.environ["var"], 'val2 val3="val4')
 
     def test_env_set_bad_input(self):
-        self.assertRaises(UsageError, lambda: _ip.magic("set_env var"))
+        self.assertRaises(UsageError, lambda: _ip.run_line_magic("set_env var"))
 
     def test_env_set_whitespace(self):
-        self.assertRaises(UsageError, lambda: _ip.magic("env var A=B"))
+        self.assertRaises(UsageError, lambda: _ip.run_line_magic("env var A=B"))
 
 
 class CellMagicTestCase(TestCase):
@@ -1048,50 +1053,50 @@ def test_script_config():
     nt.assert_in("whoda", sm.magics["cell"])
 
 
-@dec.skip_win32
-def test_script_out():
-    ip.run_cell_magic("script", "--out output sh", "echo 'hi'")
-    nt.assert_equal(ip.user_ns["output"], "hi\n")
+# @dec.skip_win32
+# def test_script_out():
+#     ip.run_cell_magic("script", "--out output sh", "echo 'hi'")
+#     nt.assert_equal(ip.user_ns["output"], "hi\n")
 
 
-@dec.skip_win32
-def test_script_err():
-    ip.run_cell_magic("script", "--err error sh", "echo 'hello' >&2")
-    nt.assert_equal(ip.user_ns["error"], "hello\n")
+# @dec.skip_win32
+# def test_script_err():
+#     ip.run_cell_magic("script", "--err error sh", "echo 'hello' >&2")
+#     nt.assert_equal(ip.user_ns["error"], "hello\n")
 
 
-@dec.skip_win32
-def test_script_out_err():
-    ip.run_cell_magic(
-        "script", "--out output --err error sh", "echo 'hi'\necho 'hello' >&2"
-    )
-    nt.assert_equal(ip.user_ns["output"], "hi\n")
-    nt.assert_equal(ip.user_ns["error"], "hello\n")
+# @dec.skip_win32
+# def test_script_out_err():
+#     ip.run_cell_magic(
+#         "script", "--out output --err error sh", "echo 'hi'\necho 'hello' >&2"
+#     )
+#     nt.assert_equal(ip.user_ns["output"], "hi\n")
+#     nt.assert_equal(ip.user_ns["error"], "hello\n")
 
 
-@dec.skip_win32
-def test_script_bg_out():
-    ip.run_cell_magic("script", "--bg --out output sh", "echo 'hi'")
-    nt.assert_equal(ip.user_ns["output"].read(), b"hi\n")
-    ip.user_ns["output"].close()
+# @dec.skip_win32
+# def test_script_bg_out():
+#     ip.run_cell_magic("script", "--bg --out output sh", "echo 'hi'")
+#     nt.assert_equal(ip.user_ns["output"].read(), b"hi\n")
+#     ip.user_ns["output"].close()
 
 
-@dec.skip_win32
-def test_script_bg_err():
-    ip.run_cell_magic("script", "--bg --err error sh", "echo 'hello' >&2")
-    nt.assert_equal(ip.user_ns["error"].read(), b"hello\n")
-    ip.user_ns["error"].close()
+# @dec.skip_win32
+# def test_script_bg_err():
+#     ip.run_cell_magic("script", "--bg --err error sh", "echo 'hello' >&2")
+#     nt.assert_equal(ip.user_ns["error"].read(), b"hello\n")
+#     ip.user_ns["error"].close()
 
 
-@dec.skip_win32
-def test_script_bg_out_err():
-    ip.run_cell_magic(
-        "script", "--bg --out output --err error sh", "echo 'hi'\necho 'hello' >&2"
-    )
-    nt.assert_equal(ip.user_ns["output"].read(), b"hi\n")
-    nt.assert_equal(ip.user_ns["error"].read(), b"hello\n")
-    ip.user_ns["output"].close()
-    ip.user_ns["error"].close()
+# @dec.skip_win32
+# def test_script_bg_out_err():
+#     ip.run_cell_magic(
+#         "script", "--bg --out output --err error sh", "echo 'hi'\necho 'hello' >&2"
+#     )
+#     nt.assert_equal(ip.user_ns["output"].read(), b"hi\n")
+#     nt.assert_equal(ip.user_ns["error"].read(), b"hello\n")
+#     ip.user_ns["output"].close()
+#     ip.user_ns["error"].close()
 
 
 def test_script_defaults():
@@ -1323,7 +1328,7 @@ def test_logging_magic_not_quiet():
 def test_time_no_var_expand():
     _ip.user_ns["a"] = 5
     _ip.user_ns["b"] = []
-    _ip.magic('time b.append("{a}")')
+    _ip.run_line_magic('time b.append("{a}")')
     assert _ip.user_ns["b"] == ["{a}"]
 
 
@@ -1331,8 +1336,8 @@ def test_time_no_var_expand():
 def test_timeit_arguments():
     """Test valid timeit arguments, should not cause SyntaxError (GH #1269)"""
     if sys.version_info < (3, 7):
-        _ip.magic("timeit -n1 -r1 ('#')")
+        _ip.run_line_magic("timeit -n1 -r1 ('#')")
     else:
         # 3.7 optimize no-op statement like above out, and complain there is
         # nothing in the for loop.
-        _ip.magic("timeit -n1 -r1 a=('#')")
+        _ip.run_line_magic("timeit -n1 -r1 a=('#')")

@@ -94,7 +94,7 @@ def test_get_ipython_dir_3():
     tmphome = TemporaryDirectory()
     try:
         with patch_get_home_dir(tmphome.name), patch("os.name", "posix"), modified_env(
-            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR, }
+            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR,}
         ), warnings.catch_warnings(record=True) as w:
             ipdir = paths.get_ipython_dir()
 
@@ -116,7 +116,7 @@ def test_get_ipython_dir_4():
                 raise
 
         with modified_env(
-            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR, }
+            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR,}
         ), warnings.catch_warnings(record=True) as w:
             ipdir = paths.get_ipython_dir()
 
@@ -136,7 +136,7 @@ def test_get_ipython_dir_5():
                 raise
 
         with modified_env(
-            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR, }
+            {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": XDG_TEST_DIR,}
         ):
             ipdir = paths.get_ipython_dir()
 
@@ -152,7 +152,7 @@ def test_get_ipython_dir_6():
     with patch_get_home_dir(HOME_TEST_DIR), patch.object(
         paths, "get_xdg_dir", return_value=xdg
     ), patch("os.name", "posix"), modified_env(
-        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": None, }
+        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "XDG_CONFIG_HOME": None,}
     ), warnings.catch_warnings(
         record=True
     ) as w:
@@ -178,7 +178,7 @@ def test_get_ipython_dir_8():
     with patch.object(paths, "_writable_dir", lambda path: bool(path)), patch.object(
         paths, "get_xdg_dir", return_value=None
     ), modified_env(
-        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "HOME": "/", }
+        {"IPYTHON_DIR": None, "IPYTHONDIR": None, "HOME": "/",}
     ):
         nt.assert_equal(paths.get_ipython_dir(), "/.ipython")
 

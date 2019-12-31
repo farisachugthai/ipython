@@ -1,11 +1,12 @@
 import nose.tools as nt
 
+from IPython.core.error import UsageError
+from IPython.core.getipython import get_ipython
 from IPython.utils.capture import capture_output
 
 
 def setup_module():
     global _ip
-    from IPython.core.getipython import get_ipython
 
     _ip = get_ipython()
 
@@ -46,12 +47,12 @@ def test_alias_args_error():
     with capture_output() as cap:
         _ip.run_cell("parts 1")
 
-    nt.assert_equal(cap.stderr.split(":")[0], "UsageError")
+    nt.assertIsInstance(cap.stderr.split(":")[0], UsageError)
 
 
 def test_alias_args_commented():
-    """Check that alias correctly ignores 'commented out' args"""
-    _ip.magic("alias commetarg echo this is %%s a commented out arg")
+    # Check that alias correctly ignores 'commented out' args
+    _ip.run_cell("alias commetarg echo this is %%s a commented out arg")
 
     with capture_output() as cap:
         _ip.run_cell("commetarg")
@@ -59,7 +60,7 @@ def test_alias_args_commented():
     # strip() is for pytest compat; testing via iptest patch IPython shell
     # in testin.globalipapp and replace the system call which messed up the
     # \r\n
-    assert cap.stdout.strip() == "this is %s a commented out arg"
+    nt.assertEqual(cap.stdout.strip(), "this is %s a commented out arg")
 
 
 def test_alias_args_commented_nargs():
