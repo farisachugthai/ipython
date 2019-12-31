@@ -15,67 +15,6 @@ If you wish to define a new hook and activate it, you can make an
 :ref:`extension <extensions>`
 or a :ref:`startup script <startup_files>`.
 
-For example, you could use a startup file like this:
-
-Isn't it kinda confusing to say use a startup file when we invoke the
-load_ipython_extension function below?
-
-Why not just say.
-
-For example, you could write an extension like this::
-
-    import os
-    def calljed(self,filename, linenum):
-        "My editor hook calls the jed editor directly."
-        print "Calling my own editor, jed ..."
-        if os.system('jed +%d %s' % (linenum,filename)) != 0:
-            raise TryNext()
-
-    def load_ipython_extension(ip):
-        ip.set_hook('editor', calljed)
-
-
-Wait but if jed get's called successfully but crashes won't os.system return
-!=0? Isn't it a better idea to do :func:`shutil.which` and make THAT the hook.
-Like I mean.::
-
-    from IPython import get_ipython
-
-    def checkjed(self, filename, lnum):
-        if shutil.which('jed'):
-
-            arbitrary_mapping = {'shell': self,
-            'filename': filename,
-            'line_number': lnum}
-
-            return calljed(arbitrary_mapping)
-        else:
-            raise TryNext()
-
-    def calljed(**kwargs):
-        # Because i have no idea what jed is.
-        raise NotImplementedError
-
-    if __name__ == "__main__":
-        shell = get_ipython()
-        if shell:
-            checkjed(shell, filename=sys.argv[1:], lnum=0)
-
-Generally.
-
-Notes
-------
-
-Unfortunately this module is not only invoked a handful of times in
-interactiveshell it's also used in completerlib. And wading into the deep
-end of how our completions work really starts getting into some interesting
-ways of how intertwined most of this package is.
-
-
-Also worth noting.
-
-./tests/test_magic_terminal.py also uses this module.
-
 """
 # *****************************************************************************
 #       Copyright (C) 2005 Fernando Perez. <fperez@colorado.edu>
@@ -90,63 +29,13 @@ import sys
 from IPython.core.error import ClipboardEmpty, TryNext
 from IPython.utils.ipstruct import Struct
 
-# here's 2 surprising not imports
-# from IPython.lib.clipboard import *
-# from prompt_toolkit.clipboard.pyperclip import Pyperclip
-
-# List here all the default hooks.  For now it's just the editor functions
-# but over time we'll move here all the public API for user-accessible things.
-
 __all__ = [
-    "editor",
-    "synchronize_with_editor",
     "shutdown_hook",
     "late_startup_hook",
     "show_in_pager",
     "pre_prompt_hook",
     "pre_run_code_hook",
-    "clipboard_get",
 ]
-
-deprecated = {
-    "pre_run_code_hook": "a callback for the 'pre_execute' or 'pre_run_cell' event",
-    "late_startup_hook": "a callback for the 'shell_initialized' event",
-    "shutdown_hook": "the atexit module",
-}
-
-
-def editor(self, filename, linenum=None, wait=True):
-    """Open the default editor at the given filename and linenumber.
-
-    IPython configures a default editor at startup by reading
-    :envvar:`EDITOR` from the environment, and falling back on
-    :command:`vi` on Unix-like systems or Notepad on Windows.
-
-    This is IPython's default editor hook, you can use it as an example to
-    write your own modified one.
-
-    Examples
-    --------
-    To set your own editor function as the new editor hook, call:
-
-    >>> get_ipython().set_hook('editor', yourfunc).
-
-    """
-    if not getattr(self, "editor", None):
-        return
-
-    editor = shlex.quote(self.editor)
-
-    # marker for at which line to open the file (for existing objects)
-    if linenum is None or editor == "notepad":
-        linemark = ""
-    else:
-        linemark = "+%d" % int(linenum)
-
-    # Call the actual editor
-    proc = subprocess.Popen("%s %s %s" % (editor, linemark, filename), shell=True)
-    if wait and proc.wait() != 0:
-        raise TryNext()
 
 
 class CommandChainDispatcher(Struct):
@@ -174,7 +63,7 @@ class CommandChainDispatcher(Struct):
         super().__init__(*args, **kwargs)
         self.chain = chain or []
 
-    def call(self, args=None, kw=None):
+    def call(self, *args, **kw):
         """Command chain is called just like normal func.
 
         This will call all funcs in chain with the same args as were given to
@@ -192,14 +81,14 @@ class CommandChainDispatcher(Struct):
         for prio, cmd in self.chain:
             # print "prio",prio,"cmd",cmd #dbg
             try:
-                return cmd(*args, **kw)
+                return cmd(args, kw)
             except TryNext as exc:
                 last_exc = exc
         # if no function will accept it, raise TryNext up to the caller
         raise last_exc
 
     def __repr__(self):
-        return "{!r}\n{!r}".format(self.__class__.__name__, self.chain)
+        return "{!r}:\n{!r}".format(self.__class__.__name__, self.chain)
 
     def add(self, func, priority=0):
         """ Add a func to the cmd chain with given priority """
@@ -216,11 +105,11 @@ class CommandChainDispatcher(Struct):
     def __add__(self, func, priority=0):
         return self.add(func, priority)
 
-    def __call__(self, args=None, kw=None):
+    def __call__(self, *args, **kw):
         return self.call(args, kw)
 
 
-def shutdown_hook(self):
+def shutdown_hook(self, *args, **kwargs):
     """Default shutdown hook.
 
     Typically, shutdown hooks should raise TryNext so all shutdown ops are done
@@ -230,11 +119,12 @@ def shutdown_hook(self):
 
 def late_startup_hook(self, *args, **kwargs):
     """Executed after ipython has been constructed and configured."""
-    self.log.info("default startup hook ok")
+    if getattr(self, 'log', None):
+        self.log.info("default startup hook ok")
     return
 
 
-def show_in_pager(self, *, data=None, start=None, screen_lines=None, **kwargs):
+def show_in_pager(self, *args, data=None, start=None, screen_lines=None, **kwargs):
     """Run a string through the pager.
 
     Idk what these parameters are though.
@@ -254,7 +144,7 @@ def show_in_pager(self, *, data=None, start=None, screen_lines=None, **kwargs):
     raise TryNext
 
 
-def pre_prompt_hook(self):
+def pre_prompt_hook(self, *args, **kwargs):
     """Run before displaying the next prompt
 
     Use this e.g. to display output from asynchronous operations (in order
@@ -263,59 +153,6 @@ def pre_prompt_hook(self):
     return None
 
 
-def pre_run_code_hook(self):
+def pre_run_code_hook(self, *args, **kwargs):
     """Executed before running the (prefiltered) code in IPython."""
     return None
-
-
-def clipboard_get(self):
-    """Get text from the clipboard.
-
-    Moved platform specific imports into their own section of the loop.
-
-    Note
-    ----
-    Not all Linux platforms have Tkinter; however, prompt_toolkit has
-    3 different modules in the :mod:`prompt_toolkit.clipboard` package.
-
-    """
-    if sys.platform == "win32":
-        from IPython.lib.clipboard import win32_clipboard_get
-
-        try:
-            chain = [win32_clipboard_get]
-        except:
-            raise ClipboardEmpty
-    elif sys.platform == "darwin":
-        from IPython.lib.clipboard import osx_clipboard_get
-
-        try:
-            chain = [osx_clipboard_get]
-        except:
-            raise ClipboardEmpty
-    else:
-        from IPython.lib.clipboard import tkinter_clipboard_get
-
-        try:
-            chain = [tkinter_clipboard_get]
-        except:
-            raise ClipboardEmpty
-
-    dispatcher = CommandChainDispatcher()
-    for func in chain:
-        dispatcher.add(func)
-    text = dispatcher()
-    return text
-
-
-def synchronize_with_editor(self, filename, linenum, column):
-    """
-
-    Parameters
-    ----------
-    self :
-    filename :
-    linenum :
-    column :
-    """
-    pass

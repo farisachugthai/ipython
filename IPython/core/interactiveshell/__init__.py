@@ -984,12 +984,11 @@ class InteractiveShell(SingletonConfigurable):
 
         Notes
         -----
-        In this method we:
-
-        - Set all default hooks, defined in the IPython.hooks module.
-
+        - Set all default hooks, defined in the IPython.core.hooks module.
             - default hooks have priority 100, i.e. low; user hooks should have
               0-100 priority
+        - Good to know because if you update hooks then it'll automatically
+          get updated here!
 
         Attributes
         ----------
@@ -1478,7 +1477,7 @@ class InteractiveShell(SingletonConfigurable):
             try:
                 obj = self.user_ns[varname]
             except KeyError:
-                raise NameError("name '%s' is not defined" % varname)
+                raise
             # Also check in output history
             ns_refs.append(self.history_manager.output_hist)
             for ns in ns_refs:
@@ -1799,7 +1798,10 @@ class InteractiveShell(SingletonConfigurable):
                     info.obj, oname, info=info, detail_level=detail_level
                 )
             else:
-                return oinspect.object_info(name=oname, found=False)
+                # return oinspect.object_info(name=oname, found=False)
+                # I'm gonna assume this was my doing because otherwise we
+                # give oinspect.object_info *arguments we couldn't find*
+                self.log.error("Unable to find %s" % oname)
 
     def object_inspect_text(self, oname, detail_level=0):
         """Get object info as formatted text"""
@@ -1814,6 +1816,13 @@ class InteractiveShell(SingletonConfigurable):
         Sometimes I feel rude writing shit like this but as a sincere question,
         what's the point of a variable you can't change?
 
+        TODO: When we don't find a var::
+
+            raise KeyError(oname)
+
+        It shouldn't raise a KeyError?? Make a new class in ../error.py and
+        raise it here and in  other places where we look for code. Then
+        catch it where we try executing it.
         """
         with self.builtin_trap:
             info = self._object_find(oname)

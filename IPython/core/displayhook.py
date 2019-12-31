@@ -14,14 +14,14 @@ import tokenize
 from warnings import warn
 
 from traitlets import Float, Instance
-from traitlets.config.configurable import Configurable
+from traitlets.config.configurable import LoggingConfigurable
 
 # TODO: Move the various attributes (cache_size, [others now moved]). Some
 # of these are also attributes of InteractiveShell. They should be on ONE object
 # only and the other objects should ask that one object for their values.
 
 
-class DisplayHook(Configurable):
+class DisplayHook(LoggingConfigurable):
     """The custom IPython displayhook to replace sys.displayhook.
 
     This class does many things, but the basic idea is that it is a callable
@@ -75,12 +75,6 @@ class DisplayHook(Configurable):
 
     @property
     def prompt_count(self):
-        """
-
-        Returns
-        -------
-
-        """
         return self.shell.execution_count
 
     # -------------------------------------------------------------------------
@@ -262,12 +256,6 @@ class DisplayHook(Configurable):
                 self.shell.user_ns["_oh"][self.prompt_count] = result
 
     def fill_exec_result(self, result):
-        """
-
-        Parameters
-        ----------
-        result :
-        """
         if self.exec_result is not None:
             self.exec_result.result = result
 
@@ -292,6 +280,11 @@ class DisplayHook(Configurable):
 
         This is invoked every time the interpreter needs to print, and is
         activated by setting the variable sys.displayhook to it.
+
+        .. versionchanged::
+            Now subclasses LoggingConfigurable so we don't need our own
+            log_output method.
+
         """
         self.check_for_underscore()
         if result is not None and not self.quiet():
@@ -302,7 +295,7 @@ class DisplayHook(Configurable):
             self.fill_exec_result(result)
             if format_dict:
                 self.write_format_data(format_dict, md_dict)
-                self.log_output(format_dict)
+                self.log.debug(format_dict)
             self.finish_displayhook()
 
     def cull_cache(self):
@@ -353,18 +346,9 @@ class DisplayHook(Configurable):
 
         if "_" not in builtin_mod.__dict__:
             self.shell.user_ns.update({"_": self._, "__": self.__, "___": self.___})
-        import gc
-
-        # TODO: Is this really needed?
-        # IronPython blocks here forever
-        if sys.platform != "cli":
-            gc.collect()
 
 
 class CapturingDisplayHook:
-    """
-
-    """
 
     def __init__(self, shell, outputs=None):
         self.shell = shell

@@ -252,8 +252,9 @@ class TerminalInteractiveShell(InteractiveShell):
     def _displayhook_class_default(self):
         return RichPromptDisplayHook
 
-    term_title = Bool(True, help="Automatically set the terminal title"
-                      ).tag(config=True)
+    term_title = Bool(True, help="Automatically set the terminal title").tag(
+        config=True
+    )
 
     term_title_format = Unicode(
         "IPython: {cwd}",
@@ -271,9 +272,9 @@ class TerminalInteractiveShell(InteractiveShell):
         default_value="multicolumn",
     ).tag(config=True)
 
-    highlight_matching_brackets = Bool(True, help=(
-        "Highlight matching brackets.")
-    ).tag(config=True)
+    highlight_matching_brackets = Bool(True, help=("Highlight matching brackets.")).tag(
+        config=True
+    )
 
     extra_open_editor_shortcuts = Bool(
         False,

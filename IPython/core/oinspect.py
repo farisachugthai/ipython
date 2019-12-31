@@ -273,12 +273,12 @@ class Inspector(LoggingConfigurable):
         True, help=("Sorry for the duplicated code but this makes more sense here.")
     ).tag(config=True)
 
+    # awh man this is actually already one! shell.object_
     detail_level = CInt(
         0, help="Integer. Should really be a flag I guess. Toggles verbosity."
     ).tag(config=True)
 
-    color_table = Dict(help="I assume the same thing as default_style"
-                       ).tag(config=True)
+    color_table = Dict(help="I assume the same thing as default_style").tag(config=True)
 
     def __init__(self, parent=None, config=None, *args, **kwargs):
         """
@@ -438,7 +438,9 @@ class Inspector(LoggingConfigurable):
             # getsourcelines returns lineno with 1-offset and page() uses
             # 0-offset, so we must adjust.
             page.page(
-                self.format(openpy.read_py_file(ofile, skip_encoding_cookie=False), sys.stdout),
+                self.format(
+                    openpy.read_py_file(ofile, skip_encoding_cookie=False), sys.stdout
+                ),
                 lineno - 1,
             )
 
@@ -556,7 +558,10 @@ class Inspector(LoggingConfigurable):
                 )
 
         def code_formatter(text):
-            return {"text/plain": self.format(text, sys.stdout), "text/html": pylight(text)}
+            return {
+                "text/plain": self.format(text, sys.stdout),
+                "text/html": pylight(text),
+            }
 
         if info["isalias"]:
             append_field(_mime, "Repr", "string_form")
@@ -622,23 +627,20 @@ class Inspector(LoggingConfigurable):
 
         Parameters
         ----------
-        - oname: name of the variable pointing to the object.
-
-        - formatter: callable (optional)
-
+        oname:
+            name of the variable pointing to the object.
+        formatter: callable (optional)
               A special formatter for docstrings.
-
               The formatter is a callable that takes a string as an input
               and returns either a formatted string or a mime type bundle
               in the form of a dictionary.
-
               Although the support of custom formatter returning a string
               instead of a mime type bundle is deprecated.
-
-        - info: a structure with some information fields which may have been
-          precomputed already.
-
-        - detail_level: if set to 1, more information is given.
+        info :
+            a structure with some information fields which may have been
+            precomputed already.
+        detail_level :
+            if set to 1, more information is given.
 
         Hold on so why isn't detail_level a boolean???
         Dude I've wondered what it was for so long.
