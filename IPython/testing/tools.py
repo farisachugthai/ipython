@@ -354,7 +354,7 @@ class TempFileMixin(unittest.TestCase):
 
     def _unlink_file_handle(self, file_handle):
         try:
-            os.unlink(fname.name)
+            os.unlink(file_handle)
         except PermissionError:
             pass
         except OSError:
@@ -362,7 +362,7 @@ class TempFileMixin(unittest.TestCase):
             # delete it.  I have no clue why
             # That isn't a very good reason to catch it on every platform wouldn't you
             # agree? Regardless let's keep catching it but at least let someone know.
-            testing_logger.error("Error while deleting tmpdir %s.", fname.name)
+            testing_logger.error("Error while deleting tmpdir %s.", file_handle)
 
     def __enter__(self):
         return self

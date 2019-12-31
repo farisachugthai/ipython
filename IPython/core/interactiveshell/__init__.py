@@ -2045,7 +2045,9 @@ class InteractiveShell(SingletonConfigurable):
         """Provide ``*args`` and **kwargs but throw them away."""
         return self.interpreter.showtraceback()
 
-    def showsyntaxerror(self, filename, **kwargs):
+    def showsyntaxerror(self, filename=None, **kwargs):
+        if filename is None:
+            filename=sys.stderr
         return self.interpreter.showsyntaxerror(filename)
 
     def showindentationerror(self):
