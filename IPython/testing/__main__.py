@@ -1,5 +1,7 @@
 """This was in the init but it caused nose to be a hard dependency."""
+from nose.plugins.manager import DefaultPluginManager
 from nose.tools.nontrivial import nottest
+from nose.core import run
 
 
 @nottest
@@ -29,5 +31,10 @@ if __name__ == "__main__":
     # Wait what? We don't call the function in this module?
     from IPython.testing import iptestcontroller
 
-    iptestcontroller.main()
+    plugin_manager = DefaultPluginManager()
+    plugin_manager.loadPlugins()
+
+    run()
+
+    # iptestcontroller.main()
     # test()

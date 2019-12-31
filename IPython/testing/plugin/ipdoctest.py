@@ -231,9 +231,9 @@ class DocTestCase(doctests.DocTestCase):
         tearDown=None,
         checker=None,
         obj=None,
-        result_var="_",
+        # result_var="_",
     ):
-        self._result_var = result_var
+        # self._result_var = result_var
         doctests.DocTestCase.__init__(
             self,
             test,
@@ -316,9 +316,6 @@ class DocTestCase(doctests.DocTestCase):
         super(DocTestCase, self).setUp()
 
     def tearDown(self):
-        """
-
-        """
         # Undo the test.globs reassignment we made, so that the parent class
         # teardown doesn't destroy the ipython namespace
         if isinstance(self._dt_test.examples[0], IPExample):
@@ -326,26 +323,10 @@ class DocTestCase(doctests.DocTestCase):
             _ip.user_ns.clear()
             _ip.user_ns.update(self.user_ns_orig)
 
-        # XXX - fperez: I am not sure if this is truly a bug in nose 0.11, but
-        # it does look like one to me: its tearDown method tries to run
-        #
-        # delattr(builtin_mod, self._result_var)
-        #
-        # without checking that the attribute really is there; it implicitly
-        # assumes it should have been set via displayhook.  But if the
-        # displayhook was never called, this doesn't necessarily happen.  I
-        # haven't been able to find a little self-contained example outside of
-        # ipython that would show the problem so I can report it to the nose
-        # team, but it does happen a lot in our code.
-        #
-        # So here, we just protect as narrowly as possible by trapping an
-        # attribute error whose message would be the name of self._result_var,
-        # and letting any other error propagate.
         try:
             super(DocTestCase, self).tearDown()
-        except AttributeError as exc:
-            if exc.args[0] != self._result_var:
-                raise
+        except:
+            pass
 
 
 # A simple subclassing of the original with a different class name, so we can
@@ -802,6 +783,7 @@ class IPythonDoctest(ExtensionDoctest):
 
     name = "ipdoctest"  # call nosetests with --with-ipdoctest
     enabled = True
+    doctest_result_var = print
 
     def makeTest(self, obj, parent):
         """Look for doctests in the given object, which will be a

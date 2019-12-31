@@ -163,7 +163,6 @@ extras_require = dict(
         "coverage",
         "ipykernel",
         "matplotlib",
-        "matplotlib",
         "nbformat",
         "nose>=0.10.1",
         # how do you make this conditional on OS again?
