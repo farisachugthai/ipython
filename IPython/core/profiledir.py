@@ -18,7 +18,8 @@ import errno
 import os
 import shutil
 
-from traitlets import Bool, Unicode, observe
+from traitlets import Bool, Unicode, observe, Instance
+from traitlets.config.loader import Config
 from traitlets.config.configurable import LoggingConfigurable
 
 from IPython.core.error import ProfileDirError
@@ -59,6 +60,9 @@ class ProfileDir(LoggingConfigurable):
 
     _location_isset = Bool(False)  # flag for detecting multiply set location
 
+    # I guess i did this part wrong
+    # config = Instance(klass=Config, allow_none=True)
+
     def __init__(self, location=None, config=None, **kwargs):
         """There was no init for this but there's 4 classmethods.
 
@@ -68,6 +72,8 @@ class ProfileDir(LoggingConfigurable):
         """
         self.location = location
         self.config = config
+        # if self.config is None:
+        #     self.config = Config()
         super().__init__(**kwargs)
 
     def __repr__(self):

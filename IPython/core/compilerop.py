@@ -212,16 +212,17 @@ class CachingCompiler(codeop.Compile):
             return super().__call__(source, filename, symbol)
         except (SyntaxError, ValueError, OverflowError):
             raise
-        except UsageError:
-            sys.stderr.write("UsageError")
-            return
 
     def ast_parse(self, source, filename="<unknown>", symbol="exec"):
         """Parse code to an AST with the current compiler flags active.
 
         Arguments are exactly the same as ast.parse (in the standard library),
-        and are passed to the built-in compile function."""
-        return compile(source, filename, symbol, self.flags | PyCF_ONLY_AST, 1)
+        and are passed to the built-in compile function.
+        """
+        try:
+            code_obj = compile(source, filename, symbol, self.flags | PyCF_ONLY_AST, 1)
+        except (SyntaxError, ValueError, OverflowError):
+            raise
 
     def reset_compiler_flags(self):
         """Reset compiler flags to default state.

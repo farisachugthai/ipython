@@ -18,24 +18,19 @@ import warnings
 from shutil import get_terminal_size as _get_terminal_size
 
 # This variable is part of the expected API of the module:
+# Also it's declared as a global 3 different times...
+global ignore_termtitle
+# See? Not that bad.
 ignore_termtitle = True
 
-if os.name == "posix":
 
-    def _term_clear():
+def _term_clear():
+    if os.name == "posix":
         os.system("clear")
-
-
-elif sys.platform == "win32":
-
-    def _term_clear():
+    elif sys.platform == "win32":
         os.system("cls")
-
-
-else:
-
-    def _term_clear():
-        pass
+    else:
+        return
 
 
 def toggle_set_term_title(val=False):
@@ -58,7 +53,6 @@ def toggle_set_term_title(val=False):
         appropriate platform-specific module).  If False, it is a no-op.
 
     """
-    global ignore_termtitle
     ignore_termtitle = not (val)
 
 
@@ -90,38 +84,50 @@ if os.name == "posix":
 elif sys.platform == "win32":
     try:
         import ctypes
-
-        SetConsoleTitleW = ctypes.windll.kernel32.SetConsoleTitleW
-        SetConsoleTitleW.argtypes = [ctypes.c_wchar_p]
-
-        def _set_term_title(title):
-            """Set terminal title using ctypes to access the Win32 APIs."""
-            SetConsoleTitleW(title)
-
     except ImportError:
         ctypes = None
 
-        def _set_term_title(title):
-            """Set terminal title using the 'title' command.
+    SetConsoleTitleW = ctypes.windll.kernel32.SetConsoleTitleW
+    SetConsoleTitleW.argtypes = [ctypes.c_wchar_p]
 
-            .. warning:: Cannot be on network share when issuing system commands
-            """
-            global ignore_termtitle
+    def _set_term_title(title):
+        """Set terminal title using ctypes to access the Win32 APIs."""
+        SetConsoleTitleW(title)
 
-            curr = os.getcwd()
-            os.chdir("C:")
-            try:
-                ret = os.system("title " + title)
-            finally:
-                os.chdir(curr)
-            if ret:
-                # non-zero return code signals error, don't try again
-                ignore_termtitle = True
+    def _set_term_title(title):
+        """Set terminal title using the 'title' command.
+
+        .. warning:: Cannot be on network share when issuing system commands
+        """
+        curr = os.getcwd()
+        os.chdir("C:")
+        try:
+            ret = os.system("title " + title)
+        finally:
+            os.chdir(curr)
+        if ret:
+            # non-zero return code signals error, don't try again
+            ignore_termtitle = True
+
+
+def env_get(env_var=None):
+    return os.environ.get(env_var)
 
 
 def set_term_title(title):
     """Set terminal title using the necessary platform-dependent calls."""
     if ignore_termtitle:
+        return
+
+    term = env_get("TERM", None)
+    # Stolen from xonsh
+    # Shells running in emacs sets TERM to "dumb" or "eterm-color".
+    # Do not set title for these to avoid garbled prompt.
+    if (term is None) or term in [
+        "dumb",
+        "eterm-color",
+        "linux",
+    ]:
         return
     _set_term_title(title)
 
@@ -135,7 +141,6 @@ def restore_term_title():
 
 def freeze_term_title():
     warnings.warn("This function is deprecated, use toggle_set_term_title()")
-    global ignore_termtitle
     ignore_termtitle = True
 
 

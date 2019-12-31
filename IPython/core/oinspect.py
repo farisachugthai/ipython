@@ -27,24 +27,29 @@ import inspect
 import io as stdlib_io
 import linecache
 import os
+import pydoc
 import sys
 import types
 from inspect import getabsfile as find_file
-from inspect import getargspec, getdoc, getsource, signature
+from inspect import getfullargspec, getdoc, getsource, signature
 from itertools import zip_longest
+from pathlib import Path
 from textwrap import dedent, indent
 from typing import Any, Callable, Union
 import warnings
 
+import pygments
 from pygments import highlight
 from pygments.lexers.python import PythonLexer
 from pygments.formatters.terminal256 import TerminalTrueColorFormatter
 
 # IPython's own
-from traitlets.traitlets import Unicode, Bool, CInt, Dict
+from traitlets import default
+from traitlets.traitlets import Unicode, Bool, CInt, Dict, CUnicode
 from traitlets.config.configurable import LoggingConfigurable
 
 from IPython.core import page
+from IPython.core.getipython import get_ipython
 from IPython.lib.lexers import IPyLexer
 from IPython.utils import PyColorize, openpy
 from IPython.utils.coloransi import TermColors
@@ -125,11 +130,22 @@ def get_encoding(obj):
     """Get encoding for python source file defining obj
 
     Returns None if obj is not defined in a sourcefile.
+
+    run contents of file through pager starting at line where the object
+    is defined, as long as the file isn't binary and is actually on the
+    filesystem.
+
+    Print only text files, not extension binaries.  Note that
+    getsourcelines returns lineno with 1-offset and page() uses
+    0-offset, so we must adjust.
+
+    Accounts for files that end with .so .dll and .pyd.
+
+    Parameter should probably be a file though.
     """
+    if not Path(obj).exists():
+        return
     ofile = find_file(obj)
-    # run contents of file through pager starting at line where the object
-    # is defined, as long as the file isn't binary and is actually on the
-    # filesystem.
     if ofile is None:
         return None
     elif ofile.endswith((".so", ".dll", ".pyd")):
@@ -137,9 +153,6 @@ def get_encoding(obj):
     elif not os.path.isfile(ofile):
         return None
     else:
-        # Print only text files, not extension binaries.  Note that
-        # getsourcelines returns lineno with 1-offset and page() uses
-        # 0-offset, so we must adjust.
         with stdlib_io.open(
             ofile, "rb"
         ) as buffer:  # Tweaked to use io.open for Python 2
@@ -262,6 +275,12 @@ class Inspector(LoggingConfigurable):
     Note
     ----
     The Xonsh guy made it stop inheriting from Colorable!!!
+    Dude you know what's infuriating though? oname is a parameter in
+    EVERY FUNCTION.
+    Dude put it in the constructor, dedicate 1 method to validate it and be
+    over with it. info is in almost all of these methods and I don't see
+    why formatter has to be in any since it's never gonna change midway
+    through a session.
 
     """
 
@@ -280,6 +299,16 @@ class Inspector(LoggingConfigurable):
 
     color_table = Dict(help="I assume the same thing as default_style").tag(config=True)
 
+    should_page = Bool(False, help="Whether to page or print to stdout.").tag(
+        config=True
+    )
+    pager_cmd = CUnicode("less -RF", help="Paging command to run.").tag(config=True)
+
+    # @default("config")
+    # def _config(self, *args, **kwargs):
+    #     """Idk if this is a dumb idea."""
+    #     return get_ipython().config
+
     def __init__(self, parent=None, config=None, *args, **kwargs):
         """
         # TODO: need to figure out what we'd need to parse from self.config to determine if we're true
@@ -287,8 +316,8 @@ class Inspector(LoggingConfigurable):
         # self.parser = PyColorize.Parser(out='str', parent=self, style=scheme)
         # self.format = self.parser.format
         """
-        self.parent = parent
-        self.config = config
+        # self.parent = parent
+        # self.config = config
         self.parser = None
         self.lexer = PythonLexer()
         self.formatter = TerminalTrueColorFormatter()
@@ -407,13 +436,20 @@ class Inspector(LoggingConfigurable):
     def psource(self, obj, oname=""):
         """Print the source code for an object."""
         # Flush the source cache because inspect can return out-of-date source
+
         linecache.checkcache()
         try:
             src = getsource(obj, oname=oname)
         except Exception:
             self.noinfo("source", oname)
         else:
-            print(src)
+            pydoc.ttypager(
+                pygments.highlight(
+                    (inspect.getsource(get_formatter_for_filename)),
+                    pygments.lexers.PythonLexer(),
+                    TerminalTrueColorFormatter(),
+                )
+            )
 
     def pfile(self, obj, oname=""):
         """Show the whole file where an object was defined.
@@ -439,9 +475,12 @@ class Inspector(LoggingConfigurable):
             # getsourcelines returns lineno with 1-offset and page() uses
             # 0-offset, so we must adjust.
             page.page(
-                self.lexer.get_tokens(self.format(
-                    openpy.read_py_file(ofile, skip_encoding_cookie=False), sys.stdout
-                )),
+                self.lexer.get_tokens(
+                    self.format(
+                        openpy.read_py_file(ofile, skip_encoding_cookie=False),
+                        sys.stdout,
+                    )
+                ),
                 lineno - 1,
             )
 
@@ -894,7 +933,7 @@ class Inspector(LoggingConfigurable):
 
         if callable_obj is not None:
             try:
-                argspec = getargspec(callable_obj)
+                argspec = getfullargspec(callable_obj)
             except Exception:
                 # For extensions/builtins we can't retrieve the argspec
                 pass

@@ -119,7 +119,7 @@ def shutdown_hook(self, *args, **kwargs):
 
 def late_startup_hook(self, *args, **kwargs):
     """Executed after ipython has been constructed and configured."""
-    if getattr(self, 'log', None):
+    if getattr(self, "log", None):
         self.log.info("default startup hook ok")
     return
 

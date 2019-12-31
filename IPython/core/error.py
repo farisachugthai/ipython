@@ -266,6 +266,6 @@ class DerivedInterrupt(KeyboardInterrupt):
 
 class DataIsObject(Exception):
     """magics.code"""
+
     # custom exceptions
     pass
-
