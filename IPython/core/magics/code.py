@@ -15,10 +15,10 @@
 import ast
 import codecs
 import inspect
-
-# Woops
 import os
 import re
+import shlex
+import textwrap
 import sys
 from itertools import chain
 from logging import error
@@ -32,11 +32,12 @@ from IPython.core.error import (
     StdinNotImplementedError,
     TryNext,
     UsageError,
+    DataIsObject,
 )
 from IPython.core.macro import Macro
 from IPython.core.magic import Magics, line_magic, magics_class
 from IPython.core.oinspect import find_file, find_source_lines
-from IPython.testing.skipdoctest import skip_doctest
+from IPython.utils.contexts import preserve_keys
 from IPython.utils.path import get_py_filename
 from IPython.utils.text import get_text_list
 
@@ -150,6 +151,7 @@ def extract_symbols(code, symbols):
 def strip_initial_indent(lines):
     """For %load, strip indent from lines until finding an unindented line.
 
+    textwrap.dedent does that. Double check and delete.
     https://github.com/ipython/ipython/issues/9775
     """
     indent_re = re.compile(r"\s+")
@@ -161,11 +163,11 @@ def strip_initial_indent(lines):
     if indent_match:
         # First line was indented
         indent = indent_match.group()
-        yield first_line[len(indent) :]
+        yield first_line[len(indent):]
 
         for line in it:
             if line.startswith(indent):
-                yield line[len(indent) :]
+                yield line[len(indent):]
             else:
                 # Less indented than the first line - stop dedenting
                 yield line
@@ -176,6 +178,20 @@ def strip_initial_indent(lines):
     # Pass the remaining lines through without dedenting
     for line in it:
         yield line
+
+
+def make_filename(arg):
+    """Make a filename from the given args"""
+    try:
+        filename = get_py_filename(arg)
+    except IOError:
+        # If it ends with .py but doesn't already exist, assume we want
+        # a new file.
+        if arg.endswith(".py"):
+            filename = arg
+        else:
+            filename = None
+    return filename
 
 
 @magics_class
@@ -344,7 +360,7 @@ class CodeMagics(Magics):
         %load -r 10-20,30,40: foo.py
         %load -s MyClass,wonder_function myscript.py
         %load -n MyClass
-        %load -n my_module.wonder_function
+        %load -nfmy_module.wonder_function
         """
         opts, args = self.parse_options(arg_s, "yns:r:")
 
@@ -381,7 +397,7 @@ class CodeMagics(Magics):
             lines = contents.split("\n")
             slices = extract_code_ranges(ranges)
             contents = [lines[slice(*slc)] for slc in slices]
-            contents = "\n".join(strip_initial_indent(chain.from_iterable(contents)))
+            contents = "\n".join(textwrap.dedent(chain.from_iterable(contents)))
 
         l = len(contents)
 
@@ -408,37 +424,19 @@ class CodeMagics(Magics):
 
         self.shell.set_next_input(contents, replace=True)
 
-    @staticmethod
-    def _find_edit_target(shell, args, opts, last_call):
+    def _find_edit_target(self, args, opts, last_call):
         """Utility method used by magic_edit to find what to edit."""
-
-        def make_filename(arg):
-            """Make a filename from the given args"""
-            try:
-                filename = get_py_filename(arg)
-            except IOError:
-                # If it ends with .py but doesn't already exist, assume we want
-                # a new file.
-                if arg.endswith(".py"):
-                    filename = arg
-                else:
-                    filename = None
-            return filename
 
         # Set a few locals from the options for convenience:
         opts_prev = "p" in opts
         opts_raw = "r" in opts
-
-        # custom exceptions
-        class DataIsObject(Exception):
-            pass
 
         # Default line number value
         lineno = opts.get("n", None)
 
         if opts_prev:
             args = "_%s" % last_call[0]
-            if args not in shell.user_ns:
+            if args not in self.shell.user_ns:
                 args = last_call[1]
 
         # by default this is done with temp files, except when the given
@@ -453,14 +451,14 @@ class CodeMagics(Magics):
             use_temp = False
         elif args:
             # Mode where user specifies ranges of lines, like in %macro.
-            data = shell.extract_input_lines(args, opts_raw)
+            data = self.shell.extract_input_lines(args, opts_raw)
             if not data:
                 try:
                     # Load the parameter given as a variable. If not a string,
                     # process it as an object instead (below)
 
                     # print '*** args',args,'type',type(args)  # dbg
-                    data = eval(args, shell.user_ns)
+                    data = eval(args, self.shell.user_ns)
                     if not isinstance(data, str):
                         raise DataIsObject
 
@@ -528,13 +526,13 @@ class CodeMagics(Magics):
                     use_temp = False
 
         if use_temp:
-            filename = shell.mktempfile(data)
+            filename = self.shell.mktempfile(data)
             print("IPython will make a temporary file named:", filename)
 
         # use last_call to remember the state of the previous call, but don't
         # let it be clobbered by successive '-p' calls.
         try:
-            last_call[0] = shell.displayhook.prompt_count
+            last_call[0] = self.shell.displayhook.prompt_count
             if not opts_prev:
                 last_call[1] = args
         except BaseException:
@@ -543,18 +541,30 @@ class CodeMagics(Magics):
         return filename, lineno, use_temp
 
     def _edit_macro(self, mname, macro):
-        """open an editor with the macro data in a file"""
-        filename = self.shell.mktempfile(macro.value)
-        self.shell.hooks.editor(filename)
+        """open an eritor with the macro data in a file"""
+        filename = shlex.quote(self.shell.mktempfile(macro.value))
+        if getattr(self.shell, "editor", None):
+            self.shell.system(self.shell.editor + filename)
+        else:
+            self.shell.hooks.editor(filename)
 
         # and make a new macro object, to replace the old one
         with open(filename) as mfile:
             mvalue = mfile.read()
         self.shell.user_ns[mname] = Macro(mvalue)
 
-    @skip_doctest
+    def invoke_editor(self, filename):
+        if getattr(self.shell, "editor", None):
+            return self.shell.system(self.shell.editor + " " + filename)
+        else:
+            try:
+                self.shell.hooks.editor(filename, lineno)
+            except TryNext:
+                warn("Could not open editor")
+                return
+
     @line_magic
-    def edit(self, parameter_s="", last_call=None):
+    def edit(self, parameter_s="", last_call=None, *args, **kwargs):
         """Brings up an editor and execute the resulting code.
 
         Usage:
@@ -605,10 +615,12 @@ class CodeMagics(Magics):
         command line arguments, which you can then do using %run.
 
 
-        Arguments:
+        Parameters
+        ----------
 
         If arguments are given, the following possibilities exist:
 
+        parameter_s : str
         - If the argument is a filename, IPython will load that into the
           editor. It will execute its contents with execfile() when you exit,
           loading any code in the file into your interactive namespace.
@@ -630,7 +642,11 @@ class CodeMagics(Magics):
           specified editor with a temporary file containing the macro's data.
           Upon exit, the macro is reloaded with the contents of the file.
 
-        Note: opening at an exact line is only supported under Unix, and some
+        last_code : list of str
+
+        Note
+        ----
+        Opening at an exact line is only supported under Unix, and some
         editors (like kedit and gedit up to Gnome 2.8) do not understand the
         '+NUMBER' parameter necessary for this feature. Good editors like
         (X)Emacs, vi, jed, pico and joe all do.
@@ -643,6 +659,8 @@ class CodeMagics(Magics):
 
         Note that %edit is also available through the alias %ed.
 
+        Examples
+        --------
         This is an example of creating a simple function inside the editor and
         then modifying it. First, start up the editor::
 
@@ -690,14 +708,15 @@ class CodeMagics(Magics):
             Out[7]: "print 'hello again'\\n"
 
 
-        Changing the default editor hook:
-
+        Changing the default editor hook
+        --------------------------------
         If you wish to write your own editor hook, you can put it in a
         configuration file which you load at startup time.  The default hook
         is defined in the IPython.core.hooks module, and you can use that as a
         starting example for further modifications.  That file also has
         general instructions on how to set a new hook for use once you've
         defined it.
+
         """
         if last_call is None:
             last_call = ["", ""]
@@ -705,7 +724,7 @@ class CodeMagics(Magics):
 
         try:
             filename, lineno, is_temp = self._find_edit_target(
-                self.shell, args, opts, last_call
+                args, opts, last_call
             )
         except MacroToEdit as e:
             self._edit_macro(args, e.args[0])
@@ -714,12 +733,13 @@ class CodeMagics(Magics):
             print("Editing In[%i]" % e.index)
             args = str(e.index)
             filename, lineno, is_temp = self._find_edit_target(
-                self.shell, args, opts, last_call
+                args, opts, last_call
             )
         if filename is None:
             # nothing was found, warnings have already been issued,
             # just give up.
             return
+        filename = shlex.quote(filename)
 
         if is_temp:
             self._knowntemps.add(filename)
@@ -729,14 +749,7 @@ class CodeMagics(Magics):
         # do actual editing here
         print("Editing...", end=" ")
         sys.stdout.flush()
-        try:
-            # Quote filenames that may have spaces in them
-            if " " in filename:
-                filename = "'%s'" % filename
-            self.shell.hooks.editor(filename, lineno)
-        except TryNext:
-            warn("Could not open editor")
-            return
+        self.invoke_editor(filename)
 
         # XXX TODO: should this be generalized for all string vars?
         # For now, this is special-cased to blocks created by cpaste
@@ -746,7 +759,6 @@ class CodeMagics(Magics):
 
         if "x" in opts:  # -x prevents actual execution
             print()
-            # should we return here?
         else:
             print("done. Executing edited code...")
             with preserve_keys(self.shell.user_ns, "__file__"):

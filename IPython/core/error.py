@@ -262,3 +262,10 @@ class DerivedInterrupt(KeyboardInterrupt):
     """interactiveshell.tests.test_interactiveshell"""
 
     pass
+
+
+class DataIsObject(Exception):
+    """magics.code"""
+    # custom exceptions
+    pass
+
