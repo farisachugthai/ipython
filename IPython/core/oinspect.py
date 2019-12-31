@@ -37,7 +37,7 @@ from typing import Any, Callable, Union
 import warnings
 
 from pygments import highlight
-from pygments.formatters import HtmlFormatter
+from pygments.lexers.python import PythonLexer
 from pygments.formatters.terminal256 import TerminalTrueColorFormatter
 
 # IPython's own
@@ -55,7 +55,7 @@ from traitlets.config.loader import Config
 
 
 def pylight(code):
-    return highlight(code, IPyLexer(), HtmlFormatter(noclasses=True))
+    return highlight(code, IPyLexer(), TerminalTrueColorFormatter(noclasses=True))
 
 
 # builtin docstrings to ignore
@@ -290,6 +290,7 @@ class Inspector(LoggingConfigurable):
         self.parent = parent
         self.config = config
         self.parser = None
+        self.lexer = PythonLexer()
         self.formatter = TerminalTrueColorFormatter()
         self.format = self.formatter.format
         super().__init__(*args, **kwargs)
@@ -438,9 +439,9 @@ class Inspector(LoggingConfigurable):
             # getsourcelines returns lineno with 1-offset and page() uses
             # 0-offset, so we must adjust.
             page.page(
-                self.format(
+                self.lexer.get_tokens(self.format(
                     openpy.read_py_file(ofile, skip_encoding_cookie=False), sys.stdout
-                ),
+                )),
                 lineno - 1,
             )
 
@@ -559,7 +560,7 @@ class Inspector(LoggingConfigurable):
 
         def code_formatter(text):
             return {
-                "text/plain": self.format(text, sys.stdout),
+                "text/plain": self.lexer.get_tokens(self.format(text, sys.stdout)),
                 "text/html": pylight(text),
             }
 
