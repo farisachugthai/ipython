@@ -12,6 +12,11 @@ from pygments.token import Token
 from IPython.core.displayhook import DisplayHook
 from IPython.core.getipython import get_ipython
 
+from prompt_toolkit.formatted_text import fragment_list_width, PygmentsTokens
+from prompt_toolkit.shortcuts import print_formatted_text
+from prompt_toolkit.formatted_text import fragment_list_width, PygmentsTokens
+from prompt_toolkit.shortcuts import print_formatted_text
+from prompt_toolkit.enums import EditingMode
 
 class Prompts:
 
@@ -32,6 +37,21 @@ class Prompts:
 
         Add prefix and suffix so the user can configure their prompt with
         strings I don't know why that got deprecated.
+    def vi_mode(self):
+        if (getattr(self.shell.pt_app, 'editing_mode', None) == 'VI'
+                and self.shell.prompt_includes_vi_mode):
+            return '['+str(self.shell.pt_app.app.vi_state.input_mode)[3:6]+'] '
+        return ''
+    def vi_mode(self):
+        if (getattr(self.shell.pt_app, 'editing_mode', None) == EditingMode.VI
+                and self.shell.prompt_includes_vi_mode):
+            mode = str(self.shell.pt_app.app.vi_state.input_mode)
+            if mode.startswith('InputMode.'):
+                mode = mode[10:13].lower()
+            elif mode.startswith('vi-'):
+                mode = mode[3:6]
+            return '['+mode+'] '
+        return ''
 
         """
         if self._is_vi_mode:

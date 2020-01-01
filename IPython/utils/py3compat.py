@@ -37,41 +37,18 @@ def no_code(x, encoding=None):
 
 
 str_to_unicode = no_code
-unicode_to_str = no_code
 cast_bytes_py2 = no_code
 cast_unicode_py2 = no_code
 buffer_to_bytes_py2 = no_code
 
 
 def cast_unicode(s, encoding=None):
-    """
-
-    Parameters
-    ----------
-    s :
-    encoding :
-
-    Returns
-    -------
-
-    """
     if isinstance(s, bytes):
         return decode(s, encoding)
     return s
 
 
 def cast_bytes(s, encoding=None):
-    """
-
-    Parameters
-    ----------
-    s :
-    encoding :
-
-    Returns
-    -------
-
-    """
     if not isinstance(s, bytes):
         return encode(s, encoding)
     return s
@@ -85,18 +62,9 @@ def buffer_to_bytes(buf):
 
 
 def _modify_str_or_docstring(str_change_func):
+
     @functools.wraps(str_change_func)
     def wrapper(func_or_str):
-        """
-
-        Parameters
-        ----------
-        func_or_str :
-
-        Returns
-        -------
-
-        """
         if isinstance(func_or_str, (str,)):
             func = None
             doc = func_or_str
@@ -135,61 +103,20 @@ def safe_unicode(e):
 
 
 def input(prompt=""):
-    """
-
-    Parameters
-    ----------
-    prompt :
-
-    Returns
-    -------
-
-    """
     return builtin_mod.input(prompt)
 
 
 def isidentifier(s, dotted=False):
-    """
-
-    Parameters
-    ----------
-    s :
-    dotted :
-
-    Returns
-    -------
-
-    """
     if dotted:
         return all(isidentifier(a) for a in s.split("."))
     return s.isidentifier()
 
 
 def iteritems(d):
-    """
-
-    Parameters
-    ----------
-    d :
-
-    Returns
-    -------
-
-    """
     return iter(d.items())
 
 
 def itervalues(d):
-    """
-
-    Parameters
-    ----------
-    d :
-
-    Returns
-    -------
-
-    """
     return iter(d.values())
 
 
@@ -223,32 +150,49 @@ def u_format(s):
     return s.format(u="")
 
 
-def get_closure(f):
-    """Get a function's closure attribute"""
-    return f.__closure__
-
-
 def annotate(**kwargs):
     """Python 3 compatible function annotation for Python 2."""
     if not kwargs:
-        raise ValueError("annotations must be provided as keyword arguments")
-
+        raise ValueError('annotations must be provided as keyword arguments')
     def dec(f):
-        """
-
-        Parameters
-        ----------
-        f :
-
-        Returns
-        -------
-
-        """
-        if hasattr(f, "__annotations__"):
+        if hasattr(f, '__annotations__'):
             for k, v in kwargs.items():
                 f.__annotations__[k] = v
         else:
             f.__annotations__ = kwargs
         return f
-
     return dec
+
+
+# Parts below taken from six:
+# Copyright (c) 2010-2013 Benjamin Peterson
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+def with_metaclass(meta, *bases):
+    """Create a base class with a metaclass."""
+    return meta("_NewBase", bases, {})
+
+PY2 = not PY3
+PYPY = platform.python_implementation() == "PyPy"
+
+# Cython still rely on that as a Dec 28 2019
+# See https://github.com/cython/cython/pull/3291 and
+# https://github.com/ipython/ipython/issues/12068
+unicode_to_str = cast_bytes_py2 = no_code

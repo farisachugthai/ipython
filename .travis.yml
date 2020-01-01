@@ -14,7 +14,17 @@ cache:
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+      env | sort
+      if ! which python$TRAVIS_PYTHON_VERSION; then
+        HOMEBREW_NO_AUTO_UPDATE=1 brew tap carreau/homebrew-python-frameworks
+        HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
+      fi
+      python3 -m pip install virtualenv
+      python3 -m virtualenv -p $(which python$TRAVIS_PYTHON_VERSION) ~/travis-env
+      source ~/travis-env/bin/activate
+    elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
         bash miniconda.sh -b -p $HOME/miniconda
         export PATH="$HOME/miniconda/bin:$PATH"
         conda config --set always_yes yes --set changeps1 no
@@ -43,7 +53,7 @@ after_success:
 matrix:
   include:
     - python: "3.7"
-      name: "Python 3.7.0 on Bionic Linux"
+      name: "3.7.0 - Linux - Conda"
       dist: "bionic" # because now we get py3.6 and py3.7 for free. they added 3.8.0!
       before_install:
         - python setup.py build
@@ -51,14 +61,14 @@ matrix:
         - pip install -U -r docs/requirements.txt
     - python: "3.8"
       dist: "bionic"
-      name: "Python 3.8 on Bionic Linux"
+      name: "3.8 - Linux - Conda"
       before_install:
         - python setup.py build
         - pip install --upgrade pip -e . -r requirements_dev.txt
         - pip install -U -r docs/requirements.txt
     - python: "3.6"
       dist: "bionic"
-      name: "Python 3.6 on Bionic Linux"
+      name: "3.6 - Linux - Conda"
       before_install:
         - python setup.py build
         - pip install --upgrade pip -e . -r requirements_dev.txt
@@ -68,7 +78,7 @@ matrix:
       python: 3.6
       osx_image: xcode11.2 # Python 3.7.4 running on macOS 10.14.4
       env: TRAVIS_PYTHON_VERSION=3.6
-      name: "Python 3.6 on macOS - Conda"
+      name: "Python 3.6 on macOS"
       before_install:
         - python setup.py build
     - os: osx
@@ -76,7 +86,7 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=3.7
       osx_image: xcode11.2 # Python 3.7.4 running on macOS 10.14.4
       language: shell # 'language: python' is an error on Travis CI macOS
-      name: "Python 3.7 on macOS - Conda"
+      name: "Python 3.7 on macOS"
       before_install:
         - python setup.py build
     - os: windows

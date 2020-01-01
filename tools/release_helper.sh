@@ -107,7 +107,7 @@ rm dist/*
 if ask_section "Should we commit, tag, push... etc ? "
 then
    echo
-   echo "Let's commit : git commit -am \"release $VERSION\" -S"
+   echo $BLUE"Let's commit : git commit -am \"release $VERSION\" -S"
    echo $GREEN"Press enter to commit"$NOR
    read
    git commit -am "release $VERSION" -S
@@ -139,10 +139,10 @@ then
    read
    
    echo
-   echo "Let's commit : git commit -am \"back to dev\" -S"
+   echo "Let's commit : "$BLUE"git commit -am \"back to dev\""$NOR
    echo $GREEN"Press enter to commit"$NOR
    read
-   git commit -am "back to dev" -S
+   git commit -am "back to dev"
    
    echo
    echo $BLUE"let's : git checkout $VERSION"$NOR
@@ -157,13 +157,15 @@ then
     echo
     echo $BLUE"Attempting to build package..."$NOR
 
-    tools/build_release
+    tools/release
 
     echo '$ shasum -a 256 dist/*'
+    echo $RED
     shasum -a 256 dist/*
+    echo $NOR
 
     if ask_section "upload packages ?"
     then 
-       tools/build_release upload
+       tools/release upload
     fi
 fi

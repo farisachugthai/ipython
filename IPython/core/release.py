@@ -20,7 +20,7 @@ name = "ipython"
 # release.  'dev' as a _version_extra string means this is a development
 # version
 _version_major = 7
-_version_minor = 11
+_version_minor = 12
 _version_patch = 0
 # setuptools will complain every single time if you don't
 _version_extra = ".dev0"

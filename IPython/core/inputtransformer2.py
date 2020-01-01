@@ -523,11 +523,11 @@ def make_tokens_by_line(lines: List[str]):
     '\\r\\n') for this to properly work. Use `.splitlines(keeplineending=True)`
     for example when passing block of text to this function.
 
+    NL tokens are used inside multiline expressions, but also after blank
+    lines or comments. This is intentional - see https://bugs.python.org/issue17061
+    We want to group the former case together but split the latter, so we
+    track parentheses level, similar to the internals of tokenize.
     """
-    # NL tokens are used inside multiline expressions, but also after blank
-    # lines or comments. This is intentional - see https://bugs.python.org/issue17061
-    # We want to group the former case together but split the latter, so we
-    # track parentheses level, similar to the internals of tokenize.
     NEWLINE, NL = tokenize.NEWLINE, tokenize.NL
     tokens_by_line = [[]]
     if len(lines) > 1 and not lines[0].endswith(("\n", "\r", "\r\n", "\x0b", "\x0c")):
@@ -789,16 +789,6 @@ class TransformerManager:
 
 
 def find_last_indent(lines):
-    """
-
-    Parameters
-    ----------
-    lines :
-
-    Returns
-    -------
-
-    """
     m = _indent_re.match(lines[-1])
     if not m:
         return 0
