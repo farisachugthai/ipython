@@ -1,6 +1,6 @@
 """Logger class for IPython's logging facilities.
 
-Based on PEP 282.
+Based on :PEP:`282`.
 """
 
 # *****************************************************************************
@@ -21,11 +21,26 @@ import io
 
 # How does this not import logging?
 import logging
+
+# No the more shocking one is that it didn't import either the traitlets
+# LoggingConfigurable or LevelFormatter.
 import os
 import time
 from pathlib import Path
+from textwrap import dedent
 
-from traitlets.config import Bool, Configurable
+from traitlets.config import Bool, Configurable, LoggingConfigurable
+from traitlets.config.application import LevelFormatter
+from traitlets.traitlets import (
+    validate,
+    default,
+    TraitError,
+    Any,
+    CInt,
+    Int,
+    Unicode,
+    Instance,
+)
 
 
 class BracketFormatter(logging.Formatter):
@@ -272,8 +287,14 @@ which already exists. But you must first start the logging process with
     close_log = logstop
 
 
-class LoggerManager(Configurable):
+class LoggerManager(LoggingConfigurable):
     """Let's give cleanup a shot.
+
+    Now with all of this effort put in to determine the mode that the user
+    wants and how to best put the file where they'll expect it, it's safe to
+    say that we know that we don't need a FileHandler.
+
+    But let's add a StreamHandler and set the level. And make them configurable right?
 
     Attributes
     ----------
@@ -292,19 +313,57 @@ class LoggerManager(Configurable):
         Not in init because it doesn't make any sense to override where
         your home directory is.
 
+    Note
+    ----
+    Uses pathlib internally and externally.
+
     """
 
+    # could do this. make an enum class? hm. idk.
+    # logmode =
     log_raw_input = Bool(False, help="Whether to log raw or processed input").tag(
         config=True
     )
     log_output = Bool(False, help="Whether to also log output.").tag(config=True)
+
     timestamp = Bool(
         False, help="Whether to put timestamps before each log entry."
     ).tag(config=True)
+
     log_active = Bool(False, help="activity control flags").tag(config=True)
 
+    loghead = Any(
+        help=dedent(
+            """
+    The header in your log file.
+    Only used if you're not logging in append mode to prevent
+    printing a header to the same log file repetitively.
+    """
+        )
+    ).tag(config=True)
+
+    shell = Instance(
+        "IPython.core.interactiveshell.InteractiveShellABC", allow_none=True
+    )
+
+    # handler_level = CInt(30, help="Log level for the handler").tag(config=True)
+
+    formatter_style = Unicode(
+        "%(highlevel)-20s %(name)s:%(filename)s:%(lineno)d %(message)s",
+        help="How do log messages look?",
+    ).tag(config=True)
+
+    time_format = Unicode(
+        "%H:%M:%S", help="Enable timestamps and you'll see what I mean."
+    ).tag(config=True)
+
     def __init__(
-        self, logfname="Logger.log", loghead=None, logmode=None, *args, **kwargs
+        self,
+        logger_name="IPython_Logger_Manager",
+        logfname="Logger.log",
+        logger_log_level=None,
+        *args,
+        **kwargs
     ):
         """New LoggerManager.
 
@@ -315,43 +374,70 @@ class LoggerManager(Configurable):
 
         """
         super().__init__(*args, **kwargs)
-        self.home = Path.home().__fspath__()
-        self.logfname = logfname
-        self.loghead = loghead
-        self.logmode = logmode
-        self.log_raw_input = log_raw_input
-        self.log_output = log_output
-        self.timestamp = timestamp
-        self.log_active = log_active
+        self.logfname = Path(logfname)
+        self.logger_name = logger_name
+        self.logger_log_level = logger_log_level
+        self.run()
 
-    @property
-    def _mode(self):
-        return self._logmode
+    def __repr__(self):
+        return "{r!} {:<r!}".format(self.__class__.__name__, self.logger_name)
 
-    @_mode.setter
+    def log(self, *args, **kwargs):
+        if self.logger_log_level == 30:
+            super().log.warning(*args, **kwargs)
+
+    def init_logger(self, override_level=None, **kwargs):
+        self.logger_instance = logging.getLogger(name=self.logger_name)
+        self.logger_log_level = override_level or 30
+        self.logger_instance.setLevel(self.logger_log_level)
+
+    def init_handler(self, override_level=None, **kwargs):
+        self.handler = logging.StreamHandler(io.StringIO, **kwargs)
+        handler_level = override_level or 30
+        self.handler.setLevel(handler_level)
+
+    def init_formatter(self, override_style=None, formatter_style=None, time_format=None, **kwargs):
+        if override_style is not None:
+            formatter_style = override_style
+        self.formatter = LevelFormatter(fmt=formatter_style, datefmt=time_format, **kwargs)
+
+    def init_filter(self, **kwargs):
+        self.handler.addFilter(logging.Filter(**kwargs))
+
+    @default("logmode")
+    def _mode(self, change):
+        return self.logmode
+
+    @validate("logmode")
     def _set_mode(self, mode):
         """'logmode' is a validated property."""
         if mode not in ["append", "backup", "global", "over", "rotate"]:
-            raise ValueError("invalid log mode %s given" % mode)
-        self._logmode = mode
+            raise TraitError("invalid log mode %s given" % mode)
+        self.logmode = mode
 
     def append(self):
         """Called when logmode is set to append."""
         return codecs.open(self.logfname, "a", encoding="utf-8")
 
     def backup(self, backupext="~"):
-        """Added a backupext parameter so that can be changed.
+        """Create a logging file and backups as necessary at path 'target'.
+
+        Added a backupext parameter so that can be changed.
 
         Also changed the logfile to be open in append mode so we don't have
         to worry about whether we have more.
         """
-        if isfile(self.logfname):
-            backup_logname = self.logfname + backupext
-            os.rename(self.logfname, backup_logname)
+        if self.logfname.is_file():
+            target = self.logfname / Path(backupext)
+            self.logfname.rename(backup_logname)
         return codecs.open(self.logfname, "a", encoding="utf-8")
 
     def global_mode(self):
-        self.logfname = os.path.join(self.home_dir, self.logfname)
+        """I'm changing this. Global mode shouldn't dump files in the home dir.
+
+        Global means put it iin teh IPython dir not the profile dir.
+        """
+        self.logfname = Path(self.shell.ipython_dir / self.logfname)
         return codecs.open(self.logfname, "a", encoding="utf-8")
 
     def over(self):
@@ -375,36 +461,32 @@ class LoggerManager(Configurable):
         elif logmode == "over":
             self.logfile = self.over()
 
+        # TODO
         elif logmode == "rotate":
-            if isfile(self.logfname):
-                if isfile(self.logfname + ".001~"):
-                    old = sorted(glob.glob(self.logfname + ".*~"))
-                    old.reverse()
-                    for f in old:
-                        root, ext = os.path.splitext(f)
-                        num = int(ext[1:-1]) + 1
-                        os.rename(f, root + "." + repr(num).zfill(3) + "~")
-                os.rename(self.logfname, self.logfname + ".001~")
+            if self.logfname.is_file():
+                if Path(self.logfname / ".001~").is_file():
+                    # Don't make the logic too complicated. I've set this to rotate and got
+                    # pissed when i saw 11 log files from 1 session.
+                    self.logfname = Path(self.logfname / ".002~")
+                else:
+                    self.logfname.rename(self.logfname / ".001~")
             self.logfile = codecs.open(self.logfname, "w", encoding="utf-8")
 
         return self.logfile
 
     def logstart(self):
-        """Generate a new log-file with a default header.
-
-        Parameters
-        ----------
-        Raises
-        ------
-        :exc:`RuntimeError`
-            If the log has already been started via 'logfile' being set.
-
-        """
+        """Generate a new log-file with a default header."""
         if self.logfile is not None:
-            raise RuntimeError("Log file is already active: %s" % self.logfname)
+            self.shell.warn("Logging already started in this session!")
         self.logfile = self.set_outputfile()
 
         if logmode != "append":
             self.logfile.write(self.loghead)
         self.logfile.flush()
         self.log_active = True
+
+    def run(self):
+        self.init_logger()
+        self.init_handler()
+        self.init_formatter()
+        self.init_filter()
