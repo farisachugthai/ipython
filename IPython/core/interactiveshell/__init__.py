@@ -24,7 +24,9 @@ import functools
 import inspect
 import os
 import re
+import reprlib
 import runpy
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -37,11 +39,14 @@ from io import RawIOBase
 from logging import error
 from os import system
 from pathlib import Path
+from textwrap import dedent
 from typing import List as ListType
 from typing import Tuple
 from warnings import warn
 
 from pickleshare import PickleShareDB
+import pygments
+
 from traitlets import (
     Any,
     Bool,
@@ -60,7 +65,9 @@ from traitlets import (
 )
 from traitlets.config.configurable import SingletonConfigurable
 
-from IPython.core import hooks, magic, oinspect, page, prefilter, usage
+# Note. These are the modules with so many globals, we can't only import
+# function names. Keep them in the crosshairs.
+from IPython.core import async_helpers, hooks, magic, oinspect, page, prefilter, usage
 from IPython.core.alias import Alias, AliasManager
 from IPython.core.async_helpers import _asyncify, _asyncio_runner, _pseudo_sync_runner
 from IPython.core.autocall import ExitAutocall
@@ -70,13 +77,14 @@ from IPython.core.display import display
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.displayhook import DisplayHook
 from IPython.core.displaypub import DisplayPublisher
-from IPython.core.error import InputRejected, ProvisionalWarning, UsageError
+from IPython.core.error import InputRejected, ProvisionalWarning, UsageError, SpaceInInput
 from IPython.core.events import EventManager, available_events
 from IPython.core.extensions import ExtensionManager
 from IPython.core.formatters import DisplayFormatter
 from IPython.core.history import HistoryManager
 from IPython.core.inputtransformer2 import ESC_MAGIC, ESC_MAGIC2
-from IPython.core.logger import Logger
+from IPython.core.logger import Logger, LoggerManager
+from IPython.core.macro import Macro
 from IPython.core.payload import PayloadManager
 from IPython.core.prefilter import PrefilterManager
 from IPython.core.profiledir import ProfileDir
@@ -89,6 +97,7 @@ from IPython.utils.process import getoutput
 from IPython.utils.strdispatch import StrDispatch
 from IPython.utils.syspathcontext import prepended_to_syspath
 from IPython.utils.text import DollarFormatter, LSString, SList, format_screen
+from IPython.utils.tempdir import TemporaryDirectory
 from IPython.utils.utils_io import ask_yes_no
 
 from .ast_async import _ast_asyncify
@@ -581,8 +590,6 @@ class InteractiveShell(SingletonConfigurable):
         self.init_completer()
         # self.init_io()
         self.init_traceback_handlers(custom_exceptions)
-        self.init_pdb()
-
         self.init_prompts()
         self.init_display_formatter()
         self.init_display_pub()
@@ -591,9 +598,11 @@ class InteractiveShell(SingletonConfigurable):
         self.init_magics()
         self.init_alias()
         self.init_logstart()
+        self.init_pdb()
         self.init_extension_manager()
         self.init_payload()
-        self.init_deprecation_warnings()
+        if sys.version_info < (3, 7):
+            self.init_deprecation_warnings()
         # Literally where is this used?
         # self.hooks.late_startup_hook()
         self.events.trigger("shell_initialized", self)
@@ -604,7 +613,7 @@ class InteractiveShell(SingletonConfigurable):
         return self
 
     def __repr__(self):
-        return "<{!r}:>".format(self.__class__.__name__)
+        return "<{!r}:{!r}>".format(self.__class__.__name__, reprlib.Repr().repr_dict(self.traits(), 6))
 
     # -------------------------------------------------------------------------
     # Trait changed handlers
@@ -724,6 +733,11 @@ class InteractiveShell(SingletonConfigurable):
         """Python source parser/formatter for syntax highlighting."""
         pyformat = PyColorize.Parser(style=self.colors, parent=self).format
         self.pycolorize = lambda src: pyformat(src, "str")
+        # yo i just noticed this. wanna see something?
+        # idk if we can do it this way but goddamn if i don't try
+        # pyformat = functools.partial(pygments.highlight(lexer=pygments.lexers.python.PythonLexer,
+                                                        # formatter=pygments.formatters.terminal256.TerminalTrueColorFormatter))
+        # self.pycolorize = lambda src: pyformat(src, 'str')
 
     def refresh_style(self):
         """No-op here, used in subclass. todo: which one?"""
@@ -736,7 +750,7 @@ class InteractiveShell(SingletonConfigurable):
         self.dir_stack = []
 
     def init_logger(self):
-        self.logger = Logger(self.home_dir, logfname="ipython_log.py", logmode="rotate")
+        self.logger = LoggerManager(logfname="ipython_log.py", logmode="rotate")
 
     def init_logstart(self):
         """Initialize logging in case it was requested at the command line."""
@@ -768,12 +782,11 @@ class InteractiveShell(SingletonConfigurable):
         Oh jeez who could they be talking about?
 
         """
-        if sys.version_info < (3, 7):
-            warnings.filterwarnings(
-                "default",
-                category=DeprecationWarning,
-                module=self.user_ns.get("__name__"),
-            )
+        warnings.filterwarnings(
+            "default",
+            category=DeprecationWarning,
+            module=self.user_ns.get("__name__"),
+        )
 
     def init_builtins(self):
         """A single, static flag that we set to True.
@@ -1000,11 +1013,14 @@ class InteractiveShell(SingletonConfigurable):
         self.strdispatchers = {}
 
         for hook_name in hooks.__all__:
-            self.set_hook(
-                hook_name, getattr(hooks, hook_name), 100, _warn_deprecated=False
-            )
+            if hook_name is not None:
+                self.set_hook(
+                    hook_name, getattr(hooks, hook_name), 100, _warn_deprecated=False
+                )
 
         if self.display_page:
+            self.set_hook("show_in_pager", page.as_hook(page.display_page), 90)
+        else:
             self.set_hook("show_in_pager", page.as_hook(page.display_page), 90)
 
     def set_hook(
@@ -1021,6 +1037,10 @@ class InteractiveShell(SingletonConfigurable):
         of args it's supposed to.
 
         Check if the hook is for strdispatcher first.
+
+        Note
+        ----
+        Lower priority numerically is preferentially.
 
         """
         f = types.MethodType(hook, self)
@@ -1040,20 +1060,14 @@ class InteractiveShell(SingletonConfigurable):
         if name not in hooks.__all__:
             print("Warning! Hook '%s' is not one of %s" % (name, hooks.__all__))
 
-        if _warn_deprecated and (name in hooks.deprecated):
-            alternative = hooks.deprecated[name]
-            warn(
-                "Hook {} is deprecated. Use {} instead.".format(name, alternative),
-                stacklevel=2,
-            )
-
         if not dp:
             dp = hooks.CommandChainDispatcher()
 
         try:
             dp.add(f, priority)
-        except AttributeError:
+        except AttributeError as e:
             # it was not commandchain, plain old func - replace
+            self.log.error(e)
             dp = f
 
         setattr(self.hooks, name, dp)
@@ -1954,22 +1968,24 @@ class InteractiveShell(SingletonConfigurable):
         self.CustomTB = types.MethodType(wrapped_handler, self)
         self.custom_exceptions = exc_tuple
 
-    def wrapped(self, etype, value, tb, tb_offset=None):
+    def wrapped(self, tb=None, tb_offset=None, *args, **kwargs):
         """Wrap CustomTB handler, to protect IPython from user code
 
         This makes it harder (but not impossible) for custom exception
         handlers to crash IPython.
         """
+        if tb is None:
+            _, tb = self._get_exc_info()
         try:
-            stb = handler(self, etype, value, tb, tb_offset=tb_offset)
-            return validate_stb(stb)
+            return self.validate_stb(tb)
         except BaseException:
             # clear custom handler immediately
-            self.set_custom_exc((), None)
-            print("Custom TB Handler failed, unregistering", file=sys.stderr)
-            # show the exception in handler first
-            print("The original exception:")
-            print(sys.exc_info())
+            # self.set_custom_exc((), None)
+            # print("Custom TB Handler failed, unregistering", file=sys.stderr)
+            # # show the exception in handler first
+            # print("The original exception:")
+            # print(sys.exc_info()
+            self.log.critical('Woops. Come back to interactiveshell.IS.wrapped')
         return stb
 
     def _get_exc_info(self, exc_tuple=None):
@@ -2042,12 +2058,31 @@ class InteractiveShell(SingletonConfigurable):
         return "".join(msg)
 
     def showtraceback(self, *args, **kwargs):
-        """Provide ``*args`` and **kwargs but throw them away."""
-        return self.interpreter.showtraceback()
+        """Display the exception that just occurred.
+
+        We remove the first stack item because it is our own code.
+        The output is written by self.write(), below.
+
+        We also accept any arg because in this file alone its called,
+        by my count, 7 different ways.
+        """
+        sys.last_type, sys.last_value, last_tb = ei = self._get_exc_info()
+        sys.last_traceback = last_tb
+        if last_tb is None:
+            return
+        if getattr(last_tb, 'tb_next', None):
+            try:
+                lines = traceback.format_exception(ei[0], ei[1], last_tb.tb_next)
+                self.write("".join(lines))
+            finally:
+                last_tb = ei = None
+                return lines
+        else:
+            print(self._get_exc_info(), file=sys.stderr)
 
     def showsyntaxerror(self, filename=None, **kwargs):
         if filename is None:
-            filename=sys.stderr
+            filename = sys.stderr
         return self.interpreter.showsyntaxerror(filename)
 
     def showindentationerror(self):
@@ -2084,42 +2119,6 @@ class InteractiveShell(SingletonConfigurable):
         return self._call_pdb
 
     def _set_call_pdb(self, val):
-        """This method mixes in the logic for pdb with InteractiveTB.
-
-        Things are probably getting really messy from here on out.
-
-        For those of you keeping count at home, the traceback handlers interact
-        with all of:
-
-        # ) The utils dir through IPython.utils.PyColorize,
-           IPython.utils.coloransi, IPython.utils.colorable since all three
-           of those modules hold ultratb's superclasses.
-
-        # ) The core package
-
-            # ) IPython.core.excolors defines the exception_colors function.
-
-        # ) Pygments
-
-        # ) Prompt_toolkit
-
-            # ) As a result IPython.terminal
-
-        # ) And at this point we now add in pdb
-
-        # ) Both IPython.core.debugger and IPython.terminal.debugger are affected
-
-        # ) This has implications for ipdb which is outside of this repository
-
-        Changes
-        -------
-
-        # notify the actual exception handlers
-        self.InteractiveTB.call_pdb = val
-
-        pdb is going to soon no longer be bound to our traceback handlers.
-
-        """
         if val not in (0, 1, False, True):
             raise ValueError("new call_pdb value must be boolean")
 
@@ -2285,6 +2284,8 @@ class InteractiveShell(SingletonConfigurable):
 
         The position argument (defaults to 0) is the index in the completers
         list where you want the completer to be inserted.
+
+        Oddly init_readline calls this method with the no_op from above.
         """
         newcomp = types.MethodType(completer, self.Completer)
         self.Completer.matchers.insert(pos, newcomp)
@@ -2530,7 +2531,7 @@ class InteractiveShell(SingletonConfigurable):
     # Things related to the running of system commands
     # -------------------------------------------------------------------------
 
-    def system_piped(self, cmd):
+    def system_piped(self, cmd=None, *args, **kwargs):
         """Call the given cmd in a subprocess, piping stdout/err
 
         .. warning::
@@ -2560,16 +2561,17 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         if cmd.rstrip().endswith("&"):
-
-            # UHHHHHHH?????
-            # =============
-            # #) %%bg is one way to send jobs to the bg
-            # #) ../lib/backgroundjobs.py
-
             raise OSError("Background processes not supported.")
 
         # .. todo:: Can we notify them in any other way than 2500 lines deep in the source code leaving 1 comment?
-        self.user_ns["_exit_code"] = system(self.var_expand(cmd, depth=1))
+        cmd = shlex.split(shlex.quote(cmd.rstrip()))
+        try:
+            self.user_ns["_exit_code"] = subprocess.run([cmd], shell=True)
+        except subprocess.CalledProcessError as e:
+            if getattr(e, '__cause__', None):
+                print(e.__cause__)
+            else:
+                print("Subprocess command failed.", file=sys.stderr)
 
     def system_raw(self, cmd):
         """Call the given cmd in a subprocess using os.system on Windows or
@@ -2804,18 +2806,22 @@ class InteractiveShell(SingletonConfigurable):
 
     # And I just factored out some code duplication so let's see if we can't
     # trim this down a lot
-    @staticmethod
-    def _validate_execedfile(fname):
+    def the_file_opened(self, fname):
         """Make sure we can open the file."""
+        if not os.path.exists(fname):
+            return False
         try:
             with open(fname):
                 pass
         except OSError:
             # Don't use warnings.warn for this
             self.log.error("Error: Could not open file <%s> ." % str(fname))
-            return 127
+            return False
         except BaseException as e:
             self.log.warning("Error: InteractiveShell safe_execfile: {}".format(e))
+            return False
+        else:
+            return True
 
     def ex(self, cmd):
         """Execute a normal python statement in user namespace."""
@@ -2903,7 +2909,9 @@ class InteractiveShell(SingletonConfigurable):
         if fname is None:
             return
         fname = os.path.abspath(os.path.expanduser(fname))
-        self._validate_execedfile(fname)
+        it_opened = self.the_file_opened(fname)
+        if it_opened is False:
+            return
         dname = os.path.dirname(fname)
 
         with prepended_to_syspath(dname), self.builtin_trap:
@@ -2923,6 +2931,14 @@ class InteractiveShell(SingletonConfigurable):
                         print("SystemExit: {}".format(status))
                         # if not exit_ignore:
                         self.showtraceback(exception_only=True)
+                except (OverflowError, SyntaxError,
+                        ValueError,
+                        TypeError,
+                        MemoryError) as e:
+                    if raise_exceptions:
+                        raise
+                    self.log.error(e)
+                    return
                 except BaseException as e:
                     if getattr(e, "__cause__", None):
                         print("Exception cause: {}".format(e.__cause__))
@@ -2979,6 +2995,9 @@ class InteractiveShell(SingletonConfigurable):
         This version will never throw an exception, but instead print
         helpful error messages to the screen.
 
+        They aren't very helpful though because we throw away the fucking
+        exception it raises.
+
         `SystemExit` exceptions with status code 0 or None are ignored.
 
         Parameters
@@ -2994,11 +3013,16 @@ class InteractiveShell(SingletonConfigurable):
                     runpy.run_module(str(mod_name), run_name="__main__", alter_sys=True)
                 )
             except SystemExit as status:
-                if status.code:
+                if getattr(status, 'code', None):
                     raise
         except BaseException:
             self.showtraceback()
             warn("Unknown failure executing module: <%s>" % mod_name)
+
+    @staticmethod
+    def get_result(raw_cell, store_history=True, silent=False, shell_futures=True, *args, **kwargs):
+        result = ExecutionResult(ExecutionInfo(raw_cell, store_history, silent, shell_futures))
+        return result
 
     def run_cell(self, raw_cell, store_history=False, silent=False, shell_futures=True):
         """Run a complete IPython cell.
@@ -3017,10 +3041,10 @@ class InteractiveShell(SingletonConfigurable):
             If True, avoid side-effects, such as implicit displayhooks and
             and logging.  silent=True forces store_history=False.
         shell_futures : bool
-          If True, the code will share future statements with the interactive
-          shell. It will both be affected by previous __future__ imports, and
-          any __future__ imports in the code will affect the shell. If False,
-          __future__ imports are not shared in either direction.
+            If True, the code will share future statements with the interactive
+            shell. It will both be affected by previous __future__ imports, and
+            any __future__ imports in the code will affect the shell. If False,
+            __future__ imports are not shared in either direction.
 
         Returns
         -------
@@ -3061,12 +3085,10 @@ class InteractiveShell(SingletonConfigurable):
         try:
             return runner(coro)
         except BaseException as e:
-            info = ExecutionInfo(raw_cell, store_history, silent, shell_futures)
-            result = ExecutionResult(info)
+            result = self.get_result(raw_cell, store_history, silent, shell_futures)
             result.error_in_exec = e
             self.showtraceback(running_compiled_code=True)
             return result
-        return
 
     def should_run_async(self, raw_cell: str) -> bool:
         """Return whether a cell should be run asynchronously via a coroutine runner
@@ -3093,6 +3115,16 @@ class InteractiveShell(SingletonConfigurable):
             return False
         return _should_be_async(cell)
 
+    def error_before_exec(self, value):
+        """Wait does that say result.error_before_exec wait what the fuck"""
+        if not self.quiet:
+            self.execution_count += 1
+        result = self.get_result()
+        result.error_before_exec = value
+        self.last_execution_succeeded = False
+        self.last_execution_result = result
+        return result
+
     async def run_cell_async(
         self, raw_cell: str, store_history=False, silent=False, shell_futures=True
     ) -> ExecutionResult:
@@ -3103,6 +3135,7 @@ class InteractiveShell(SingletonConfigurable):
         .. versionchanged:: 7.11.0
 
             'silent' parameter now ignored because the 'quiet' attr exists.
+            Same with store_history.
 
         Parameters
         ----------
@@ -3126,61 +3159,50 @@ class InteractiveShell(SingletonConfigurable):
         result : :class:`ExecutionResult`
 
         """
-        info = ExecutionInfo(raw_cell, store_history, silent, shell_futures)
-        result = ExecutionResult(info)
-
         if (not raw_cell) or raw_cell.isspace():
             self.last_execution_succeeded = True
+            result = self.get_result()
             self.last_execution_result = result
             return result
-
-        if self.quiet:
-            store_history = False
-
-        if store_history:
-            result.execution_count = self.execution_count
-
-        def error_before_exec(value):
-            if store_history:
-                self.execution_count += 1
-            result.error_before_exec = value
-            self.last_execution_succeeded = False
-            self.last_execution_result = result
-            return result
+        # So we literally NEED result because later on we just depend on it being there
+        # so stop making it's existence conditional do you realize how many situations there
+        # are where you call this function and it doesn't work and crashes
+        # the application leaving it entirely able to run a line of code???????
+        else:
+            result = self.get_result(raw_cell)
 
         self.events.trigger("pre_execute")
-        if not silent:
-            self.events.trigger("pre_run_cell", info)
 
         # If any of our input transformation (input_transformer_manager or
         # prefilter_manager) raises an exception, we store it in this variable
         # so that we can display the error after logging the input and storing
         # it in the history.
+
+        # Don't we have an input transformation manager that should be taking
+        # care of this?
         try:
             cell = self.transform_cell(raw_cell)
         except Exception:
-            preprocessing_exc_tuple = sys.exc_info()
+            preprocessing_exc_tuple = self._get_exc_info()
             cell = raw_cell  # cell has to exist so it can be stored/logged
         else:
             preprocessing_exc_tuple = None
 
-        # Store raw and processed history
-        if store_history:
-            self.history_manager.store_inputs(self.execution_count, cell, raw_cell)
-        if not silent:
-            self.logger.log(cell, raw_cell)
+        self.logger.log(cell)
 
         # Display the exception if input processing failed.
         if preprocessing_exc_tuple is not None:
             self.showtraceback(preprocessing_exc_tuple)
             if store_history:
                 self.execution_count += 1
-            return error_before_exec(preprocessing_exc_tuple[1])
+            return self.error_before_exec(preprocessing_exc_tuple[1])
 
         # Our own compiler remembers the __future__ environment. If we want to
-        # run code with a separate __future__ environment, use the default
-        # compiler
+        # run code with a separate __future__ environment, use the default compiler
         # wth cachingcompiler is our compiler and that was true before i changed a line
+
+        # I feel like I'm gonna scream. When do we get to the part where we
+        # RUN THE CODE
         compiler = self.compile if shell_futures else CachingCompiler()
 
         _run_async = False
@@ -3193,6 +3215,11 @@ class InteractiveShell(SingletonConfigurable):
                 try:
                     if sys.version_info < (3, 8) and self.autoawait:
                         if _should_be_async(cell):
+
+                            # Who wants to figure out how to write a unittest for
+                            # a 200 line method with 2 nested contextmanagers,
+                            # a try catch and 2 if elses
+
                             # the code AST below will not be user code: we wrap it
                             # in an `async def`. This will likely make some AST
                             # transformer below miss some transform opportunity and
@@ -3219,7 +3246,7 @@ class InteractiveShell(SingletonConfigurable):
                 #     return error_before_exec(e)
                 except IndentationError as e:
                     self.showindentationerror()
-                    return error_before_exec(e)
+                    return self.error_before_exec(e)
                 except (
                     OverflowError,
                     SyntaxError,
@@ -3228,14 +3255,14 @@ class InteractiveShell(SingletonConfigurable):
                     MemoryError,
                 ) as e:
                     self.showsyntaxerror()
-                    return error_before_exec(e)
+                    return self.error_before_exec(e)
 
                 # Apply AST transformations
                 try:
                     code_ast = self.transform_ast(code_ast)
                 except InputRejected as e:
                     self.showtraceback()
-                    return error_before_exec(e)
+                    return self.error_before_exec(e)
 
                 # Give the displayhook a reference to our ExecutionResult so it
                 # can fill in the output value.
@@ -3243,8 +3270,20 @@ class InteractiveShell(SingletonConfigurable):
 
                 # Execute the user code
                 interactivity = "none" if silent else self.ast_node_interactivity
+
+                # You didn't even define it in all but one of the execution
+                # paths in your with/with/try/if/if
                 if _run_async:
                     interactivity = "async"
+
+                self.log.debug(dedent("""
+                InteractiveShell.run_cell_async:
+                code_ast: {},
+                cell_name: {},
+                result: {}""".format(code_ast, cell_name, result)))
+
+                if code_ast is None:
+                    return result
 
                 has_raised = await self.run_ast_nodes(
                     code_ast.body,
@@ -3326,10 +3365,8 @@ class InteractiveShell(SingletonConfigurable):
                 # don't unregister the transform.
                 raise
             except Exception:
-                warn(
-                    "AST transformer %r threw an error. It will be unregistered."
-                    % transformer
-                )
+                self.log.warn("AST transformer %r threw an error."
+                              "It will be unregistered." % transformer)
                 self.ast_transformers.remove(transformer)
 
         if self.ast_transformers:
@@ -3340,9 +3377,8 @@ class InteractiveShell(SingletonConfigurable):
         self,
         nodelist: ListType[AST],
         cell_name: str,
-        interactivity="last_expr",
-        compiler=compile,
         result=None,
+        *args, **kwargs,
     ):
         """Run a sequence of AST nodes.
 
@@ -3365,6 +3401,13 @@ class InteractiveShell(SingletonConfigurable):
             are not displayed) 'last_expr_or_assign' will run the last expression
             or the last assignment. Other values for this parameter will raise a
             ValueError.
+
+
+            Guys. Everybody take a knee. We need to stop and take a timeout.
+
+            There's a method in here that validates...a pre-existing trait?
+            I have to walk away from my computer I'm sorry this is too much.
+
         compiler : callable
             A function with the same interface as the built-in compile(), to turn
             the AST nodes into code objects. Default is the built-in compile().
@@ -3783,6 +3826,17 @@ class InteractiveShell(SingletonConfigurable):
                 tmp_file.write(data)
         return filename
 
+    def write_err(self, data):
+        """Write a string to the default error output.
+
+        Was deprecated but we use it in too many tests.
+        """
+        self.io.stderr.write(data)
+
+    def write(self, data):
+        """Delegate to code.InteractiveShell now."""
+        self.interpreter.write(data)
+
     def ask_yes_no(self, prompt, default=None, interrupt=None):
         """Checks self.quiet and then returns True if so.
 
@@ -3856,25 +3910,20 @@ class InteractiveShell(SingletonConfigurable):
         skip_encoding_cookie :
         search_ns :
         target : str
-            A string specifying code to retrieve. This will be tried
-            respectively as:
+            A string specifying code to retrieve. This will be tried respectively
+            as:
 
-            * ranges of input history (see %history for syntax),
+        * ranges of input history (see %history for syntax),
 
-            * url,
+        * url,
 
-            * corresponding .py file,
+        * corresponding .py file,
 
-            * filename
+        * filename
 
-            * An expression evaluating to a string or
-              :class:`IPython.core.macro.Macro` in the user namespace.
+        * An expression evaluating to a string or
+            :class:`IPython.core.macro.Macro` in the user namespace.
 
-        target : str
-          A string specifying code to retrieve. This will be tried respectively
-          as: ranges of input history (see %history for syntax), url,
-          corresponding .py file, filename, or an expression evaluating to a
-          string or Macro in the user namespace.
         raw : bool
             If true (default), retrieve raw history. Has no effect on the other
             retrieval mechanisms.
@@ -3897,8 +3946,6 @@ class InteractiveShell(SingletonConfigurable):
         In each case, ``.args[0]`` is a printable message.
 
         """
-        from IPython.core.macro import Macro
-
         code = self.extract_input_lines(target, raw=raw)  # Grab history
         if code:
             return code
@@ -3982,22 +4029,6 @@ class InteractiveShell(SingletonConfigurable):
         """
         self.history_manager.end_session()
 
-        if self.tempfiles is not None and self.tempdirs is not None:
-            self.cleanup_tmpdirs()
-
-        # Clear all user namespaces to release all references cleanly.
-        self.reset(new_session=False)
-
-        # Run user hooks
-        # todo: uncomment later. raising errs
-        # self.hooks.shutdown_hook()
-
-    def cleanup(self):
-        self.restore_sys_module_state()
-
-    def switch_doctest_mode(self, mode):
-        pass
-
     def cleanup_tmpdirs(self):
         # Cleanup all tempfiles and folders left around
         for tfile in self.tempfiles:
@@ -4016,16 +4047,18 @@ class InteractiveShell(SingletonConfigurable):
             except PermissionError:
                 print("PermissionError at exit.")
 
-    def write_err(self, data):
-        """Write a string to the default error output.
+        # Clear all user namespaces to release all references cleanly.
+        self.reset(new_session=False)
 
-        Was deprecated but we use it in too many tests.
-        """
-        self.io.stderr.write(data)
+        # Run user hooks
+        self.hooks.shutdown_hook()
 
-    def write(self, data):
-        """Delegate to code.InteractiveShell now."""
-        self.interpreter.write(data)
+    def cleanup(self):
+        self.restore_sys_module_state()
+
+    # Overridden in terminal subclass to change prompts
+    def switch_doctest_mode(self, mode):
+        pass
 
 
 class InteractiveShellABC(metaclass=abc.ABCMeta):

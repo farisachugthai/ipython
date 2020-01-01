@@ -349,7 +349,7 @@ class LoggerManager(LoggingConfigurable):
     # handler_level = CInt(30, help="Log level for the handler").tag(config=True)
 
     formatter_style = Unicode(
-        "%(highlevel)-20s %(name)s:%(filename)s:%(lineno)d %(message)s",
+        "%(filename)s:%(highlevel)-20s %(name)s:%(lineno)d %(message)s",
         help="How do log messages look?",
     ).tag(config=True)
 
@@ -396,10 +396,14 @@ class LoggerManager(LoggingConfigurable):
         handler_level = override_level or 30
         self.handler.setLevel(handler_level)
 
-    def init_formatter(self, override_style=None, formatter_style=None, time_format=None, **kwargs):
+    def init_formatter(
+        self, override_style=None, formatter_style=None, time_format=None, **kwargs
+    ):
         if override_style is not None:
             formatter_style = override_style
-        self.formatter = LevelFormatter(fmt=formatter_style, datefmt=time_format, **kwargs)
+        self.formatter = LevelFormatter(
+            fmt=formatter_style, datefmt=time_format, **kwargs
+        )
 
     def init_filter(self, **kwargs):
         self.handler.addFilter(logging.Filter(**kwargs))
