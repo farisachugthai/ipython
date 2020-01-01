@@ -1,3 +1,5 @@
+.. _exception:
+
 ==================
 Exception Handling
 ==================
@@ -5,8 +7,8 @@ Exception Handling
 .. module:: exception_handling
    :synopsis: How IPython handles expected and unexpected exceptions.
 
-`ultratb` and :mod:`cgitb`
-==========================
+:mod:`ultratb` and :mod:`cgitb`
+===============================
 
 .. currentmodule:: IPython.core.ultratb
 
@@ -42,7 +44,7 @@ Installation instructions for `ColorTB`::
 This can potentially be very slow, if you happen to have a huge data
 structure whose string representation is complex to compute.
 
-Your computer may appear to freeze for a while with cpu usage at 100%.
+Your computer may appear to freeze for a while with CPU usage at 100%.
 If this occurs, you can cancel the traceback with Ctrl-C
 (maybe hitting it more than once).
 
@@ -121,41 +123,20 @@ Nov 21, 2019:
 As of 2019, most of the patches shown here have been merged upstream to inspect.
 
 As a result, our patches have been removed, saving us from working with ~200
-LOC. The remaining module level functions might be able to be deleted.
+lines of code. The remaining module level functions might be able to be deleted.
 Still manually inspecting that the patches aren't present upstream.
 
 Dec 02, 2019:
 
 TODO: We'll need to start breaking up the method `structured_traceback`,
 a method that'll be particularly difficult to get into smaller pieces as it's
-overidden in every subclass that exists in this module.
+over-ridden in every subclass that exists in this module.
 
-A good start is implementing 3 methods in every TBTool.::
+A good start is implementing 3 methods in every `TBTool`.::
 
     def get_etype(self, etype):
         # A closure inside of structured_traceback because we need it's state
         if etype is None:
-            self.etype = sys.exc_info[0]
-            return self.etype
-
-You can set the return value to 'etype' so that it's locally bound and bound to
-the instance.
-
-So that'll hopefully protect us for how insanely inconsistent the
-variable handling here is.
-
-Cool. Now we can handle that tuple being None gracefully. Call that method
-for each of the 3 components. Check if all 3 are None and if so just bail.
-
-That'll take care of structured_traceback getting called incorrectly and
-doesn't provide the traceback info we want; in addition to handling a situation
-where it gets called when we didn't have a traceback.
-
-
-Inheritance diagram:
-
-.. inheritance-diagram:: IPython.core.ultratb
-   :parts: 3
 
 
 Exception Handling in the `InteractiveShell`
@@ -219,7 +200,7 @@ If it's **THAT** important to make sure it's a list then validate it.
 But handling the 'CustomTB' attribute and the 'custom_exceptions' attribute
 feels like 2 separate problems and should be 2 different methods.
 
-We assign to CustomTB to define an exception handler. Then we can separately
+We assign to `CustomTB` to define an exception handler. Then we can separately
 define what exceptions it catches, and that feels easier to test and validate
 then having a method with 3 nested closures inside of it.
 
@@ -262,15 +243,14 @@ So we need to validate that 'custom_exceptions' attribute that we assign to
 in 'set_custom_exc'.
 
 
-Excepthook
------------
+:data:`sys.excepthook`
+----------------------
 
 Be wary of what we change :data:`sys.excepthook` to.
 
-GUI frameworks like wxPython trap exceptions and call
-sys.excepthook themselves.  I guess this is a feature that
-enables them to keep running after exceptions that would
-otherwise kill their mainloop.
+GUI frameworks like wxPython trap exceptions and call `sys.excepthook`
+themselves.  I guess this is a feature that enables them to keep running after
+exceptions that would otherwise kill their mainloop.
 
 This is a bother for IPython which expects to catch all of the
 program exceptions with ``try except`` statement.
@@ -278,8 +258,8 @@ program exceptions with ``try except`` statement.
 Normally, IPython sets `sys.excepthook` to a CrashHandler instance, so if
 any app directly invokes `sys.excepthook`, it will look to the user like
 IPython crashed.  In order to work around this, we can disable the
-CrashHandler and replace it with this excepthook instead, which prints a
-regular traceback using our InteractiveTB.  In this fashion, apps which
+CrashHandler and replace it with this `sys.excepthook` instead, which prints a
+regular traceback using our `InteractiveTB`.  In this fashion, apps which
 call `sys.excepthook` will generate a regular-looking exception from
 IPython, and the CrashHandler will only be triggered by real IPython
 crashes.
@@ -293,7 +273,7 @@ to be true IPython errors.
    :func:`code.InteractiveInterpreter.showtraceback`
    which calls `sys.excepthook`.
 
-As a result I just deleted.:
+As a result I just deleted.::
 
    self.showtraceback((etype, value, tb), tb_offset=0)
 

@@ -14,7 +14,6 @@ from codecs import decode, encode
 from sys import getfilesystemencoding
 
 DEFAULT_ENCODING = getfilesystemencoding()
-# from .encoding import DEFAULT_ENCODING
 
 # keep reference to builtin_mod because the kernel overrides that value
 # to forward requests to a frontend.
@@ -62,7 +61,6 @@ def buffer_to_bytes(buf):
 
 
 def _modify_str_or_docstring(str_change_func):
-
     @functools.wraps(str_change_func)
     def wrapper(func_or_str):
         if isinstance(func_or_str, (str,)):
@@ -153,14 +151,16 @@ def u_format(s):
 def annotate(**kwargs):
     """Python 3 compatible function annotation for Python 2."""
     if not kwargs:
-        raise ValueError('annotations must be provided as keyword arguments')
+        raise ValueError("annotations must be provided as keyword arguments")
+
     def dec(f):
-        if hasattr(f, '__annotations__'):
+        if hasattr(f, "__annotations__"):
             for k, v in kwargs.items():
                 f.__annotations__[k] = v
         else:
             f.__annotations__ = kwargs
         return f
+
     return dec
 
 
@@ -185,9 +185,11 @@ def annotate(**kwargs):
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 def with_metaclass(meta, *bases):
     """Create a base class with a metaclass."""
     return meta("_NewBase", bases, {})
+
 
 PY2 = not PY3
 PYPY = platform.python_implementation() == "PyPy"

@@ -1,6 +1,9 @@
 """Terminal input and output prompts.
 
 TMK this is made configurable in the .ipapp module.
+
+This doesn't import traitlets anywhere wuttttt. I'm gonna start adding stuff
+so I know that we hooked into the shell attribute correctly at least.
 """
 import abc
 import sys
@@ -12,18 +15,25 @@ from pygments.token import Token
 from IPython.core.displayhook import DisplayHook
 from IPython.core.getipython import get_ipython
 
+from traitlets import Instance
+from traitlets.config.configurable import LoggingConfigurable
 from prompt_toolkit.formatted_text import fragment_list_width, PygmentsTokens
 from prompt_toolkit.shortcuts import print_formatted_text
 from prompt_toolkit.formatted_text import fragment_list_width, PygmentsTokens
 from prompt_toolkit.shortcuts import print_formatted_text
 from prompt_toolkit.enums import EditingMode
 
-class Prompts:
 
-    # This might be useful to hang onto.
-    old_displayhook = sys.displayhook
+class Prompts(LoggingConfigurable):
+    shell = Instance(
+        "IPython.core.interactiveshell.InteractiveShellABC", allow_none=True
+    )
 
     def __init__(self, shell=None):
+        super().__init__(shell=shell, config=None)
+        # This might be useful to hang onto.
+        old_displayhook = sys.displayhook
+
         self.shell = shell or get_ipython()
 
     @property
@@ -84,24 +94,12 @@ class Prompts:
         ]
 
     def rewrite_prompt_tokens(self):
-        """
-
-        Returns
-        -------
-
-        """
         width = self._width()
         return [
             (Token.Prompt, ("-" * (width - 2)) + "> "),
         ]
 
     def out_prompt_tokens(self):
-        """
-
-        Returns
-        -------
-
-        """
         return [
             (Token.OutPrompt, "Out["),
             (Token.OutPromptNum, str(self.shell.execution_count)),

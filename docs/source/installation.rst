@@ -20,11 +20,11 @@ IPython 6 requires Python ≥ 3.6. IPython 5.x can be installed on Python 2.
 Quick Install
 -------------
 
-With ``pip`` already installed :
+With ``pip`` already installed.:
 
 .. code-block:: bash
 
-    $ pip install ipython
+   $ pip install ipython
 
 This installs IPython as well as its dependencies.
 
@@ -48,7 +48,6 @@ IPython and most dependencies should be installed via :command:`pip`.
 In many scenarios, this is the simplest method of installing Python packages.
 More information about :mod:`pip` can be found on
 `its PyPI page <https://pip.pypa.io>`__.
-
 
 More general information about installing Python packages can be found in
 `Python's documentation <http://docs.python.org>`_.
@@ -83,7 +82,7 @@ The quickest way to get up and running with IPython is to install it with pip:
 
 .. code-block:: bash
 
-    $ pip install ipython
+   $ pip install ipython
 
 That's it.
 
@@ -97,10 +96,10 @@ grab the latest stable tarball of IPython `from PyPI
 
 .. code-block:: bash
 
-    tar -xzf ipython-5.1.0.tar.gz
-    cd ipython-5.1.0
-    # The [test] extra ensures test dependencies are installed too:
-    pip install .[test]
+   tar -xzf ipython-5.1.0.tar.gz
+   cd ipython-5.1.0
+   # The [test] extra ensures test dependencies are installed too:
+   pip install .[test]
 
 Do not invoke ``setup.py`` directly as this can have undesirable consequences
 for further upgrades. We do not recommend using ``easy_install`` either.
@@ -115,7 +114,8 @@ the IPython source tree:
 
 .. code-block:: bash
 
-    $ iptest
+   $ iptest
+
 
 .. _devinstall:
 
@@ -126,14 +126,13 @@ It is also possible to install the development version of IPython from our
 `Git <http://git-scm.com/>`_ source code repository.  To do this you will
 need to have Git installed on your system.
 
-
 Then do:
 
 .. code-block:: bash
 
-    $ git clone https://github.com/ipython/ipython.git
-    $ cd ipython
-    $ pip install -e .[test]
+   $ git clone https://github.com/ipython/ipython.git
+   $ cd ipython
+   $ pip install -e .[test]
 
 The :command:`pip` ``install -e .`` command allows users and developers to follow
 the development branch as it changes by creating links in the right places and
@@ -143,24 +142,24 @@ Then, if you want to update your IPython at any time, do:
 
 .. code-block:: bash
 
-    $ git pull
+   $ git pull
 
-If the dependencies or entrypoints have changed, you may have to run
+If the dependencies or entry points have changed, you may have to re-run the
+code below; however, this is infrequent.
 
 .. code-block:: bash
 
-    $ pip install -e .
+   $ pip install -e .
 
-again, but this is infrequent.
 
 .. _installation-troubleshooting:
 
 Troubleshooting
 ===============
 
-.. admonition::
+.. admonition:: This troubleshooting guide is old.
 
-   This troubleshooting guide is old.
+   It may need some updating.
 
 If you are encountering an error message you are likely trying to install or
 use IPython from source. You need to checkout the remote 5.x branch. If you are
@@ -168,14 +167,14 @@ using git the following should work
 
 .. code-block:: bash
 
-  $ git fetch origin
-  $ git checkout 5.x
+   $ git fetch origin
+   $ git checkout 5.x
 
 If you encounter this error message with a regular install of IPython, then you
 likely need to update your package manager, for example if you are using `pip`
 check the version of pip with::
 
-  $ pip --version
+   $ pip --version
 
 You will need to update pip to the version 9.0.1 or greater. If you are not using
 pip, please inquiry with the maintainers of the package for your package
@@ -183,11 +182,11 @@ manager.
 
 For more information see one of our blog posts:
 
-    https://blog.jupyter.org/release-of-ipython-5-0-8ce60b8d2e8e
+   https://blog.jupyter.org/release-of-ipython-5-0-8ce60b8d2e8e
 
 As well as the following Pull-Request for discussion:
 
-    https://github.com/ipython/ipython/pull/9900
+   https://github.com/ipython/ipython/pull/9900
 
 This error does also occur if you are invoking ``setup.py`` directly – which you
 should not – or are using ``easy_install`` If this is the case, use ``pip
@@ -196,15 +195,15 @@ of ``setup.py develop`` If you are depending on IPython as a dependency you may
 also want to have a conditional dependency on IPython depending on the Python
 version::
 
-    install_req = ['ipython']
-    if sys.version_info[0] < 3 and 'bdist_wheel' not in sys.argv:
-        install_req.remove('ipython')
-        install_req.append('ipython<6')
+   install_req = ['ipython']
+   if sys.version_info[0] < 3 and 'bdist_wheel' not in sys.argv:
+       install_req.remove('ipython')
+       install_req.append('ipython<6')
 
-    setup(
-        ...
-        install_requires=install_req
-    )
+   setup(
+       ...
+       install_requires=install_req
+   )
 
 
 Aside on setuptools
@@ -226,21 +225,18 @@ one can refer to the output of ``pip uninstall``.::
         leave behind no metadata to determine what files were installed.
       - Script wrappers installed by ``python setup.py develop``.**
 
-
-.. todo:: So it says this docs is about kernel installs.
-
-    It mostly seems like a wildly incomplete and out of date explanation of virtual environments?
-
-.. seealso::
-
-   :ref:`Installing Jupyter <jupyter:install>`
-     The IPython kernel is the Python execution backend for Jupyter.
-
 The Jupyter Notebook and other frontends automatically ensure that the
 IPython kernel is available. However, if you want to use a kernel with a
 different version of Python, or in a virtualenv or conda environment, you'll
 need to install that manually.
 
+.. todo:: So it says this docs is about kernel installs.
+
+    It mostly seems like a wildly incomplete and out of date explanation of virtual environments?
+
+.. seealso:: :ref:`Installing Jupyter <jupyter:install>`
+
+     The IPython kernel is the Python execution backend for Jupyter.
 
 Kernels for Python 2 and 3
 --------------------------
@@ -262,7 +258,6 @@ Or using conda, create a Python 2 environment::
     python -m ipykernel install --user
 
 .. note::
-
     IPython 6.0 stopped support for Python 2, so
     installing IPython on Python 2 will give you an older version (5.x series).
 
@@ -327,8 +322,8 @@ of the preferred location (see ``jupyter --paths`` command for more details):
 * in Jupyter's env (sys.prefix/share),
 * per-user (~/.local/share or ~/Library/share)
 
-If you want to edit the kernelspec before installing it, you can do so in two steps.
-First, ask IPython to write its spec to a temporary location:
+If you want to edit the kernelspec before installing it, you can do so in two
+steps. First, ask IPython to write its spec to a temporary location:
 
 .. sourcecode:: bash
 
@@ -341,3 +336,4 @@ into a place Jupyter will look):
 .. sourcecode:: bash
 
     jupyter kernelspec install /tmp/share/jupyter/kernels/python3
+

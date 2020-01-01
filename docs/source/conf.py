@@ -95,6 +95,7 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.doctest",
     "sphinx.ext.extlinks",
+    "sphinx.ext.inheritance_diagram",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",  # to preprocess docstrings
     "sphinx.ext.todo",
@@ -278,19 +279,20 @@ html_additional_pages = {
 # Output file base name for HTML help builder.
 htmlhelp_basename = "ipythondoc"
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
-                       'rpy2': ('https://rpy2.readthedocs.io/en/version_2.8.x/', None),
-                       'jupyterclient': ('https://jupyter-client.readthedocs.io/en/latest/', None),
-                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/latest/', None),
-                       'jupyter': ('https://jupyter.readthedocs.io/en/latest/', None),
-                       'jedi': ('https://jedi.readthedocs.io/en/latest/', None),
-                       'traitlets': ('https://traitlets.readthedocs.io/en/latest/', None),
-                       'ipykernel': ('https://ipykernel.readthedocs.io/en/latest/', None),
-                       'prompt_toolkit' : ('https://python-prompt-toolkit.readthedocs.io/en/stable/', None),
-                       'ipywidgets': ('https://ipywidgets.readthedocs.io/en/stable/', None),
-                       'ipyparallel': ('https://ipyparallel.readthedocs.io/en/stable/', None),
-                       'pip': ('https://pip.pypa.io/en/stable/', None)
-                      }
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "rpy2": ("https://rpy2.readthedocs.io/en/version_2.8.x/", None),
+    "jupyterclient": ("https://jupyter-client.readthedocs.io/en/latest/", None),
+    "ipyparallel": ("https://ipyparallel.readthedocs.io/en/latest/", None),
+    "jupyter": ("https://jupyter.readthedocs.io/en/latest/", None),
+    "jedi": ("https://jedi.readthedocs.io/en/latest/", None),
+    "traitlets": ("https://traitlets.readthedocs.io/en/latest/", None),
+    "ipykernel": ("https://ipykernel.readthedocs.io/en/latest/", None),
+    "prompt_toolkit": ("https://python-prompt-toolkit.readthedocs.io/en/stable/", None),
+    "ipywidgets": ("https://ipywidgets.readthedocs.io/en/stable/", None),
+    "ipyparallel": ("https://ipyparallel.readthedocs.io/en/stable/", None),
+    "pip": ("https://pip.pypa.io/en/stable/", None),
+}
 
 
 # Options for LaTeX output
@@ -502,8 +504,8 @@ def setup(app: "Sphinx") -> None:
     app.add_lexer("ipython", IPyLexer)
     app.add_lexer("ipython3", IPython3Lexer)
     app.add_lexer("numpy", NumPyLexer)
-    app.add_lexer('markdown', MarkdownLexer)
-    app.add_lexer('rst', RstLexer)
+    app.add_lexer("markdown", MarkdownLexer)
+    app.add_lexer("rst", RstLexer)
 
     fdesc = GroupedField(
         "param", label="Parameters", names=["param"], can_collapse=True

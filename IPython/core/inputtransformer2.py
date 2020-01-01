@@ -60,12 +60,12 @@ class PromptStripper:
     initial_re : regular expression, optional
         A regular expression matching only the initial prompt, but not continuation.
         If no initial expression is given, prompt_re will be used everywhere.
-        Used mainly for plain Python prompts (``>>>``), where the continuation prompt
-        ``...`` is a valid Python expression in Python 3, so shouldn't be stripped.
+        Used mainly for plain Python prompts.
+        :kbd:`>>>`, where the continuation prompt, :kbd:`...`,
+        is a valid Python expression in Python 3, so shouldn't be stripped.
 
-    If initial_re and prompt_re differ,
-    only initial_re will be tested against the first line.
-    If any prompt is found on the first two lines,
+    If initial_re and prompt_re differ, only initial_re will be tested
+    against the first line. If any prompt is found on the first two lines,
     prompts will be stripped from the rest of the block.
     """
 
@@ -85,6 +85,10 @@ class PromptStripper:
             return self._strip(lines)
         return lines
 
+    def call(self, lines):
+        # For visibility.
+        return self.__call__(lines)
+
 
 classic_prompt = PromptStripper(
     prompt_re=re.compile(r"^(>>>|[.][.][.])( |$)"), initial_re=re.compile(r"^>>>( |$)")
@@ -94,16 +98,6 @@ ipython_prompt = PromptStripper(re.compile(r"^(In \[\d+\]: |\s*[.]{3,}: ?)"))
 
 
 def cell_magic(lines):
-    """
-
-    Parameters
-    ----------
-    lines :
-
-    Returns
-    -------
-
-    """
     if not lines or not lines[0].startswith("%%"):
         return lines
     if re.match(r"%%\w+[?]", lines[0]):
@@ -149,8 +143,8 @@ def find_end_of_continued_line(lines, start_line: int):
 def assemble_continued_line(lines, start: Tuple[int, int], end_line: int):
     r"""Assemble a single line from multiple continued line pieces
 
-    Continued lines are lines ending in ``\``, and the line following the last
-    ``\`` in the block.
+    Continued lines are lines ending in :kbd:`\`, and the line following the last
+    :kbd:`\` in the block.
 
     For example, this code continues over multiple lines::
 
@@ -166,7 +160,7 @@ def assemble_continued_line(lines, start: Tuple[int, int], end_line: int):
 
     This uses 0-indexed line numbers. *start* is (lineno, colno).
 
-    Used to allow ``%magic`` and ``!system`` commands to be continued over
+    Used to allow `%magic` and ``!system`` commands to be continued over
     multiple lines.
     """
     parts = [lines[start[0]][start[1] :]] + lines[start[0] + 1 : end_line + 1]
@@ -188,29 +182,26 @@ class TokenTransformBase:
     syntax. After each transformation, tokens are regenerated to find the next
     piece of special syntax.
 
-    Subclasses need to implement one class method (find)
-    and one regular method (transform).
+    Subclasses need to implement one class method :meth:`find`
+    and one regular method :meth:`transform`.
 
     The priority attribute can select which transformation to apply if multiple
     transformers match in the same place. Lower numbers have higher priority.
-    This allows "%magic?" to be turned into a help call rather than a magic call.
+    This allows `%magic`\? to be turned into a help call rather than a magic call.
+
+    .. todo:: Have this subclass abc.ABC?
+
     """
 
     # Lower numbers -> higher priority (for matches in the same location)
     priority = 10
 
-    def sortby(self):
-        """
-
-        Returns
-        -------
-
-        """
-        return self.start_line, self.start_col, self.priority
-
     def __init__(self, start):
         self.start_line = start[0] - 1  # Shift from 1-index to 0-index
         self.start_col = start[1]
+
+    def sortby(self):
+        return self.start_line, self.start_col, self.priority
 
     @classmethod
     def find(cls, tokens_by_line):

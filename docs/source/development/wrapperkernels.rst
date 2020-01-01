@@ -1,3 +1,6 @@
+.. _wrapperkernels:
+
+====================================
 Making simple Python wrapper kernels
 ====================================
 
@@ -44,25 +47,26 @@ wrappers, like `octave_kernel <https://pypi.python.org/pypi/octave_kernel>`_, or
 languages where it's impractical to implement the communications machinery, like
 `bash_kernel <https://pypi.python.org/pypi/bash_kernel>`_. Native kernels are
 likely to be better maintained by the community using them, like
-`IJulia <https://github.com/JuliaLang/IJulia.jl>`_ or `IHaskell <https://github.com/gibiansky/IHaskell>`_.
+`IJulia <https://github.com/JuliaLang/IJulia.jl>`_ or `IHaskell
+<https://github.com/gibiansky/IHaskell>`_.
 
 .. seealso::
-
    :ref:`jupyterclient:kernels`
 
    :doc:`wrapperkernels`
 
 You can now re-use the kernel machinery in IPython to easily make new kernels.
 This is useful for languages that have Python bindings, such as `Octave
-<http://www.gnu.org/software/octave/>`_ (via
-`Oct2Py <http://blink1073.github.io/oct2py/>`_), or languages
-where the REPL can be controlled in a tty using `pexpect <http://pexpect.readthedocs.io/en/latest/>`_,
+<http://www.gnu.org/software/octave/>`_ (via `Oct2Py
+<http://blink1073.github.io/oct2py/>`_), or languages where the REPL can be
+controlled in a tty using `pexpect <http://pexpect.readthedocs.io/en/latest/>`_,
 such as bash.
 
-.. seealso::
-
-   `bash_kernel <https://github.com/takluyver/bash_kernel>`_
-     A simple kernel for bash, written using this machinery
+.. sorry to comment it out but there are 2 references to the bash kernel
+   with different urls and sphinx doesn't like it.
+.. .. seealso::
+..    `bash_kernel <https://github.com/takluyver/bash_kernel>`_
+..       A simple kernel for bash, written using this machinery.
 
 Required steps
 --------------
@@ -111,7 +115,7 @@ following methods and attributes:
      Your method should return a dict containing the fields described in
      :ref:`execution_results`. To display output, it can send messages
      using :meth:`~ipykernel.kernelbase.Kernel.send_response`.
-     See :doc:`messaging` for details of the different message types.
+     See :doc:`jupyterclient:messaging` for details of the different message types.
 
 To launch your kernel, add this at the end of your module::
 
@@ -122,7 +126,9 @@ To launch your kernel, add this at the end of your module::
 Example
 -------
 
-``echokernel.py`` will simply echo any input it's given to stdout::
+``echokernel.py`` will simply echo any input it's given to stdout
+
+.. code-block:: ipython
 
     from ipykernel.kernelbase import Kernel
 
@@ -151,7 +157,7 @@ Example
         from ipykernel.kernelapp import IPKernelApp
         IPKernelApp.launch_instance(kernel_class=EchoKernel)
 
-Here's the Kernel spec ``kernel.json`` file for this::
+Here's the Kernel spec ``kernel.json`` file for this.::
 
     {"argv":["python","-m","echokernel", "-f", "{connection_file}"],
      "display_name":"Echo"
@@ -163,7 +169,7 @@ Optional steps
 
 You can override a number of other methods to improve the functionality of your
 kernel. All of these methods should return a dictionary as described in the
-relevant section of the :doc:`messaging spec <messaging>`.
+relevant section of the :ref:`messaging spec <jupyterclient:messaging>`.
 
 .. class:: MyKernel
 
