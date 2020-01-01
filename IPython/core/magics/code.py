@@ -163,11 +163,11 @@ def strip_initial_indent(lines):
     if indent_match:
         # First line was indented
         indent = indent_match.group()
-        yield first_line[len(indent):]
+        yield first_line[len(indent) :]
 
         for line in it:
             if line.startswith(indent):
-                yield line[len(indent):]
+                yield line[len(indent) :]
             else:
                 # Less indented than the first line - stop dedenting
                 yield line
@@ -723,18 +723,14 @@ class CodeMagics(Magics):
         opts, args = self.parse_options(parameter_s, "prxn:")
 
         try:
-            filename, lineno, is_temp = self._find_edit_target(
-                args, opts, last_call
-            )
+            filename, lineno, is_temp = self._find_edit_target(args, opts, last_call)
         except MacroToEdit as e:
             self._edit_macro(args, e.args[0])
             return
         except InteractivelyDefined as e:
             print("Editing In[%i]" % e.index)
             args = str(e.index)
-            filename, lineno, is_temp = self._find_edit_target(
-                args, opts, last_call
-            )
+            filename, lineno, is_temp = self._find_edit_target(args, opts, last_call)
         if filename is None:
             # nothing was found, warnings have already been issued,
             # just give up.

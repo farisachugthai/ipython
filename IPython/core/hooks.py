@@ -34,6 +34,7 @@ __all__ = [
     "late_startup_hook",
     "show_in_pager",
     "pre_prompt_hook",
+    "deprecated",
     "pre_run_code_hook",
 ]
 
@@ -156,3 +157,8 @@ def pre_prompt_hook(self, *args, **kwargs):
 def pre_run_code_hook(self, *args, **kwargs):
     """Executed before running the (prefiltered) code in IPython."""
     return None
+
+
+def deprecated(self, *args, **kwargs):
+    """This feels silly don't you think?"""
+    pass

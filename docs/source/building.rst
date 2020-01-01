@@ -194,3 +194,18 @@ well advertised.
      .. autoclass :: nose.plugins.foo.Pluggy
         :members:
 
+
+Tips
+----
+
+On usage in Vim:
+
+.. code-block:: vim
+
+   py3 from nose.core import run; run(vim.current.buffer, argv=[''])
+
+Should work on both vim and neovim so long as python3 is setup correctly,
+nose is installed in the current env, and the legacy python interface is
+functional.
+
+'argv' among many other keyword-parameters can be customized as desired.

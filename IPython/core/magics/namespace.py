@@ -104,14 +104,14 @@ class NamespaceMagics(Magics):
         self.shell._inspect("pdef", parameter_s, namespaces)
 
     @line_magic
-    def pdoc(self, parameter_s="", namespaces=None):
+    def pdoc(self, parameter_s="", *args, **kwargs):
         """Print the docstring for an object.
 
         If the given object is a class, it will print both the class and the
         constructor docstrings.
 
         """
-        self.shell._inspect("pdoc", parameter_s, namespaces)
+        self.shell._inspect("pdoc", parameter_s, [locals(), globals()])
 
     @line_magic
     def psource(self, parameter_s="", namespaces=None):

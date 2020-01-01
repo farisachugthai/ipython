@@ -32,6 +32,7 @@ from IPython.core.magic import (
     cell_magic,
     line_cell_magic,
     line_magic,
+    magic_escapes,
     magics_class,
     needs_local_scope,
     no_var_expand,
@@ -563,6 +564,15 @@ python-profiler package from non-free."""
         else:
             self.shell.showtraceback()
 
+    @magic_arguments.magic_arguments()
+    @magic_arguments.argument("-i", help="Foo")
+    @magic_arguments.argument("-p", help="Profile")
+    @magic_arguments.argument("-m", help="Module")
+    @magic_arguments.argument("-t", help="Timeit")
+    @line_magic
+    def run2(self):
+        args = magic_arguments.parse_argstring(self.run2, line)
+
     @line_magic
     def run(self, parameter_s="", runner=None, file_finder=get_py_filename):
         """Run the named file inside IPython as a program.
@@ -847,9 +857,6 @@ python-profiler package from non-free."""
                     if "m" in opts:
 
                         def run():
-                            """
-
-                            """
                             self.shell.safe_run_module(modulename, prog_ns)
 
                     else:

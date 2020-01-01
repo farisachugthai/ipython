@@ -197,7 +197,7 @@ class BasicMagics(Magics):
         params_str = "" if params is None else " " + params
 
         if args.line:
-            self.self.shell.magics_manager.register_alias(name, target, "line", params)
+            self.shell.magics_manager.register_alias(name, target, "line", params)
             print(
                 "Created `%s%s` as an alias for `%s%s%s`."
                 % (
@@ -210,7 +210,7 @@ class BasicMagics(Magics):
             )
 
         if args.cell:
-            self.self.shell.magics_manager.register_alias(name, target, "cell", params)
+            self.shell.magics_manager.register_alias(name, target, "cell", params)
             print(
                 "Created `%s%s` as an alias for `%s%s%s`."
                 % (

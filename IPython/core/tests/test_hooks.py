@@ -9,6 +9,7 @@ import nose.tools as nt
 
 from IPython.core.error import TryNext
 from IPython.core.hooks import CommandChainDispatcher
+from IPython.core.getipython import get_ipython
 
 # -----------------------------------------------------------------------------
 # Local utilities
@@ -19,10 +20,6 @@ from IPython.core.hooks import CommandChainDispatcher
 
 
 class Okay(object):
-    """
-
-    """
-
     def __init__(self, message):
         self.message = message
         self.called = False
@@ -33,9 +30,6 @@ class Okay(object):
 
 
 class Fail(object):
-    """
-
-    """
 
     def __init__(self, message):
         self.message = message
@@ -98,3 +92,15 @@ def test_command_chain_dispatcher_eq_priority():
     okay2 = Okay("okay2")
     dp = CommandChainDispatcher([(1, okay1)])
     dp.add(okay2, 1)
+
+
+def test_hooks_that_make_no_sense():
+    # Because I have no idea what'll happen
+    shell = get_ipython()
+    if shell is None:
+        return
+
+    # no nose because i don't know if this won't raise an error
+    assert shell.set_hook("show_in_pager", page.as_hook(page.display_page), 110)
+
+    assert shell.set_hook("show_in_pager", page.as_hook(page.display_page), -10)

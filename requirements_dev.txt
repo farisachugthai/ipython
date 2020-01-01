@@ -1,3 +1,4 @@
+-e .
 Pygments
 backcall
 codecov
@@ -5,11 +6,9 @@ colorama
 coverage
 curio
 decorator
-docrepr
 docutils
 ipykernel
 ipyparallel
-ipython-genutils
 jedi
 matplotlib
 nbformat
@@ -20,7 +19,6 @@ pexpect
 pickleshare
 pillow
 pip
-prompt-toolkit
 ptyprocess
 pyparsing
 pytest

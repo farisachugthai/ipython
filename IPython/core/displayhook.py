@@ -349,7 +349,6 @@ class DisplayHook(LoggingConfigurable):
 
 
 class CapturingDisplayHook:
-
     def __init__(self, shell, outputs=None):
         self.shell = shell
         if outputs is None:
