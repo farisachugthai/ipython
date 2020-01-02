@@ -71,7 +71,7 @@ class BuiltinTrap(Configurable):
         return False
 
     def __repr__(self):
-        return "".format(self.__class__.__name__)
+        return "<{!r}:> {!r}".format(self.__class__.__name__, self.location)
 
     def add_builtin(self, key, value):
         """Add a builtin and save the original."""

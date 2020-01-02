@@ -319,6 +319,30 @@ class LoggerManager(LoggingConfigurable):
 
     """
 
+    # The below is from interactiveshell because why was it there.
+    # logstart = Bool(
+    #     False,
+    #     help="""
+    #     Start logging to the default log file in overwrite mode.
+    #     Use `logappend` to specify a log file to **append** logs to.
+    #     """,
+    # ).tag(config=True)
+
+    # logfile = Unicode(
+    #     "",
+    #     help="""
+    #     The name of the logfile to use.
+    #     """,
+    # ).tag(config=True)
+
+    # logappend = Unicode(
+    #     "",
+    #     help="""
+    #     Start logging to the given file in append mode.
+    #     Use `logfile` to specify a log file to **overwrite** logs to.
+    #     """,
+    # ).tag(config=True)
+
     # could do this. make an enum class? hm. idk.
     # logmode =
     log_raw_input = Bool(False, help="Whether to log raw or processed input").tag(
@@ -392,7 +416,7 @@ class LoggerManager(LoggingConfigurable):
         self.logger_instance.setLevel(self.logger_log_level)
 
     def init_handler(self, override_level=None, **kwargs):
-        self.handler = logging.StreamHandler(io.StringIO, **kwargs)
+        self.handler = logging.StreamHandler(io.StringIO(), **kwargs)
         handler_level = override_level or 30
         self.handler.setLevel(handler_level)
 
@@ -419,6 +443,9 @@ class LoggerManager(LoggingConfigurable):
             raise TraitError("invalid log mode %s given" % mode)
         self.logmode = mode
 
+    def logappend(self):
+        return self.append()
+
     def append(self):
         """Called when logmode is set to append."""
         return codecs.open(self.logfname, "a", encoding="utf-8")
@@ -433,7 +460,7 @@ class LoggerManager(LoggingConfigurable):
         """
         if self.logfname.is_file():
             target = self.logfname / Path(backupext)
-            self.logfname.rename(backup_logname)
+            self.logfname.rename(target)
         return codecs.open(self.logfname, "a", encoding="utf-8")
 
     def global_mode(self):
@@ -453,20 +480,20 @@ class LoggerManager(LoggingConfigurable):
 
     @output_file.setter
     def set_output_file(self):
-        if logmode == "append":
+        if self.logmode == "append":
             self.logfile = self.append()
 
-        elif logmode == "backup":
+        elif self.logmode == "backup":
             self.logfile = self.backup()
 
-        elif logmode == "global":  # can't name a method global
+        elif self.logmode == "global":  # can't name a method global
             self.logfile = self.global_mode()
 
-        elif logmode == "over":
+        elif self.logmode == "over":
             self.logfile = self.over()
 
         # TODO
-        elif logmode == "rotate":
+        elif self.logmode == "rotate":
             if self.logfname.is_file():
                 if Path(self.logfname / ".001~").is_file():
                     # Don't make the logic too complicated. I've set this to rotate and got
@@ -478,16 +505,17 @@ class LoggerManager(LoggingConfigurable):
 
         return self.logfile
 
-    def logstart(self):
+    @classmethod
+    def logstart(cls):
         """Generate a new log-file with a default header."""
-        if self.logfile is not None:
-            self.shell.warn("Logging already started in this session!")
-        self.logfile = self.set_outputfile()
+        if cls.logfile is not None:
+            cls.shell.warn("Logging already started in this session!")
+        cls.logfile = self.set_outputfile()
 
-        if logmode != "append":
-            self.logfile.write(self.loghead)
-        self.logfile.flush()
-        self.log_active = True
+        if cls.logmode != "append":
+            cls.logfile.write(self.loghead)
+        cls.logfile.flush()
+        cls.log_active = True
 
     def run(self):
         self.init_logger()

@@ -358,29 +358,6 @@ class InteractiveShell(SingletonConfigurable):
         "own input transformations."
     )
 
-    logstart = Bool(
-        False,
-        help="""
-        Start logging to the default log file in overwrite mode.
-        Use `logappend` to specify a log file to **append** logs to.
-        """,
-    ).tag(config=True)
-
-    logfile = Unicode(
-        "",
-        help="""
-        The name of the logfile to use.
-        """,
-    ).tag(config=True)
-
-    logappend = Unicode(
-        "",
-        help="""
-        Start logging to the given file in append mode.
-        Use `logfile` to specify a log file to **overwrite** logs to.
-        """,
-    ).tag(config=True)
-
     object_info_string_level = Enum((0, 1, 2), default_value=0,).tag(config=True)
 
     pdb = Bool(
@@ -597,7 +574,7 @@ class InteractiveShell(SingletonConfigurable):
         self.init_displayhook()
         self.init_magics()
         self.init_alias()
-        self.init_logstart()
+        # self.init_logstart()
         self.init_pdb()
         self.init_extension_manager()
         self.init_payload()
@@ -752,14 +729,23 @@ class InteractiveShell(SingletonConfigurable):
     def init_logger(self):
         self.logger = LoggerManager(logfname="ipython_log.py", logmode="rotate")
 
-    def init_logstart(self):
-        """Initialize logging in case it was requested at the command line."""
-        if self.logappend:
-            self.magic("logstart %s append" % self.logappend)
-        elif self.logfile:
-            self.magic("logstart %s" % self.logfile)
-        elif self.logstart:
-            self.magic("logstart")
+    def logappend(self):
+        return self.logger.logappend()
+
+    def logstart(self):
+        """logger.logstart is now a classmethod so that'll return an instance. Sweet!"""
+        return self.logger.logstart()
+
+#     def init_logstart(self):
+#         """Initialize logging in case it was requested at the command line.
+
+#         .. todo:: We deprecated self.magic get rid of it's usage here.
+#         """
+        # if self.logappend:
+        #     self.magic("logstart %s append" % self.logappend)
+        # elif self.logstart:
+        #     self.logger.logstart()
+        #     # self.magic("logstart %s")
 
     def init_deprecation_warnings(self):
         """Register default filter for deprecation warning.
@@ -3115,16 +3101,6 @@ class InteractiveShell(SingletonConfigurable):
             return False
         return _should_be_async(cell)
 
-    def error_before_exec(self, value):
-        """Wait does that say result.error_before_exec wait what the fuck"""
-        if not self.quiet:
-            self.execution_count += 1
-        result = self.get_result()
-        result.error_before_exec = value
-        self.last_execution_succeeded = False
-        self.last_execution_result = result
-        return result
-
     async def run_cell_async(
         self, raw_cell: str, store_history=False, silent=False, shell_futures=True
     ) -> ExecutionResult:
@@ -3169,8 +3145,9 @@ class InteractiveShell(SingletonConfigurable):
         # are where you call this function and it doesn't work and crashes
         # the application leaving it entirely able to run a line of code???????
         else:
-            result = self.get_result(raw_cell)
+            result =  self.get_result(raw_cell)
 
+        self.log.debug('result: {}'.format(result))
         self.events.trigger("pre_execute")
 
         # If any of our input transformation (input_transformer_manager or
@@ -3254,33 +3231,22 @@ class InteractiveShell(SingletonConfigurable):
                     TypeError,
                     MemoryError,
                 ) as e:
-                    self.showsyntaxerror()
-                    return self.error_before_exec(e)
+                    raise SyntaxError(e)
 
                 # Apply AST transformations
                 try:
                     code_ast = self.transform_ast(code_ast)
                 except InputRejected as e:
-                    self.showtraceback()
-                    return self.error_before_exec(e)
+                    self.showtraceback(e)
 
                 # Give the displayhook a reference to our ExecutionResult so it
                 # can fill in the output value.
                 self.displayhook.exec_result = result
 
-                # Execute the user code
-                interactivity = "none" if silent else self.ast_node_interactivity
-
                 # You didn't even define it in all but one of the execution
                 # paths in your with/with/try/if/if
                 if _run_async:
-                    interactivity = "async"
-
-                self.log.debug(dedent("""
-                InteractiveShell.run_cell_async:
-                code_ast: {},
-                cell_name: {},
-                result: {}""".format(code_ast, cell_name, result)))
+                    self.ast_node_interactivity = "async"
 
                 if code_ast is None:
                     return result
@@ -3288,7 +3254,7 @@ class InteractiveShell(SingletonConfigurable):
                 has_raised = await self.run_ast_nodes(
                     code_ast.body,
                     cell_name,
-                    interactivity=interactivity,
+                    interactivity=self.ast_node_interactivity,
                     compiler=compiler,
                     result=result,
                 )

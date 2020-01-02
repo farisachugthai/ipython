@@ -1,6 +1,14 @@
+import code
+import reprlib
 import sys
 import types
 from types import CodeType, FunctionType
+
+from traitlets.traitlets import Bool, Instance
+from traitlets.config import LoggingConfigurable
+
+if sys.version_info < (3, 7):
+    from IPython.core.error import ModuleNotFoundError
 
 
 def get_cells(fname):
@@ -26,7 +34,10 @@ def get_cells(fname):
     if getattr(fname, "read", None):
         yield fname.read()
     if fname.endswith(".ipynb"):
-        from nbformat import read
+        try:
+            from nbformat import read
+        except (ImportError, ModuleNotFoundError):
+            raise
 
         nb = read(fname, as_version=4)
         if not nb.cells:
@@ -96,54 +107,66 @@ def softspace(file, newvalue):
 
 
 def no_op(*a, **kw):
-    """
-
-    Parameters
-    ----------
-    a :
-    kw :
-    """
     pass
 
 
 class DummyMod:
     """A dummy module used for IPython's interactive module when
-    a namespace must be assigned to the module's __dict__."""
+    a namespace must be assigned to the module's __dict__.
+
+    .. todo:: collections.NamedTuple?
+    """
 
     __spec__ = None
 
 
-class ExecutionInfo:
+class ExecutionInfo(LoggingConfigurable):
     """The arguments used for a call to :meth:`InteractiveShell.run_cell`.
 
     Stores information about what is going to happen.
 
     """
 
-    def __init__(
-        self, raw_cell=None, store_history=False, silent=False, shell_futures=True
-    ):
-        self.raw_cell = raw_cell
-        self.store_history = store_history
-        self.silent = silent
-        self.shell_futures = shell_futures
+    store_history = Bool(True, help="Whether to log ExecutionInfo or not.").tag(
+        config=True
+    )
 
-    def __repr__(self):
-        name = self.__class__.__qualname__
-        raw_cell = (
-            (self.raw_cell[:50] + "..") if len(self.raw_cell) > 50 else self.raw_cell
-        )
-        return (
-            '<%s object at %x, raw_cell="%s" store_history=%s silent=%s shell_futures=%s>'
-            % (
-                name,
+    shell = Instance("IPython.core.interactiveshell.InteractiveShellABC")
+
+    silent = Bool(False, help="Stream log info to stdout as well?").tag(config=True)
+
+    shell_futures = Bool(
+        True,
+        help="I've been working on this for too long to have to say I have no idea.",
+    ).tag(config=True)
+
+    def __init__(self, raw_cell, *args, **kwargs):
+        self.raw_cell = raw_cell
+        self.truncated_cell = reprlib.Repr().repr(self.raw_cell)
+        super().__init__(**kwargs)
+
+    def repr(self):
+        """Public method for the repr.
+
+        Just to make it easier to see in a ``ExecutionResult?`` in the REPL.
+        Also let's embrance string formatting!
+
+        """
+        # TODO: Check the unittests and then start deleting all the BS out of this.
+        return ("""
+        <{} object at {}
+        raw_cell={}
+        store_history={} silent={} shell_futures={}>""".format(
+                self.__class__.__name__,
                 id(self),
-                raw_cell,
+                self.truncated_cell,
                 self.store_history,
                 self.silent,
                 self.shell_futures,
-            )
-        )
+                ))
+
+    def __repr__(self):
+        return self.repr()
 
 
 class ExecutionResult:
@@ -175,17 +198,24 @@ class ExecutionResult:
     error_in_exec = None
     result = None
 
-    def __init__(self, info=None):
+    def __init__(self, info=None, *args, **kwargs):
         self.info = info
+
+    def error_before_exec(self, value):
+        """Wait does that say result.error_before_exec wait what the fuck.
+
+        Moved this over here. Idk if I was supposed to. Check soon.
+        """
+        if not self.quiet:
+            self.execution_count += 1
+        result = self.get_result()
+        result.error_before_exec = value
+        self.last_execution_succeeded = False
+        self.last_execution_result = result
+        return result
 
     @property
     def success(self):
-        """
-
-        Returns
-        -------
-
-        """
         return (self.error_before_exec is None) and (self.error_in_exec is None)
 
     def raise_error(self):
@@ -195,17 +225,16 @@ class ExecutionResult:
         if self.error_in_exec is not None:
             raise self.error_in_exec
 
-    def __repr__(self):
-        name = self.__class__.__qualname__
-        return (
-            "<%s object at %x, execution_count=%s error_before_exec=%s error_in_exec=%s info=%s result=%s>"
-            % (
-                name,
-                id(self),
-                self.execution_count,
-                self.error_before_exec,
-                self.error_in_exec,
-                repr(self.info),
-                repr(self.result),
-            )
-        )
+    # def __repr__(self):
+    #     return (
+    #         "<%s object at %x, execution_count=%s error_before_exec=%s error_in_exec=%s info=%s result=%s>"
+    #         % (
+    #             self.__class__.__qualname__,
+    #             id(self),
+    #             self.execution_count,
+    #             self.error_before_exec,
+    #             self.error_in_exec,
+    #             self.info,
+    #             self.result,
+    #         )
+    #     )

@@ -63,7 +63,11 @@ class ProfileDir(LoggingConfigurable):
     # I guess i did this part wrong
     # config = Instance(klass=Config, allow_none=True)
 
-    def __init__(self, location=None, config=None, **kwargs):
+    shell = Instance(
+        "IPython.core.interactiveshell.InteractiveShellABC", allow_none=True
+    )
+
+    def __init__(self, location=None, **kwargs):
         """There was no init for this but there's 4 classmethods.
 
         All of them return the same signature so why not formalize it?
@@ -71,10 +75,7 @@ class ProfileDir(LoggingConfigurable):
 
         """
         self.location = location
-        self.config = config
-        # if self.config is None:
-        #     self.config = Config()
-        super().__init__(**kwargs)
+        super().__init__(shell=self.shell, **kwargs)
 
     def __repr__(self):
         return "<{!r}:> {!r}".format(self.__class__.__name__, self.location)
