@@ -3049,7 +3049,6 @@ class InteractiveShell(SingletonConfigurable):
         -------
         result : :class:`ExecutionResult`
         """
-        breakpoint()
         result = None
         try:
             result = self._run_cell(raw_cell, store_history, silent, shell_futures)

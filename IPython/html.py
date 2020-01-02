@@ -4,6 +4,8 @@ Shim to maintain backwards compatibility with old IPython.html imports.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+from html import *
+from os import devnull
 import sys
 from warnings import warn
 
@@ -24,5 +26,11 @@ _html.widgets = _widgets
 sys.modules['IPython.html'] = _html
 
 if __name__ == '__main__':
-    from notebook import notebookapp as app
-    app.launch_new_instance()
+    try:
+        from notebook import notebookapp as app
+        app.launch_new_instance()
+    except ImportError as e:
+        devnull(e)
+        sys.exit("IPython HTML can't import everything. Ensure everything's installed correctly.")
+    except:
+        raise

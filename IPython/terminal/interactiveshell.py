@@ -442,7 +442,9 @@ class TerminalInteractiveShell(InteractiveShell):
 
         return options
 
-    def prompt_for_code(self):
+    def prompt_for_code(self, old_loop=None):
+        if old_loop is None:
+            self.log.warning("asyncio didn't return anything on get_event_loop")
         if self.rl_next_input:
             default = self.rl_next_input
             self.rl_next_input = None
@@ -455,13 +457,6 @@ class TerminalInteractiveShell(InteractiveShell):
         # If we don't do this, people could spawn coroutine with a
         # while/true inside which will freeze the prompt.
 
-        try:
-            old_loop = asyncio.get_event_loop()
-        except RuntimeError:
-            # This happens when the user used `asyncio.run()`.
-            old_loop = None
-
-        asyncio.set_event_loop(self.pt_loop)
         try:
             with patch_stdout(raw=True):
                 text = self.pt_app.prompt(
@@ -534,11 +529,12 @@ class TerminalInteractiveShell(InteractiveShell):
             warn('interact `display_banner` argument is deprecated since IPython 5.0. Call `show_banner()` if needed.', DeprecationWarning, stacklevel=2)
 
         self.keep_running = True
+        old_loop = self._pre_prompt_for_code()
         while self.keep_running:
             print(self.separate_in, end='')
 
             try:
-                code = self.prompt_for_code()
+                code = self.prompt_for_code(old_loop)
             except EOFError:
                 if (not self.confirm_exit) \
                         or self.ask_yes_no('Do you really want to exit ([y]/n)?','y','n'):
@@ -547,6 +543,16 @@ class TerminalInteractiveShell(InteractiveShell):
             else:
                 if code:
                     self.run_cell(code, store_history=True)
+
+    def _pre_prompt_for_code(self):
+        # It just didn't seem necessary to run this before every single cell
+        try:
+            old_loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # This happens when the user used `asyncio.run()`.
+            old_loop = None
+            asyncio.set_event_loop(self.pt_loop)
+        return old_loop
 
     def mainloop(self, display_banner=DISPLAY_BANNER_DEPRECATED):
         # An extra layer of protection in case someone mashing Ctrl-C breaks
