@@ -18,7 +18,6 @@ from textwrap import dedent, indent
 
 
 class _AsyncIORunner:
-
     def __call__(self, coro):
         """
         Handler for asyncio autoawait
@@ -28,7 +27,8 @@ class _AsyncIORunner:
         return asyncio.get_event_loop().run_until_complete(coro)
 
     def __str__(self):
-        return 'asyncio'
+        return "asyncio"
+
 
 _asyncio_runner = _AsyncIORunner()
 
@@ -98,9 +98,10 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
     the implementation involves wrapping the repl in an async function, it
     is erroneously allowed (e.g. yield or return at the top level)
     """
+
     def __init__(self):
-        if sys.version_info >= (3,8):
-            raise ValueError('DEPRECATED in Python 3.8+')
+        if sys.version_info >= (3, 8):
+            raise ValueError("DEPRECATED in Python 3.8+")
         self.depth = 0
         super().__init__()
 
@@ -108,7 +109,7 @@ class _AsyncSyntaxErrorVisitor(ast.NodeVisitor):
         func_types = (ast.FunctionDef, ast.AsyncFunctionDef)
         invalid_types_by_depth = {
             0: (ast.Return, ast.Yield, ast.YieldFrom),
-            1: (ast.Nonlocal,)
+            1: (ast.Nonlocal,),
         }
 
         should_traverse = self.depth < max(invalid_types_by_depth.keys())
@@ -151,7 +152,12 @@ def _should_be_async(cell: str) -> bool:
     """
     if sys.version_info > (3, 8):
         try:
-            code = compile(cell, "<>", "exec", flags=getattr(ast,'PyCF_ALLOW_TOP_LEVEL_AWAIT', 0x0))
+            code = compile(
+                cell,
+                "<>",
+                "exec",
+                flags=getattr(ast, "PyCF_ALLOW_TOP_LEVEL_AWAIT", 0x0),
+            )
             return inspect.CO_COROUTINE & code.co_flags == inspect.CO_COROUTINE
         except SyntaxError:
             return False

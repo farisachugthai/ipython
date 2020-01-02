@@ -12,58 +12,64 @@ from subprocess import Popen, PIPE, CalledProcessError
 import atexit
 
 from IPython.core import magic_arguments
-from IPython.core.magic import  (
-    Magics, magics_class, line_magic, cell_magic
-)
+from IPython.core.magic import Magics, magics_class, line_magic, cell_magic
 from IPython.lib.backgroundjobs import BackgroundJobManager
 from IPython.utils import py3compat
 from IPython.utils.process import arg_split
 from traitlets import List, Dict, default
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def script_args(f):
     """single decorator for adding script args"""
     args = [
         magic_arguments.argument(
-            '--out', type=str,
+            "--out",
+            type=str,
             help="""The variable in which to store stdout from the script.
             If the script is backgrounded, this will be the stdout *pipe*,
             instead of the stderr text itself and will not be auto closed.
-            """
+            """,
         ),
         magic_arguments.argument(
-            '--err', type=str,
+            "--err",
+            type=str,
             help="""The variable in which to store stderr from the script.
             If the script is backgrounded, this will be the stderr *pipe*,
             instead of the stderr text itself and will not be autoclosed.
-            """
+            """,
         ),
         magic_arguments.argument(
-            '--bg', action="store_true",
+            "--bg",
+            action="store_true",
             help="""Whether to run the script in the background.
             If given, the only way to see the output of the command is
             with --out/err.
-            """
+            """,
         ),
         magic_arguments.argument(
-            '--proc', type=str,
+            "--proc",
+            type=str,
             help="""The variable in which to store Popen instance.
             This is used only when --bg option is given.
-            """
+            """,
         ),
         magic_arguments.argument(
-            '--no-raise-error', action="store_false", dest='raise_error',
+            "--no-raise-error",
+            action="store_false",
+            dest="raise_error",
             help="""Whether you should raise an error message in addition to 
             a stream on stderr if you get a nonzero exit code.
-            """
-        )
+            """,
+        ),
     ]
     for arg in args:
         f = arg(f)
     return f
+
 
 @magics_class
 class ScriptMagics(Magics):
@@ -73,6 +79,7 @@ class ScriptMagics(Magics):
     with a program in a subprocess, and registers a few top-level
     magics that call %%script with common interpreters.
     """
+
     script_magics = List(
         help="""Extra script cell magics to define
         
@@ -82,27 +89,28 @@ class ScriptMagics(Magics):
         specify them in script_paths
         """,
     ).tag(config=True)
-    @default('script_magics')
+
+    @default("script_magics")
     def _script_magics_default(self):
         """default to a common list of programs"""
-        
+
         defaults = [
-            'sh',
-            'bash',
-            'perl',
-            'ruby',
-            'python',
-            'python2',
-            'python3',
-            'pypy',
+            "sh",
+            "bash",
+            "perl",
+            "ruby",
+            "python",
+            "python2",
+            "python3",
+            "pypy",
         ]
-        if os.name == 'nt':
-            defaults.extend([
-                'cmd',
-            ])
-        
+        if os.name == "nt":
+            defaults.extend(
+                ["cmd",]
+            )
+
         return defaults
-    
+
     script_paths = Dict(
         help="""Dict mapping short 'ruby' names to full paths, such as '/opt/secret/bin/ruby'
         
@@ -110,7 +118,7 @@ class ScriptMagics(Magics):
         find the right interpreter.
         """
     ).tag(config=True)
-    
+
     def __init__(self, shell=None):
         super(ScriptMagics, self).__init__(shell=shell)
         self._generate_script_magics()
@@ -120,38 +128,39 @@ class ScriptMagics(Magics):
 
     def __del__(self):
         self.kill_bg_processes()
-    
+
     def _generate_script_magics(self):
-        cell_magics = self.magics['cell']
+        cell_magics = self.magics["cell"]
         for name in self.script_magics:
             cell_magics[name] = self._make_script_magic(name)
-    
+
     def _make_script_magic(self, name):
         """make a named magic, that calls %%script with a particular program"""
         # expand to explicit path if necessary:
         script = self.script_paths.get(name, name)
-        
+
         @magic_arguments.magic_arguments()
         @script_args
         def named_script_magic(line, cell):
             # if line, add it as cl-flags
             if line:
-                 line = "%s %s" % (script, line)
+                line = "%s %s" % (script, line)
             else:
                 line = script
             return self.shebang(line, cell)
-        
+
         # write a basic docstring:
-        named_script_magic.__doc__ = \
-        """%%{name} script magic
+        named_script_magic.__doc__ = """%%{name} script magic
         
         Run cells with {script} in a subprocess.
         
         This is a shortcut for `%%script {script}`
-        """.format(**locals())
-        
+        """.format(
+            **locals()
+        )
+
         return named_script_magic
-    
+
     @magic_arguments.magic_arguments()
     @script_args
     @cell_magic("script")
@@ -175,9 +184,9 @@ class ScriptMagics(Magics):
             2
             3
         """
-        argv = arg_split(line, posix = not sys.platform.startswith('win'))
+        argv = arg_split(line, posix=not sys.platform.startswith("win"))
         args, cmd = self.shebang.parser.parse_known_args(argv)
-        
+
         try:
             p = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
         except OSError as e:
@@ -186,10 +195,10 @@ class ScriptMagics(Magics):
                 return
             else:
                 raise
-        
-        if not cell.endswith('\n'):
-            cell += '\n'
-        cell = cell.encode('utf8', 'replace')
+
+        if not cell.endswith("\n"):
+            cell += "\n"
+        cell = cell.encode("utf8", "replace")
         if args.bg:
             self.bg_processes.append(p)
             self._gc_bg_processes()
@@ -206,7 +215,7 @@ class ScriptMagics(Magics):
             if args.proc:
                 self.shell.user_ns[args.proc] = p
             return
-        
+
         try:
             out, err = p.communicate(cell)
         except KeyboardInterrupt:
@@ -226,8 +235,7 @@ class ScriptMagics(Magics):
             except OSError:
                 pass
             except Exception as e:
-                print("Error while terminating subprocess (pid=%i): %s" \
-                    % (p.pid, e))
+                print("Error while terminating subprocess (pid=%i): %s" % (p.pid, e))
             return
         out = py3compat.decode(out)
         err = py3compat.decode(err)
@@ -241,9 +249,9 @@ class ScriptMagics(Magics):
         else:
             sys.stderr.write(err)
             sys.stderr.flush()
-        if args.raise_error and p.returncode!=0:
+        if args.raise_error and p.returncode != 0:
             raise CalledProcessError(p.returncode, cell, output=out, stderr=err)
-    
+
     def _run_script(self, p, cell, to_close):
         """callback for running the script in the background"""
         p.stdin.write(cell)
@@ -253,7 +261,7 @@ class ScriptMagics(Magics):
         p.wait()
 
     @line_magic("killbgscripts")
-    def killbgscripts(self, _nouse_=''):
+    def killbgscripts(self, _nouse_=""):
         """Kill all BG processes started by %%script and its family."""
         self.kill_bg_processes()
         print("All background processes were killed.")

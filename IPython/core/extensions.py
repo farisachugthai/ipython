@@ -15,9 +15,10 @@ from IPython.utils.decorators import undoc
 from traitlets import Instance
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main class
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 class ExtensionManager(Configurable):
     """A class to manage IPython extensions.
@@ -46,18 +47,18 @@ class ExtensionManager(Configurable):
     is added to ``sys.path`` automatically.
     """
 
-    shell = Instance('IPython.core.interactiveshell.InteractiveShellABC', allow_none=True)
+    shell = Instance(
+        "IPython.core.interactiveshell.InteractiveShellABC", allow_none=True
+    )
 
     def __init__(self, shell=None, **kwargs):
         super(ExtensionManager, self).__init__(shell=shell, **kwargs)
-        self.shell.observe(
-            self._on_ipython_dir_changed, names=('ipython_dir',)
-        )
+        self.shell.observe(self._on_ipython_dir_changed, names=("ipython_dir",))
         self.loaded = set()
 
     @property
     def ipython_extension_dir(self):
-        return os.path.join(self.shell.ipython_dir, u'extensions')
+        return os.path.join(self.shell.ipython_dir, u"extensions")
 
     def _on_ipython_dir_changed(self, change):
         ensure_dir_exists(self.ipython_extension_dir)
@@ -79,10 +80,13 @@ class ExtensionManager(Configurable):
                 with prepended_to_syspath(self.ipython_extension_dir):
                     mod = import_module(module_str)
                     if mod.__file__.startswith(self.ipython_extension_dir):
-                        print(("Loading extensions from {dir} is deprecated. "
-                               "We recommend managing extensions like any "
-                               "other Python packages, in site-packages.").format(
-                              dir=compress_user(self.ipython_extension_dir)))
+                        print(
+                            (
+                                "Loading extensions from {dir} is deprecated. "
+                                "We recommend managing extensions like any "
+                                "other Python packages, in site-packages."
+                            ).format(dir=compress_user(self.ipython_extension_dir))
+                        )
             mod = sys.modules[module_str]
             if self._call_load_ipython_extension(mod):
                 self.loaded.add(module_str)
@@ -101,7 +105,7 @@ class ExtensionManager(Configurable):
         """
         if module_str not in self.loaded:
             return "not loaded"
-        
+
         if module_str in sys.modules:
             mod = sys.modules[module_str]
             if self._call_unload_ipython_extension(mod):
@@ -130,12 +134,12 @@ class ExtensionManager(Configurable):
             self.load_extension(module_str)
 
     def _call_load_ipython_extension(self, mod):
-        if hasattr(mod, 'load_ipython_extension'):
+        if hasattr(mod, "load_ipython_extension"):
             mod.load_ipython_extension(self.shell)
             return True
 
     def _call_unload_ipython_extension(self, mod):
-        if hasattr(mod, 'unload_ipython_extension'):
+        if hasattr(mod, "unload_ipython_extension"):
             mod.unload_ipython_extension(self.shell)
             return True
 
@@ -146,5 +150,6 @@ class ExtensionManager(Configurable):
         """
         # Ensure the extension directory exists
         raise DeprecationWarning(
-            '`install_extension` and the `install_ext` magic have been deprecated since IPython 4.0'
-            'Use pip or other package managers to manage ipython extensions.')
+            "`install_extension` and the `install_ext` magic have been deprecated since IPython 4.0"
+            "Use pip or other package managers to manage ipython extensions."
+        )

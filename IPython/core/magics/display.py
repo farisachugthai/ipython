@@ -1,26 +1,24 @@
 """Simple magics for display formats"""
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (c) 2012 The IPython Development Team.
 #
 #  Distributed under the terms of the Modified BSD License.
 #
 #  The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Our own packages
 from IPython.core.display import display, Javascript, Latex, SVG, HTML, Markdown
-from IPython.core.magic import  (
-    Magics, magics_class, cell_magic
-)
+from IPython.core.magic import Magics, magics_class, cell_magic
 from IPython.core import magic_arguments
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Magic implementation classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 @magics_class
@@ -44,7 +42,6 @@ class DisplayMagics(Magics):
         """Run the cell block of Javascript code"""
         display(Javascript(cell))
 
-
     @cell_magic
     def latex(self, line, cell):
         """Render the cell as a block of latex
@@ -62,9 +59,11 @@ class DisplayMagics(Magics):
 
     @magic_arguments.magic_arguments()
     @magic_arguments.argument(
-        '--isolated', action='store_true', default=False,
+        "--isolated",
+        action="store_true",
+        default=False,
         help="""Annotate the cell as 'isolated'.
-Isolated cells are rendered inside their own <iframe> tag"""
+Isolated cells are rendered inside their own <iframe> tag""",
     )
     @cell_magic
     def html(self, line, cell):
@@ -72,7 +71,7 @@ Isolated cells are rendered inside their own <iframe> tag"""
         args = magic_arguments.parse_argstring(self.html, line)
         html = HTML(cell)
         if args.isolated:
-            display(html, metadata={'text/html':{'isolated':True}})
+            display(html, metadata={"text/html": {"isolated": True}})
         else:
             display(html)
 

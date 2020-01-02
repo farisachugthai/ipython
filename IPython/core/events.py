@@ -26,6 +26,7 @@ class EventManager(object):
 
        This API is experimental in IPython 2.0, and may be revised in future versions.
     """
+
     def __init__(self, shell, available_events):
         """Initialise the :class:`CallbackManager`.
         
@@ -37,8 +38,8 @@ class EventManager(object):
           An iterable of names for callback events.
         """
         self.shell = shell
-        self.callbacks = {n:[] for n in available_events}
-    
+        self.callbacks = {n: [] for n in available_events}
+
     def register(self, event, function):
         """Register a new event callback.
         
@@ -58,10 +59,10 @@ class EventManager(object):
           If ``event`` is not one of the known events.
         """
         if not callable(function):
-            raise TypeError('Need a callable, got %r' % function)
+            raise TypeError("Need a callable, got %r" % function)
         callback_proto = available_events.get(event)
         self.callbacks[event].append(callback_proto.adapt(function))
-    
+
     def unregister(self, event, function):
         """Remove a callback from the given event."""
         if function in self.callbacks[event]:
@@ -75,7 +76,9 @@ class EventManager(object):
             except AttributeError:
                 pass
 
-        raise ValueError('Function {!r} is not registered as a {} callback'.format(function, event))
+        raise ValueError(
+            "Function {!r} is not registered as a {} callback".format(function, event)
+        )
 
     def trigger(self, event, *args, **kwargs):
         """Call callbacks for ``event``.
@@ -90,13 +93,16 @@ class EventManager(object):
                 print("Error in callback {} (for {}):".format(func, event))
                 self.shell.showtraceback()
 
+
 # event_name -> prototype mapping
 available_events = {}
+
 
 def _define_event(callback_function):
     callback_proto = callback_prototype(callback_function)
     available_events[callback_function.__name__] = callback_proto
     return callback_proto
+
 
 # ------------------------------------------------------------------------------
 # Callback prototypes
@@ -104,6 +110,7 @@ def _define_event(callback_function):
 # No-op functions which describe the names of available events and the
 # signatures of callbacks for those events.
 # ------------------------------------------------------------------------------
+
 
 @_define_event
 def pre_execute():
@@ -113,6 +120,7 @@ def pre_execute():
     code cells.
     """
     pass
+
 
 @_define_event
 def pre_run_cell(info):
@@ -125,6 +133,7 @@ def pre_run_cell(info):
     """
     pass
 
+
 @_define_event
 def post_execute():
     """Fires after code is executed in response to user/frontend action.
@@ -133,6 +142,7 @@ def post_execute():
     code cells.
     """
     pass
+
 
 @_define_event
 def post_run_cell(result):
@@ -144,6 +154,7 @@ def post_run_cell(result):
       The object which will be returned as the execution result.
     """
     pass
+
 
 @_define_event
 def shell_initialized(ip):
