@@ -14,7 +14,7 @@ import unittest
 import nose.tools as nt
 
 from IPython.utils.io import IOStream, Tee, capture_output
-
+from IPython.testing.decorators import skip_win32
 
 def test_tee_simple():
     "Very simple check with stdout only"
@@ -31,7 +31,7 @@ class TeeTestCase(unittest.TestCase):
         trap = StringIO()
         chan = StringIO()
         text = 'Hello'
-        
+
         std_ori = getattr(sys, channel)
         setattr(sys, channel, trap)
 
@@ -46,10 +46,12 @@ class TeeTestCase(unittest.TestCase):
         setattr(sys, channel, std_ori)
         assert getattr(sys, channel) == std_ori
 
-    def test(self):
+    def test_trap_stdout_and_stderr_with_Tee(self):
         for chan in ['stdout', 'stderr']:
             self.tchan(chan)
 
+
+@skip_win32
 def test_io_init():
     """Test that io.stdin/out/err exist at startup"""
     for name in ('stdin', 'stdout', 'stderr'):
@@ -61,7 +63,9 @@ def test_io_init():
         # just test for string equality.
         assert 'IPython.utils.io.IOStream' in classname, classname
 
+
 class TestIOStream(unittest.TestCase):
+    # Do docstrings show up on unittest failures? The stdlib specifically says no docstrings
 
     def test_IOStream_init(self):
         """IOStream initializes from a file-like object missing attributes. """
@@ -80,10 +84,10 @@ class TestIOStream(unittest.TestCase):
 
     def test_capture_output(self):
         """capture_output() context works"""
-        
+
         with capture_output() as io:
             print('hi, stdout')
             print('hi, stderr', file=sys.stderr)
-        
+
         nt.assert_equal(io.stdout, 'hi, stdout\n')
         nt.assert_equal(io.stderr, 'hi, stderr\n')
