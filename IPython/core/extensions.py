@@ -7,12 +7,14 @@
 import os
 import os.path
 import sys
+from textwrap import dedent
 from importlib import import_module, reload
 
-from traitlets.config.configurable import Configurable
+from traitlets.config.configurable import LoggingConfigurable
 from IPython.utils.path import ensure_dir_exists, compress_user
-from IPython.utils.decorators import undoc
-from traitlets import Instance
+# from IPython.utils.decorators import undoc
+from IPython.utils.syspathcontext import prepended_to_syspath
+from traitlets.traitlets import Instance
 
 
 # -----------------------------------------------------------------------------
@@ -20,7 +22,7 @@ from traitlets import Instance
 # -----------------------------------------------------------------------------
 
 
-class ExtensionManager(Configurable):
+class ExtensionManager(LoggingConfigurable):
     """A class to manage IPython extensions.
 
     An IPython extension is an importable Python module that has
@@ -34,7 +36,7 @@ class ExtensionManager(Configurable):
     the only argument.  You can do anything you want with IPython at
     that point, including defining new magic and aliases, adding new
     components, etc.
-    
+
     You can also optionally define an :func:`unload_ipython_extension(ipython)`
     function, which will be called if the user unloads or reloads the extension.
     The extension manager will only call :func:`load_ipython_extension` again
@@ -52,16 +54,31 @@ class ExtensionManager(Configurable):
     )
 
     def __init__(self, shell=None, **kwargs):
-        super(ExtensionManager, self).__init__(shell=shell, **kwargs)
+        # Any particular reason that we don't use traitlets.observe?
+        # *Is it the same thing?*
+        self.shell = shell
+        super(ExtensionManager, self).__init__(shell=self.shell, **kwargs)
         self.shell.observe(self._on_ipython_dir_changed, names=("ipython_dir",))
         self.loaded = set()
 
+    def __repr__(self):
+        return f"{self.__class__.__name__!r}"
+
     @property
     def ipython_extension_dir(self):
-        return os.path.join(self.shell.ipython_dir, u"extensions")
+        return os.path.join(self.shell.ipython_dir, "extensions")
 
     def _on_ipython_dir_changed(self, change):
         ensure_dir_exists(self.ipython_extension_dir)
+
+    def extensions_admonition(self, msg=None):
+        """Warn users; however, allow a parameter to specify the message."""
+        if msg is None:
+            msg = dedent("Loading extensions from "
+            f"{compress_user(self.ipython_extension_dir)} "
+            "is deprecated. We recommend managing extensions packages using "
+            "setuptools and in site-packages.")
+        self.log.info(f'{msg}')
 
     def load_extension(self, module_str):
         """Load an IPython extension by its module name.
@@ -71,22 +88,15 @@ class ExtensionManager(Configurable):
         function, or None if it succeeded.
         """
         if module_str in self.loaded:
-            return "already loaded"
-
-        from IPython.utils.syspathcontext import prepended_to_syspath
+            self.log.error("Extension already loaded.")
+            return
 
         with self.shell.builtin_trap:
             if module_str not in sys.modules:
                 with prepended_to_syspath(self.ipython_extension_dir):
                     mod = import_module(module_str)
                     if mod.__file__.startswith(self.ipython_extension_dir):
-                        print(
-                            (
-                                "Loading extensions from {dir} is deprecated. "
-                                "We recommend managing extensions like any "
-                                "other Python packages, in site-packages."
-                            ).format(dir=compress_user(self.ipython_extension_dir))
-                        )
+                        self.extensions_admonition()
             mod = sys.modules[module_str]
             if self._call_load_ipython_extension(mod):
                 self.loaded.add(module_str)
@@ -98,7 +108,7 @@ class ExtensionManager(Configurable):
 
         This function looks up the extension's name in ``sys.modules`` and
         simply calls ``mod.unload_ipython_extension(self)``.
-        
+
         Returns the string "no unload function" if the extension doesn't define
         a function to unload itself, "not loaded" if the extension isn't loaded,
         otherwise None.
@@ -121,7 +131,6 @@ class ExtensionManager(Configurable):
         :func:`reload` is called and then the :func:`load_ipython_extension`
         function of the module, if it exists is called.
         """
-        from IPython.utils.syspathcontext import prepended_to_syspath
 
         if (module_str in self.loaded) and (module_str in sys.modules):
             self.unload_extension(module_str)
@@ -137,13 +146,15 @@ class ExtensionManager(Configurable):
         if hasattr(mod, "load_ipython_extension"):
             mod.load_ipython_extension(self.shell)
             return True
+        else:
+            self.log.warning(f"{type(mod)} given. The {self.__class__.__name__} "
+            "was expecting a module type.")
 
     def _call_unload_ipython_extension(self, mod):
         if hasattr(mod, "unload_ipython_extension"):
             mod.unload_ipython_extension(self.shell)
             return True
 
-    @undoc
     def install_extension(self, url, filename=None):
         """
         Deprecated.
