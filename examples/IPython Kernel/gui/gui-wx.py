@@ -19,9 +19,9 @@ class MyFrame(wx.Frame):
     This is MyFrame.  It just shows a few controls on a wxPanel,
     and has a simple menu.
     """
+
     def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, -1, title,
-                          pos=(150, 150), size=(350, 200))
+        wx.Frame.__init__(self, parent, -1, title, pos=(150, 150), size=(350, 200))
 
         # Create the menubar
         menuBar = wx.MenuBar()
@@ -66,7 +66,6 @@ class MyFrame(wx.Frame):
         panel.SetSizer(sizer)
         panel.Layout()
 
-
     def OnTimeToClose(self, evt):
         """Event handler for the button click."""
         print("See ya later!")
@@ -88,7 +87,7 @@ class MyApp(wx.App):
         return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     app = wx.GetApp()
     if app is None:
@@ -101,6 +100,7 @@ if __name__ == '__main__':
 
     try:
         from IPython.lib.inputhook import enable_gui
-        enable_gui('wx', app)
+
+        enable_gui("wx", app)
     except ImportError:
         app.MainLoop()

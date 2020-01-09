@@ -49,13 +49,14 @@ from IPython.testing.ipunittest import ipdoctest, ipdocstring
 # numpy.testing.decorators, we expose all of it here.
 from IPython.external.decorators import knownfailureif
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Classes and functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Simple example of the basic idea
 def as_unittest(func):
     """Decorator to make a simple function into a normal test via unittest."""
+
     class Tester(unittest.TestCase):
         def test(self):
             func()
@@ -64,7 +65,9 @@ def as_unittest(func):
 
     return Tester
 
+
 # Utility functions
+
 
 def apply_wrapper(wrapper, func):
     """Apply a wrapper to a function for decoration.
@@ -75,11 +78,14 @@ def apply_wrapper(wrapper, func):
     This will ensure that wrapped functions can still be well introspected via
     IPython, for example.
     """
-    warnings.warn("The function `apply_wrapper` is deprecated since IPython 4.0",
-            DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "The function `apply_wrapper` is deprecated since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     import nose.tools
 
-    return decorator(wrapper,nose.tools.make_decorator(func)(wrapper))
+    return decorator(wrapper, nose.tools.make_decorator(func)(wrapper))
 
 
 def make_label_dec(label, ds=None):
@@ -127,8 +133,11 @@ def make_label_dec(label, ds=None):
     True
     """
 
-    warnings.warn("The function `make_label_dec` is deprecated since IPython 4.0",
-            DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "The function `make_label_dec` is deprecated since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if isinstance(label, str):
         labels = [label]
     else:
@@ -136,14 +145,14 @@ def make_label_dec(label, ds=None):
 
     # Validate that the given label(s) are OK for use in setattr() by doing a
     # dry run on a dummy function.
-    tmp = lambda : None
+    tmp = lambda: None
     for label in labels:
-        setattr(tmp,label,True)
+        setattr(tmp, label, True)
 
     # This is the actual decorator we'll return
     def decor(f):
         for label in labels:
-            setattr(f,label,True)
+            setattr(f, label, True)
         return f
 
     # Apply the user's docstring, or autogenerate a basic one
@@ -158,7 +167,7 @@ def make_label_dec(label, ds=None):
 # preserve function metadata better and allows the skip condition to be a
 # callable.
 def skipif(skip_condition, msg=None):
-    ''' Make function raise SkipTest exception if skip_condition is true
+    """ Make function raise SkipTest exception if skip_condition is true
 
     Parameters
     ----------
@@ -183,7 +192,7 @@ def skipif(skip_condition, msg=None):
     You will see from the code that we had to further decorate the
     decorator with the nose.tools.make_decorator function in order to
     transmit function name, and various other metadata.
-    '''
+    """
 
     def skip_decorator(f):
         # Local import to avoid a hard nose dependency and only incur the
@@ -194,27 +203,29 @@ def skipif(skip_condition, msg=None):
         if callable(skip_condition):
             skip_val = skip_condition
         else:
-            skip_val = lambda : skip_condition
+            skip_val = lambda: skip_condition
 
-        def get_msg(func,msg=None):
+        def get_msg(func, msg=None):
             """Skip message with information about function being skipped."""
-            if msg is None: out = 'Test skipped due to test condition.'
-            else: out = msg
-            return "Skipping test: %s. %s" % (func.__name__,out)
+            if msg is None:
+                out = "Test skipped due to test condition."
+            else:
+                out = msg
+            return "Skipping test: %s. %s" % (func.__name__, out)
 
         # We need to define *two* skippers because Python doesn't allow both
         # return with value and yield inside the same function.
         def skipper_func(*args, **kwargs):
             """Skipper for normal test functions."""
             if skip_val():
-                raise nose.SkipTest(get_msg(f,msg))
+                raise nose.SkipTest(get_msg(f, msg))
             else:
                 return f(*args, **kwargs)
 
         def skipper_gen(*args, **kwargs):
             """Skipper for test generators."""
             if skip_val():
-                raise nose.SkipTest(get_msg(f,msg))
+                raise nose.SkipTest(get_msg(f, msg))
             else:
                 for x in f(*args, **kwargs):
                     yield x
@@ -228,6 +239,7 @@ def skipif(skip_condition, msg=None):
         return nose.tools.make_decorator(f)(skipper)
 
     return skip_decorator
+
 
 # A version with the condition set to true, common case just to attach a message
 # to a skip decorator
@@ -246,8 +258,10 @@ def skip(msg=None):
          to be raised, with the optional message added.
       """
     if msg and not isinstance(msg, str):
-        raise ValueError('invalid object passed to `@skip` decorator, did you '
-                         'meant `@skip()` with brackets ?')
+        raise ValueError(
+            "invalid object passed to `@skip` decorator, did you "
+            "meant `@skip()` with brackets ?"
+        )
     return skipif(True, msg)
 
 
@@ -255,13 +269,14 @@ def onlyif(condition, msg):
     """The reverse from skipif, see skipif for details."""
 
     if callable(condition):
-        skip_condition = lambda : not condition()
+        skip_condition = lambda: not condition()
     else:
-        skip_condition = lambda : not condition
+        skip_condition = lambda: not condition
 
     return skipif(skip_condition, msg)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Utility functions for decorators
 def module_not_available(module):
     """Can module be imported?  Returns true if module does NOT import.
@@ -286,61 +301,71 @@ def decorated_dummy(dec, name):
     import IPython.testing.decorators as dec
     setup = dec.decorated_dummy(dec.skip_if_no_x11, __name__)
     """
-    warnings.warn("The function `decorated_dummy` is deprecated since IPython 4.0",
-        DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "The function `decorated_dummy` is deprecated since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     dummy = lambda: None
     dummy.__name__ = name
     return dec(dummy)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Decorators for public use
 
 # Decorators to skip certain tests on specific platforms.
-skip_win32 = skipif(sys.platform == 'win32',
-                    "This test does not run under Windows")
-skip_linux = skipif(sys.platform.startswith('linux'),
-                    "This test does not run under Linux")
-skip_osx = skipif(sys.platform == 'darwin',"This test does not run under OS X")
+skip_win32 = skipif(sys.platform == "win32", "This test does not run under Windows")
+skip_linux = skipif(
+    sys.platform.startswith("linux"), "This test does not run under Linux"
+)
+skip_osx = skipif(sys.platform == "darwin", "This test does not run under OS X")
 
 
 # Decorators to skip tests if not on specific platforms.
-skip_if_not_win32 = skipif(sys.platform != 'win32',
-                           "This test only runs under Windows")
-skip_if_not_linux = skipif(not sys.platform.startswith('linux'),
-                           "This test only runs under Linux")
-skip_if_not_osx = skipif(sys.platform != 'darwin',
-                         "This test only runs under OSX")
+skip_if_not_win32 = skipif(sys.platform != "win32", "This test only runs under Windows")
+skip_if_not_linux = skipif(
+    not sys.platform.startswith("linux"), "This test only runs under Linux"
+)
+skip_if_not_osx = skipif(sys.platform != "darwin", "This test only runs under OSX")
 
 
-_x11_skip_cond = (sys.platform not in ('darwin', 'win32') and
-                  os.environ.get('DISPLAY', '') == '')
+_x11_skip_cond = (
+    sys.platform not in ("darwin", "win32") and os.environ.get("DISPLAY", "") == ""
+)
 _x11_skip_msg = "Skipped under *nix when X11/XOrg not available"
 
 skip_if_no_x11 = skipif(_x11_skip_cond, _x11_skip_msg)
 
 
 # Decorators to skip certain tests on specific platform/python combinations
-skip_win32_py38 = skipif(sys.version_info > (3,8) and os.name == 'nt')
+skip_win32_py38 = skipif(sys.version_info > (3, 8) and os.name == "nt")
 
 
 # not a decorator itself, returns a dummy function to be used as setup
 def skip_file_no_x11(name):
-    warnings.warn("The function `skip_file_no_x11` is deprecated since IPython 4.0",
-            DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "The function `skip_file_no_x11` is deprecated since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return decorated_dummy(skip_if_no_x11, name) if _x11_skip_cond else None
+
 
 # Other skip decorators
 
 # generic skip without module
-skip_without = lambda mod: skipif(module_not_available(mod), "This test requires %s" % mod)
+skip_without = lambda mod: skipif(
+    module_not_available(mod), "This test requires %s" % mod
+)
 
-skipif_not_numpy = skip_without('numpy')
+skipif_not_numpy = skip_without("numpy")
 
-skipif_not_matplotlib = skip_without('matplotlib')
+skipif_not_matplotlib = skip_without("matplotlib")
 
-skipif_not_sympy = skip_without('sympy')
+skipif_not_sympy = skip_without("sympy")
 
-skip_known_failure = knownfailureif(True,'This test is known to fail')
+skip_known_failure = knownfailureif(True, "This test is known to fail")
 
 # A null 'decorator', useful to make more readable code that needs to pick
 # between different decorators based on OS or other conditions
@@ -356,8 +381,10 @@ else:
     unicode_paths = True
     f.close()
 
-onlyif_unicode_paths = onlyif(unicode_paths, ("This test is only applicable "
-                                    "where we can use unicode in filenames."))
+onlyif_unicode_paths = onlyif(
+    unicode_paths,
+    ("This test is only applicable " "where we can use unicode in filenames."),
+)
 
 
 def onlyif_cmds_exist(*commands):
@@ -366,18 +393,25 @@ def onlyif_cmds_exist(*commands):
     """
     for cmd in commands:
         if not shutil.which(cmd):
-            return skip("This test runs only if command '{0}' "
-                        "is installed".format(cmd))
+            return skip(
+                "This test runs only if command '{0}' " "is installed".format(cmd)
+            )
     return null_deco
+
 
 def onlyif_any_cmd_exists(*commands):
     """
     Decorator to skip test unless at least one of `commands` is found.
     """
-    warnings.warn("The function `onlyif_any_cmd_exists` is deprecated since IPython 4.0",
-            DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "The function `onlyif_any_cmd_exists` is deprecated since IPython 4.0",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     for cmd in commands:
         if shutil.which(cmd):
             return null_deco
-    return skip("This test runs only if one of the commands {0} "
-                "is installed".format(commands))
+    return skip(
+        "This test runs only if one of the commands {0} "
+        "is installed".format(commands)
+    )

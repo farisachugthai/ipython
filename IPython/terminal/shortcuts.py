@@ -14,12 +14,22 @@ from typing import Callable
 
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import DEFAULT_BUFFER, SEARCH_BUFFER
-from prompt_toolkit.filters import (has_focus, has_selection, Condition,
-    vi_insert_mode, emacs_insert_mode, has_completions, vi_mode)
-from prompt_toolkit.key_binding.bindings.completion import display_completions_like_readline
+from prompt_toolkit.filters import (
+    has_focus,
+    has_selection,
+    Condition,
+    vi_insert_mode,
+    emacs_insert_mode,
+    has_completions,
+    vi_mode,
+)
+from prompt_toolkit.key_binding.bindings.completion import (
+    display_completions_like_readline,
+)
 from prompt_toolkit.key_binding import KeyBindings
 
 from IPython.utils.decorators import undoc
+
 
 @undoc
 @Condition
@@ -34,69 +44,83 @@ def create_ipython_shortcuts(shell):
     kb = KeyBindings()
     insert_mode = vi_insert_mode | emacs_insert_mode
 
-    if getattr(shell, 'handle_return', None):
+    if getattr(shell, "handle_return", None):
         return_handler = shell.handle_return(shell)
     else:
         return_handler = newline_or_execute_outer(shell)
 
-    kb.add('enter', filter=(has_focus(DEFAULT_BUFFER)
-                            & ~has_selection
-                            & insert_mode
-                        ))(return_handler)
+    kb.add("enter", filter=(has_focus(DEFAULT_BUFFER) & ~has_selection & insert_mode))(
+        return_handler
+    )
 
     def reformat_and_execute(event):
-        reformat_text_before_cursor(event.current_buffer, event.current_buffer.document, shell)
+        reformat_text_before_cursor(
+            event.current_buffer, event.current_buffer.document, shell
+        )
         event.current_buffer.validate_and_handle()
 
-    kb.add('escape', 'enter', filter=(has_focus(DEFAULT_BUFFER)
-                            & ~has_selection
-                            & insert_mode
-                                      ))(reformat_and_execute)
+    kb.add(
+        "escape",
+        "enter",
+        filter=(has_focus(DEFAULT_BUFFER) & ~has_selection & insert_mode),
+    )(reformat_and_execute)
 
-    kb.add('c-\\')(force_exit)
+    kb.add("c-\\")(force_exit)
 
-    kb.add('c-p', filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER))
-                )(previous_history_or_previous_completion)
+    kb.add("c-p", filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER)))(
+        previous_history_or_previous_completion
+    )
 
-    kb.add('c-n', filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER))
-                )(next_history_or_next_completion)
+    kb.add("c-n", filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER)))(
+        next_history_or_next_completion
+    )
 
-    kb.add('c-g', filter=(has_focus(DEFAULT_BUFFER) & has_completions)
-                )(dismiss_completion)
+    kb.add("c-g", filter=(has_focus(DEFAULT_BUFFER) & has_completions))(
+        dismiss_completion
+    )
 
-    kb.add('c-c', filter=has_focus(DEFAULT_BUFFER))(reset_buffer)
+    kb.add("c-c", filter=has_focus(DEFAULT_BUFFER))(reset_buffer)
 
-    kb.add('c-c', filter=has_focus(SEARCH_BUFFER))(reset_search_buffer)
+    kb.add("c-c", filter=has_focus(SEARCH_BUFFER))(reset_search_buffer)
 
-    supports_suspend = Condition(lambda: hasattr(signal, 'SIGTSTP'))
-    kb.add('c-z', filter=supports_suspend)(suspend_to_bg)
+    supports_suspend = Condition(lambda: hasattr(signal, "SIGTSTP"))
+    kb.add("c-z", filter=supports_suspend)(suspend_to_bg)
 
     # Ctrl+I == Tab
-    kb.add('tab', filter=(has_focus(DEFAULT_BUFFER)
-                          & ~has_selection
-                          & insert_mode
-                          & cursor_in_leading_ws
-                        ))(indent_buffer)
-    kb.add('c-o', filter=(has_focus(DEFAULT_BUFFER) & emacs_insert_mode)
-           )(newline_autoindent_outer(shell.input_transformer_manager))
+    kb.add(
+        "tab",
+        filter=(
+            has_focus(DEFAULT_BUFFER)
+            & ~has_selection
+            & insert_mode
+            & cursor_in_leading_ws
+        ),
+    )(indent_buffer)
+    kb.add("c-o", filter=(has_focus(DEFAULT_BUFFER) & emacs_insert_mode))(
+        newline_autoindent_outer(shell.input_transformer_manager)
+    )
 
-    kb.add('f2', filter=has_focus(DEFAULT_BUFFER))(open_input_in_editor)
+    kb.add("f2", filter=has_focus(DEFAULT_BUFFER))(open_input_in_editor)
 
-    if shell.display_completions == 'readlinelike':
-        kb.add('c-i', filter=(has_focus(DEFAULT_BUFFER)
-                              & ~has_selection
-                              & insert_mode
-                              & ~cursor_in_leading_ws
-                        ))(display_completions_like_readline)
+    if shell.display_completions == "readlinelike":
+        kb.add(
+            "c-i",
+            filter=(
+                has_focus(DEFAULT_BUFFER)
+                & ~has_selection
+                & insert_mode
+                & ~cursor_in_leading_ws
+            ),
+        )(display_completions_like_readline)
 
-    if sys.platform == 'win32':
-        kb.add('c-v', filter=(has_focus(DEFAULT_BUFFER) & ~vi_mode))(win_paste)
+    if sys.platform == "win32":
+        kb.add("c-v", filter=(has_focus(DEFAULT_BUFFER) & ~vi_mode))(win_paste)
 
     return kb
 
 
 def reformat_text_before_cursor(buffer, document, shell):
-    text = buffer.delete_before_cursor(len(document.text[:document.cursor_position]))
+    text = buffer.delete_before_cursor(len(document.text[: document.cursor_position]))
     try:
         formatted_text = shell.reformat_handler(text)
         buffer.insert_text(formatted_text)
@@ -105,7 +129,6 @@ def reformat_text_before_cursor(buffer, document, shell):
 
 
 def newline_or_execute_outer(shell):
-
     def newline_or_execute(event):
         """When the user presses return, insert a newline or execute the code."""
         b = event.current_buffer
@@ -124,31 +147,33 @@ def newline_or_execute_outer(shell):
         if d.line_count == 1:
             check_text = d.text
         else:
-            check_text = d.text[:d.cursor_position]
+            check_text = d.text[: d.cursor_position]
         status, indent = shell.check_complete(check_text)
-       
+
         # if all we have after the cursor is whitespace: reformat current text
         # before cursor
-        after_cursor = d.text[d.cursor_position:]
+        after_cursor = d.text[d.cursor_position :]
         if not after_cursor.strip():
             reformat_text_before_cursor(b, d, shell)
-        if not (d.on_last_line or
-                d.cursor_position_row >= d.line_count - d.empty_line_count_at_the_end()
-                ):
+        if not (
+            d.on_last_line
+            or d.cursor_position_row >= d.line_count - d.empty_line_count_at_the_end()
+        ):
             if shell.autoindent:
-                b.insert_text('\n' + indent)
+                b.insert_text("\n" + indent)
             else:
-                b.insert_text('\n')
+                b.insert_text("\n")
             return
 
-        if (status != 'incomplete') and b.accept_handler:
+        if (status != "incomplete") and b.accept_handler:
             reformat_text_before_cursor(b, d, shell)
             b.validate_and_handle()
         else:
             if shell.autoindent:
-                b.insert_text('\n' + indent)
+                b.insert_text("\n" + indent)
             else:
-                b.insert_text('\n')
+                b.insert_text("\n")
+
     return newline_or_execute
 
 
@@ -190,8 +215,10 @@ def reset_search_buffer(event):
     else:
         event.app.layout.focus(DEFAULT_BUFFER)
 
+
 def suspend_to_bg(event):
     event.app.suspend_to_background()
+
 
 def force_exit(event):
     """
@@ -199,8 +226,10 @@ def force_exit(event):
     """
     sys.exit("Quit")
 
+
 def indent_buffer(event):
-    event.current_buffer.insert_text(' ' * 4)
+    event.current_buffer.insert_text(" " * 4)
+
 
 @undoc
 def newline_with_copy_margin(event):
@@ -212,9 +241,12 @@ def newline_with_copy_margin(event):
     Preserve margin and cursor position when using
     Control-O to insert a newline in EMACS mode
     """
-    warnings.warn("`newline_with_copy_margin(event)` is deprecated since IPython 6.0. "
-      "see `newline_autoindent_outer(shell)(event)` for a replacement.",
-                  DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "`newline_with_copy_margin(event)` is deprecated since IPython 6.0. "
+        "see `newline_autoindent_outer(shell)(event)` for a replacement.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     b = event.current_buffer
     cursor_start_pos = b.document.cursor_position_col
@@ -224,6 +256,7 @@ def newline_with_copy_margin(event):
     if cursor_start_pos != cursor_end_pos:
         pos_diff = cursor_start_pos - cursor_end_pos
         b.cursor_right(count=pos_diff)
+
 
 def newline_autoindent_outer(inputsplitter) -> Callable[..., None]:
     """
@@ -242,9 +275,9 @@ def newline_autoindent_outer(inputsplitter) -> Callable[..., None]:
 
         if b.complete_state:
             b.cancel_completion()
-        text = d.text[:d.cursor_position] + '\n'
+        text = d.text[: d.cursor_position] + "\n"
         _, indent = inputsplitter.check_complete(text)
-        b.insert_text('\n' + (' ' * (indent or 0)), move_cursor=False)
+        b.insert_text("\n" + (" " * (indent or 0)), move_cursor=False)
 
     return newline_autoindent
 
@@ -254,11 +287,13 @@ def open_input_in_editor(event):
     event.app.current_buffer.open_in_editor()
 
 
-if sys.platform == 'win32':
+if sys.platform == "win32":
     from IPython.core.error import TryNext
-    from IPython.lib.clipboard import (ClipboardEmpty,
-                                       win32_clipboard_get,
-                                       tkinter_clipboard_get)
+    from IPython.lib.clipboard import (
+        ClipboardEmpty,
+        win32_clipboard_get,
+        tkinter_clipboard_get,
+    )
 
     @undoc
     def win_paste(event):
@@ -271,4 +306,4 @@ if sys.platform == 'win32':
                 return
         except ClipboardEmpty:
             return
-        event.current_buffer.insert_text(text.replace('\t', ' ' * 4))
+        event.current_buffer.insert_text(text.replace("\t", " " * 4))

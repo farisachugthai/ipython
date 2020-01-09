@@ -7,12 +7,12 @@ Authors:
 * Brian Granger
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #  Copyright (C) 2008-2011  The IPython Development Team
 #
 #  Distributed under the terms of the BSD License.  The full license is in
 #  the file COPYING, distributed as part of this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import sys
 
@@ -39,6 +39,7 @@ class appended_to_syspath(object):
         # Returning False causes any exceptions to be re-raised.
         return False
 
+
 class prepended_to_syspath(object):
     """A context for prepending a directory to sys.path for a second."""
 
@@ -47,7 +48,7 @@ class prepended_to_syspath(object):
 
     def __enter__(self):
         if self.dir not in sys.path:
-            sys.path.insert(0,self.dir)
+            sys.path.insert(0, self.dir)
             self.added = True
         else:
             self.added = False

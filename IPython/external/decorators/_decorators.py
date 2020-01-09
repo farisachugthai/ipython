@@ -60,32 +60,32 @@ def skipif(skip_condition, msg=None):
 
         # Allow for both boolean or callable skip conditions.
         if callable(skip_condition):
-            skip_val = lambda : skip_condition()
+            skip_val = lambda: skip_condition()
         else:
-            skip_val = lambda : skip_condition
+            skip_val = lambda: skip_condition
 
-        def get_msg(func,msg=None):
+        def get_msg(func, msg=None):
             """Skip message with information about function being skipped."""
             if msg is None:
-                out = 'Test skipped due to test condition'
+                out = "Test skipped due to test condition"
             else:
-                out = '\n'+msg
+                out = "\n" + msg
 
-            return "Skipping test: %s%s" % (func.__name__,out)
+            return "Skipping test: %s%s" % (func.__name__, out)
 
         # We need to define *two* skippers because Python doesn't allow both
         # return with value and yield inside the same function.
         def skipper_func(*args, **kwargs):
             """Skipper for normal test functions."""
             if skip_val():
-                raise nose.SkipTest(get_msg(f,msg))
+                raise nose.SkipTest(get_msg(f, msg))
             else:
                 return f(*args, **kwargs)
 
         def skipper_gen(*args, **kwargs):
             """Skipper for test generators."""
             if skip_val():
-                raise nose.SkipTest(get_msg(f,msg))
+                raise nose.SkipTest(get_msg(f, msg))
             else:
                 for x in f(*args, **kwargs):
                     yield x
@@ -99,6 +99,7 @@ def skipif(skip_condition, msg=None):
         return nose.tools.make_decorator(f)(skipper)
 
     return skip_decorator
+
 
 def knownfailureif(fail_condition, msg=None):
     """
@@ -126,7 +127,7 @@ def knownfailureif(fail_condition, msg=None):
 
     """
     if msg is None:
-        msg = 'Test skipped due to known failure'
+        msg = "Test skipped due to known failure"
 
     def knownfail_decorator(f):
         # Local import to avoid a hard nose dependency and only incur the
@@ -138,6 +139,7 @@ def knownfailureif(fail_condition, msg=None):
                 raise KnownFailureTest(msg)
             else:
                 return f(*args, **kwargs)
+
         return nose.tools.make_decorator(f)(knownfailer)
 
     return knownfail_decorator

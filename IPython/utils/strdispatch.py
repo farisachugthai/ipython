@@ -25,18 +25,18 @@ class StrDispatch(object):
         self.strs = {}
         self.regexs = {}
 
-    def add_s(self, s, obj, priority= 0 ):
+    def add_s(self, s, obj, priority=0):
         """ Adds a target 'string' for dispatching """
 
         chain = self.strs.get(s, CommandChainDispatcher())
-        chain.add(obj,priority)
+        chain.add(obj, priority)
         self.strs[s] = chain
 
-    def add_re(self, regex, obj, priority= 0 ):
+    def add_re(self, regex, obj, priority=0):
         """ Adds a target regexp for dispatching """
 
         chain = self.regexs.get(regex, CommandChainDispatcher())
-        chain.add(obj,priority)
+        chain.add(obj, priority)
         self.regexs[regex] = chain
 
     def dispatch(self, key):
@@ -48,7 +48,7 @@ class StrDispatch(object):
             if re.match(r, key):
                 yield obj
             else:
-                #print "nomatch",key  # dbg
+                # print "nomatch",key  # dbg
                 pass
 
     def __repr__(self):
@@ -56,7 +56,7 @@ class StrDispatch(object):
 
     def s_matches(self, key):
         if key not in self.strs:
-             return
+            return
         for el in self.strs[key]:
             yield el[1]
 
@@ -64,5 +64,5 @@ class StrDispatch(object):
         """ Yield all 'value' targets, without priority """
         for val in self.dispatch(key):
             for el in val:
-                yield el[1] # only value, no priority
+                yield el[1]  # only value, no priority
         return

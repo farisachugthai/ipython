@@ -9,11 +9,12 @@ from traitlets import Undefined
 from collections import defaultdict
 
 here = abspath(dirname(__file__))
-options = join(here, 'source', 'config', 'options')
-generated = join(options, 'config-generated.txt')
+options = join(here, "source", "config", "options")
+generated = join(options, "config-generated.txt")
 
 import textwrap
-indent = lambda text,n: textwrap.indent(text,n*' ')
+
+indent = lambda text, n: textwrap.indent(text, n * " ")
 
 
 def interesting_default_value(dv):
@@ -23,12 +24,14 @@ def interesting_default_value(dv):
         return bool(dv)
     return True
 
+
 def format_aliases(aliases):
     fmted = []
     for a in aliases:
-        dashes = '-' if len(a) == 1 else '--'
-        fmted.append('``%s%s``' % (dashes, a))
-    return ', '.join(fmted)
+        dashes = "-" if len(a) == 1 else "--"
+        fmted.append("``%s%s``" % (dashes, a))
+    return ", ".join(fmted)
+
 
 def class_config_rst_doc(cls, trait_aliases):
     """Generate rST documentation for this class' config options.
@@ -40,21 +43,20 @@ def class_config_rst_doc(cls, trait_aliases):
     for k, trait in sorted(cls.class_traits(config=True).items()):
         ttype = trait.__class__.__name__
 
-        fullname = classname + '.' + trait.name
-        lines += ['.. configtrait:: ' + fullname,
-                  ''
-                 ]
+        fullname = classname + "." + trait.name
+        lines += [".. configtrait:: " + fullname, ""]
 
-        help = trait.help.rstrip() or 'No description'
-        lines.append(indent(inspect.cleandoc(help), 4) + '\n')
+        help = trait.help.rstrip() or "No description"
+        lines.append(indent(inspect.cleandoc(help), 4) + "\n")
 
         # Choices or type
-        if 'Enum' in ttype:
+        if "Enum" in ttype:
             # include Enum choices
-            lines.append(indent(
-                ':options: ' + ', '.join('``%r``' % x for x in trait.values), 4))
+            lines.append(
+                indent(":options: " + ", ".join("``%r``" % x for x in trait.values), 4)
+            )
         else:
-            lines.append(indent(':trait type: ' + ttype, 4))
+            lines.append(indent(":trait type: " + ttype, 4))
 
         # Default value
         # Ignore boring default values like None, [] or ''
@@ -65,20 +67,21 @@ def class_config_rst_doc(cls, trait_aliases):
                 dvr = None  # ignore defaults we can't construct
             if dvr is not None:
                 if len(dvr) > 64:
-                    dvr = dvr[:61] + '...'
+                    dvr = dvr[:61] + "..."
                 # Double up backslashes, so they get to the rendered docs
-                dvr = dvr.replace('\\n', '\\\\n')
-                lines.append(indent(':default: ``%s``' % dvr, 4))
+                dvr = dvr.replace("\\n", "\\\\n")
+                lines.append(indent(":default: ``%s``" % dvr, 4))
 
         # Command line aliases
         if trait_aliases[fullname]:
             fmt_aliases = format_aliases(trait_aliases[fullname])
-            lines.append(indent(':CLI option: ' + fmt_aliases, 4))
+            lines.append(indent(":CLI option: " + fmt_aliases, 4))
 
         # Blank line
-        lines.append('')
+        lines.append("")
 
-    return '\n'.join(lines)
+    return "\n".join(lines)
+
 
 def reverse_aliases(app):
     """Produce a mapping of trait names to lists of command line aliases.
@@ -96,33 +99,39 @@ def reverse_aliases(app):
             if len(cls_cfg) == 1:
                 traitname = list(cls_cfg)[0]
                 if cls_cfg[traitname] is True:
-                    res[classname+'.'+traitname].append(flag)
+                    res[classname + "." + traitname].append(flag)
 
     return res
 
+
 def write_doc(name, title, app, preamble=None):
     trait_aliases = reverse_aliases(app)
-    filename = join(options, name+'.rst')
-    with open(filename, 'w') as f:
-        f.write(title + '\n')
-        f.write(('=' * len(title)) + '\n')
-        f.write('\n')
+    filename = join(options, name + ".rst")
+    with open(filename, "w") as f:
+        f.write(title + "\n")
+        f.write(("=" * len(title)) + "\n")
+        f.write("\n")
         if preamble is not None:
-            f.write(preamble + '\n\n')
-        #f.write(app.document_config_options())
+            f.write(preamble + "\n\n")
+        # f.write(app.document_config_options())
 
         for c in app._classes_inc_parents():
             f.write(class_config_rst_doc(c, trait_aliases))
-            f.write('\n')
+            f.write("\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Touch this file for the make target
-    with open(generated, 'w'):
+    with open(generated, "w"):
         pass
 
-    write_doc('terminal', 'Terminal IPython options', TerminalIPythonApp())
-    write_doc('kernel', 'IPython kernel options', IPKernelApp(),
-        preamble=("These options can be used in :file:`ipython_kernel_config.py`. "
-                  "The kernel also respects any options in `ipython_config.py`"),
+    write_doc("terminal", "Terminal IPython options", TerminalIPythonApp())
+    write_doc(
+        "kernel",
+        "IPython kernel options",
+        IPKernelApp(),
+        preamble=(
+            "These options can be used in :file:`ipython_kernel_config.py`. "
+            "The kernel also respects any options in `ipython_config.py`"
+        ),
     )

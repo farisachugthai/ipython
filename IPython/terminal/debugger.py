@@ -9,17 +9,25 @@ from .ptutils import IPythonPTCompleter
 from .shortcuts import suspend_to_bg, cursor_in_leading_ws
 
 from prompt_toolkit.enums import DEFAULT_BUFFER
-from prompt_toolkit.filters import (Condition, has_focus, has_selection,
-    vi_insert_mode, emacs_insert_mode)
+from prompt_toolkit.filters import (
+    Condition,
+    has_focus,
+    has_selection,
+    vi_insert_mode,
+    emacs_insert_mode,
+)
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.bindings.completion import display_completions_like_readline
+from prompt_toolkit.key_binding.bindings.completion import (
+    display_completions_like_readline,
+)
 from pygments.token import Token
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.formatted_text import PygmentsTokens
 
 from prompt_toolkit import __version__ as ptk_version
-PTK3 = ptk_version.startswith('3.')
+
+PTK3 = ptk_version.startswith("3.")
 
 
 class TerminalPdb(Pdb):
@@ -35,23 +43,23 @@ class TerminalPdb(Pdb):
             return [(Token.Prompt, self.prompt)]
 
         if self._ptcomp is None:
-            compl = IPCompleter(shell=self.shell,
-                                        namespace={},
-                                        global_namespace={},
-                                        parent=self.shell,
-                                       )
+            compl = IPCompleter(
+                shell=self.shell, namespace={}, global_namespace={}, parent=self.shell,
+            )
             self._ptcomp = IPythonPTCompleter(compl)
 
         kb = KeyBindings()
-        supports_suspend = Condition(lambda: hasattr(signal, 'SIGTSTP'))
-        kb.add('c-z', filter=supports_suspend)(suspend_to_bg)
+        supports_suspend = Condition(lambda: hasattr(signal, "SIGTSTP"))
+        kb.add("c-z", filter=supports_suspend)(suspend_to_bg)
 
-        if self.shell.display_completions == 'readlinelike':
-            kb.add('tab', filter=(has_focus(DEFAULT_BUFFER)
-                                  & ~has_selection
-                                  & vi_insert_mode | emacs_insert_mode
-                                  & ~cursor_in_leading_ws
-                              ))(display_completions_like_readline)
+        if self.shell.display_completions == "readlinelike":
+            kb.add(
+                "tab",
+                filter=(
+                    has_focus(DEFAULT_BUFFER) & ~has_selection & vi_insert_mode
+                    | emacs_insert_mode & ~cursor_in_leading_ws
+                ),
+            )(display_completions_like_readline)
 
         options = dict(
             message=(lambda: PygmentsTokens(get_prompt_tokens())),
@@ -67,7 +75,7 @@ class TerminalPdb(Pdb):
         )
 
         if not PTK3:
-            options['inputhook'] = self.shell.inputhook
+            options["inputhook"] = self.shell.inputhook
         self.pt_loop = asyncio.new_event_loop()
         self.pt_app = PromptSession(**options)
 
@@ -79,7 +87,7 @@ class TerminalPdb(Pdb):
         override the same methods from cmd.Cmd to provide prompt toolkit replacement.
         """
         if not self.use_rawinput:
-            raise ValueError('Sorry ipdb does not support use_rawinput=False')
+            raise ValueError("Sorry ipdb does not support use_rawinput=False")
 
         # In order to make sure that asyncio code written in the
         # interactive shell doesn't interfere with the prompt, we run the
@@ -93,27 +101,28 @@ class TerminalPdb(Pdb):
             # This happens when the user used `asyncio.run()`.
             old_loop = None
 
-
         self.preloop()
 
         try:
             if intro is not None:
                 self.intro = intro
             if self.intro:
-                self.stdout.write(str(self.intro)+"\n")
+                self.stdout.write(str(self.intro) + "\n")
             stop = None
             while not stop:
                 if self.cmdqueue:
                     line = self.cmdqueue.pop(0)
                 else:
                     self._ptcomp.ipy_completer.namespace = self.curframe_locals
-                    self._ptcomp.ipy_completer.global_namespace = self.curframe.f_globals
+                    self._ptcomp.ipy_completer.global_namespace = (
+                        self.curframe.f_globals
+                    )
 
                     asyncio.set_event_loop(self.pt_loop)
                     try:
                         line = self.pt_app.prompt()
                     except EOFError:
-                        line = 'EOF'
+                        line = "EOF"
                     finally:
                         # Restore the original event loop.
                         asyncio.set_event_loop(old_loop)
@@ -135,8 +144,9 @@ def set_trace(frame=None):
     TerminalPdb().set_trace(frame or sys._getframe().f_back)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import pdb
+
     # IPython.core.debugger.Pdb.trace_dispatch shall not catch
     # bdb.BdbQuit. When started through __main__ and an exception
     # happened after hitting "c", this is needed in order to

@@ -3,5 +3,6 @@
 
 # Import setuptools and call the actual setup
 import setuptools
-with open('setup.py', 'rb') as f:
-    exec(compile(f.read(), 'setup.py', 'exec'))
+
+with open("setup.py", "rb") as f:
+    exec(compile(f.read(), "setup.py", "exec"))

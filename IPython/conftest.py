@@ -26,8 +26,6 @@ elif os.environ.get("XDG_CACHE_HOME", None):
     tempfile.tempdir = os.environ.get("XDG_CACHE_HOME")
 
 
-
-
 def get_ipython():
     if TerminalInteractiveShell._instance:
         return TerminalInteractiveShell.instance()
@@ -36,7 +34,7 @@ def get_ipython():
     config.TerminalInteractiveShell.simple_prompt = True
 
     config.TerminalInteractiveShell.profile_dir = tempfile.mkdtemp()
-    config.InteractiveShellApp.exec_files=[]
+    config.InteractiveShellApp.exec_files = []
 
     # Create and initialize our test-friendly IPython instance.
     shell = TerminalInteractiveShell.instance(config=config)
@@ -48,7 +46,9 @@ def work_path():
     path = pathlib.Path("./tmp-ipython-pytest-profiledir")
     os.environ["IPYTHONDIR"] = str(path.absolute())
     if path.exists():
-        raise ValueError('IPython dir temporary path already exists ! Did previous test run exit successfully ?')
+        raise ValueError(
+            "IPython dir temporary path already exists ! Did previous test run exit successfully ?"
+        )
     path.mkdir()
     yield
     shutil.rmtree(str(path.resolve()))
@@ -99,6 +99,7 @@ def pytest_runtest_makereport(item, call):
 
             f.write(rep.nodeid + extra + "\n")
 
+
 def nopage(strng, start=0, screen_lines=0, pager_cmd=None):
     if isinstance(strng, dict):
         strng = strng.get("text/plain", "")
@@ -118,7 +119,7 @@ def xsys(self, cmd):
 # unfortunately this will fail on some test that get executed as _collection_
 # time (before the fixture run), in particular parametrized test that contain
 # yields. so for now execute at import time.
-#@pytest.fixture(autouse=True, scope='session')
+# @pytest.fixture(autouse=True, scope='session')
 def inject():
 
     builtins.get_ipython = get_ipython
@@ -130,5 +131,6 @@ def inject():
 
     page.pager_page = nopage
     # yield
+
 
 inject()

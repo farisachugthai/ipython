@@ -6,8 +6,10 @@ import subprocess
 from IPython.core.error import TryNext
 import IPython.utils.py3compat as py3compat
 
+
 class ClipboardEmpty(ValueError):
     pass
+
 
 def win32_clipboard_get():
     """ Get the current clipboard's text on Windows.
@@ -17,8 +19,10 @@ def win32_clipboard_get():
     try:
         import win32clipboard
     except ImportError:
-        raise TryNext("Getting text from the clipboard requires the pywin32 "
-                      "extensions: http://sourceforge.net/projects/pywin32/")
+        raise TryNext(
+            "Getting text from the clipboard requires the pywin32 "
+            "extensions: http://sourceforge.net/projects/pywin32/"
+        )
     win32clipboard.OpenClipboard()
     try:
         text = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
@@ -32,16 +36,17 @@ def win32_clipboard_get():
         win32clipboard.CloseClipboard()
     return text
 
+
 def osx_clipboard_get() -> str:
     """ Get the clipboard's text on OS X.
     """
-    p = subprocess.Popen(['pbpaste', '-Prefer', 'ascii'],
-        stdout=subprocess.PIPE)
+    p = subprocess.Popen(["pbpaste", "-Prefer", "ascii"], stdout=subprocess.PIPE)
     bytes_, stderr = p.communicate()
     # Text comes in with old Mac \r line endings. Change them to \n.
-    bytes_ = bytes_.replace(b'\r', b'\n')
+    bytes_ = bytes_.replace(b"\r", b"\n")
     text = py3compat.decode(bytes_)
     return text
+
 
 def tkinter_clipboard_get():
     """ Get the clipboard's text using Tkinter.
@@ -51,10 +56,12 @@ def tkinter_clipboard_get():
     implementation that uses that toolkit.
     """
     try:
-        from tkinter import Tk, TclError 
+        from tkinter import Tk, TclError
     except ImportError:
-        raise TryNext("Getting text from the clipboard on this platform requires tkinter.")
-        
+        raise TryNext(
+            "Getting text from the clipboard on this platform requires tkinter."
+        )
+
     root = Tk()
     root.withdraw()
     try:
@@ -65,5 +72,3 @@ def tkinter_clipboard_get():
         root.destroy()
     text = py3compat.cast_unicode(text, py3compat.DEFAULT_ENCODING)
     return text
-
-

@@ -4,6 +4,7 @@ This file just contains doctests both using plain python and IPython prompts.
 All tests should be loaded by nose.
 """
 
+
 def pyfunc():
     """Some pure python tests...
 
@@ -21,7 +22,8 @@ def pyfunc():
     ...
     0 1 1 2 2 3 
     """
-    return 'pyfunc'
+    return "pyfunc"
+
 
 def ipfunc():
     """Some ipython tests...
@@ -69,7 +71,7 @@ def ipfunc():
     In [9]: ipfunc()
     Out[9]: 'ipfunc'
     """
-    return 'ipfunc'
+    return "ipfunc"
 
 
 def ranfunc():
@@ -99,7 +101,7 @@ def ranfunc():
        >>> ranfunc()
        'ranfunc'
     """
-    return 'ranfunc'
+    return "ranfunc"
 
 
 def random_all():
@@ -126,6 +128,7 @@ def random_all():
     """
     pass
 
+
 def iprand():
     """Some ipython tests with random output.
 
@@ -138,7 +141,8 @@ def iprand():
     In [9]: iprand()
     Out[9]: 'iprand'
     """
-    return 'iprand'
+    return "iprand"
+
 
 def iprand_all():
     """Some ipython tests with fully random output.
@@ -154,4 +158,4 @@ def iprand_all():
     In [9]: iprand_all()
     Out[9]: 'junk'
     """
-    return 'iprand_all'
+    return "iprand_all"

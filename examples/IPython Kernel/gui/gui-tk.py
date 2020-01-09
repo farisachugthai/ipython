@@ -8,11 +8,10 @@ In [5]: %gui tk
 In [6]: %run gui-tk.py
 """
 
-from tkinter import * 
+from tkinter import *
 
 
 class MyApp:
-
     def __init__(self, root):
         frame = Frame(root)
         frame.pack()
@@ -23,12 +22,14 @@ class MyApp:
     def hello_world(self):
         print("Hello World!")
 
+
 root = Tk()
 
 app = MyApp(root)
 
 try:
     from IPython.lib.inputhook import enable_gui
-    enable_gui('tk', root)
+
+    enable_gui("tk", root)
 except ImportError:
     root.mainloop()

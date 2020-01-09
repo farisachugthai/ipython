@@ -14,11 +14,14 @@ from gi.repository import Gtk
 def hello_world(wigdet, data=None):
     print("Hello World")
 
+
 def delete_event(widget, event, data=None):
     return False
 
+
 def destroy(widget, data=None):
     Gtk.main_quit()
+
 
 window = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
 window.connect("delete_event", delete_event)
@@ -32,6 +35,7 @@ window.show()
 
 try:
     from IPython.lib.inputhook import enable_gui
-    enable_gui('gtk3')
+
+    enable_gui("gtk3")
 except ImportError:
     Gtk.main()

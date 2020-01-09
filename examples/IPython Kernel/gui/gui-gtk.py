@@ -9,18 +9,22 @@ In [6]: %run gui-gtk.py
 """
 
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 
 
 def hello_world(wigdet, data=None):
     print("Hello World")
 
+
 def delete_event(widget, event, data=None):
     return False
 
+
 def destroy(widget, data=None):
     gtk.main_quit()
+
 
 window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 window.connect("delete_event", delete_event)
@@ -34,6 +38,7 @@ window.show()
 
 try:
     from IPython.lib.inputhook import enable_gui
-    enable_gui('gtk')
+
+    enable_gui("gtk")
 except ImportError:
     gtk.main()

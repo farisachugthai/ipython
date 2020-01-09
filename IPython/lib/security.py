@@ -1,9 +1,9 @@
 """
 Password generation for the IPython notebook.
 """
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Imports
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Stdlib
 import getpass
 import hashlib
@@ -13,19 +13,20 @@ import random
 from IPython.core.error import UsageError
 from IPython.utils.py3compat import encode
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Globals
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Length of the salt in nr of hex chars, which implies salt_len * 4
 # bits of randomness.
 salt_len = 12
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-def passwd(passphrase=None, algorithm='sha1'):
+
+def passwd(passphrase=None, algorithm="sha1"):
     """Generate hashed password and salt for use in notebook configuration.
 
     In the notebook configuration, set `c.NotebookApp.password` to
@@ -53,21 +54,21 @@ def passwd(passphrase=None, algorithm='sha1'):
     """
     if passphrase is None:
         for i in range(3):
-            p0 = getpass.getpass('Enter password: ')
-            p1 = getpass.getpass('Verify password: ')
+            p0 = getpass.getpass("Enter password: ")
+            p1 = getpass.getpass("Verify password: ")
             if p0 == p1:
                 passphrase = p0
                 break
             else:
-                print('Passwords do not match.')
+                print("Passwords do not match.")
         else:
-            raise UsageError('No matching passwords found. Giving up.')
+            raise UsageError("No matching passwords found. Giving up.")
 
     h = hashlib.new(algorithm)
-    salt = ('%0' + str(salt_len) + 'x') % random.getrandbits(4 * salt_len)
-    h.update(encode(passphrase, 'utf-8') + encode(salt, 'ascii'))
+    salt = ("%0" + str(salt_len) + "x") % random.getrandbits(4 * salt_len)
+    h.update(encode(passphrase, "utf-8") + encode(salt, "ascii"))
 
-    return ':'.join((algorithm, salt, h.hexdigest()))
+    return ":".join((algorithm, salt, h.hexdigest()))
 
 
 def passwd_check(hashed_passphrase, passphrase):
@@ -97,7 +98,7 @@ def passwd_check(hashed_passphrase, passphrase):
     False
     """
     try:
-        algorithm, salt, pw_digest = hashed_passphrase.split(':', 2)
+        algorithm, salt, pw_digest = hashed_passphrase.split(":", 2)
     except (ValueError, TypeError):
         return False
 
@@ -109,6 +110,6 @@ def passwd_check(hashed_passphrase, passphrase):
     if len(pw_digest) == 0:
         return False
 
-    h.update(encode(passphrase, 'utf-8') + encode(salt, 'ascii'))
+    h.update(encode(passphrase, "utf-8") + encode(salt, "ascii"))
 
     return h.hexdigest() == pw_digest

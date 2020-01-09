@@ -14,33 +14,48 @@ from IPython.utils.capture import capture_output
 from IPython.terminal.ptutils import _elide, _adjust_completion_text_based_on_context
 import nose.tools as nt
 
-class TestElide(unittest.TestCase):
 
+class TestElide(unittest.TestCase):
     def test_elide(self):
-        _elide('concatenate((a1, a2, ...), axis') # do not raise
-        _elide('concatenate((a1, a2, ..), . axis') # do not raise
-        nt.assert_equal(_elide('aaaa.bbbb.ccccc.dddddd.eeeee.fffff.gggggg.hhhhhh'), 'aaaa.b…g.hhhhhh')
+        _elide("concatenate((a1, a2, ...), axis")  # do not raise
+        _elide("concatenate((a1, a2, ..), . axis")  # do not raise
+        nt.assert_equal(
+            _elide("aaaa.bbbb.ccccc.dddddd.eeeee.fffff.gggggg.hhhhhh"),
+            "aaaa.b…g.hhhhhh",
+        )
 
 
 class TestContextAwareCompletion(unittest.TestCase):
-
     def test_adjust_completion_text_based_on_context(self):
         # Adjusted case
-        nt.assert_equal(_adjust_completion_text_based_on_context('arg1=', 'func1(a=)', 7), 'arg1')
+        nt.assert_equal(
+            _adjust_completion_text_based_on_context("arg1=", "func1(a=)", 7), "arg1"
+        )
 
         # Untouched cases
-        nt.assert_equal(_adjust_completion_text_based_on_context('arg1=', 'func1(a)', 7), 'arg1=')
-        nt.assert_equal(_adjust_completion_text_based_on_context('arg1=', 'func1(a', 7), 'arg1=')
-        nt.assert_equal(_adjust_completion_text_based_on_context('%magic', 'func1(a=)', 7), '%magic')
-        nt.assert_equal(_adjust_completion_text_based_on_context('func2', 'func1(a=)', 7), 'func2')
+        nt.assert_equal(
+            _adjust_completion_text_based_on_context("arg1=", "func1(a)", 7), "arg1="
+        )
+        nt.assert_equal(
+            _adjust_completion_text_based_on_context("arg1=", "func1(a", 7), "arg1="
+        )
+        nt.assert_equal(
+            _adjust_completion_text_based_on_context("%magic", "func1(a=)", 7), "%magic"
+        )
+        nt.assert_equal(
+            _adjust_completion_text_based_on_context("func2", "func1(a=)", 7), "func2"
+        )
+
 
 # Decorator for interaction loop tests -----------------------------------------
+
 
 class mock_input_helper(object):
     """Machinery for tests of the main interact loop.
 
     Used by the mock_input decorator.
     """
+
     def __init__(self, testgen):
         self.testgen = testgen
         self.exception = None
@@ -59,11 +74,11 @@ class mock_input_helper(object):
             return next(self.testgen)
         except StopIteration:
             self.ip.keep_running = False
-            return u''
+            return u""
         except:
             self.exception = sys.exc_info()
             self.ip.keep_running = False
-            return u''
+            return u""
 
 
 def mock_input(testfunc, *args, **kwargs):
@@ -87,13 +102,14 @@ def mock_input(testfunc, *args, **kwargs):
 
     return test_method(testfunc, *args, **kwargs)
 
+
 # Test classes -----------------------------------------------------------------
 
 
 def syntax_error_transformer(lines):
     """Transformer that throws SyntaxError if 'syntaxerror' is in the code."""
     for line in lines:
-        pos = line.find('syntaxerror')
+        pos = line.find("syntaxerror")
         if pos >= 0:
             e = SyntaxError('input contains "syntaxerror"')
             e.text = line
@@ -103,13 +119,15 @@ def syntax_error_transformer(lines):
 
 
 class InteractiveShellTestCase(unittest.TestCase):
-
     def setUp(self):
         ip = get_ipython()
 
     def rl_hist_entries(self, rl, n):
         """Get last n readline history entries as a list"""
-        return [rl.get_history_item(rl.get_current_history_length() - x) for x in range(n - 1, -1, -1)]
+        return [
+            rl.get_history_item(rl.get_current_history_length() - x)
+            for x in range(n - 1, -1, -1)
+        ]
 
     def test_raising_syntaxerror(self):
         with self.assertRaises(SyntaxError) as exc_info:
@@ -117,21 +135,20 @@ class InteractiveShellTestCase(unittest.TestCase):
         assert exc_info.type is SyntaxError
         assert exc_info.value.args[0] == "value must be 42"
 
-
     @mock_input
     def test_inputtransformer_syntaxerror(self):
         ip.input_transformers_post.append(syntax_error_transformer)
 
         try:
-            #raise Exception
-            with tt.AssertPrints('4', suppress=False):
-                yield u'print(2*2)'
+            # raise Exception
+            with tt.AssertPrints("4", suppress=False):
+                yield u"print(2*2)"
 
-            with tt.AssertPrints('SyntaxError: input contains', suppress=False):
-                yield u'print(2345) # syntaxerror'
+            with tt.AssertPrints("SyntaxError: input contains", suppress=False):
+                yield u"print(2345) # syntaxerror"
 
-            with tt.AssertPrints('16', suppress=False):
-                yield u'print(4*4)'
+            with tt.AssertPrints("16", suppress=False):
+                yield u"print(4*4)"
 
         finally:
             ip.input_transformers_post.remove(syntax_error_transformer)
@@ -139,7 +156,7 @@ class InteractiveShellTestCase(unittest.TestCase):
     def test_plain_text_only(self):
         ip = get_ipython()
         formatter = ip.display_formatter
-        assert formatter.active_types == ['text/plain']
+        assert formatter.active_types == ["text/plain"]
         assert not formatter.ipython_display_formatter.enabled
 
         class Test(object):
@@ -147,36 +164,35 @@ class InteractiveShellTestCase(unittest.TestCase):
                 return "<Test %i>" % id(self)
 
             def _repr_html_(self):
-                return '<html>'
+                return "<html>"
 
         # verify that HTML repr isn't computed
         obj = Test()
         data, _ = formatter.format(obj)
-        self.assertEqual(data, {'text/plain': repr(obj)})
+        self.assertEqual(data, {"text/plain": repr(obj)})
 
         class Test2(Test):
             def _ipython_display_(self):
                 from IPython.display import display
-                display('<custom>')
+
+                display("<custom>")
 
         # verify that _ipython_display_ shortcut isn't called
         obj = Test2()
         with capture_output() as captured:
             data, _ = formatter.format(obj)
 
-        self.assertEqual(data, {'text/plain': repr(obj)})
-        assert captured.stdout == ''
+        self.assertEqual(data, {"text/plain": repr(obj)})
+        assert captured.stdout == ""
+
 
 class TerminalMagicsTestCase(unittest.TestCase):
     def test_paste_magics_blankline(self):
         """Test that code with a blank line doesn't get split (gh-3246)."""
         ip = get_ipython()
-        s = ('def pasted_func(a):\n'
-             '    b = a+1\n'
-             '\n'
-             '    return b')
+        s = "def pasted_func(a):\n" "    b = a+1\n" "\n" "    return b"
 
-        tm = ip.magics_manager.registry['TerminalMagics']
+        tm = ip.magics_manager.registry["TerminalMagics"]
         tm.store_or_execute(s, name=None)
 
-        self.assertEqual(ip.user_ns['pasted_func'](54), 55)
+        self.assertEqual(ip.user_ns["pasted_func"](54), 55)

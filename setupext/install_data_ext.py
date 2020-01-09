@@ -7,8 +7,8 @@ import os
 from distutils.command.install_data import install_data
 from distutils.util import change_root, convert_path
 
-class install_data_ext(install_data):
 
+class install_data_ext(install_data):
     def initialize_options(self):
         self.install_base = None
         self.install_platbase = None
@@ -23,24 +23,20 @@ class install_data_ext(install_data):
         self.force = 0
         self.data_files = self.distribution.data_files
         self.warn_dir = 1
-        
 
     def finalize_options(self):
-        self.set_undefined_options('install',
-                                   ('root', 'root'),
-                                   ('force', 'force'),
-                                   ('install_base', 'install_base'),
-                                   ('install_platbase',
-                                    'install_platbase'),
-                                   ('install_purelib',
-                                    'install_purelib'),
-                                   ('install_headers',
-                                    'install_headers'),
-                                   ('install_lib', 'install_lib'),
-                                   ('install_scripts',
-                                    'install_scripts'),
-                                   ('install_data', 'install_data'))
-                                   
+        self.set_undefined_options(
+            "install",
+            ("root", "root"),
+            ("force", "force"),
+            ("install_base", "install_base"),
+            ("install_platbase", "install_platbase"),
+            ("install_purelib", "install_purelib"),
+            ("install_headers", "install_headers"),
+            ("install_lib", "install_lib"),
+            ("install_scripts", "install_scripts"),
+            ("install_data", "install_data"),
+        )
 
     def run(self):
         """
@@ -52,9 +48,9 @@ class install_data_ext(install_data):
         """
         for lof in self.data_files:
             if lof[0]:
-                base = getattr(self, 'install_' + lof[0])
+                base = getattr(self, "install_" + lof[0])
             else:
-                base = getattr(self, 'install_base')
+                base = getattr(self, "install_base")
             dir = convert_path(lof[1])
             if not os.path.isabs(dir):
                 dir = os.path.join(base, dir)
@@ -73,8 +69,7 @@ class install_data_ext(install_data):
                 for f in files:
                     f = convert_path(f)
                     (out, _) = self.copy_file(f, dir)
-                    #print "DEBUG: ", out  # dbg
+                    # print "DEBUG: ", out  # dbg
                     self.outfiles.append(out)
-                    
 
         return self.outfiles

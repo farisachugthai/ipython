@@ -10,6 +10,7 @@ launch InteractiveShell instances, load extensions, etc.
 import abc
 import glob
 import logging
+
 # from logging.handlers import BufferingHandler
 from itertools import chain
 import os
@@ -133,8 +134,7 @@ class InteractiveShellApp(LoggingConfigurable):
     """
 
     extensions = List(
-        Unicode(),
-        help="A list of dotted module names of IPython extensions to load."
+        Unicode(), help="A list of dotted module names of IPython extensions to load."
     ).tag(config=True)
 
     extra_extension = Unicode(
@@ -142,8 +142,7 @@ class InteractiveShellApp(LoggingConfigurable):
     ).tag(config=True)
 
     reraise_ipython_extension_failures = Bool(
-        False,
-        help="Reraise exceptions encountered loading IPython extensions?",
+        False, help="Reraise exceptions encountered loading IPython extensions?",
     ).tag(config=True)
 
     # Extensions that are always loaded (not configurable)
@@ -156,8 +155,7 @@ class InteractiveShellApp(LoggingConfigurable):
     ).tag(config=True)
 
     exec_files = List(
-        Unicode(),
-        help="""List of files to run at IPython startup."""
+        Unicode(), help="""List of files to run at IPython startup."""
     ).tag(config=True)
 
     exec_PYTHONSTARTUP = Bool(
@@ -507,8 +505,6 @@ class InteractiveShellApp(LoggingConfigurable):
 
 
 class InteractiveShellAppABC(InteractiveShellApp):
-
     @abc.abstractmethod
     def init_shell(self):
         raise NotImplementedError("Override in subclasses")
-

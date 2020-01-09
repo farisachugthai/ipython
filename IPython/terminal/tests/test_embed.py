@@ -60,10 +60,10 @@ def teardown_module():
 
 
 # def test_instantiating_terminal_interactiveshell_embed():
-    # Wait am i gonna get stuck if i do this
-    # Shit this isn't gonna be a simple place to start
-    # embedded = InteractiveShellEmbed()
-    # nt.assertIsInstance(embedded, TerminalInteractiveShell)
+# Wait am i gonna get stuck if i do this
+# Shit this isn't gonna be a simple place to start
+# embedded = InteractiveShellEmbed()
+# nt.assertIsInstance(embedded, TerminalInteractiveShell)
 
 
 def test_ipython_embed():

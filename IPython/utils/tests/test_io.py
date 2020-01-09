@@ -16,28 +16,28 @@ import nose.tools as nt
 from IPython.utils.io import IOStream, Tee, capture_output
 from IPython.testing.decorators import skip_win32
 
+
 def test_tee_simple():
     "Very simple check with stdout only"
     chan = StringIO()
-    text = 'Hello'
-    tee = Tee(chan, channel='stdout')
+    text = "Hello"
+    tee = Tee(chan, channel="stdout")
     print(text, file=chan)
-    nt.assert_equal(chan.getvalue(), text+"\n")
+    nt.assert_equal(chan.getvalue(), text + "\n")
 
 
 class TeeTestCase(unittest.TestCase):
-
     def tchan(self, channel):
         trap = StringIO()
         chan = StringIO()
-        text = 'Hello'
+        text = "Hello"
 
         std_ori = getattr(sys, channel)
         setattr(sys, channel, trap)
 
         tee = Tee(chan, channel=channel)
 
-        print(text, end='', file=chan)
+        print(text, end="", file=chan)
         trap_val = trap.getvalue()
         nt.assert_equal(chan.getvalue(), text)
 
@@ -47,21 +47,21 @@ class TeeTestCase(unittest.TestCase):
         assert getattr(sys, channel) == std_ori
 
     def test_trap_stdout_and_stderr_with_Tee(self):
-        for chan in ['stdout', 'stderr']:
+        for chan in ["stdout", "stderr"]:
             self.tchan(chan)
 
 
 @skip_win32
 def test_io_init():
     """Test that io.stdin/out/err exist at startup"""
-    for name in ('stdin', 'stdout', 'stderr'):
-        cmd = "from IPython.utils import io;print(io.%s.__class__)"%name
-        with Popen([sys.executable, '-c', cmd], stdout=PIPE) as p:
+    for name in ("stdin", "stdout", "stderr"):
+        cmd = "from IPython.utils import io;print(io.%s.__class__)" % name
+        with Popen([sys.executable, "-c", cmd], stdout=PIPE) as p:
             p.wait()
-            classname = p.stdout.read().strip().decode('ascii')
+            classname = p.stdout.read().strip().decode("ascii")
         # __class__ is a reference to the class object in Python 3, so we can't
         # just test for string equality.
-        assert 'IPython.utils.io.IOStream' in classname, classname
+        assert "IPython.utils.io.IOStream" in classname, classname
 
 
 class TestIOStream(unittest.TestCase):
@@ -73,21 +73,22 @@ class TestIOStream(unittest.TestCase):
         class BadStringIO(StringIO):
             def __dir__(self):
                 attrs = super().__dir__()
-                attrs.append('name')
+                attrs.append("name")
                 return attrs
+
         with self.assertWarns(DeprecationWarning):
             iostream = IOStream(BadStringIO())
-            iostream.write('hi, bad iostream\n')
+            iostream.write("hi, bad iostream\n")
 
-        assert not hasattr(iostream, 'name')
+        assert not hasattr(iostream, "name")
         iostream.close()
 
     def test_capture_output(self):
         """capture_output() context works"""
 
         with capture_output() as io:
-            print('hi, stdout')
-            print('hi, stderr', file=sys.stderr)
+            print("hi, stdout")
+            print("hi, stderr", file=sys.stderr)
 
-        nt.assert_equal(io.stdout, 'hi, stdout\n')
-        nt.assert_equal(io.stderr, 'hi, stderr\n')
+        nt.assert_equal(io.stdout, "hi, stdout\n")
+        nt.assert_equal(io.stderr, "hi, stderr\n")
