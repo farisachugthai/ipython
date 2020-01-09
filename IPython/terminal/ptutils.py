@@ -154,23 +154,42 @@ class IPythonPTCompleter(Completer):
 
 
 class IPythonPTLexer(Lexer):
+    """Wrapper around PythonLexer and BashLexer.
+
+    Is it a missed super() call if the superclass is an abc class?
     """
-    Wrapper around PythonLexer and BashLexer.
-    """
+
+    # from pygments.lexer.Lexer
+    #: Name of the lexer
+    name = "IPythonPTLexer"
+
+    #: Shortcuts for the lexer
+    aliases = ["ipython", "ipy", "ipython3"]
+
+    #: File name globs
+    filenames = ["*.py", "*.ipy", "*.ipynb"]
+
+    #: Secondary file name globs
+    alias_filenames = []
+
+    #: MIME types
+    mimetypes = []
+
+    #: Priority, should multiple lexers match and no content is provided
+    priority = 0
 
     def __init__(self):
-        l = pygments_lexers
-        self.python_lexer = PygmentsLexer(l.Python3Lexer)
-        self.shell_lexer = PygmentsLexer(l.BashLexer)
+        self.python_lexer = PygmentsLexer(pygments_lexers.Python3Lexer)
+        self.shell_lexer = PygmentsLexer(pygments_lexers.BashLexer)
 
         self.magic_lexers = {
-            "HTML": PygmentsLexer(l.HtmlLexer),
-            "html": PygmentsLexer(l.HtmlLexer),
-            "javascript": PygmentsLexer(l.JavascriptLexer),
-            "js": PygmentsLexer(l.JavascriptLexer),
-            "perl": PygmentsLexer(l.PerlLexer),
-            "ruby": PygmentsLexer(l.RubyLexer),
-            "latex": PygmentsLexer(l.TexLexer),
+            "HTML": PygmentsLexer(pygments_lexers.HtmlLexer),
+            "html": PygmentsLexer(pygments_lexers.HtmlLexer),
+            "javascript": PygmentsLexer(pygments_lexers.JavascriptLexer),
+            "js": PygmentsLexer(pygments_lexers.JavascriptLexer),
+            "perl": PygmentsLexer(pygments_lexers.PerlLexer),
+            "ruby": PygmentsLexer(pygments_lexers.RubyLexer),
+            "latex": PygmentsLexer(pygments_lexers.TexLexer),
         }
 
     def lex_document(self, document):
