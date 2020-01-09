@@ -7,8 +7,10 @@ launch InteractiveShell instances, load extensions, etc.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+import abc
 import glob
 import logging
+# from logging.handlers import BufferingHandler
 from itertools import chain
 import os
 import sys
@@ -130,16 +132,18 @@ class InteractiveShellApp(LoggingConfigurable):
       - :meth:`init_code`
     """
 
-    handler = Instance(logging.StreamHandler, allow_none=True).tag(config=True)
     extensions = List(
-        Unicode(), help="A list of dotted module names of IPython extensions to load."
+        Unicode(),
+        help="A list of dotted module names of IPython extensions to load."
     ).tag(config=True)
+
     extra_extension = Unicode(
         "", help="dotted module name of an IPython extension to load."
     ).tag(config=True)
 
     reraise_ipython_extension_failures = Bool(
-        False, help="Reraise exceptions encountered loading IPython extensions?",
+        False,
+        help="Reraise exceptions encountered loading IPython extensions?",
     ).tag(config=True)
 
     # Extensions that are always loaded (not configurable)
@@ -152,31 +156,39 @@ class InteractiveShellApp(LoggingConfigurable):
     ).tag(config=True)
 
     exec_files = List(
-        Unicode(), help="""List of files to run at IPython startup."""
+        Unicode(),
+        help="""List of files to run at IPython startup."""
     ).tag(config=True)
+
     exec_PYTHONSTARTUP = Bool(
         True,
         help="""Run the file referenced by the PYTHONSTARTUP environment
         variable at IPython startup.""",
     ).tag(config=True)
+
     file_to_run = Unicode("", help="""A file to be run""").tag(config=True)
 
     exec_lines = List(
         Unicode(), help="""lines of code to run at IPython startup."""
     ).tag(config=True)
+
     code_to_run = Unicode("", help="Execute the given command string.").tag(config=True)
+
     module_to_run = Unicode("", help="Run the module as a script.").tag(config=True)
+
     gui = CaselessStrEnum(
         gui_keys,
         allow_none=True,
         help="Enable GUI event loop integration with any of {0}.".format(gui_keys),
     ).tag(config=True)
+
     matplotlib = CaselessStrEnum(
         backend_keys,
         allow_none=True,
         help="""Configure matplotlib for interactive use with
         the default matplotlib backend.""",
     ).tag(config=True)
+
     pylab = CaselessStrEnum(
         backend_keys,
         allow_none=True,
@@ -184,6 +196,7 @@ class InteractiveShellApp(LoggingConfigurable):
         selecting a particular matplotlib backend and loop integration.
         """,
     ).tag(config=True)
+
     pylab_import_all = Bool(
         True,
         help="""If true, IPython will populate the user namespace with numpy, pylab, etc.
@@ -192,9 +205,11 @@ class InteractiveShellApp(LoggingConfigurable):
         When False, pylab mode should not import any names into the user namespace.
         """,
     ).tag(config=True)
+
     shell = Instance(
         "IPython.core.interactiveshell.InteractiveShellABC", allow_none=True
     )
+
     # whether interact-loop should start
     interact = Bool(True)
 
@@ -228,15 +243,12 @@ class InteractiveShellApp(LoggingConfigurable):
             idx = 0
         sys.path.insert(idx, "")
 
-    def init_shell(self):
-        raise NotImplementedError("Override in subclasses")
-
     def init_gui_pylab(self):
         if self.pylab:
+
             def enable(key):
-                return self.shell.enable_pylab(
-                    key, import_all=self.pylab_import_all
-                    )
+                return self.shell.enable_pylab(key, import_all=self.pylab_import_all)
+
             key = self.pylab
         elif self.matplotlib:
             enable = shell.enable_matplotlib
@@ -341,7 +353,7 @@ class InteractiveShellApp(LoggingConfigurable):
 
         should * not* be excluded from `%whos`.
         """
-        self.log.addHandler(self.handler)
+        self.log.addHandler(logging.StreamHandler())
         self._run_startup_files()
         self._run_exec_lines()
 
@@ -492,3 +504,11 @@ class InteractiveShellApp(LoggingConfigurable):
                 self.shell.safe_run_module(self.module_to_run, self.shell.user_ns)
             finally:
                 sys.argv = save_argv
+
+
+class InteractiveShellAppABC(InteractiveShellApp):
+
+    @abc.abstractmethod
+    def init_shell(self):
+        raise NotImplementedError("Override in subclasses")
+
