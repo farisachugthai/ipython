@@ -2,6 +2,7 @@
 
 import asyncio
 import os
+import reprlib
 import sys
 import warnings
 from warnings import warn
@@ -52,12 +53,12 @@ from pygments.styles import get_style_by_name
 from pygments.style import Style
 from pygments.token import Token
 
-from .debugger import TerminalPdb, Pdb
-from .magics import TerminalMagics
-from .pt_inputhooks import get_inputhook_name_and_func
-from .prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
-from .ptutils import IPythonPTCompleter, IPythonPTLexer
-from .shortcuts import create_ipython_shortcuts
+from IPython.terminal.debugger import TerminalPdb, Pdb
+from IPython.terminal.magics import TerminalMagics
+from IPython.terminal.pt_inputhooks import get_inputhook_name_and_func
+from IPython.terminal.prompts import Prompts, ClassicPrompts, RichPromptDisplayHook
+from IPython.terminal.ptutils import IPythonPTCompleter, IPythonPTLexer
+from IPython.terminal.shortcuts import create_ipython_shortcuts
 
 DISPLAY_BANNER_DEPRECATED = object()
 PTK3 = ptk_version.startswith("3.")
@@ -247,10 +248,6 @@ class TerminalInteractiveShell(InteractiveShell):
     def _prompts_default(self):
         return self.prompts_class(self)
 
-    #    @observe('prompts')
-    #    def _(self, change):
-    #        self._update_layout()
-
     @default("displayhook_class")
     def _displayhook_class_default(self):
         return RichPromptDisplayHook
@@ -335,6 +332,8 @@ class TerminalInteractiveShell(InteractiveShell):
                 return "\n".join(lines)
 
             self.prompt_for_code = prompt
+            # Wait doesn't this leave self.pt_app undefined?
+            # self.pt_app
             return
 
         # Set up keyboard shortcuts
@@ -379,8 +378,8 @@ class TerminalInteractiveShell(InteractiveShell):
         We need that to add style for prompt ... etc.
         """
         style_overrides = {}
+        name_or_cls = str(name_or_cls).lower()
         if name_or_cls == "legacy":
-            legacy = self.colors.lower()
             if legacy == "linux":
                 style_cls = get_style_by_name("monokai")
                 style_overrides = _style_overrides_linux
@@ -712,9 +711,8 @@ class TerminalInteractiveShell(InteractiveShell):
             self.prompts = self._prompts_before
             self._prompts_before = None
 
-
-#        self._update_layout()
-
+    def __repr__(self):
+        return f"{self.__class__.__name__}"
 
 InteractiveShellABC.register(TerminalInteractiveShell)
 

@@ -351,7 +351,10 @@ class InteractiveShellApp(LoggingConfigurable):
 
         should * not* be excluded from `%whos`.
         """
-        self.log.addHandler(logging.StreamHandler())
+        if len(self.log.handlers) == 0:
+            self.log.addHandler(logging.StreamHandler())
+        if self.log.handlers[0]:
+            self.log.handlers[0].setLevel(logging.WARNING)
         self._run_startup_files()
         self._run_exec_lines()
 
