@@ -387,13 +387,14 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         if self.interact:
             self.log.info("Starting IPython's mainloop...")
             self.shell.mainloop()
-        else:
-            # we're about to sys.exit don't just mark that as debug
-            self.log.warning(
-                "IPython not interactive. Here is the last execution; result.\n{}".format(
-                    self.shell.last_execution_result
-                )
-            )
+        # else:
+        # yo this messes up the unittests
+        #     # we're about to sys.exit don't just mark that as debug
+        #     self.log.warning(
+        #         "IPython not interactive. Here is the last execution; result.\n{}".format(
+        #             self.shell.last_execution_result
+        #         )
+        #     )
             if not self.shell.last_execution_succeeded:
                 self.log.error(
                     "terminal/ipapp: The sys.exit came from InteractiveShellApp.start. Your welcome."

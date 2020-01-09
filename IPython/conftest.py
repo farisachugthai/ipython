@@ -26,6 +26,7 @@ elif os.environ.get("XDG_CACHE_HOME", None):
     tempfile.tempdir = os.environ.get("XDG_CACHE_HOME")
 
 
+@pytest.fixture(autouse=True, scope='session')
 def get_ipython():
     if TerminalInteractiveShell._instance:
         return TerminalInteractiveShell.instance()
@@ -76,7 +77,7 @@ def pytest_collection_modifyitems(config, items):
 
 
 # @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
+# def pytest_runtest_makereport(item, call):
     # If you want to postprocess test reports and need access to the executing
     #  environment you can implement a hook that gets called when the test
     # “report” object is about to be created. Here we write out all failing test # calls and also access a fixture(if it was used by the test) in case you
@@ -84,20 +85,20 @@ def pytest_runtest_makereport(item, call):
     # just write some information out to a failures file:
 
     # execute all other hooks to obtain the report object
-    outcome = yield
-    rep = outcome.get_result()
+    # outcome = yield
+    # rep = outcome.get_result()
 
-    # we only look at actual failing test calls, not setup/teardown
-    if rep.when == "call" and rep.failed:
-        mode = "a" if os.path.exists("failures.rst.ignore") else "w"
-        with open("failures.rst.ignore", mode) as f:
-            # let's also access a fixture for the fun of it
-            if "tmpdir" in item.fixturenames:
-                extra = " ({})".format(item.funcargs["tmpdir"])
-            else:
-                extra = ""
+    # # we only look at actual failing test calls, not setup/teardown
+    # if rep.when == "call" and rep.failed:
+    #     mode = "a" if os.path.exists("failures.rst.ignore") else "w"
+    #     with open("failures.rst.ignore", mode) as f:
+    #         # let's also access a fixture for the fun of it
+    #         if "tmpdir" in item.fixturenames:
+    #             extra = " ({})".format(item.funcargs["tmpdir"])
+    #         else:
+    #             extra = ""
 
-            f.write(rep.nodeid + extra + "\n")
+    #         f.write(rep.nodeid + extra + "\n")
 
 
 def nopage(strng, start=0, screen_lines=0, pager_cmd=None):

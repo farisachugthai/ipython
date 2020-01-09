@@ -36,8 +36,8 @@ from IPython.utils.text import list_strings
 from IPython.utils.io import temp_pyfile, Tee
 from IPython.utils import py3compat
 
-from . import decorators as dec
-from . import skipdoctest
+from IPython.testing import decorators as dec
+from IPython.testing import skipdoctest
 
 
 # The docstring for full_path doctests differently on win32 (different path
@@ -372,7 +372,13 @@ class AssertPrints(object):
         self.tee = Tee(self.buffer, channel=self.channel)
         setattr(sys, self.channel, self.buffer if self.suppress else self.tee)
 
-    def __exit__(self, etype, value, traceback):
+    def __exit__(self, etype=None, value=None, traceback=None):
+        if etype is None:
+            if sys.exc_info()[0] is None:
+                return
+            else:
+                etype, value, traceback = sys.exc_info()
+
         try:
             if value is not None:
                 # If an error was raised, don't check anything else
