@@ -75,7 +75,7 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_slow)
 
 
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+# @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     # If you want to postprocess test reports and need access to the executing
     #  environment you can implement a hook that gets called when the test
