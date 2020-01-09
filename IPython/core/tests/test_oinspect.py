@@ -11,7 +11,7 @@ import re
 
 import nose.tools as nt
 
-from .. import oinspect
+from IPython.core import oinspect
 
 from decorator import decorator
 
@@ -27,9 +27,9 @@ inspector = None
 
 
 def setup_module():
-    global inspector
+    global inspector, ip
     inspector = oinspect.Inspector()
-
+    ip = get_ipython()
 
 # -----------------------------------------------------------------------------
 # Local utilities
@@ -38,7 +38,6 @@ def setup_module():
 # WARNING: since this test checks the line number where a function is
 # defined, if any code is inserted above, the following line will need to be
 # updated.  Do NOT insert any whitespace between the next line and the function
-# definition below.
 THIS_LINE_NUMBER = 41  # Put here the actual number of this line
 
 from unittest import TestCase
@@ -63,6 +62,7 @@ def match_pyfiles(f1, f2):
 
 
 def test_find_file():
+    # tbf though findfile is from ipython_genutils/traitlets
     match_pyfiles(oinspect.find_file(test_find_file), os.path.abspath(__file__))
 
 

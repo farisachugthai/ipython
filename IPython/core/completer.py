@@ -145,7 +145,7 @@ skip_doctest = True
 try:
     import jedi
 
-    jedi.settings.case_insensitive_completion = False
+    # jedi.settings.case_insensitive_completion = False
     import jedi.api.helpers
     import jedi.api.classes
 

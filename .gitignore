@@ -1,3 +1,7 @@
+.vs
+TestResults
+*.sln
+*.pyproj
 **htmlcov**
 *.ignore
 coverage.xml

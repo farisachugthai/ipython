@@ -1877,7 +1877,12 @@ class InteractiveShell(SingletonConfigurable):
     def _inspect(self, meth, oname, namespaces=None, **kw):
         """Generic interface to the inspector system.
 
-        This function is meant to be called by pdef, pdoc & friends.
+        This function is meant to be called by `%pdef`, `%pdoc` & friends.
+
+        Parameters
+        ----------
+
+
         """
         info = self._object_find(oname, namespaces)
         docformat = sphinxify if self.sphinxify_docstring else None

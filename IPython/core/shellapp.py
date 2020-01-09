@@ -8,12 +8,13 @@ launch InteractiveShell instances, load extensions, etc.
 # Distributed under the terms of the Modified BSD License.
 
 import glob
+import logging
 from itertools import chain
 import os
 import sys
 
 from traitlets.config.application import boolean_flag
-from traitlets.config.configurable import Configurable
+from traitlets.config.configurable import LoggingConfigurable
 from traitlets.config.loader import Config
 from IPython.core.application import SYSTEM_CONFIG_DIRS, ENV_CONFIG_DIRS
 from IPython.core import pylabtools
@@ -113,7 +114,7 @@ shell_aliases["cache-size"] = "InteractiveShell.cache_size"
 # -----------------------------------------------------------------------------
 
 
-class InteractiveShellApp(Configurable):
+class InteractiveShellApp(LoggingConfigurable):
     """A Mixin for applications that start InteractiveShell instances.
 
     Provides configurables for loading extensions and executing files
@@ -129,6 +130,7 @@ class InteractiveShellApp(Configurable):
       - :meth:`init_code`
     """
 
+    handler = Instance(logging.StreamHandler, allow_none=True).tag(config=True)
     extensions = List(
         Unicode(), help="A list of dotted module names of IPython extensions to load."
     ).tag(config=True)
@@ -230,13 +232,11 @@ class InteractiveShellApp(Configurable):
         raise NotImplementedError("Override in subclasses")
 
     def init_gui_pylab(self):
-        """Enable GUI event loop integration, taking pylab into account."""
-        enable = False
-        shell = self.shell
         if self.pylab:
-            enable = lambda key: shell.enable_pylab(
-                key, import_all=self.pylab_import_all
-            )
+            def enable(key):
+                return self.shell.enable_pylab(
+                    key, import_all=self.pylab_import_all
+                    )
             key = self.pylab
         elif self.matplotlib:
             enable = shell.enable_matplotlib
@@ -244,6 +244,8 @@ class InteractiveShellApp(Configurable):
         elif self.gui:
             enable = shell.enable_gui
             key = self.gui
+        else:
+            enable = None
 
         if not enable:
             return
@@ -305,20 +307,49 @@ class InteractiveShellApp(Configurable):
             self.log.warning("Unknown error in loading extensions:", exc_info=True)
 
     def init_code(self):
-        """run the pre-flight code, specified via exec_lines"""
+        """run the pre-flight code, specified via exec_lines.
+
+        Attributes
+        ----------
+        hide_initial_ns: bool
+            hidden from magics like `% who`.
+
+        Methods
+        -------
+        :meth:`_run_startup_files`
+        :meth:`_run_exec_lines`,
+        :meth:`_run_exec_files`.
+        :meth:`_run_cmd_line_code`.
+
+        :meth:`init_shell`
+            This method is particularly important because it calls: meth: `_run_startup_files`, : meth: `_run_exec_lines`, and: meth: `_run_exec_files`.
+            As a result, it's generally always in the stack trace when code breaks
+            when a user is trying new startup code.
+            In addition, this method hides variables that are defined in startup
+            from magics like `% who` by calling 'update' on the interactiveshell
+            Afterwards, it ALSO calls: meth: `_run_cmd_line_code` and: meth: `_run_module`!
+            Admittedly though, there's hardly a noticeable difference between any
+            of those methods and they could probably be refactored to simply be
+            1 or 2 methods with some parameters it needs to check.
+
+        Notes
+        -----
+        Command-line execution, I.E.: :
+
+            ipython - i script.py
+            ipython - m module)
+
+        should * not* be excluded from `%whos`.
+        """
+        self.log.addHandler(self.handler)
         self._run_startup_files()
         self._run_exec_lines()
-        self._run_exec_files()
 
-        # Hide variables defined here from %who etc.
         if self.hide_initial_ns:
             self.shell.user_ns_hidden.update(self.shell.user_ns)
 
-        # command-line execution (ipython -i script.py, ipython -m module)
-        # should *not* be excluded from %whos
         self._run_cmd_line_code()
         self._run_module()
-
         # flush output, so itwon't be attached to the first cell
         sys.stdout.flush()
         sys.stderr.flush()

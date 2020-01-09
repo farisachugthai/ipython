@@ -9,6 +9,8 @@
 #  The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+import locale
 from IPython import start_ipython
 
+locale.setlocale(locale.LC_ALL, "")
 start_ipython()

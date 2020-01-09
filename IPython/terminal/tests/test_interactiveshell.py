@@ -4,6 +4,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 import sys
+import traceback
 import unittest
 
 from IPython.core.inputtransformer import InputTransformer
@@ -53,7 +54,7 @@ class mock_input_helper(object):
     def __exit__(self, etype, value, tb):
         self.ip.prompt_for_code = self.orig_prompt_for_code
 
-    def fake_input(self):
+    def fake_input(self, *args, **kwargs):
         try:
             return next(self.testgen)
         except StopIteration:
@@ -64,13 +65,15 @@ class mock_input_helper(object):
             self.ip.keep_running = False
             return u''
 
-def mock_input(testfunc):
+
+def mock_input(testfunc, *args, **kwargs):
     """Decorator for tests of the main interact loop.
 
     Write the test as a generator, yield-ing the input strings, which IPython
     will see as if they were typed in at the prompt.
     """
-    def test_method(self):
+
+    def test_method(self, *args, **kwargs):
         testgen = testfunc(self)
         with mock_input_helper(testgen) as mih:
             mih.ip.interact()
@@ -78,24 +81,45 @@ def mock_input(testfunc):
         if mih.exception is not None:
             # Re-raise captured exception
             etype, value, tb = mih.exception
-            import traceback
             traceback.print_tb(tb, file=sys.stdout)
             del tb  # Avoid reference loop
             raise value
 
-    return test_method
+    return test_method(testfunc, *args, **kwargs)
 
 # Test classes -----------------------------------------------------------------
 
+
+def syntax_error_transformer(lines):
+    """Transformer that throws SyntaxError if 'syntaxerror' is in the code."""
+    for line in lines:
+        pos = line.find('syntaxerror')
+        if pos >= 0:
+            e = SyntaxError('input contains "syntaxerror"')
+            e.text = line
+            e.offset = pos + 1
+            raise e
+    return lines
+
+
 class InteractiveShellTestCase(unittest.TestCase):
+
+    def setUp(self):
+        ip = get_ipython()
+
     def rl_hist_entries(self, rl, n):
         """Get last n readline history entries as a list"""
-        return [rl.get_history_item(rl.get_current_history_length() - x)
-                for x in range(n - 1, -1, -1)]
-    
+        return [rl.get_history_item(rl.get_current_history_length() - x) for x in range(n - 1, -1, -1)]
+
+    def test_raising_syntaxerror(self):
+        with self.assertRaises(SyntaxError) as exc_info:
+            raise SyntaxError("value must be 42")
+        assert exc_info.type is SyntaxError
+        assert exc_info.value.args[0] == "value must be 42"
+
+
     @mock_input
     def test_inputtransformer_syntaxerror(self):
-        ip = get_ipython()
         ip.input_transformers_post.append(syntax_error_transformer)
 
         try:
@@ -143,18 +167,6 @@ class InteractiveShellTestCase(unittest.TestCase):
         self.assertEqual(data, {'text/plain': repr(obj)})
         assert captured.stdout == ''
 
-def syntax_error_transformer(lines):
-    """Transformer that throws SyntaxError if 'syntaxerror' is in the code."""
-    for line in lines:
-        pos = line.find('syntaxerror')
-        if pos >= 0:
-            e = SyntaxError('input contains "syntaxerror"')
-            e.text = line
-            e.offset = pos + 1
-            raise e
-    return lines
-
-
 class TerminalMagicsTestCase(unittest.TestCase):
     def test_paste_magics_blankline(self):
         """Test that code with a blank line doesn't get split (gh-3246)."""
@@ -163,8 +175,8 @@ class TerminalMagicsTestCase(unittest.TestCase):
              '    b = a+1\n'
              '\n'
              '    return b')
-        
+
         tm = ip.magics_manager.registry['TerminalMagics']
         tm.store_or_execute(s, name=None)
-        
+
         self.assertEqual(ip.user_ns['pasted_func'](54), 55)

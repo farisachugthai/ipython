@@ -4,7 +4,20 @@
 
 Under Posix environments it works like a typical setup.py script.
 Under Windows, the command sdist is not supported, since IPython
-requires utilities which are not available under Windows."""
+requires utilities which are not available under Windows.
+
+And now it does on Windows as well.
+
+.. data:: setup_args
+
+    Create a dict with the basic information
+    This dict is eventually passed to setup after additional keys are added.
+
+.. data:: setuptools_extra_args
+
+    This dict is used for passing extra arguments that are setuptools
+    specific to setup
+"""
 
 #-----------------------------------------------------------------------------
 #  Copyright (c) 2008-2011, IPython Development Team.
@@ -21,6 +34,45 @@ from __future__ import print_function
 
 import os
 import sys
+import runpy
+if False:  # shut the linters up
+    from IPython.core.release import (
+        name,
+        version,
+        description,
+        long_description,
+        author,
+        author_email,
+        url,
+        license,
+        platforms,
+        keywords,
+        classifiers,
+    )
+
+from distutils.core import setup
+
+# Our own imports
+from setupbase import (
+    setup_args,
+    find_packages,
+    find_package_data,
+    check_package_data_first,
+    find_entry_points,
+    build_scripts_entrypt,
+    find_data_files,
+    git_prebuild,
+    install_symlinked,
+    install_lib_symlink,
+    install_scripts_for_symlink,
+    unsymlink,
+)
+
+try:
+    import importlib_metadata
+except ImportError:
+    importlib_metadata = None
+
 
 # **Python version check**
 #
@@ -55,56 +107,31 @@ Python {py} detected.
 {pip}
 """.format(py=sys.version_info, pip=pip_message )
 
-    print(error, file=sys.stderr)
-    sys.exit(1)
-
-# At least we're on the python version we need, move on.
-
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
-if os.path.exists('MANIFEST'): os.remove('MANIFEST')
-
-from distutils.core import setup
-
-# Our own imports
-from setupbase import target_update
-
-from setupbase import (
-    setup_args,
-    find_packages,
-    find_package_data,
-    check_package_data_first,
-    find_entry_points,
-    build_scripts_entrypt,
-    find_data_files,
-    git_prebuild,
-    install_symlinked,
-    install_lib_symlink,
-    install_scripts_for_symlink,
-    unsymlink,
-)
-
-isfile = os.path.isfile
-pjoin = os.path.join
-
-#-------------------------------------------------------------------------------
-# Handle OS specific things
-#-------------------------------------------------------------------------------
-
-if os.name in ('nt','dos'):
-    os_name = 'windows'
-else:
-    os_name = os.name
-
-# Under Windows, 'sdist' has not been supported.  Now that the docs build with
-# Sphinx it might work, but let's not turn it on until someone confirms that it
-# actually works.
-if os_name == 'windows' and 'sdist' in sys.argv:
-    print('The sdist command is not available under Windows.  Exiting.')
-    sys.exit(1)
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
 
 
-#-------------------------------------------------------------------------------
+def execfile(fname, globs, locs=None):
+    """TODO: runpy.run_path()."""
+    locs = locs or globs
+    with open(fname) as f:
+        exec(compile(f.read(), fname, "exec"), globs, locs)
+
+
+# release.py contains version, authors, license, url, keywords, etc.
+repo_root = os.path.dirname(os.path.abspath(__file__))
+# execfile(os.path.join(repo_root, "IPython", "core", "release.py"), globals())
+compile_file = os.path.join(repo_root, "IPython", "core", "release.py")
+ns = runpy.run_path(compile_file, init_globals=globals())
+if getattr(ns, "version_info", None):
+    _version_major, _version_minor, _version_patch, _version_extra = getattr(
+        ns, "version_info"
+    )
+name = ns["name"]
+version = ns["version"]
+# ------------------------------------------------------------------------------
 # Things related to the IPython documentation
 #-------------------------------------------------------------------------------
 
@@ -176,7 +203,20 @@ extras_require = dict(
     parallel = ['ipyparallel'],
     qtconsole = ['qtconsole'],
     doc = ['Sphinx>=1.3'],
-    test = ['nose>=0.10.1', 'requests', 'testpath', 'pygments', 'nbformat', 'ipykernel', 'numpy>=1.14'],
+    # coverage shows up the iptestcontroller and there's no try/excepts
+    test=[
+        "coverage",
+        "ipykernel",
+        "matplotlib",
+        "nbformat",
+        "nose>=0.10.1",
+        # how do you make this conditional on OS again?
+        # "pexpect",
+        "pytest",
+        "requests",
+        "sphinx",
+        "testpath",
+    ],
     terminal = [],
     kernel = ['ipykernel'],
     nbformat = ['nbformat'],
@@ -231,11 +271,17 @@ if 'setuptools' in sys.modules:
     setuptools_extra_args['python_requires'] = '>=3.6'
     setuptools_extra_args['zip_safe'] = False
     setuptools_extra_args['entry_points'] = {
-        'console_scripts': find_entry_points(),
+        "console_scripts": [
+            "iptest = IPython.testing.iptestcontroller:main",
+            "iptest3 = IPython.testing.iptestcontroller:main",
+            "ipython = IPython:start_ipython",
+            "ipython3 = IPython:start_ipython",
+        ],
         'pygments.lexers': [
             'ipythonconsole = IPython.lib.lexers:IPythonConsoleLexer',
             'ipython = IPython.lib.lexers:IPythonLexer',
             'ipython3 = IPython.lib.lexers:IPython3Lexer',
+            "ipytraceback = IPython.lib.lexers:IPythonTracebackLexer",
         ],
     }
     setup_args['extras_require'] = extras_require

@@ -4,7 +4,7 @@ Shim to maintain backwards compatibility with old IPython.html imports.
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-from html import *
+from html import *  # Because IPython.lib.display tries importing things from here
 from os import devnull
 import sys
 from warnings import warn
