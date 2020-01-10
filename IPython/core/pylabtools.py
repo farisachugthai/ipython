@@ -99,10 +99,10 @@ def figsize(sizex, sizey):
 
 def print_figure(fig, fmt="png", bbox_inches="tight", **kwargs):
     """Print a figure to an image, and return the resulting file data
-    
+
     Returned data will be bytes unless ``fmt='svg'``,
     in which case it will be unicode.
-    
+
     Any keyword args are passed to fig.canvas.print_figure,
     such as ``quality`` or ``bbox_inches``.
     """
@@ -332,11 +332,11 @@ def activate_matplotlib(backend):
 
 def import_pylab(user_ns, import_all=True):
     """Populate the namespace with pylab-related values.
-    
+
     Imports matplotlib, pylab, numpy, and everything from pylab and numpy.
-    
+
     Also imports a few names from IPython (figsize, display, getfigs)
-    
+
     """
 
     # Import numpy as np/pyplot as plt are conventions we're trying to

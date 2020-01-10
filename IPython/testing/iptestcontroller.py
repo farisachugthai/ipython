@@ -4,6 +4,17 @@
 This module runs one or more subprocesses which will actually run the IPython
 test suite.
 
+
+Also it's really quietly dependant on coverage. Let's add that to the requirements.
+
+If you're having difficult running the test suite!
+
+.. tip::
+
+    Arguments after -- should be passed through to nose. Argparse treats
+    everything after -- as regular positional arguments, so we separate them
+    first.
+
 """
 
 # Copyright (c) IPython Development Team.
@@ -20,7 +31,7 @@ import sys
 import subprocess
 import time
 
-from .iptest import (
+from IPython.testing.iptest import (
     have,
     test_group_names as py_test_group_names,
     test_sections,
@@ -33,20 +44,33 @@ from IPython.utils.tempdir import TemporaryDirectory
 
 
 class TestController:
-    """Run tests in a subprocess
+    """Run tests in a subprocess.
+
+    I don't know why the following were comments.
+
+    Attributes
+    ----------
+    section : str, optional
+        IPython test suite to be executed.
+    cmd : list
+        command line arguments to be executed
+    env : dict
+        extra environment variables to set for the subprocess
+    dirs : list
+        `tempfile.TemporaryDirectory` instances to clear up when the
+        process finishes
+    process : :class:`subprocess.Popen` instance
+        The instance of the tests running.
+    stdout : str
+        process stdout+stderr
+
     """
 
-    #: str, IPython test suite to be executed.
     section = None
-    #: list, command line arguments to be executed
     cmd = None
-    #: dict, extra environment variables to set for the subprocess
     env = None
-    #: list, TemporaryDirectory instances to clear up when the process finishes
     dirs = None
-    #: subprocess.Popen instance
     process = None
-    #: str, process stdout+stderr
     stdout = None
 
     def __init__(self):
@@ -56,13 +80,21 @@ class TestController:
 
     def setUp(self):
         """Create temporary directories etc.
-        
+
         This is only called when we know the test group will be run. Things
         created here may be cleaned up by self.cleanup().
         """
         pass
 
     def launch(self, buffer_output=False, capture_output=False):
+        """Checks if we're capturing output
+
+        Parameters
+        ----------
+        buffer_output : bool
+        capture_output : bool
+            No idea why these are 2 separate parameters.
+        """
         # print('*** ENV:', self.env)  # dbg
         # print('*** CMD:', self.cmd)  # dbg
         env = os.environ.copy()
@@ -115,7 +147,14 @@ class TestController:
 
 
 class PyTestController(TestController):
-    """Run Python tests using IPython.testing.iptest"""
+    """Run Python tests using IPython.testing.iptest.
+
+    Attributes
+    ----------
+    pycmd : str
+        Python command to execute in subprocess
+
+    """
 
     #: str, Python command to execute in subprocess
     pycmd = None
@@ -221,11 +260,11 @@ def prepare_controllers(options):
 
 def do_run(controller, buffer_output=True):
     """Setup and run a test controller.
-    
+
     If buffer_output is True, no output is displayed, to avoid it appearing
     interleaved. In this case, the caller is responsible for displaying test
     output on failure.
-    
+
     Returns
     -------
     controller : TestController
@@ -501,15 +540,6 @@ def default_options():
 
 
 def main():
-    # iptest doesn't work correctly if the working directory is the
-    # root of the IPython source tree. Tell the user to avoid
-    # frustration.
-    if os.path.exists(os.path.join(os.getcwd(), "IPython", "testing", "__main__.py")):
-        print("Don't run iptest from the IPython source directory", file=sys.stderr)
-        sys.exit(1)
-    # Arguments after -- should be passed through to nose. Argparse treats
-    # everything after -- as regular positional arguments, so we separate them
-    # first.
     try:
         ix = sys.argv.index("--")
     except ValueError:

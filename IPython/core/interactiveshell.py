@@ -10,7 +10,6 @@
 #  the file COPYING, distributed as part of this software.
 # -----------------------------------------------------------------------------
 
-
 import abc
 import ast
 import atexit
@@ -180,8 +179,8 @@ def removed_co_newlocals(function: types.FunctionType) -> types.FunctionType:
 
 # we still need to run things using the asyncio eventloop, but there is no
 # async integration
-from .async_helpers import _asyncio_runner, _asyncify, _pseudo_sync_runner
-from .async_helpers import _curio_runner, _trio_runner, _should_be_async
+from IPython.core.async_helpers import _asyncio_runner, _asyncify, _pseudo_sync_runner
+from IPython.core.async_helpers import _curio_runner, _trio_runner, _should_be_async
 
 
 def _ast_asyncify(cell: str, wrapper_name: str) -> ast.Module:
@@ -3617,14 +3616,14 @@ class InteractiveShell(SingletonConfigurable):
 
     def enable_matplotlib(self, gui=None):
         """Enable interactive matplotlib and inline figure support.
-        
+
         This takes the following steps:
-        
+
         1. select the appropriate eventloop and matplotlib backend
         2. set up matplotlib for interactive use with that backend
         3. configure formatters for inline figure display
         4. enable the selected gui eventloop
-        
+
         Parameters
         ----------
         gui : optional, string
@@ -3671,7 +3670,7 @@ class InteractiveShell(SingletonConfigurable):
         namespace all of numpy and pylab, and configures IPython to correctly
         interact with the GUI event loop.  The GUI backend to be used can be
         optionally selected with the optional ``gui`` argument.
-        
+
         This method only adds preloading the namespace to InteractiveShell.enable_matplotlib.
 
         Parameters

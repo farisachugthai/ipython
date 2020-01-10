@@ -249,10 +249,10 @@ class InteractiveShellApp(LoggingConfigurable):
 
             key = self.pylab
         elif self.matplotlib:
-            enable = shell.enable_matplotlib
+            enable = self.shell.enable_matplotlib
             key = self.matplotlib
         elif self.gui:
-            enable = shell.enable_gui
+            enable = self.shell.enable_gui
             key = self.gui
         else:
             enable = None

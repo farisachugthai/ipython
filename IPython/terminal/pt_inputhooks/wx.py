@@ -1,11 +1,8 @@
-"""Enable wxPython to be used interactively in prompt_toolkit
-"""
-
+"""Enable wxPython to be used interactively in prompt_toolkit."""
 import sys
 import signal
 import time
 from timeit import default_timer as clock
-import wx
 
 
 def ignore_keyboardinterrupts(func):
@@ -47,15 +44,6 @@ def inputhook_wx1(context):
         app.ProcessIdle()
         del ea
     return 0
-
-
-class EventLoopTimer(wx.Timer):
-    def __init__(self, func):
-        self.func = func
-        wx.Timer.__init__(self)
-
-    def Notify(self):
-        self.func()
 
 
 class EventLoopRunner(object):
@@ -199,21 +187,38 @@ def inputhook_wxphoenix(context):
     app.MainLoop()
 
 
-# Get the major wx version number to figure out what input hook we should use.
-major_version = 3
+if __name__ == "__main__":
+    try:
+        import wx
 
-try:
-    major_version = int(wx.__version__[0])
-except Exception:
-    pass
+    except Exception:  # noqa
+        pass
+    else:
 
-# Use the phoenix hook on all platforms for wxpython >= 4
-if major_version >= 4:
-    inputhook = inputhook_wxphoenix
-# On OSX, evtloop.Pending() always returns True, regardless of there being
-# any events pending. As such we can't use implementations 1 or 3 of the
-# inputhook as those depend on a pending/dispatch loop.
-elif sys.platform == "darwin":
-    inputhook = inputhook_wx2
-else:
-    inputhook = inputhook_wx3
+        class EventLoopTimer(wx.Timer):
+            def __init__(self, func):
+                self.func = func
+                wx.Timer.__init__(self)
+
+            def Notify(self):
+                self.func()
+
+        # Get the major wx version number to figure out what input hook we should use.
+        major_version = 3
+
+        try:
+            major_version = int(wx.__version__[0])
+        except Exception:
+            pass
+
+        # Use the phoenix hook on all platforms for wxpython >= 4
+        if major_version >= 4:
+            inputhook = inputhook_wxphoenix
+        # On OSX, evtloop.Pending() always returns True, regardless of there being
+        # any events pending. As such we can't use implementations 1 or 3 of the
+        # inputhook as those depend on a pending/dispatch loop.
+        elif sys.platform == "darwin":
+            inputhook = inputhook_wx2
+        else:
+            inputhook = inputhook_wx3
+

@@ -31,7 +31,7 @@ from IPython.core.application import (
 from IPython.core.magics import ScriptMagics, LoggingMagics
 from IPython.core.shellapp import InteractiveShellApp, shell_flags, shell_aliases
 from IPython.extensions.storemagic import StoreMagics
-from .interactiveshell import TerminalInteractiveShell
+from IPython.terminal.interactiveshell import TerminalInteractiveShell
 from IPython.paths import get_ipython_dir
 from traitlets import Bool, List, default, observe, Type
 
@@ -387,19 +387,13 @@ class TerminalIPythonApp(BaseIPythonApplication, InteractiveShellApp):
         if self.interact:
             self.log.info("Starting IPython's mainloop...")
             self.shell.mainloop()
-        # else:
-        # yo this messes up the unittests
-        #     # we're about to sys.exit don't just mark that as debug
-        #     self.log.warning(
-        #         "IPython not interactive. Here is the last execution; result.\n{}".format(
-        #             self.shell.last_execution_result
-        #         )
-        #     )
-            if not self.shell.last_execution_succeeded:
-                self.log.error(
-                    "terminal/ipapp: The sys.exit came from InteractiveShellApp.start. Your welcome."
-                )
-                sys.exit(1)
+            # The below also happens when the user presses <C-d> so that's
+            # an expected close. So don't run this.
+            # if not self.shell.last_execution_succeeded:
+            #     self.log.error(
+            #         "terminal/ipapp: The sys.exit came from InteractiveShellApp.start. Your welcome."
+            #     )
+            #     sys.exit(1)
 
 
 def load_default_config(ipython_dir=None):

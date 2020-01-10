@@ -12,6 +12,7 @@ from importlib import import_module, reload
 
 from traitlets.config.configurable import LoggingConfigurable
 from IPython.utils.path import ensure_dir_exists, compress_user
+
 # from IPython.utils.decorators import undoc
 from IPython.utils.syspathcontext import prepended_to_syspath
 from traitlets.traitlets import Instance
@@ -74,11 +75,13 @@ class ExtensionManager(LoggingConfigurable):
     def extensions_admonition(self, msg=None):
         """Warn users; however, allow a parameter to specify the message."""
         if msg is None:
-            msg = dedent("Loading extensions from "
-            f"{compress_user(self.ipython_extension_dir)} "
-            "is deprecated. We recommend managing extensions packages using "
-            "setuptools and in site-packages.")
-        self.log.info(f'{msg}')
+            msg = dedent(
+                "Loading extensions from "
+                f"{compress_user(self.ipython_extension_dir)} "
+                "is deprecated. We recommend managing extensions packages using "
+                "setuptools and in site-packages."
+            )
+        self.log.info(f"{msg}")
 
     def load_extension(self, module_str):
         """Load an IPython extension by its module name.
@@ -147,8 +150,10 @@ class ExtensionManager(LoggingConfigurable):
             mod.load_ipython_extension(self.shell)
             return True
         else:
-            self.log.warning(f"{type(mod)} given. The {self.__class__.__name__} "
-            "was expecting a module type.")
+            self.log.warning(
+                f"{type(mod)} given. The {self.__class__.__name__} "
+                "was expecting a module type."
+            )
 
     def _call_unload_ipython_extension(self, mod):
         if hasattr(mod, "unload_ipython_extension"):

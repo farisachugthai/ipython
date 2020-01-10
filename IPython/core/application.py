@@ -156,7 +156,7 @@ class BaseIPythonApplication(Application):
 
     extra_config_file = Unicode(
         help="""Path to an extra config file to load.
-    
+
     If specified, load this config file in addition to any other IPython config.
     """
     ).tag(config=True)
@@ -284,7 +284,7 @@ class BaseIPythonApplication(Application):
 
     def excepthook(self, etype, evalue, tb):
         """this is sys.excepthook after init_crashhandler
-        
+
         set self.verbose_crash=True to use our full crashhandler, instead of
         a regular traceback with a short message (crash_handler_lite)
         """
@@ -496,3 +496,24 @@ class BaseIPythonApplication(Application):
         self.load_config_file()
         # enforce cl-opts override configfile opts:
         self.update_config(cl_config)
+
+    # This feels really dangerous. I wanna find out but hold off.
+    # @classmethod
+    # def launch_instance(cls, argv=None, **kwargs):
+    #     """Launch a global instance of this Application.
+
+    #     If a global instance already exists, this reinitializes and starts it.
+
+    #     Notes
+    #     -----
+    #     Called by the :class:`IPython.terminal.ipapp.TerminalIPythonApp`.
+    #     So I moved it out of traitlets for easier diagnosability.
+    #     Cross yo fingers.
+
+    #     Examples
+    #     --------
+    #     >>> TerminalIPythonApp.launch_instance()
+    #     """
+    #     app = cls.instance(**kwargs)
+    #     app.initialize(argv)
+    #     app.start()
