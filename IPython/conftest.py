@@ -87,13 +87,14 @@ def start_test_shell():
     return _ip
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def work_path():
     path = pathlib.Path("./tmp-ipython-pytest-profiledir")
     os.environ["TEST_IPYTHONDIR"] = str(path.absolute())
     if path.exists():
         raise ValueError(
-            'IPython dir temporary path already exists ! Did previous test run exit successfully ?')
+            "IPython dir temporary path already exists ! Did previous test run exit successfully ?"
+        )
     path.mkdir()
     yield
     shutil.rmtree(str(path.resolve()))

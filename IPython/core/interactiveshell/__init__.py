@@ -77,7 +77,12 @@ from IPython.core.display import display
 from IPython.core.display_trap import DisplayTrap
 from IPython.core.displayhook import DisplayHook
 from IPython.core.displaypub import DisplayPublisher
-from IPython.core.error import InputRejected, ProvisionalWarning, UsageError, SpaceInInput
+from IPython.core.error import (
+    InputRejected,
+    ProvisionalWarning,
+    UsageError,
+    SpaceInInput,
+)
 from IPython.core.events import EventManager, available_events
 from IPython.core.extensions import ExtensionManager
 from IPython.core.formatters import DisplayFormatter
@@ -590,7 +595,9 @@ class InteractiveShell(SingletonConfigurable):
         return self
 
     def __repr__(self):
-        return "<{!r}:{!r}>".format(self.__class__.__name__, reprlib.Repr().repr_dict(self.traits(), 6))
+        return "<{!r}:{!r}>".format(
+            self.__class__.__name__, reprlib.Repr().repr_dict(self.traits(), 6)
+        )
 
     # -------------------------------------------------------------------------
     # Trait changed handlers
@@ -713,7 +720,7 @@ class InteractiveShell(SingletonConfigurable):
         # yo i just noticed this. wanna see something?
         # idk if we can do it this way but goddamn if i don't try
         # pyformat = functools.partial(pygments.highlight(lexer=pygments.lexers.python.PythonLexer,
-                                                        # formatter=pygments.formatters.terminal256.TerminalTrueColorFormatter))
+        # formatter=pygments.formatters.terminal256.TerminalTrueColorFormatter))
         # self.pycolorize = lambda src: pyformat(src, 'str')
 
     def refresh_style(self):
@@ -736,16 +743,16 @@ class InteractiveShell(SingletonConfigurable):
         """logger.logstart is now a classmethod so that'll return an instance. Sweet!"""
         return self.logger.logstart()
 
-#     def init_logstart(self):
-#         """Initialize logging in case it was requested at the command line.
+    #     def init_logstart(self):
+    #         """Initialize logging in case it was requested at the command line.
 
-#         .. todo:: We deprecated self.magic get rid of it's usage here.
-#         """
-        # if self.logappend:
-        #     self.magic("logstart %s append" % self.logappend)
-        # elif self.logstart:
-        #     self.logger.logstart()
-        #     # self.magic("logstart %s")
+    #         .. todo:: We deprecated self.magic get rid of it's usage here.
+    #         """
+    # if self.logappend:
+    #     self.magic("logstart %s append" % self.logappend)
+    # elif self.logstart:
+    #     self.logger.logstart()
+    #     # self.magic("logstart %s")
 
     def init_deprecation_warnings(self):
         """Register default filter for deprecation warning.
@@ -769,9 +776,7 @@ class InteractiveShell(SingletonConfigurable):
 
         """
         warnings.filterwarnings(
-            "default",
-            category=DeprecationWarning,
-            module=self.user_ns.get("__name__"),
+            "default", category=DeprecationWarning, module=self.user_ns.get("__name__"),
         )
 
     def init_builtins(self):
@@ -1971,7 +1976,7 @@ class InteractiveShell(SingletonConfigurable):
             # # show the exception in handler first
             # print("The original exception:")
             # print(sys.exc_info()
-            self.log.critical('Woops. Come back to interactiveshell.IS.wrapped')
+            self.log.critical("Woops. Come back to interactiveshell.IS.wrapped")
         return stb
 
     def _get_exc_info(self, exc_tuple=None):
@@ -2056,7 +2061,7 @@ class InteractiveShell(SingletonConfigurable):
         sys.last_traceback = last_tb
         if last_tb is None:
             return
-        if getattr(last_tb, 'tb_next', None):
+        if getattr(last_tb, "tb_next", None):
             try:
                 lines = traceback.format_exception(ei[0], ei[1], last_tb.tb_next)
                 self.write("".join(lines))
@@ -2554,7 +2559,7 @@ class InteractiveShell(SingletonConfigurable):
         try:
             self.user_ns["_exit_code"] = subprocess.run([cmd], shell=True)
         except subprocess.CalledProcessError as e:
-            if getattr(e, '__cause__', None):
+            if getattr(e, "__cause__", None):
                 print(e.__cause__)
             else:
                 print("Subprocess command failed.", file=sys.stderr)
@@ -2917,10 +2922,13 @@ class InteractiveShell(SingletonConfigurable):
                         print("SystemExit: {}".format(status))
                         # if not exit_ignore:
                         self.showtraceback(exception_only=True)
-                except (OverflowError, SyntaxError,
-                        ValueError,
-                        TypeError,
-                        MemoryError) as e:
+                except (
+                    OverflowError,
+                    SyntaxError,
+                    ValueError,
+                    TypeError,
+                    MemoryError,
+                ) as e:
                     if raise_exceptions:
                         raise
                     self.log.error(e)
@@ -2999,15 +3007,19 @@ class InteractiveShell(SingletonConfigurable):
                     runpy.run_module(str(mod_name), run_name="__main__", alter_sys=True)
                 )
             except SystemExit as status:
-                if getattr(status, 'code', None):
+                if getattr(status, "code", None):
                     raise
         except BaseException:
             self.showtraceback()
             warn("Unknown failure executing module: <%s>" % mod_name)
 
     @staticmethod
-    def get_result(raw_cell, store_history=True, silent=False, shell_futures=True, *args, **kwargs):
-        result = ExecutionResult(ExecutionInfo(raw_cell, store_history, silent, shell_futures))
+    def get_result(
+        raw_cell, store_history=True, silent=False, shell_futures=True, *args, **kwargs
+    ):
+        result = ExecutionResult(
+            ExecutionInfo(raw_cell, store_history, silent, shell_futures)
+        )
         return result
 
     def run_cell(self, raw_cell, store_history=False, silent=False, shell_futures=True):
@@ -3145,9 +3157,9 @@ class InteractiveShell(SingletonConfigurable):
         # are where you call this function and it doesn't work and crashes
         # the application leaving it entirely able to run a line of code???????
         else:
-            result =  self.get_result(raw_cell)
+            result = self.get_result(raw_cell)
 
-        self.log.debug('result: {}'.format(result))
+        self.log.debug("result: {}".format(result))
         self.events.trigger("pre_execute")
 
         # If any of our input transformation (input_transformer_manager or
@@ -3331,8 +3343,10 @@ class InteractiveShell(SingletonConfigurable):
                 # don't unregister the transform.
                 raise
             except Exception:
-                self.log.warn("AST transformer %r threw an error."
-                              "It will be unregistered." % transformer)
+                self.log.warn(
+                    "AST transformer %r threw an error."
+                    "It will be unregistered." % transformer
+                )
                 self.ast_transformers.remove(transformer)
 
         if self.ast_transformers:
@@ -3340,11 +3354,7 @@ class InteractiveShell(SingletonConfigurable):
         return node
 
     async def run_ast_nodes(
-        self,
-        nodelist: ListType[AST],
-        cell_name: str,
-        result=None,
-        *args, **kwargs,
+        self, nodelist: ListType[AST], cell_name: str, result=None, *args, **kwargs,
     ):
         """Run a sequence of AST nodes.
 

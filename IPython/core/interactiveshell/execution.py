@@ -153,17 +153,17 @@ class ExecutionInfo(LoggingConfigurable):
 
         """
         # TODO: Check the unittests and then start deleting all the BS out of this.
-        return ("""
+        return """
         <{} object at {}
         raw_cell={}
         store_history={} silent={} shell_futures={}>""".format(
-                self.__class__.__name__,
-                id(self),
-                self.truncated_cell,
-                self.store_history,
-                self.silent,
-                self.shell_futures,
-                ))
+            self.__class__.__name__,
+            id(self),
+            self.truncated_cell,
+            self.store_history,
+            self.silent,
+            self.shell_futures,
+        )
 
     def __repr__(self):
         return self.repr()
