@@ -147,7 +147,7 @@ def _should_be_async(cell: str) -> bool:
 
     If it works, assume it should be async. Otherwise Return False.
 
-    Not handled yet: If the block of code has a return statement as  the top
+    Not handled yet: If the block of code has a return statement as the top
     level, it will be seen as async. This is a know limitation.
     """
     if sys.version_info > (3, 8):
@@ -159,13 +159,13 @@ def _should_be_async(cell: str) -> bool:
                 flags=getattr(ast, "PyCF_ALLOW_TOP_LEVEL_AWAIT", 0x0),
             )
             return inspect.CO_COROUTINE & code.co_flags == inspect.CO_COROUTINE
-        except SyntaxError:
+        except (SyntaxError, MemoryError):
             return False
     try:
         # we can't limit ourself to ast.parse, as it __accepts__ to parse on
         # 3.7+, but just does not _compile_
         code = compile(cell, "<>", "exec")
-    except SyntaxError:
+    except (SyntaxError, MemoryError):
         try:
             parse_tree = _async_parse_cell(cell)
 
@@ -173,7 +173,7 @@ def _should_be_async(cell: str) -> bool:
             v = _AsyncSyntaxErrorVisitor()
             v.visit(parse_tree)
 
-        except SyntaxError:
+        except (SyntaxError, MemoryError):
             return False
         return True
     return False

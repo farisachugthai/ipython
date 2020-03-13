@@ -65,7 +65,12 @@ def create_ipython_shortcuts(shell):
         filter=(has_focus(DEFAULT_BUFFER) & ~has_selection & insert_mode),
     )(reformat_and_execute)
 
-    kb.add("c-\\")(force_exit)
+    # Ctrl+J == Enter, seemingly
+    registry.add_binding(Keys.ControlJ,
+                         filter=(HasFocus(DEFAULT_BUFFER)
+                                 & ~HasSelection()
+                                 & insert_mode
+                        ))(return_handler)
 
     kb.add("c-p", filter=(vi_insert_mode & has_focus(DEFAULT_BUFFER)))(
         previous_history_or_previous_completion
@@ -292,7 +297,7 @@ if sys.platform == "win32":
     from IPython.lib.clipboard import (
         ClipboardEmpty,
         win32_clipboard_get,
-        tkinter_clipboard_get,
+        tkinter_clipboard_get
     )
 
     @undoc
