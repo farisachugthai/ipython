@@ -24,7 +24,7 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       env | sort
       if ! which python$TRAVIS_PYTHON_VERSION; then
-        HOMEBREW_NO_AUTO_UPDATE=1 brew tap carreau/homebrew-python-frameworks
+        HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
         HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${TRAVIS_PYTHON_VERSION/./}
       fi
       python3 -m pip install virtualenv
@@ -38,7 +38,7 @@ install:
   - pip install setuptools --upgrade
   - pip install -e file://$PWD#egg=ipython[test] --upgrade
   - pip install trio curio --upgrade --upgrade-strategy eager
-  - pip install pytest matplotlib
+  - pip install pytest 'matplotlib !=3.2.0'
   - pip install codecov check-manifest --upgrade
 
 script:
@@ -72,14 +72,10 @@ matrix:
     - arch: arm64
       python: "3.7"
       dist: xenial
-      env: ARM64=True
+      env: ARM64=True IPYTHON_TESTING_TIMEOUT_SCALE=2
       sudo: true
     - arch: amd64
-      python: "3.8-dev"
-      dist: xenial
-      sudo: true
-    - arch: amd64
-      python: "3.7-dev"
+      python: "3.8"
       dist: xenial
       sudo: true
     - arch: amd64

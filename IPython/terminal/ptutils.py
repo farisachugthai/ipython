@@ -45,6 +45,8 @@ def _elide(string, *, min_elide=30):
 
     object_parts = string.split(".")
     file_parts = string.split(os.sep)
+    if file_parts[-1] == '':
+        file_parts.pop()
 
     if len(object_parts) > 3:
         return "{}.{}\N{HORIZONTAL ELLIPSIS}{}.{}".format(

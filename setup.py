@@ -30,8 +30,6 @@ And now it does on Windows as well.
 #  The full license is in the file COPYING.rst, distributed with this software.
 # -----------------------------------------------------------------------------
 
-from __future__ import print_function
-
 import os
 import sys
 import runpy
@@ -242,14 +240,15 @@ extras_require = dict(
 )
 
 install_requires = [
-    "setuptools>=18.5",
-    "jedi>=0.10",
-    "decorator",
-    "pickleshare",
-    "traitlets>=4.2",
-    "prompt_toolkit>=2.0.0,<3.1.0,!=3.0.0,!=3.0.1",
-    "pygments",
-    "backcall",
+    'setuptools>=18.5',
+    'jedi>=0.10',
+    'decorator',
+    'pickleshare',
+    'traitlets>=4.2',
+    'prompt_toolkit>=2.0.0,<3.1.0,!=3.0.0,!=3.0.1',
+    'pygments',
+    'backcall',
+    'stack_data',
 ]
 
 # Platform-specific dependencies:
